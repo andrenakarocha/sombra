@@ -4,7 +4,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'rea
 
 import { useMoradores, useSalvarMorador } from '@/api/consultas';
 import { mensagemDeErro } from '@/api/mensagens';
-import type { FatorDeRisco, Morador, NovoMorador } from '@/api/tipos';
+import type { FatorDeRisco, Morador, NovoMorador } from '@/application/modelos';
 import { Botao } from '@/componentes/Botao';
 import { Campo } from '@/componentes/Campo';
 import { Texto } from '@/componentes/Texto';

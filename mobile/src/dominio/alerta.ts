@@ -1,4 +1,4 @@
-import type { Alerta, Domicilio, EstadoDoAlerta } from '@/api/tipos';
+import type { Alerta, Domicilio, EstadoDoAlerta } from '@/application/modelos';
 import { formatarHora } from '@/util/formato';
 
 export const ROTULO_DO_ESTADO: Record<EstadoDoAlerta, string> = {

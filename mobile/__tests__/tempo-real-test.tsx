@@ -4,7 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import type { Resultado } from '@/api/consultas';
 import { aplicarEvento } from '@/api/tempo-real';
-import type { Domicilio } from '@/api/tipos';
+import type { Domicilio } from '@/application/modelos';
 import Inicio from '@/app/(familia)/(abas)/index';
 import { CASAS } from '@/demo/fixtures';
 

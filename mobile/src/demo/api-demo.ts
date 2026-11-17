@@ -2,7 +2,7 @@
 // Assim o professor abre o app sem subir o backend (spec 05, "Modo demonstração").
 
 import { ErroDaApi } from '@/api/erros';
-import type { Alerta, CheckIn, Domicilio, Leitura, NovoMorador } from '@/api/tipos';
+import type { Alerta, CheckIn, Domicilio, Leitura, NovoMorador } from '@/application/modelos';
 import { exibirCartaoSus, exibirCpf, exibirTelefone } from '@/util/mascaras';
 
 import { ALERTAS, CASAS, leituras24h, MORADORES, PONTOS, PRIVACIDADE, REDE } from './fixtures';

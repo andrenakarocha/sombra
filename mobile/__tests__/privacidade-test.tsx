@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import type { Resultado } from '@/api/consultas';
-import type { Domicilio, Morador, PrivacidadeDaCasa } from '@/api/tipos';
+import type { Domicilio, Morador, PrivacidadeDaCasa } from '@/application/modelos';
 import Privacidade from '@/app/(familia)/(abas)/privacidade';
 import MoradorDaCasa from '@/app/(familia)/casa/[id]/morador';
 import { CASAS } from '@/demo/fixtures';

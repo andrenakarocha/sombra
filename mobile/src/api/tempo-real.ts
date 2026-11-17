@@ -11,7 +11,7 @@ import { usePreferencias } from '@/sessao/preferencias';
 import { TOKEN_DEMO, useSessao } from '@/sessao/sessao';
 
 import { queryClient, type Resultado } from './consultas';
-import type { Domicilio } from './tipos';
+import type { Domicilio } from '@/application/modelos';
 
 const NOVA_TENTATIVA_MS = 10_000;
 

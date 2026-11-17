@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAlertas } from '@/api/consultas';
 import { mensagemDeErro } from '@/api/mensagens';
-import type { Alerta } from '@/api/tipos';
+import type { Alerta } from '@/application/modelos';
 import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { AvisoOffline } from '@/componentes/AvisoOffline';
 import { Farol } from '@/componentes/Farol';

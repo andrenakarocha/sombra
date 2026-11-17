@@ -1,4 +1,4 @@
-import type { SituacaoDoCheckIn } from '@/api/tipos';
+import type { SituacaoDoCheckIn } from '@/application/modelos';
 
 import { banco } from './banco';
 
