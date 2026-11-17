@@ -28,3 +28,5 @@ export type Domicilio = {
   ultimoCheckIn: string | null;
   alertaAberto: AlertaResumo | null;
 };
+
+export type Pagina<T> = { itens: T[]; pagina: number; tamanho: number; total: number };

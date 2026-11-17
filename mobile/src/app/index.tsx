@@ -1,40 +1,49 @@
-import { ScrollView, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoGigante } from '@/componentes/BotaoGigante';
+import { sair } from '@/api/auth';
+import { useCasas } from '@/api/consultas';
+import { mensagemDeErro } from '@/api/mensagens';
+import { Botao } from '@/componentes/Botao';
 import { CartaoCasa } from '@/componentes/CartaoCasa';
-import { Farol } from '@/componentes/Farol';
 import { Texto } from '@/componentes/Texto';
-import { CASAS } from '@/demo/fixtures';
-import { NIVEIS } from '@/dominio/nivel';
-import { espaco, useTema } from '@/tema';
+import { espaco, raio, useTema } from '@/tema';
+import { formatarHora } from '@/util/formato';
 
-// Vitrine dos componentes-base (F6.1). As abas da família e o Modo Idoso substituem esta tela na F6.3.
-export default function Vitrine() {
+// Lista das casas (F6.2). As abas da família substituem esta tela na F6.3.
+export default function Inicio() {
   const tema = useTema();
+  const casas = useCasas();
   const nada = () => {};
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tema.fundo }}>
-      <ScrollView contentContainerStyle={{ padding: espaco[5], gap: espaco[5] }}>
+      <ScrollView
+        contentContainerStyle={{ padding: espaco[5], gap: espaco[5] }}
+        refreshControl={<RefreshControl refreshing={casas.isRefetching} onRefresh={() => void casas.refetch()} />}
+      >
         <Texto variante="tituloGrande" accessibilityRole="header">
-          Sombra
+          Suas casas
         </Texto>
-        <View style={{ gap: espaco[2] }}>
-          {NIVEIS.map((nivel) => (
-            <Farol key={nivel} nivel={nivel} />
-          ))}
-        </View>
-        {CASAS.map((casa) => (
-          <CartaoCasa key={casa.id} casa={casa} aoAbrir={nada} aoLigar={nada} />
+
+        {casas.data?.origem === 'cache' && (
+          <View
+            accessibilityRole="alert"
+            style={{ backgroundColor: tema.superficieAlternativa, borderRadius: raio.medio, padding: espaco[4] }}
+          >
+            <Texto forte>Sem conexão.</Texto>
+            <Texto>Mostrando os dados salvos às {formatarHora(casas.data.atualizadoEm)}.</Texto>
+          </View>
+        )}
+
+        {casas.isPending && <ActivityIndicator accessibilityLabel="Carregando as casas" color={tema.marca} />}
+        {casas.isError && <Texto accessibilityRole="alert">{mensagemDeErro(casas.error)}</Texto>}
+
+        {casas.data?.dados.map((casa) => (
+          <CartaoCasa key={casa.id} casa={casa} aoAbrir={nada} />
         ))}
-        <BotaoGigante rotulo="ESTOU BEM" instrucao="aperte uma vez" variante="bem" aoAcionar={nada} />
-        <BotaoGigante
-          rotulo="PRECISO DE AJUDA"
-          instrucao="segure por 2 segundos"
-          variante="ajuda"
-          segurarPorMs={2000}
-          aoAcionar={nada}
-        />
+
+        <Botao rotulo="Sair" variante="secundario" dica="Sai da conta e apaga os dados salvos no aparelho" aoTocar={sair} />
       </ScrollView>
     </SafeAreaView>
   );

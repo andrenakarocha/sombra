@@ -619,7 +619,7 @@ provando o antes e o depois.
 - [x] **F6.1** 🤖 Scaffold Expo SDK 58 + Expo Router + TS estrito + tema dos tokens + `Farol`, `CartaoCasa`,
   `BotaoGigante` + lint, typecheck e Jest — 2026-11-17 17:56.
   🔎 `npx expo-doctor` ok; o app abre no Expo Go.
-- [ ] **F6.2** 🤖 Cliente da API (TanStack Query), login (secure-store) e SQLite com migrações para cache.
+- [x] **F6.2** 🤖 Cliente da API (TanStack Query), login (secure-store) e SQLite com migrações para cache — 2026-11-17 18:02.
   🔎 abre offline com os últimos dados.
 - [ ] **F6.3** 🤖 Início, Casa (gráfico de 24 h), Alertas (com reconhecer) e SignalR.
   🔎 o simulador deixa o card vermelho sem recarregar (P10).
