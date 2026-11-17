@@ -68,3 +68,9 @@ export type Morador = {
 
 // rascunho
 export type ContatoDaRede = { id: string; nome: string; papel: 'FAMILIAR' | 'VIZINHO'; telefone: string };
+
+export type SituacaoDoCheckIn = 'ESTOU_BEM' | 'PRECISO_DE_AJUDA';
+
+// O contrato tem { origem, situacao }; o app manda também o momento em que a pessoa apertou (rascunho), para um
+// check-in que esperou na fila offline não chegar com o horário errado.
+export type CheckIn = { origem: 'APP' | 'CUIDADOR'; situacao: SituacaoDoCheckIn; momento: string };
