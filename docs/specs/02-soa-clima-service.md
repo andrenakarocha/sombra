@@ -2,6 +2,7 @@
 
 > **Fase:** F3 (ONNX na F9.1, polimento na F11.2) · **Pasta:** `services/clima-service/` · **Checkpoints:** `PLANO.md` §8.4
 > **Entrega:** link do GitHub (pasta) · **Consumido por:** Core (C#) · **Consome:** Open-Meteo, CSVs do INMET, modelo ONNX do `ml/`
+> **Observabilidade:** [`docs/observabilidade.md`](../observabilidade.md) §1–§7 (formatter próprio do Spring; saúde pelo actuator)
 
 ## Objetivo
 Um serviço **dono do conhecimento climático**: regiões, estações, observações, risco de calor atual, **previsão de 24 h feita pelo modelo de ML** e pontos de resfriamento perto de casa. Segue **exatamente** a estrutura do guia do professor (domínio · aplicação · infraestrutura · api), em Java/Spring Boot, a stack da disciplina. O Core conversa com ele só pelo contrato OpenAPI, nunca pelo banco.

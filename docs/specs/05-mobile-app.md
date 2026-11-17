@@ -3,6 +3,7 @@
 > **Fase:** F6 🤝 (polimento na F11.5, vídeo na F13.6) · **Pasta:** `mobile/` · **Checkpoints:** `PLANO.md` §8.7
 > **Entrega:** link do GitHub (pasta) com README (Ficha, como rodar, prints) + vídeo ≤ 3 min
 > **Critérios:** telas e navegação · consumo de dados · banco de dados · acessibilidade · aderência ao problema · documentação
+> **Observabilidade:** [`docs/observabilidade.md`](../observabilidade.md) §3 e §5 (código curto do erro na tela; nada de PII no console)
 
 ## Objetivo
 A **porta de entrada** do Sombra no celular, com dois públicos:

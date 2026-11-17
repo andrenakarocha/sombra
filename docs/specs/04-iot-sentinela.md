@@ -3,6 +3,7 @@
 > **Fase:** F5 (polimento na F11.4, vídeo na F13.6) · **Pasta:** `iot/sentinela/` · **Checkpoints:** `PLANO.md` §8.6 · 🔑 Wokwi do André
 > **Entrega:** link público do Wokwi + vídeo ≤ 4 min + `integrantes.txt`
 > **Regra do professor:** *"o aluno não vai criar um projeto paralelo apenas para cumprir a atividade"*. A Sentinela **é** a porta física do Sombra.
+> **Observabilidade:** [`docs/observabilidade.md`](../observabilidade.md) §4 e §5 (log serial e eventos por MQTT)
 
 ## Objetivo
 Um dispositivo de baixo custo que fica na casa do idoso, **funciona sem internet**, mede o calor real dentro de casa, conversa com o idoso por luz, som, tela e **dois botões grandes**, e se integra ao Core por MQTT nos dois sentidos.

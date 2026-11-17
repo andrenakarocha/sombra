@@ -2,6 +2,7 @@
 
 > **Fase:** F1 (polimento na F11.1) · **Pasta:** `services/core-api/` · **Checkpoints:** `PLANO.md` §8.2
 > **Entrega:** link do GitHub (pasta) · **Consumido por:** app, painel, Sentinela, monitor da VM
+> **Observabilidade:** [`docs/observabilidade.md`](../observabilidade.md) §1–§7 (o Core é o serviço mais instrumentado; a guarda de log é da spec 07)
 
 ## Objetivo
 O **coração do Sombra**: domicílios, moradores, rede de cuidado, Sentinelas, leituras, alertas, check-ins e escalonamento, com POO de verdade, Web API completa, EF Core com LINQ, assincronia ponta a ponta e qualidade medida pelo **pipeline do próprio professor**.

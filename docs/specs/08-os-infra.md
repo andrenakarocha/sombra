@@ -3,6 +3,7 @@
 > **Fase:** F8 🔑 (Azure na F11.8, vídeo na F13.6) · **Pasta:** `infra/` · **Checkpoints:** `PLANO.md` §8.9
 > **Entrega:** link do GitHub (pasta) + vídeo ≤ 7 min + evidências no repositório · **nomes de todos os integrantes**
 > **Ambiente:** VM local (Vagrant + Ubuntu 24.04) e, opcionalmente, **os mesmos scripts** numa VM do Azure (decisão D2)
+> **Observabilidade:** [`docs/observabilidade.md`](../observabilidade.md) §4–§6 (`log.sh`, `auditoria.jsonl`, monitor consultando a saúde dos serviços, retenção)
 
 ## Objetivo
 A partir de uma VM **vazia**, um único `sudo ./provision.sh` deixa o servidor `sombra-srv01` configurado (hostname, IP, DNS, usuários) e **hospedando o Sombra inteiro** (Core, Clima, painel, Postgres, nginx) como serviços systemd, com **monitoramento como serviço tolerante a falhas**, **logs de auditoria** de tudo e **testes de falha** que provam a recuperação.
