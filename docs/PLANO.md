@@ -7,7 +7,7 @@ last-updated: 2026-11-17
 
 # Sombra — plano mestre
 
-> Fonte de verdade da GS 2026.2. Todo agente (Claude Code ou outro, do André, do Matheus ou do João) começa pela **§0**.
+> Fonte de verdade da GS 2026.2. Todo agente (Claude Code ou outro, de qualquer integrante) começa pela **§0**.
 > Aqui está **o que** será construído, **por quê**, **como** e **em que ordem**, com critérios de aceite verificáveis e
 > checkpoints para retomar o trabalho de qualquer estado. O detalhe de design e a rubrica de cada disciplina ficam nas
 > **specs** (`specs/NN-*.md`); a ordem de execução fica **só aqui**.
@@ -37,14 +37,14 @@ Specs: [00 Fundação](specs/00-fundacao-contratos.md) · [01 C#](specs/01-cshar
 
 ## 0. Protocolo para agentes
 
-**Legenda:** 🧑 passo humano (André) · 🤖 passo de agente · 🧑🤖 sessão conjunta · 🤝 delegável (cabe numa sessão do
-Matheus ou do João só com a spec indicada) · 🔑 usa conta ou acesso do André · ✅ critério de aceite · 🔎 como verificar ·
+**Legenda:** 🧑 passo humano (do operador) · 🤖 passo de agente · 🧑🤖 sessão conjunta · 🤝 bom ponto de partida (cabe
+numa sessão nova só com a spec indicada) · 🔑 usa conta ou acesso externo · ✅ critério de aceite · 🔎 como verificar ·
 ⛔ bloqueio (nada depois começa antes dele) · ⏸ pausado à espera de insumo
 
 Ao começar qualquer sessão neste projeto:
 
 1. Leia a §1 (contexto) e a §2 (decisões). As **fechadas** (§2.1) não se re-litigam nem mudam sem pedido explícito do
-   André. As **abertas** (§2.2) só fecham no checkpoint indicado.
+   operador. As **abertas** (§2.2) só fecham no checkpoint indicado.
 2. Vá à **§12 (Painel de status)**: identifique a fase atual e o último checkpoint marcado `[x]`.
 3. **Confie, mas verifique:** rode o 🔎 do último checkpoint marcado. Se falhar, o estado real é anterior: desmarque e
    corrija antes de seguir.
@@ -52,15 +52,15 @@ Ao começar qualquer sessão neste projeto:
 5. **Um checkpoint = uma unidade de trabalho = um commit atômico** (Conventional Commits em inglês, com o escopo da
    pasta: `feat(core): …`, `test(clima): …`, `chore(infra): …`). Nunca junte checkpoints num commit. Os commits vão
    em lote num branch (`fN-assunto`) e entram na `main` por **PR com rebase merge**, que preserva um commit por
-   checkpoint. **O `git push` é sempre do André** (hook `block-dangerous-git` da máquina). O agente abre o PR e, depois do CI
-   verde e do **"pode mergear" do André no chat**, roda só o comando de merge (hook `guard-autonomous-policy`; o
-   mesmo vale para release e publicação). Ninguém faz push direto na `main` (D15).
+   checkpoint. O agente termina abrindo o PR; o **dono do repositório revisa e faz o merge** depois do CI verde. Em máquinas com os
+   hooks `block-dangerous-git` e `guard-autonomous-policy`, o `git push` é do operador e o agente só roda um merge,
+   release ou publicação com o ok explícito dele. Ninguém faz push direto na `main` (D15).
 6. Ao concluir: marque `[x]` com a data. Ao fechar o último checkpoint de uma fase, **assine a fase** na §12 (✅ e
    data). Não há log de execução: o checkpoint marcado e o commit contam a história.
 7. **Passos 🧑 bloqueiam.** Não simule, não pule, não invente credenciais, entrevista, fotos ou dados. Pare, diga
-   exatamente o que o André precisa fazer e espere.
+   exatamente o que o operador precisa fazer e espere.
 8. Plano diverge da realidade (API mudou, flag não existe, premissa da §11 falsa)? **Pare**, proponha
-   o ajuste ao André e só então edite o plano.
+   o ajuste ao operador e só então edite o plano.
 9. Uma fase só termina quando **todos** os ✅ dela passam. Marque-a como concluída na §12.
 10. Escopo: só o que está aqui. Ideias novas vão para a §2.3, não para o código.
 11. Idioma: documentação, UI e mensagens ao cidadão em pt-BR. Código, commits e arquivos em inglês, **exceto a
@@ -150,22 +150,22 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 
 | # | Decisão | Origem |
 |---|---|---|
-| D1 | CitizenTech **Sombra**: calor extremo e idosos que moram sozinhos | André, 2026-11-17 |
-| D2 | **Monorepo** público, uma pasta por parte, Ficha no topo do README (o brief pede isso) (ADR-002) | André, 2026-11-17 |
-| D3 | **Escopo máximo** nas 8 disciplinas, tudo integrado; "não se preocupar com prazo" | André, 2026-11-17 |
+| D1 | CitizenTech **Sombra**: calor extremo e idosos que moram sozinhos | equipe, 2026-11-17 |
+| D2 | **Monorepo** público, uma pasta por parte, Ficha no topo do README (o brief pede isso) (ADR-002) | equipe, 2026-11-17 |
+| D3 | **Escopo máximo** nas 8 disciplinas, tudo integrado; "não se preocupar com prazo" | equipe, 2026-11-17 |
 | D4 | **Dois backends que conversam:** Core em C#/.NET 10 (disciplina C#) e Clima em Java/Spring (disciplina SOA). Cada um é dono do seu banco (ADR-003) | plano, aceito |
 | D5 | **Cyber dentro do Core**, no projeto `Sombra.Privacidade` (middleware e guardas no backend, como o professor descreveu); dashboard no painel e no app | plano, aceito |
 | D6 | **ML com INMET A701 (2010–2025)**, XGBoost exportado em ONNX e servido pelo Clima | plano, aceito |
-| D7 | **LLM: Gemini Flash** (chave já existe), com cache e fallback em templates (ADR-005) | André, 2026-11-17 |
-| D8 | **VM local com Vagrant** para a entrega de OS; os mesmos scripts sobem uma VM no Azure como extra (F11.8) | André, 2026-11-17 |
-| D9 | **QA:** Feature com *Como/Quero/Para* + critérios *Dado/Quando/Então*; Test Case com objetivo, preparação, entradas, passos e saída esperada | André, 2026-11-17 |
-| D10 | **André executa o máximo**, fica com o que é mais difícil e com **todas as contas e acessos** (GitHub, Azure, Wokwi, Gemini, YouTube, VM). Matheus e João recebem o que o André delegar, de preferência checkpoints 🤝 | André, 2026-11-17 |
+| D7 | **LLM: Gemini Flash** (chave já existe), com cache e fallback em templates (ADR-005) | equipe, 2026-11-17 |
+| D8 | **VM local com Vagrant** para a entrega de OS; os mesmos scripts sobem uma VM no Azure como extra (F11.8) | equipe, 2026-11-17 |
+| D9 | **QA:** Feature com *Como/Quero/Para* + critérios *Dado/Quando/Então*; Test Case com objetivo, preparação, entradas, passos e saída esperada | equipe, 2026-11-17 |
+| D10 | **Cada integrante é operador da sua parte:** escolhe os checkpoints, decide dentro da spec e entrega por PR; o dono do repositório revisa e faz o merge. As contas do projeto (Azure, Wokwi, Gemini, YouTube, VM) estão com o dono do repositório, e quem precisar de uma pede a ele. Os 🤝 são bons pontos de partida | equipe, 2026-11-17 |
 | D11 | Linguagem ubíqua do domínio em **português** (Domicílio, Sentinela, Alerta de calor) + sufixos técnicos em inglês (`Repository`, `Controller`), no padrão do guia de SOA (ADR-001) (ADR-001) | plano, aceito |
 | D12 | Tipografia **Atkinson Hyperlegible** e farol acessível (cor + ícone + texto) em todas as superfícies | plano, aceito |
 | D13 | **Ajustes da entrevista** (Dona Cida e a filha): escalonamento em degraus (lembrete à pessoa → lembrete leve à família → "quem está perto" → alerta só em perigo ou pedido de ajuda); Sentinela discreta (sem piscar nem apitar sem parar); check-in diário opcional; lembrete de água no pico da tarde; lembretes nunca entre 22h e 7h; "o que acontece se eu esquecer" sempre explicado | entrevista, 2026-11-17 |
-| D15 | **Repositório público `andrenakarocha/sombra`** com a `main` protegida para todos, inclusive o admin: PR obrigatório (0 aprovações), histórico linear, sem force push. **Um PR por lote**, com **rebase merge** (um commit por checkpoint na `main`). **O push é manual, do André**, e **cada merge, release ou publicação precisa do "pode mergear" dele no chat** (hooks da máquina); o agente abre o PR e roda só aquele comando. Os checks do CI viram obrigatórios na F0.12 | André, 2026-11-17 (fecha a DA1) |
-| D16 | **Direção de arte "luz filtrada pela folhagem"** (`design/`): tokens com temas claro e escuro, contraste conferido por script (≥ 7:1 no texto principal), Fraunces + Atkinson Hyperlegible Next, risco com cor + forma + texto | André, 2026-11-17 (fecha a DA5) |
-| D14 | **Fotos do território fora das entregas** (padronizadas pelo time); uso possível só no pitch, com a placa do carro desfocada. A transcrição vai para o repositório com "a filha" no lugar do nome dela | André, 2026-11-17 |
+| D15 | **Repositório público `andrenakarocha/sombra`** com a `main` protegida para todos, inclusive o admin: PR obrigatório (0 aprovações), histórico linear, sem force push. **Um PR por lote**, com **rebase merge** (um commit por checkpoint na `main`). **Quem revisa e faz o merge é o dono do repositório.** Em máquinas com os hooks de segurança, o push é manual do operador e o agente só roda merge, release ou publicação com o ok explícito dele. Os checks do CI viram obrigatórios na F0.12 | equipe, 2026-11-17 (fecha a DA1) |
+| D16 | **Direção de arte "luz filtrada pela folhagem"** (`design/`): tokens com temas claro e escuro, contraste conferido por script (≥ 7:1 no texto principal), Fraunces + Atkinson Hyperlegible Next, risco com cor + forma + texto | equipe, 2026-11-17 (fecha a DA5) |
+| D14 | **Fotos do território fora das entregas** (padronizadas pelo time); uso possível só no pitch, com a placa do carro desfocada. A transcrição vai para o repositório com "a filha" no lugar do nome dela | equipe, 2026-11-17 |
 
 As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11), 002 (D2), 003 (D4), 004 (MQTT assinado e sem PII), 005 (D7) e 006 (índice de calor replicado com vetores).
 
@@ -337,7 +337,7 @@ problema real da cidade, desde que a equipe consiga conversar com alguém que co
 
 É pouco esforço com muito retorno, e um professor pode perguntar.
 
-**O que o André traz (🧑, F0.16):**
+**O que o operador traz (🧑, F0.16):**
 1. **Transcrição** em perguntas e respostas (digitada de memória logo depois da conversa já serve, ou um áudio
    transcrito). Roteiro de 8 perguntas na spec 00.
 2. **3 a 6 fotos do território:** a rua, a fachada (sem número), o cômodo mais quente, a garrafa d'água, a UBS do bairro.
@@ -386,7 +386,7 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
 - [x] **F0.2** 🤖 `tools/doctor.sh`: confere git, Docker + Compose, .NET SDK 10, JDK 21, Node ≥ 22, uv (instala o Python
   3.12 por projeto), `gh` logado, jq e shellcheck; opcionais por fase (VirtualBox, Vagrant, FFmpeg, gitleaks, psql). O
   pwsh não é preciso: o script de qualidade roda na imagem do SDK. Imprime o que falta e como instalar — 2026-11-17 16:07.
-  🔎 sai com 0 na máquina do André, ou com a lista exata do que instalar.
+  🔎 sai com 0 na máquina do operador, ou com a lista exata do que instalar.
 - [x] **F0.3** 🧑 🔑 Contas e chaves de que o código precisa agora: dono do repositório (DA1), `gh auth status`, chave
   Gemini no `.env` local. Wokwi, Azure DevOps e YouTube podem esperar as fases deles (F5.1, F10.1, F13.7).
   🔎 `gh auth status` ok; `.env` local tem `GEMINI_API_KEY` (nunca commitado). — 2026-11-17 16:09.
@@ -409,7 +409,7 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   🔎 cada spec de serviço cita a seção que lhe cabe.
 - [x] **F0.9** 🧑🤖 Direção de arte: `design/tokens.json` + `design/README.md` + uma página de amostra (farol nos 5 níveis,
   cartão de casa, botão gigante, tipografia, claro e escuro). Fecha a DA5 — 2026-11-17 16:40.
-  🔎 André aprova a amostra.
+  🔎 o operador aprova a amostra.
 - [x] **F0.10** 🤖 `compose.yaml` (Postgres com os 2 bancos via init, Mosquitto, placeholders do Core, do Clima e do painel
   com `/health`) + `Makefile` (`env`, `up`, `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`; o `demo` chega
   na F9.2) — 2026-11-17 16:43.
@@ -426,7 +426,7 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
 - [x] **F0.13** 🤖 ADRs 001–006 (`docs/adr/`): linguagem ubíqua · monorepo · dois serviços donos dos seus bancos · MQTT
   público com HMAC e sem PII · LLM com fallback · índice de calor replicado de propósito com vetores compartilhados.
   🔎 os ADRs existem e a §2.1 os cita — 2026-11-17 16:53.
-- [x] **F0.14** 🤖 Handoff para delegar, **sem issues nem quadro** (decisão do André): o `AGENTS.md` ensina o agente de
+- [x] **F0.14** 🤖 Handoff para delegar, **sem issues nem quadro** (decisão da equipe): o `AGENTS.md` ensina o agente de
   quem chega dizendo "sou o João, quero fazer a minha parte" (lista os 🤝 abertos, confirma, segue a §0 e a spec,
   entrega por PR) e traz o prompt pronto para o grupo — 2026-11-17 16:56.
   🔎 o `AGENTS.md` tem o fluxo de delegação e o prompt.
@@ -573,7 +573,7 @@ provando o antes e o depois.
 
 **Objetivo:** a porta física do Sombra, integrada de verdade. **Spec:** 04.
 
-- [ ] **F5.1** 🧑🤖 🔑 Projeto no Wokwi (conta do André) + circuito + `diagram.json` versionado.
+- [ ] **F5.1** 🧑🤖 🔑 Projeto no Wokwi (conta do projeto) + circuito + `diagram.json` versionado.
   🔎 o OLED mostra a temperatura do DHT22.
 - [ ] **F5.2** 🤖 🤝 Índice de calor (vetores), máquina de estados offline, LED, buzzer e botões.
   🔎 mexendo no DHT22, os estados mudam conforme a tabela de níveis.
@@ -605,7 +605,7 @@ provando o antes e o depois.
 - [ ] **F6.6** 🤖 Modo demonstração (fixtures quando a API não responde) + notificações locais.
   🔎 sem backend, o app abre com dados de exemplo e um aviso claro.
 - [ ] **F6.7** 🧑🤖 Acessibilidade (checklist da spec) + testes Jest.
-  🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do André.
+  🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do operador.
 - [ ] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
   🔎 todos os critérios da rubrica de Mobile com evidência.
 
@@ -668,7 +668,7 @@ falha documentados.
   de tempos.
   🔎 verde 3 vezes seguidas.
 - [ ] **F9.3** 🧑🤖 O roteiro com a Sentinela real no Wokwi, o app no celular e o painel no navegador.
-  🔎 o André roda e aprova.
+  🔎 o operador roda e aprova.
 - [ ] **F9.4** 🤖 O roteiro contra a VM (`*.sombra.local`), com a Sentinela no broker público.
   🔎 `make demo TARGET=vm` verde.
 - [ ] **F9.5** 🤖 Rastreio ponta a ponta: o `correlationId` do MQTT até o SignalR.
@@ -683,7 +683,7 @@ falha documentados.
 - [ ] **F10.1** 🧑 🔑 ⛔ Organização e projeto no Azure DevOps, **professor de QA como Admin**, PAT para o script.
   🔎 o professor aparece em Project Administrators.
 - [ ] **F10.2** 🤖 🤝 `features.yaml` (F01–F12, Como/Quero/Para + Dado/Quando/Então).
-  🔎 revisado pelo André.
+  🔎 revisado pelo operador.
 - [ ] **F10.3** 🤖 🤝 `casos-de-teste.yaml` (40–50, positivos e negativos, técnica de cada um, vínculo com o teste
   automatizado).
   🔎 cada Feature tem pelo menos 1 negativo.
@@ -708,9 +708,9 @@ spec. Um checkpoint por superfície.
 - [ ] **F11.7** 🤖 Cyber: mapa regra × sink, relatório LGPD gerado, antes e depois lado a lado no dashboard.
 - [ ] **F11.8** 🧑🤖 🔑 VM no Azure com o mesmo `provision.sh` e HTTPS (fecha a DA3) (P13).
 - [ ] **F11.9** 🧑🤖 Revisão visual final: screenshots do painel (390/768/1440) e do app (dois tamanhos), revisados.
-  🔎 de cada um: o André aprova.
+  🔎 de cada um: o operador aprova.
 
-**✅ Aceite F11:** o André aprovou cada superfície visual.
+**✅ Aceite F11:** o operador aprovou cada superfície visual.
 
 ### 8.13 F12 — Documentação final, PDFs e defesa
 
@@ -738,14 +738,14 @@ spec. Um checkpoint por superfície.
 - [ ] **F13.2** 🤖 Pesquisa com fontes primárias para o ato 1 (calor em SP e saúde da pessoa idosa).
   🔎 cada número tem link.
 - [ ] **F13.3** 🧑🤖 Roteiro e storyboard do pitch (fecha a DA4).
-  🔎 aprovado pelo André.
+  🔎 aprovado pelo operador.
 - [ ] **F13.4** 🤖 Capturas em 1080p: Playwright a partir do `make demo`, Wokwi, VM, emulador; fotos do território
   (D14) com a placa desfocada.
   🔎 os clipes cobrem todos os atos.
 - [ ] **F13.5** 🧑🤖 Render do pitch (≤ 4:00), mix e legendas.
-  🔎 o André aprova.
+  🔎 o operador aprova.
 - [ ] **F13.6** 🧑🤖 Vídeos de IoT (≤ 4), Mobile (≤ 3), ML (≤ 5), OS (≤ 7) e Cyber.
-  🔎 o André aprova cada um.
+  🔎 o operador aprova cada um.
 - [ ] **F13.7** 🧑 🔑 Upload no YouTube como não listado + links nos READMEs.
   🔎 cada link abre numa aba anônima.
 
@@ -756,7 +756,7 @@ spec. Um checkpoint por superfície.
 - [ ] **F14.1** 🤖 `tools/checklist-entrega.sh`: confere links (anônimos), arquivos exigidos, durações dos vídeos,
   integrantes em cada entrega.
   🔎 sai com 0.
-- [ ] **F14.2** 🧑 🔑 Envio das 8 tarefas no Teams (André, ou quem ele indicar).
+- [ ] **F14.2** 🧑 🔑 Envio das 8 tarefas no Teams (um integrante por disciplina).
   🔎 print de cada envio em `docs/evidencias/entrega/`.
 
 **✅ Aceite F14:** as 8 tarefas enviadas até 19/11, 23h55.
@@ -765,18 +765,18 @@ spec. Um checkpoint por superfície.
 
 ## 9. Paralelismo e delegação
 
-- **Caminho do André (padrão):** F0 → F1 → F2 → F3 → F8 → F7 → F9 → F11 → F12 → F13 → F14. É onde ficam as contas, a VM,
-  a integração e o que é mais difícil (D10).
-- **Delegáveis 🤝** (uma sessão nova só precisa do `docs/PLANO.md` §0 e da spec): a **F4 inteira** (ML, depois da
-  F0.15), a **F6 inteira** (App, contra o contrato e o simulador; liga no Core quando a F1.7 existir), a **F5.2**
-  (firmware offline) e a **F10.2–F10.3** (YAML de QA). O André decide se e quando passar; sem delegação, ele executa
-  na ordem.
+- **Caminho principal:** F0 → F1 → F2 → F3 → F8 → F7 → F9 → F11 → F12 → F13 → F14. É onde ficam as contas, a VM e a
+  integração.
+- **Bons pontos de partida 🤝** (uma sessão nova só precisa do `docs/PLANO.md` §0 e da spec): a **F4 inteira** (ML,
+  depois da F0.15), a **F6 inteira** (App, contra o contrato e o simulador; liga no Core quando a F1.7 existir), a
+  **F5.2** (firmware offline) e a **F10.2–F10.3** (YAML de QA). Cada operador escolhe a sua parte e decide dentro da
+  spec.
 - **Podem correr juntos:** F3 com F1 (serviços e bancos separados) · F4 com qualquer fase · F10.2–F10.3 a partir da F0 ·
   F13.1–F13.3 a partir da F9.
 - **Nunca em paralelo:** duas sessões no mesmo serviço · migrações do mesmo banco · duas sessões editando a mesma spec.
-- **Ao delegar:** o André manda o repositório e o prompt do `AGENTS.md` (F0.14). O agente de quem recebe lista os 🤝
-  abertos, segue a §0 e a spec e entrega por PR. Sem issues nem quadro: o plano é o quadro. Antes do primeiro PR,
-  o André adiciona a pessoa como colaboradora no GitHub.
+- **Ao chegar:** a pessoa abre a sessão com o prompt do `AGENTS.md` (F0.14). O agente dela mostra os checkpoints
+  abertos da parte escolhida, segue a §0 e a spec e entrega por PR. Sem issues nem quadro: o plano é o quadro. Para
+  abrir PR, a pessoa precisa ser colaboradora do repositório.
 
 ---
 
@@ -802,16 +802,16 @@ spec. Um checkpoint por superfície.
 | P1 | Os vetores do índice de calor seguem a equação oficial da NWS/WPC | F0.6 | ✅ 2026-11-17: fórmula, coeficientes e ajustes transcritos da página da NWS/WPC; 20 vetores conferidos. A página deixa ambígua a saída abaixo de 80 °F; a leitura adotada está no contrato |
 | P2 | Os históricos anuais do INMET (portal de dados históricos) trazem a A701 de 2010 a 2025, horária, com `-9999` para faltante | F0.15 | ✅ 2026-11-17: os 16 anos baixados de `portal.inmet.gov.br/uploads/dadoshistoricos/{ano}.zip`, todos com a A701 e as 7 colunas usadas; 140.256 horas, 893 sem temperatura (0,64%) |
 | P3 | O `Invoke-CodeQuality.ps1` do professor roda no Linux (pwsh) e dá 100 com a estrutura nova | F1.1 | 🟡 deu 100/100 no CP06 (ExpenseHub) |
-| P4 | Testcontainers funciona na máquina do André (Docker) | F1.6 | ⬜ |
+| P4 | Testcontainers funciona na máquina de desenvolvimento (Docker) | F1.6 | ⬜ |
 | P5 | A chave Gemini atual responde, com cota gratuita suficiente para a demo | F2.6 | 🟡 a chave existe no `.env` do HENRY; a cota atual não foi conferida |
 | P6 | O Semgrep CE em modo taint cobre as regras planejadas em C# | F2.7 | ⬜ |
 | P7 | A Open-Meteo dá, sem chave, as variáveis horárias que o modelo usa (temperatura, umidade, pressão, radiação, vento), incluindo horas passadas | F3.5 | ⬜ |
 | P8 | XGBoost → ONNX (onnxmltools) e ONNX Runtime Java dão a mesma probabilidade | F4.6, F9.1 | ⬜ |
 | P9 | O ESP32 no Wokwi conecta num broker MQTT público pela rede `Wokwi-GUEST`, e o projeto abre por link público | F5.3, F5.5 | ⬜ |
 | P10 | `@microsoft/signalr` funciona no Expo SDK 54 (Expo Go) | F6.3 | ⬜ |
-| P11 | Vagrant + VirtualBox sobem Ubuntu 24.04 no Arch do André | F8.1 | 🟡 2026-11-17 (doctor): VirtualBox 7.2.22 instalado; **Vagrant ausente** e fora dos repositórios oficiais do Arch (só AUR). Alternativa: VBoxManage + imagem cloud do Ubuntu com cloud-init. Decidir na F8.1 |
+| P11 | Vagrant + VirtualBox sobem Ubuntu 24.04 na máquina de desenvolvimento (Arch) | F8.1 | 🟡 2026-11-17 (doctor): VirtualBox 7.2.22 instalado; **Vagrant ausente** e fora dos repositórios oficiais do Arch (só AUR). Alternativa: VBoxManage + imagem cloud do Ubuntu com cloud-init. Decidir na F8.1 |
 | P12 | A API REST do Azure DevOps cria Test Cases com passos e vínculos sem licença de Test Plans | F10.4 | ⬜ |
-| P13 | O André tem Azure for Students ativo | F11.8 | ⬜ |
+| P13 | Há uma conta Azure for Students ativa | F11.8 | ⬜ |
 | P14 | O pipeline do HENRY (HyperFrames, FFmpeg, Chrome headless, voz Gemini TTS) roda de novo, com cota de TTS | F13.1 | 🟡 rodou em out/2026 no Challenge |
 
 Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior, falta o teste real · ✅ confirmada ·

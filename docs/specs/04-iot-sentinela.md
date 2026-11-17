@@ -1,6 +1,6 @@
 # Spec 04 — Physical Computing: IoT & IoB · Sentinela (ESP32 no Wokwi)
 
-> **Fase:** F5 (polimento na F11.4, vídeo na F13.6) · **Pasta:** `iot/sentinela/` · **Checkpoints:** `PLANO.md` §8.6 · 🔑 Wokwi do André
+> **Fase:** F5 (polimento na F11.4, vídeo na F13.6) · **Pasta:** `iot/sentinela/` · **Checkpoints:** `PLANO.md` §8.6 · 🔑 conta do Wokwi
 > **Entrega:** link público do Wokwi + vídeo ≤ 4 min + `integrantes.txt`
 > **Regra do professor:** *"o aluno não vai criar um projeto paralelo apenas para cumprir a atividade"*. A Sentinela **é** a porta física do Sombra.
 > **Observabilidade:** [`docs/observabilidade.md`](../observabilidade.md) §4 e §5 (log serial e eventos por MQTT)
