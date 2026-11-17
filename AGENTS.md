@@ -8,8 +8,9 @@ Em resumo:
 1. Leia o contexto (§1) e as decisões (§2). As decisões fechadas não se re-litigam.
 2. Abra o painel de status (§12) e rode o 🔎 do último checkpoint marcado antes de seguir.
 3. Execute o próximo checkpoint da fase, com o detalhe da spec correspondente em `docs/specs/`.
-4. Um checkpoint vira um commit atômico (Conventional Commits em inglês). Ao concluir, marque `[x]` com data e hora,
-   atualize a §12, acrescente uma linha na §13 e registre o pedido principal no [`prompts.md`](prompts.md).
+4. Um checkpoint vira um commit atômico (Conventional Commits em inglês). Ao concluir, marque `[x]` com a data; ao
+   fechar uma fase, assine-a na §12. Sem log de execução. Ao fechar uma parte, acrescente os prompts principais dela no
+   [`prompts.md`](prompts.md) (exigência da GS).
 5. Passos 🧑 são do André: não simule, não invente credenciais, entrevistas, fotos ou dados.
 6. Nenhum dado pessoal real em código, fixtures, logs, prompts ou serviços externos.
 7. Documentação e UI em pt-BR. Código em inglês, exceto a linguagem ubíqua do domínio, que fica em português (D11).
@@ -23,8 +24,8 @@ Se a pessoa abrir a sessão dizendo algo como *"sou o João, quero fazer a minha
 
 1. Leia o `docs/PLANO.md` (§0, §2 e §12) e liste os checkpoints 🤝 ainda abertos, ou os da parte que ela pediu.
 2. Confirme com ela qual vai pegar e leia a spec correspondente em `docs/specs/`.
-3. Siga o protocolo da §0: branch `fN-parte-nome` (ex.: `f4-ml-matheus`), um commit por checkpoint, plano e
-   `prompts.md` atualizados, PR para a `main` no fim.
+3. Siga o protocolo da §0: branch `fN-parte-nome` (ex.: `f4-ml-matheus`), um commit por checkpoint, checkpoints
+   marcados no plano, PR para a `main` no fim.
 4. Se aparecer um passo 🔑 (conta, chave, VM, Wokwi, Azure, YouTube), pare: é com o André.
 
 Prompt para o André mandar no grupo:
