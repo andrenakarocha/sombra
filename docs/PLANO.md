@@ -399,8 +399,8 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   e vetores de teste do índice de calor (`docs/contratos/indice-de-calor.vetores.json`, ≥ 15 pares T/UR → índice,
   calculados pela equação oficial da NWS/WPC) — 2026-11-17 16:18.
   🔎 script de conferência dos vetores sai com 0 (P1).
-- [ ] **F0.7** 🤖 Contratos: `mqtt.asyncapi.yaml`, `core-api.md`, `clima-service.md`, `signalr.md`, portas, nomes e variáveis
-  de ambiente (§3.2).
+- [x] **F0.7** 🤖 Contratos: `mqtt.asyncapi.yaml`, `core-api.md`, `clima-service.md`, `signalr.md`, portas, nomes e variáveis
+  de ambiente (§3.2) — 2026-11-17 16:23.
   🔎 `npx @asyncapi/cli validate docs/contratos/mqtt.asyncapi.yaml` passa.
 - [ ] **F0.8** 🤖 `docs/observabilidade.md` (§6 detalhada: campos, nomes de evento, correlação, exemplos por stack).
   🔎 cada spec de serviço cita a seção que lhe cabe.
@@ -815,11 +815,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Agora (2026-11-17):** plano mestre escrito (F0.1) a partir da sessão de planejamento: Sombra escolhido, monorepo,
 escopo máximo, decisões D1–D12 fechadas. A entrevista chegou (F0.16 feita) e virou a D13 (escalonamento em
-degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). Repositório público no ar (F0.5); o resto da F0 segue no branch `f0-fundacao`, que o André envia quando quiser. F0.6 feita (glossário, contrato de níveis, vetores). Próximo: **F0.7** (contratos MQTT, REST e SignalR).
+degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). Repositório público no ar (F0.5); o resto da F0 segue no branch `f0-fundacao`, que o André envia quando quiser. F0.6 e F0.7 feitas (glossário, níveis, vetores e contratos entre as partes). Próximo: **F0.8** (observabilidade).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.6 e F0.16 feitas; lote no branch `f0-fundacao` |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.7 e F0.16 feitas; lote no branch `f0-fundacao` |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -861,3 +861,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🧑🤖 | F0.5 — André escolheu **público agora** e **PR obrigatório para todos**. Criado `andrenakarocha/sombra` com os 5 primeiros commits. Branch apagada no merge, wiki desligada, tópicos `citizentech`, `fiap`, `global-solution`. `CODEOWNERS` (`* @andrenakarocha`), templates de PR e de issue. 13 labels: as 8 disciplinas, painel, pitch, fundacao, integracao e `delegavel`. Proteção da `main`: PR com 0 aprovações, `enforce_admins`, histórico linear, sem force push nem deleção, conversas resolvidas. 🔎 anônimo: HTTP 200 e `visibility: public` |
 | 2026-11-17 | 🤖 | ⚠️ **Divergência na F0.5.** O hook `block-dangerous-git` da máquina barrou o `git push` do primeiro PR: **o push é sempre manual, do André**. O push inicial já tinha saído por dentro do `gh repo create --push`, que o hook não pega; o agente avisou o André e não usa mais o `gh` para enviar código. Com push manual e o `PLANO.md` mudando em todo checkpoint, um PR por checkpoint pediria um push do André a cada passo, e empilhar branches com squash gera conflito. Ajuste aprovado pelo André: **um PR por lote com rebase merge** (D15). Squash desligado e rebase ligado no repositório; template de PR ajustado. Observação: o hook reconhece o texto do comando em qualquer lugar, então scripts que escrevem esse texto em documentos vão por arquivo |
 | 2026-11-17 | 🤖 | F0.6 — `docs/glossario.md` (casa e pessoas, dispositivo e alertas, clima, privacidade; inclui os termos da D13 e a distinção Leitura × Observação, que marca a fronteira entre Core e Clima). Contrato `docs/contratos/niveis-de-risco.md`: equação oficial da NWS/WPC (lida com curl; o WebFetch deu 403), leitura adotada para a ambiguidade abaixo de 80 °F, os cinco níveis com os limiares da NWS convertidos com precisão (26,67 / 32,22 / 39,44 / 51,67 °C, no lugar dos 27 / 32 / 39 / 51 arredondados da spec 00), o comportamento por nível da D13 e a regra da noite. Referência em `tools/indice-de-calor/vetores.py` (stdlib) e 20 vetores em `indice-de-calor.vetores.json`. 🔎 `vetores.py` sai com 0. Specs 00, 01 (R3 e R6: o "estou bem" é pedido a partir de `CAUTELA_EXTREMA`) e 03 (limiares do alvo) alinhadas |
+| 2026-11-17 | 🤖 | F0.7 — contratos em `docs/contratos/`: `mqtt.asyncapi.yaml` (AsyncAPI 3.1; telemetria, evento, comando e status com LWT; QoS por operação; servidores local e público), assinatura HMAC sobre **string canônica por tipo com o `deviceId` dentro** (sem canonicalizar JSON entre C++, C# e Python; impede usar a mensagem em outra Sentinela), arredondamento de uma casa antes de assinar, anti-replay por `seq` e janela de 300 s. Vetores de assinatura com segredo só de teste (`tools/mqtt-assinatura/vetores.py`, 6 casos + um adulterado), e os exemplos do AsyncAPI usam assinaturas reais. `core-api.md` (convenções, papéis, ProblemDetails com `regra`, paginação, máscara de PII, 25 rotas, exemplos), `clima-service.md`, `signalr.md` (grupos, 8 eventos sem PII, reconexão) e `README.md` (índice, portas, regras de variáveis). `.env.example` completo. 🔎 `@asyncapi/cli` 6.3.1: válido, sem apontamentos; a telemetria anônima da CLI foi desligada. **Correção:** o exemplo de telemetria (33,4 °C e 61% → 38,2 °C, `CAUTELA_EXTREMA`) contrariava o próprio contrato (dá 40,9 °C, `PERIGO`); trocado por 33,4 °C e 40% → 34,4 °C, `CAUTELA_EXTREMA`, nos cinco lugares em que aparecia |

@@ -1,0 +1,81 @@
+{
+  "aviso": "Segredo só de teste, público neste repositório. Nunca usar numa Sentinela real.",
+  "segredoHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "deviceId": "snt-7f3a9c",
+  "vetores": [
+    {
+      "tipo": "telemetria",
+      "mensagem": {
+        "v": 1,
+        "ts": 1763400000,
+        "seq": 42,
+        "t": 33.4,
+        "rh": 40.0,
+        "hi": 34.4,
+        "nivel": "CAUTELA_EXTREMA"
+      },
+      "canonica": "T|1|snt-7f3a9c|1763400000|42|33.4|40.0|34.4|CAUTELA_EXTREMA",
+      "sig": "e275562cd298b112e0a01eebc6d91bfb6d48d40ecb0971c858c09adebd9c0f61"
+    },
+    {
+      "tipo": "telemetria",
+      "mensagem": {
+        "v": 1,
+        "ts": 1763400010,
+        "seq": 43,
+        "t": 36.0,
+        "rh": 60.0,
+        "hi": 48.1,
+        "nivel": "PERIGO"
+      },
+      "canonica": "T|1|snt-7f3a9c|1763400010|43|36.0|60.0|48.1|PERIGO",
+      "sig": "365ae975e5b2168c8336cb6868a1a26b52e38e20a4c818b359fc2cdea94bbc9d"
+    },
+    {
+      "tipo": "evento",
+      "mensagem": {
+        "v": 1,
+        "ts": 1763400060,
+        "seq": 44,
+        "tipo": "CHECKIN_ESTOU_BEM"
+      },
+      "canonica": "E|1|snt-7f3a9c|1763400060|44|CHECKIN_ESTOU_BEM",
+      "sig": "5fb4a74bd56f6ea799bdc3f81a972ea4cad8b62a744a03f0e5daa8f4c3c801f7"
+    },
+    {
+      "tipo": "evento",
+      "mensagem": {
+        "v": 1,
+        "ts": 1763400120,
+        "seq": 45,
+        "tipo": "PEDIDO_DE_AJUDA"
+      },
+      "canonica": "E|1|snt-7f3a9c|1763400120|45|PEDIDO_DE_AJUDA",
+      "sig": "e82e11762a0ceb620d6d03865a3e3dd4b0c0fe9e82370b4276aae20a214485c0"
+    },
+    {
+      "tipo": "comando",
+      "mensagem": {
+        "v": 1,
+        "ts": 1763400070,
+        "seq": 7,
+        "tipo": "PRE_ALERTA",
+        "mensagem": "Amanhã: calor perigoso. Encha sua garrafa de água."
+      },
+      "canonica": "C|1|snt-7f3a9c|1763400070|7|PRE_ALERTA|Amanhã: calor perigoso. Encha sua garrafa de água.",
+      "sig": "d1619c0481fb6608686697ee857359e1f302af62218f0997c9796b04610005e4"
+    },
+    {
+      "tipo": "comando",
+      "mensagem": {
+        "v": 1,
+        "ts": 1763400900,
+        "seq": 8,
+        "tipo": "FAMILIA_AVISADA",
+        "mensagem": "Sua filha foi avisada."
+      },
+      "canonica": "C|1|snt-7f3a9c|1763400900|8|FAMILIA_AVISADA|Sua filha foi avisada.",
+      "sig": "ddfe320ba4bdcffbe9adab649aa02cec3861a8773d1072fe5b724a34677af129"
+    }
+  ]
+}
