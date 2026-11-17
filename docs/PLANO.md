@@ -315,7 +315,7 @@ Usado em todos os vídeos e no pitch, e automatizado como `make demo` (F9.2):
 - **Dispositivo:** log serial com nível e `seq`; eventos de boot e reconexão vão também no MQTT.
 - **Projeto:** este plano tem o **painel de status (§12)** e o **log de execução (§13)**; cada checkpoint atualiza os dois.
 
-Detalhe em `docs/observabilidade.md` (F0.8).
+Detalhe em [`docs/observabilidade.md`](observabilidade.md) (F0.8), com o checklist de pronto de cada serviço.
 
 ---
 
@@ -403,7 +403,7 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
 - [x] **F0.7** 🤖 Contratos: `mqtt.asyncapi.yaml`, `core-api.md`, `clima-service.md`, `signalr.md`, portas, nomes e variáveis
   de ambiente (§3.2) — 2026-11-17 16:23.
   🔎 `npx @asyncapi/cli validate docs/contratos/mqtt.asyncapi.yaml` passa.
-- [ ] **F0.8** 🤖 `docs/observabilidade.md` (§6 detalhada: campos, nomes de evento, correlação, exemplos por stack).
+- [x] **F0.8** 🤖 `docs/observabilidade.md` (§6 detalhada: campos, nomes de evento, correlação, exemplos por stack) — 2026-11-17 16:28.
   🔎 cada spec de serviço cita a seção que lhe cabe.
 - [ ] **F0.9** 🧑🤖 Direção de arte: `design/tokens.json` + `design/README.md` + uma página de amostra (farol nos 5 níveis,
   cartão de casa, botão gigante, tipografia, claro e escuro). Fecha a DA5.
@@ -814,13 +814,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (2026-11-17):** plano mestre escrito (F0.1) a partir da sessão de planejamento: Sombra escolhido, monorepo,
-escopo máximo, decisões D1–D12 fechadas. A entrevista chegou (F0.16 feita) e virou a D13 (escalonamento em
-degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). Repositório público no ar (F0.5); o resto da F0 segue no branch `f0-fundacao`, que o André envia quando quiser. F0.6 e F0.7 feitas (glossário, níveis, vetores e contratos entre as partes) e na `main` pelo PR #1. Próximo: **F0.8** (observabilidade).
+**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D15) e entrevista incorporada (D13, D14). Repositório público com F0.1–F0.7 na `main` (PR #1); F0.8 feita no branch `f0-fundacao-2`. Próximo: **F0.9** (direção de arte, com aprovação do André) e, sem depender dela, F0.10–F0.15.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.7 e F0.16 feitas (PR #1 na `main`); lote seguinte no branch `f0-fundacao-2` |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.8 e F0.16 feitas (F0.1–F0.7 na `main` pelo PR #1); lote seguinte no branch `f0-fundacao-2` |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -864,3 +862,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🤖 | F0.6 — `docs/glossario.md` (casa e pessoas, dispositivo e alertas, clima, privacidade; inclui os termos da D13 e a distinção Leitura × Observação, que marca a fronteira entre Core e Clima). Contrato `docs/contratos/niveis-de-risco.md`: equação oficial da NWS/WPC (lida com curl; o WebFetch deu 403), leitura adotada para a ambiguidade abaixo de 80 °F, os cinco níveis com os limiares da NWS convertidos com precisão (26,67 / 32,22 / 39,44 / 51,67 °C, no lugar dos 27 / 32 / 39 / 51 arredondados da spec 00), o comportamento por nível da D13 e a regra da noite. Referência em `tools/indice-de-calor/vetores.py` (stdlib) e 20 vetores em `indice-de-calor.vetores.json`. 🔎 `vetores.py` sai com 0. Specs 00, 01 (R3 e R6: o "estou bem" é pedido a partir de `CAUTELA_EXTREMA`) e 03 (limiares do alvo) alinhadas |
 | 2026-11-17 | 🤖 | F0.7 — contratos em `docs/contratos/`: `mqtt.asyncapi.yaml` (AsyncAPI 3.1; telemetria, evento, comando e status com LWT; QoS por operação; servidores local e público), assinatura HMAC sobre **string canônica por tipo com o `deviceId` dentro** (sem canonicalizar JSON entre C++, C# e Python; impede usar a mensagem em outra Sentinela), arredondamento de uma casa antes de assinar, anti-replay por `seq` e janela de 300 s. Vetores de assinatura com segredo só de teste (`tools/mqtt-assinatura/vetores.py`, 6 casos + um adulterado), e os exemplos do AsyncAPI usam assinaturas reais. `core-api.md` (convenções, papéis, ProblemDetails com `regra`, paginação, máscara de PII, 25 rotas, exemplos), `clima-service.md`, `signalr.md` (grupos, 8 eventos sem PII, reconexão) e `README.md` (índice, portas, regras de variáveis). `.env.example` completo. 🔎 `@asyncapi/cli` 6.3.1: válido, sem apontamentos; a telemetria anônima da CLI foi desligada. **Correção:** o exemplo de telemetria (33,4 °C e 61% → 38,2 °C, `CAUTELA_EXTREMA`) contrariava o próprio contrato (dá 40,9 °C, `PERIGO`); trocado por 33,4 °C e 40% → 34,4 °C, `CAUTELA_EXTREMA`, nos cinco lugares em que aparecia |
 | 2026-11-17 | 🧑🤖 | Lote F0.5–F0.7 enviado pelo André; **PR #1** aberto pelo agente. O hook `guard-autonomous-policy` barrou o merge: merge, release e publicação exigem aprovação humana explícita, valendo para um comando só. Decisão do André: **ele aprova cada merge no chat** e o agente roda só o merge por rebase, com a variável de aprovação do hook. PR #1 mergeado às 19:26 UTC (aprovado no chat); `main` linear com um commit por checkpoint. O próximo lote segue no branch `f0-fundacao-2`. A F8.3 (`gh release`) também vai pedir esse ok |
+| 2026-11-17 | 🤖 | F0.8 — `docs/observabilidade.md`: os 8 campos obrigatórios, níveis com exemplos, o que nunca vai para o log, correlação ponta a ponta (HTTP `X-Correlation-Id`; MQTT `{deviceId}:{seq}`; propagação para Clima, SignalR, outbox e IA; código curto do erro na tela), catálogo de eventos por serviço, como fazer em cada stack (Serilog + Expressions; formatter próprio do Spring; logging do Python; `jq -cn` no bash; serial legível no ESP32), saúde, versão e trilhas de auditoria, retenção e um checklist de pronto. 🔎 as specs 01, 02, 04, 05, 06, 07 e 08 citam as seções que lhes cabem |

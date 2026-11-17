@@ -4,6 +4,7 @@
 > **Código:** `services/core-api/src/Sombra.Privacidade/` · **Docs e auditoria:** `security/`
 > **Entrega (Prof. Vitor Lasse):** **um PDF** com a documentação (prints de código e evidências de Parsing PII · Taint Analysis · IA · Dashboard) **e, separado, um ZIP ou link do GitHub** com o código. **Não misturar.** Mais o vídeo do dashboard.
 > **Rubrica:** Robustez do motor de PII **3** · Eficácia do Taint Analysis **3** · Inovação com IA na remediação **2** · Dashboard Executivo de Risco Cidadão **2**
+> **Observabilidade:** [`docs/observabilidade.md`](../observabilidade.md) §2 (o módulo é quem garante "nenhum dado pessoal no log" no Core) e §6 (trilha de eventos de segurança)
 
 ## Por que aqui brilha
 O Sombra guarda **dados de saúde de idosos** (condições, remédios, Cartão SUS), que a LGPD trata como **dado pessoal sensível** (art. 5º II, art. 11). O módulo protege dados reais do domínio, não um exemplo de brinquedo.

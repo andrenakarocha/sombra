@@ -2,6 +2,7 @@
 
 > **Fase:** F7 (polimento na F11.6) · **Pasta:** `web/painel/` · **Checkpoints:** `PLANO.md` §8.8
 > **Atende:** **Cyber** (Dashboard Executivo, 2 pts) · **OS** (a "aplicação Web CitizenTech" hospedada na VM) · **pitch** (as telas mais bonitas da demo) · a "página web" que o brief pede no protótipo
+> **Observabilidade:** [`docs/observabilidade.md`](../observabilidade.md) §3, §5 e §6 (código curto do erro; `/healthz` do nginx; commit no rodapé)
 
 ## Objetivo
 Uma central para quem acompanha muitas casas (operador de UBS/CRAS, agente comunitário de saúde) e para a gestão: alertas ao vivo, indicador de impacto, saúde da operação e o **farol de Risco Cidadão**, com **privacidade por padrão** (só aparece dado agregado por bairro, e PII sempre mascarada).
