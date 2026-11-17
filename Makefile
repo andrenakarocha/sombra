@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint test
+.PHONY: help env doctor up down ps logs db-reset contratos lint test test-sim sim
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -40,10 +40,18 @@ contratos: ## Confere os contratos: vetores do índice de calor, assinatura MQTT
 	@python3 -I design/tokens.py conferir | tail -n 1
 	@npx -y @asyncapi/cli@6.3.1 validate docs/contratos/mqtt.asyncapi.yaml >/dev/null && echo "AsyncAPI válido"
 
-lint: ## shellcheck em todos os scripts
+lint: ## shellcheck nos scripts e ruff no Python
 	@shellcheck tools/*.sh infra/compose/postgres/init/*.sh && echo "shellcheck ok"
+	@cd tools/sentinela-sim && uv run -q ruff check . && uv run -q ruff format --check . >/dev/null && echo "ruff ok"
 
-test: contratos ## Roda todos os testes (cada componente acrescenta os seus)
+test: contratos test-sim ## Roda todos os testes (cada componente acrescenta os seus)
+
+test-sim: ## Testes do simulador da Sentinela (a integração usa o Mosquitto do make up)
+	@cd tools/sentinela-sim && uv run -q pytest -q
+
+sim: .env ## Roda um cenário da Sentinela simulada (CENARIO=onda-de-calor INTERVALO=1 OUVIR=0)
+	@set -a && . ./.env && set +a && cd tools/sentinela-sim && uv run -q sentinela-sim rodar \
+	  --cenario $(or $(CENARIO),onda-de-calor) --intervalo $(or $(INTERVALO),1) --ouvir $(or $(OUVIR),0)
 
 .env:
 	@python3 -I tools/novo-env.py
