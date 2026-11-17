@@ -591,8 +591,8 @@ provando o antes e o depois.
 
 **Objetivo:** os 6 critérios da rubrica de Mobile. **Spec:** 05.
 
-- [ ] **F6.1** 🤖 Scaffold Expo SDK 58 + Expo Router + TS estrito + tema dos tokens + `Farol`, `CartaoCasa`,
-  `BotaoGigante` + lint, typecheck e Jest.
+- [x] **F6.1** 🤖 Scaffold Expo SDK 58 + Expo Router + TS estrito + tema dos tokens + `Farol`, `CartaoCasa`,
+  `BotaoGigante` + lint, typecheck e Jest — 2026-11-17 17:56.
   🔎 `npx expo-doctor` ok; o app abre no Expo Go.
 - [ ] **F6.2** 🤖 Cliente da API (TanStack Query), login (secure-store) e SQLite com migrações para cache.
   🔎 abre offline com os últimos dados.
@@ -833,7 +833,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
-| F6 App (Mobile) | ⬜ não iniciada | | | 🤝 |
+| F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | 🤝 branch `f6-mobile-joao` |
 | F7 Painel | ⬜ não iniciada | | | |
 | F8 Infra (OS) | ⬜ não iniciada | | | |
 | F9 Integração | ⬜ não iniciada | | | |

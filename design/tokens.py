@@ -2,7 +2,7 @@
 """Tokens de design do Sombra: gera o CSS e confere o contraste (WCAG 2.2).
 
 Uso:
-    design/tokens.py gerar      escreve design/tokens.css a partir de design/tokens.json
+    design/tokens.py gerar      escreve design/tokens.css e mobile/src/tema/tokens.ts a partir de design/tokens.json
     design/tokens.py conferir   confere os pares de contraste dos dois temas (sai com 0 se todos passam)
 """
 
@@ -12,6 +12,7 @@ import re
 import sys
 
 PASTA = pathlib.Path(__file__).resolve().parent
+TOKENS_TS = PASTA.parent / "mobile" / "src" / "tema" / "tokens.ts"
 TOKENS = json.loads((PASTA / "tokens.json").read_text(encoding="utf-8"))
 NIVEIS = ("normal", "atencao", "cautelaExtrema", "perigo", "perigoExtremo")
 
@@ -80,6 +81,41 @@ def gerar() -> None:
     ]
     (PASTA / "tokens.css").write_text("\n".join(linhas), encoding="utf-8")
     print(f"design/tokens.css gerado ({len(primitivos)} primitivos)")
+    gerar_ts()
+
+
+def numero(valor: str) -> float:
+    """'15px' → 15 e '150ms' → 150: o React Native usa números sem unidade."""
+    n = float(re.sub(r"(px|ms)$", "", valor))
+    return int(n) if n.is_integer() else n
+
+
+def arvore(no: dict) -> dict:
+    """Devolve os valores finais (aliases resolvidos), sem os metadados $type e $value."""
+    saida = {}
+    for chave, valor in no.items():
+        if chave.startswith("$"):
+            continue
+        if "$value" in valor:
+            final = resolver(valor["$value"])
+            saida[chave] = numero(final) if valor["$type"] in ("dimension", "duration") else final
+        else:
+            saida[chave] = arvore(valor)
+    return saida
+
+
+def gerar_ts() -> None:
+    # As pilhas de fonte do CSS não valem no app: lá as famílias são as carregadas em mobile/src/tema/fontes.ts.
+    valores = arvore({k: v for k, v in TOKENS.items() if k != "fonte"})
+    linhas = [
+        "// Gerado por design/tokens.py a partir de design/tokens.json. Não edite à mão.",
+        "",
+        f"export const tokens = {json.dumps(valores, indent=2, ensure_ascii=False)} as const;",
+        "",
+    ]
+    TOKENS_TS.parent.mkdir(parents=True, exist_ok=True)
+    TOKENS_TS.write_text("\n".join(linhas), encoding="utf-8")
+    print("mobile/src/tema/tokens.ts gerado")
 
 
 def luminancia(hex_cor: str) -> float:

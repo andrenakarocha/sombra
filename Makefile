@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint test test-sim sim
+.PHONY: help env doctor up down ps logs db-reset contratos lint test test-sim test-mobile sim
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -40,14 +40,18 @@ contratos: ## Confere os contratos: vetores do índice de calor, assinatura MQTT
 	@python3 -I design/tokens.py conferir | tail -n 1
 	@npx -y @asyncapi/cli@6.3.1 validate docs/contratos/mqtt.asyncapi.yaml >/dev/null && echo "AsyncAPI válido"
 
-lint: ## shellcheck nos scripts e ruff no Python
+lint: ## shellcheck nos scripts, ruff no Python e ESLint + tsc no app
 	@shellcheck tools/*.sh infra/compose/postgres/init/*.sh && echo "shellcheck ok"
 	@cd tools/sentinela-sim && uv run -q ruff check . && uv run -q ruff format --check . >/dev/null && echo "ruff ok"
+	@cd mobile && npm run -s lint && npm run -s typecheck && echo "app ok"
 
-test: contratos test-sim ## Roda todos os testes (cada componente acrescenta os seus)
+test: contratos test-sim test-mobile ## Roda todos os testes (cada componente acrescenta os seus)
 
 test-sim: ## Testes do simulador da Sentinela (a integração usa o Mosquitto do make up)
 	@cd tools/sentinela-sim && uv run -q pytest -q
+
+test-mobile: ## Testes Jest do app
+	@cd mobile && npm test -s -- --ci
 
 sim: .env ## Roda um cenário da Sentinela simulada (CENARIO=onda-de-calor INTERVALO=1 OUVIR=0)
 	@set -a && . ./.env && set +a && cd tools/sentinela-sim && uv run -q sentinela-sim rodar \
