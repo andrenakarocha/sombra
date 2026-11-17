@@ -1,0 +1,324 @@
+{
+  "arquivos": {
+    "2023": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2023.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2023_A_31-12-2023.CSV",
+      "sha256Zip": "b17391392cc1219151977cc2c46a7ab24368d821fd780311da9fff62a627bfd8",
+      "sha256Csv": "ae52e888aa15f03e64c04cc0400896091d32da1ad4a303fdcb830cead9f78c44",
+      "baixadoEm": "2026-11-17T19:51:34+00:00",
+      "metadados": {
+        "REGIAO": "SE",
+        "UF": "SP",
+        "ESTACAO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,49638888",
+        "LONGITUDE": "-46,61999999",
+        "ALTITUDE": "785,64",
+        "DATA DE FUNDACAO": "25/07/06"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 212,
+      "faltandoUmidade": 212
+    },
+    "2010": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2010.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2010_A_31-12-2010.CSV",
+      "sha256Zip": "a665f207d0c95bcbf352fe6c91a52f8466ac12220a4f354c23e6a7835a8bac58",
+      "sha256Csv": "fd914734eb2c1d16b7c2d985effddf6c3b37d0e04d4e93ad9e120e11d69e0cfa",
+      "baixadoEm": "2026-11-17T19:51:51+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 162,
+      "faltandoUmidade": 10
+    },
+    "2011": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2011.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2011_A_31-12-2011.CSV",
+      "sha256Zip": "420a488a5d3b63bbbd2e28580747e62e529db63223cbc39e25dcf19490c9c57d",
+      "sha256Csv": "242da2ea7f7a1814e6e28adda6a18e5e97e2df857ec4df40b4e1b2661af4fdab",
+      "baixadoEm": "2026-11-17T19:52:04+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 23,
+      "faltandoUmidade": 23
+    },
+    "2012": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2012.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2012_A_31-12-2012.CSV",
+      "sha256Zip": "ec846d42e949ad10667648f53686d5071335cc5e5c98094cc998e37304d42e9d",
+      "sha256Csv": "93a6f1406d709aa9518b9b794190e1d531c24a08e26a1fb303705ed8c1b363c5",
+      "baixadoEm": "2026-11-17T19:52:18+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8784,
+      "faltandoTemperatura": 38,
+      "faltandoUmidade": 38
+    },
+    "2013": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2013.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2013_A_31-12-2013.CSV",
+      "sha256Zip": "8fe490c521e1fd5c3c4b6b710558a8f3075cdd7c34501d9d9aa0e8a8a36ffde4",
+      "sha256Csv": "5f2a45f7be8129d373f937418de8b00f46e4ae6fc27fd7518ff772fcef13d8ba",
+      "baixadoEm": "2026-11-17T19:52:33+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 46,
+      "faltandoUmidade": 46
+    },
+    "2014": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2014.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2014_A_31-12-2014.CSV",
+      "sha256Zip": "ead543e4669b54fd7587ad7f0bfccc883a91d26e5eb62067650ddff9388281ac",
+      "sha256Csv": "6690c2d8364def66d5df1daecdbd7ca408e4f3ea2d681a2ed8e0696a94d4ab55",
+      "baixadoEm": "2026-11-17T19:52:47+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 204,
+      "faltandoUmidade": 204
+    },
+    "2015": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2015.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2015_A_31-12-2015.CSV",
+      "sha256Zip": "93ea17021cf7dc17fea5faccad30f1da1f97805acf502415e7246737cb325e91",
+      "sha256Csv": "a0c96324f7c0d534f9e690f2a5178616281339d6de73647ada97e5f102eb78d2",
+      "baixadoEm": "2026-11-17T19:53:02+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 0,
+      "faltandoUmidade": 0
+    },
+    "2016": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2016.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2016_A_31-12-2016.CSV",
+      "sha256Zip": "62a88787f1d976d7898dba2acbf5874f79cd486816e6d9531c53966557eb20a6",
+      "sha256Csv": "9989f6f158c83059b0a54d35842f66f159f2b5049952dff6986ba515517816fc",
+      "baixadoEm": "2026-11-17T19:53:26+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8784,
+      "faltandoTemperatura": 67,
+      "faltandoUmidade": 67
+    },
+    "2017": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2017.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2017_A_31-12-2017.CSV",
+      "sha256Zip": "0f620edffe32a9df55e2c0619f5f9d2fe9965ffe2fa03bfa48abac4a4a34c061",
+      "sha256Csv": "1bac9171eb8660d5a282dc724913f7efeba52afdde7b93e6c6387b7f6465912f",
+      "baixadoEm": "2026-11-17T19:53:40+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 73,
+      "faltandoUmidade": 73
+    },
+    "2018": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2018.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2018_A_31-12-2018.CSV",
+      "sha256Zip": "ca44308b336e72d830ab1daedef45a59debc2f52bfda1a8be02c1e3d948861bb",
+      "sha256Csv": "1bec33fd03bd0179a0e0a4b194578727468baac0af6bf524bf2d820a01d447d4",
+      "baixadoEm": "2026-11-17T19:53:58+00:00",
+      "metadados": {
+        "REGIÃO": "SE",
+        "UF": "SP",
+        "ESTAÇÃO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,48333333",
+        "LONGITUDE": "-46,61666666",
+        "ALTITUDE": "792,06",
+        "DATA DE FUNDAÇÃO (YYYY-MM-DD)": "2006-07-25"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 0,
+      "faltandoUmidade": 0
+    },
+    "2019": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2019.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2019_A_31-12-2019.CSV",
+      "sha256Zip": "f09fa1f4314330be69093f574e7b273954881a5dcb24fc3eca9782545136af49",
+      "sha256Csv": "51527c56c4ff94d005f69bd2d5d1d167a478d7882e398f6e059ee989522a5b6c",
+      "baixadoEm": "2026-11-17T19:54:20+00:00",
+      "metadados": {
+        "REGI?O": "SE",
+        "UF": "SP",
+        "ESTAC?O": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,496294",
+        "LONGITUDE": "-46,620088",
+        "ALTITUDE": "785,64",
+        "DATA DE FUNDAC?O": "25/07/06"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 0,
+      "faltandoUmidade": 0
+    },
+    "2020": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2020.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2020_A_31-12-2020.CSV",
+      "sha256Zip": "e6cf2016dd3b78d7180dac8cbd482e5f549b227dc87a9dff642ecb7bb9e5ba0b",
+      "sha256Csv": "aec112b14d90797dcd905c8a5932fb4eb09015582f459edbf3b7a4a8cdafed12",
+      "baixadoEm": "2026-11-17T19:54:36+00:00",
+      "metadados": {
+        "REGIAO": "SE",
+        "UF": "SP",
+        "ESTACAO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,496294",
+        "LONGITUDE": "-46,620088",
+        "ALTITUDE": "785,64",
+        "DATA DE FUNDACAO": "25/07/06"
+      },
+      "horas": 8784,
+      "faltandoTemperatura": 1,
+      "faltandoUmidade": 1
+    },
+    "2021": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2021.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2021_A_31-12-2021.CSV",
+      "sha256Zip": "360e53e612cf30473371d76b520585f8cd34e61d0d2185e3afe1206ce949433b",
+      "sha256Csv": "815c01daf4a6da98d26517b0214932a0754fa5cf997a79ce726516b50192fef1",
+      "baixadoEm": "2026-11-17T19:54:48+00:00",
+      "metadados": {
+        "REGIAO": "SE",
+        "UF": "SP",
+        "ESTACAO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,496294",
+        "LONGITUDE": "-46,620088",
+        "ALTITUDE": "785,64",
+        "DATA DE FUNDACAO": "25/07/06"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 1,
+      "faltandoUmidade": 2
+    },
+    "2022": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2022.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2022_A_31-12-2022.CSV",
+      "sha256Zip": "292d997e0589486404827055f887327732f11d0bed9b5507952e6cad9bea286b",
+      "sha256Csv": "ceb3a4cde159602228959b96c32eb46134f37b9b3b84c90126d8cbf169d8d088",
+      "baixadoEm": "2026-11-17T19:55:02+00:00",
+      "metadados": {
+        "REGIAO": "SE",
+        "UF": "SP",
+        "ESTACAO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,49638888",
+        "LONGITUDE": "-46,61999999",
+        "ALTITUDE": "785,64",
+        "DATA DE FUNDACAO": "25/07/06"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 0,
+      "faltandoUmidade": 0
+    },
+    "2024": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2024.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2024_A_31-12-2024.CSV",
+      "sha256Zip": "0a7f89de57427f79b6f82943b2f7f2e932202d9253e34bf25629ed088d108ae7",
+      "sha256Csv": "c5f365c069258734ba108f4e85e71ddb00a8a9d4c936b4a7ec76afd9c00fd276",
+      "baixadoEm": "2026-11-17T19:55:17+00:00",
+      "metadados": {
+        "REGIAO": "SE",
+        "UF": "SP",
+        "ESTACAO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,49638888",
+        "LONGITUDE": "-46,61999999",
+        "ALTITUDE": "785,64",
+        "DATA DE FUNDACAO": "25/07/06"
+      },
+      "horas": 8784,
+      "faltandoTemperatura": 19,
+      "faltandoUmidade": 19
+    },
+    "2025": {
+      "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2025.zip",
+      "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2025_A_31-12-2025.CSV",
+      "sha256Zip": "14988d0b736ba969b48881589f602f3a6d7e97b95bd1de934456851fdac2cb89",
+      "sha256Csv": "1eac048271dd0339613149e4638b293f5b627c847980a2b0853c725217e0a314",
+      "baixadoEm": "2026-11-17T19:55:30+00:00",
+      "metadados": {
+        "REGIAO": "SE",
+        "UF": "SP",
+        "ESTACAO": "SAO PAULO - MIRANTE",
+        "CODIGO (WMO)": "A701",
+        "LATITUDE": "-23,4962888",
+        "LONGITUDE": "-46,6200666",
+        "ALTITUDE": "785,64",
+        "DATA DE FUNDACAO": "25/07/06"
+      },
+      "horas": 8760,
+      "faltandoTemperatura": 47,
+      "faltandoUmidade": 47
+    }
+  }
+}

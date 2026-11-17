@@ -27,3 +27,4 @@ integrante revisa, testa e aprova antes do commit. Decisões de produto, a entre
 | 2026-11-17 | F0.12 | "Pode seguir." | Escreveu o CI com filtro por pasta e o agregador `ci-ok`; fixou as actions por SHA depois de ler o `action.yml` de cada uma; trocou a gitleaks-action (licença comercial) pelo binário MIT | Falta ver o CI rodar no PR |
 | 2026-11-17 | F0.13 | "Pode seguir." | Escreveu os seis ADRs a partir das decisões do plano e dos contratos | Entra no PR do lote para revisão do André |
 | 2026-11-17 | F0.14 | "Não precisa de issue. Vou mandar o repo e um handoff: 'sou o João, quero fazer minha parte'." | Escreveu o fluxo de delegação e o prompt do grupo no `AGENTS.md` | André decidiu o formato |
+| 2026-11-17 | F0.15 | "Pode seguir." | Escreveu o script que baixa o INMET e guarda só a A701 com SHA-256, rodou os 16 anos e documentou a proveniência | Dados reais e públicos, conferidos contra o manifesto |
