@@ -1,6 +1,6 @@
 # Direção de arte
 
-> **Status:** proposta da F0.9, aguardando a aprovação do André. Abra a [`amostra.html`](amostra.html) no navegador
+> **Status:** aprovada pelo André em 2026-11-17 (decisão D16). Abra a [`amostra.html`](amostra.html) no navegador
 > (`?tema=claro` ou `?tema=escuro` força o tema).
 
 ## Conceito: luz filtrada pela folhagem
@@ -57,4 +57,4 @@ no painel elas são empacotadas junto, e a licença de cada uma é conferida nes
 ## Marca
 
 Uma casa (a sombra, verde-petróleo) sob um telhado de barro, com o sol ocre atrás. Está como `<symbol id="marca">` na
-amostra e vira um SVG próprio quando a direção de arte for aprovada.
+amostra e vira um SVG próprio no primeiro componente que a usar (F6.1 ou F7.1).
