@@ -1,3 +1,6 @@
+using System.Linq;
+using Sombra.Dominio.Comum;
+
 namespace Sombra.Dominio.Saude;
 
 /// <summary>
@@ -7,11 +10,24 @@ namespace Sombra.Dominio.Saude;
 /// </summary>
 public abstract record FatorDeRisco
 {
+    private static readonly FatorDeRisco[] _declaraveis = [new Cardiopatia(), new UsoDeDiuretico()];
+
     /// <summary>Gets o código estável do fator, usado na API e no banco.</summary>
     public abstract string Codigo { get; }
 
     /// <summary>Gets quantos °C este fator reduz os limites térmicos.</summary>
     public abstract double ReducaoGraus { get; }
+
+    /// <summary>Encontra um fator declarável pelo código. A idade avançada não entra: vem da data de nascimento.</summary>
+    /// <param name="codigo">O código, ex.: <c>CARDIOPATIA</c>.</param>
+    /// <returns>O fator.</returns>
+    /// <exception cref="RegraVioladaException">Quando o código não é de um fator declarável (R3).</exception>
+    public static FatorDeRisco DoCodigo(string? codigo)
+    {
+        string normalizado = (codigo ?? string.Empty).Trim().ToUpperInvariant();
+        return _declaraveis.SingleOrDefault(f => f.Codigo == normalizado)
+            ?? throw new RegraVioladaException("R3", "Fator de risco desconhecido.");
+    }
 }
 
 /// <summary>Pessoa com 80 anos ou mais: sente menos sede e regula pior a temperatura.</summary>

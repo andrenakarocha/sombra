@@ -46,6 +46,16 @@ public sealed class MoradorTests
         Assert.AreEqual("[DADO DE SAÚDE PROTEGIDO]", perfil.ToString());
     }
 
+    /// <summary>O cadastro acha os fatores declaráveis pelo código; a idade avançada e códigos estranhos são recusados.</summary>
+    [TestMethod]
+    public void FatorDeclaravelPeloCodigo()
+    {
+        Assert.AreEqual(new Cardiopatia(), FatorDeRisco.DoCodigo(" cardiopatia "));
+        Assert.AreEqual(new UsoDeDiuretico(), FatorDeRisco.DoCodigo("USO_DE_DIURETICO"));
+        Assert.AreEqual("R3", Assert.ThrowsExactly<RegraVioladaException>(() => FatorDeRisco.DoCodigo("IDADE_AVANCADA")).Regra);
+        Assert.ThrowsExactly<RegraVioladaException>(() => FatorDeRisco.DoCodigo(null));
+    }
+
     /// <summary>A idade é a completa: o aniversário ainda não chegou neste ano.</summary>
     [TestMethod]
     public void CalculaIdadeCompleta()

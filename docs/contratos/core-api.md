@@ -19,7 +19,7 @@
 - **Paginação:** `?pagina=1&tamanho=20` (máximo 100) → `{ "itens": [], "pagina": 1, "tamanho": 20, "total": 57 }`.
 - **Correlação:** o header `X-Correlation-Id` é aceito e devolvido. Sem ele, o Core gera um (§6 do plano).
 - **PII:** CPF, Cartão SUS, telefone e saúde saem **sempre mascarados**, exceto em endpoints marcados para o `Cuidador`
-  da própria casa (spec 07). Máscara do CPF: `***.982.247-**`.
+  da própria casa (spec 07). Máscara do CPF: `***.456.***-00` (o bloco do meio e os verificadores).
 
 ## Endpoints
 
@@ -80,7 +80,7 @@
   "id": "c1a8e2f4-7b3d-4e9a-8f2c-6d5b4a3e2f10",
   "nome": "Lurdes A.",
   "idade": 78,
-  "cpf": "***.982.247-**",
+  "cpf": "***.982.***-10",
   "cartaoSus": "*** **** **** 1234",
   "perfilDeSaude": "[DADO DE SAÚDE PROTEGIDO]",
   "fatoresDeRisco": ["IDADE_AVANCADA", "USO_DE_DIURETICO"]

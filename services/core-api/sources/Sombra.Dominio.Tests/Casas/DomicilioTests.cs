@@ -119,6 +119,20 @@ public sealed class DomicilioTests
         Assert.AreEqual("R10", Assert.ThrowsExactly<RegraVioladaException>(() => Sentinela.Criar("sentinela-1")).Regra);
     }
 
+    /// <summary>A casa nasce com a rotina padrão e guarda a rotina combinada com a pessoa (R11).</summary>
+    [TestMethod]
+    public void GuardaARotinaCombinada()
+    {
+        Domicilio casa = Fabricas.Casa();
+        Assert.AreEqual(Rotina.Padrao, casa.Rotina);
+
+        Rotina rotina = Rotina.Criar(new TimeOnly(9, 0), lembreteDeAguaAtivo: false);
+        casa.DefinirRotina(rotina);
+
+        Assert.AreEqual(rotina, casa.Rotina);
+        Assert.ThrowsExactly<ArgumentNullException>(() => casa.DefinirRotina(null!));
+    }
+
     /// <summary>Apelido e região climática são validados, e a casa nunca aparece pelo endereço.</summary>
     [TestMethod]
     public void ValidaCadastroDaCasa()
