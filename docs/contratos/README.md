@@ -18,7 +18,7 @@ mesmo PR** (§0 do plano).
 | Core API | 5080 | `api.sombra.local` | `sombra_core` (papel `sombra_core`) |
 | Clima Service | 8081 | `clima.sombra.local` | `sombra_clima` (papel `sombra_clima`) |
 | Painel | 5173 em dev · 80 pelo nginx | `painel.sombra.local` | — |
-| PostgreSQL 16 | 5432, só local | — | — |
+| PostgreSQL 16 | 5432 no compose e na VM · 55432 no host do dev (`DB_PORTA_LOCAL`) | — | — |
 | Mosquitto (dev e CI) | 1883 | — | — |
 | VM | — | `sombra-srv01` · `192.168.56.10` | — |
 

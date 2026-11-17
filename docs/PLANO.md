@@ -408,9 +408,10 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
 - [x] **F0.9** 🧑🤖 Direção de arte: `design/tokens.json` + `design/README.md` + uma página de amostra (farol nos 5 níveis,
   cartão de casa, botão gigante, tipografia, claro e escuro). Fecha a DA5 — 2026-11-17 16:40.
   🔎 André aprova a amostra; aprovação registrada na §13.
-- [ ] **F0.10** 🤖 `compose.yaml` (Postgres com os 2 bancos via init, Mosquitto, placeholders do Core, do Clima e do painel
-  com `/health`) + `Makefile` (`up`, `down`, `logs`, `test`, `demo`, `lint`, `db-reset`).
-  🔎 `make up` → os três `/health` respondem 200.
+- [x] **F0.10** 🤖 `compose.yaml` (Postgres com os 2 bancos via init, Mosquitto, placeholders do Core, do Clima e do painel
+  com `/health`) + `Makefile` (`env`, `up`, `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`; o `demo` chega
+  na F9.2) — 2026-11-17 16:43.
+  🔎 `make up` → os três `/health` respondem 200; o papel de um serviço é barrado no banco do outro.
 - [ ] **F0.11** 🤖 Simulador da Sentinela (`tools/sentinela-sim/`, Python): telemetria e eventos assinados (HMAC), obedece
   comandos; cenários `normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`,
   `payload-adulterado`; testes.
@@ -814,11 +815,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. Próximo: **F0.10** (compose e Makefile), no branch `f0-fundacao-3`.
+**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 feita (`make up` verde). Próximo: **F0.11** (simulador da Sentinela), no branch `f0-fundacao-3`.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.9 e F0.16 feitas (na `main` pelos PRs #1 e #2); lote seguinte no branch `f0-fundacao-3` |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.10 e F0.16 feitas (F0.1–F0.9 na `main` pelos PRs #1 e #2); lote seguinte no branch `f0-fundacao-3` |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -865,3 +866,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🤖 | F0.8 — `docs/observabilidade.md`: os 8 campos obrigatórios, níveis com exemplos, o que nunca vai para o log, correlação ponta a ponta (HTTP `X-Correlation-Id`; MQTT `{deviceId}:{seq}`; propagação para Clima, SignalR, outbox e IA; código curto do erro na tela), catálogo de eventos por serviço, como fazer em cada stack (Serilog + Expressions; formatter próprio do Spring; logging do Python; `jq -cn` no bash; serial legível no ESP32), saúde, versão e trilhas de auditoria, retenção e um checklist de pronto. 🔎 as specs 01, 02, 04, 05, 06, 07 e 08 citam as seções que lhes cabem |
 | 2026-11-17 | 🤖 | F0.9 (proposta) — direção de arte "luz filtrada pela folhagem", tirada das fotos e da entrevista (paredes ocre, telhado de barro, sombra de árvore na calçada). `design/tokens.json` (primitivos e semânticos dos temas claro e escuro, com aliases), `tokens.py gerar` (CSS) e `tokens.py conferir`: **50 pares de contraste WCAG 2.2 passam nos dois temas**, com o texto principal entre 12,6:1 e 16:1 e os selos de risco ≥ 5:1. `amostra.html`: os cinco níveis com ícone de forma própria, cartão da casa, Modo Idoso, farol de privacidade, paleta e tipografia (Fraunces + Atkinson Hyperlegible Next). Revisada em capturas reais (Chromium headless, 1440 e 390 px, claro e escuro). A revisão corrigiu a textura com cara de camuflagem, a paleta desalinhada, a moldura do celular invisível no escuro e o cartão quebrando no mobile. Falta a aprovação do André |
 | 2026-11-17 | 🧑 | F0.9 — **direção de arte aprovada pelo André** ("pika"), virando a D16. Lote F0.8–F0.9 enviado por ele; **PR #2** mergeado às 19:40 UTC com o "pode mergear" no chat. O próximo lote segue no branch `f0-fundacao-3` |
+| 2026-11-17 | 🤖 | F0.10 — `compose.yaml` (projeto `sombra`, tudo em 127.0.0.1): Postgres 16 com script de init que cria **um papel e um banco por serviço** e revoga o `CONNECT` público; Mosquitto 2; Core, Clima e painel como placeholders nginx que dizem em qual fase serão trocados. `Makefile` com `env`, `up` (espera os healthchecks), `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`. `tools/novo-env.py`: gera os segredos que faltam, **nunca sobrescreve** valor real (a chave Gemini foi preservada), grava em 600 e só mostra nomes. `.env.example` sem senha duplicada: as strings de conexão passam a ser montadas pelo compose. **Ajuste:** a 5432 do host já é do PostgreSQL local do André; o banco do compose fica em 55432 no host (`DB_PORTA_LOCAL`) e `db:5432` dentro. 🔎 os 5 serviços `healthy`; `/health/live`, `/actuator/health/liveness` e `/healthz` → 200; o papel `sombra_core` é barrado no `sombra_clima` (`permission denied`); ida e volta no MQTT; `make test` e `make lint` verdes |
