@@ -87,7 +87,7 @@ internal sealed class Cenario
         casa.DefinirRedeDeCuidado(
         [
             new ContatoDeCuidado("Ana", Telefone.Criar("11987654321"), PapelDoContato.Familiar),
-            new ContatoDeCuidado("Cida (vizinha)", Telefone.Criar("11912345678"), PapelDoContato.Vizinho),
+            new ContatoDeCuidado("Rosa (vizinha)", Telefone.Criar("11912345678"), PapelDoContato.Vizinho),
         ]);
         casa.VincularSentinela(deviceId);
         casa.AtivarMonitoramento();

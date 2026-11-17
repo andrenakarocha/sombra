@@ -54,6 +54,6 @@ internal static class Fabricas
         =>
         [
             new("Ana", Telefone.Criar("11987654321"), PapelDoContato.Familiar),
-            new("Cida (vizinha)", Telefone.Criar("11912345678"), PapelDoContato.Vizinho),
+            new("Rosa (vizinha)", Telefone.Criar("11912345678"), PapelDoContato.Vizinho),
         ];
 }
