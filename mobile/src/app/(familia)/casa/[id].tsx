@@ -69,6 +69,13 @@ export default function Casa() {
         <Botao rotulo={`Ligar para ${morador.nome}`} aoTocar={() => ligar(morador.telefone!)} />
       )}
 
+      <Botao
+        rotulo="Morador e dados de saúde"
+        variante="secundario"
+        dica="Cadastro com CPF, Cartão SUS e saúde, sempre mascarados"
+        aoTocar={() => router.push(`/casa/${id}/morador`)}
+      />
+
       <Texto variante="subtitulo" accessibilityRole="header" style={{ marginTop: espaco[4] }}>
         Rede de cuidado
       </Texto>

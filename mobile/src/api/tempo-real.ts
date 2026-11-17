@@ -52,6 +52,11 @@ export function aplicarEvento(cliente: QueryClient, evento: string, payload: unk
       atualizarCasa(cliente, domicilioId, (c) => ({ ...c, ultimoCheckIn: momento }));
       break;
     }
+    case 'RiscoCidadaoAtualizado': {
+      const { domicilioId } = payload as { domicilioId: string | null };
+      if (domicilioId) cliente.invalidateQueries({ queryKey: ['privacidade', domicilioId] });
+      break;
+    }
     case 'AlertaAberto':
     case 'AlertaEscalonado':
     case 'AlertaResolvido': {
@@ -72,6 +77,7 @@ export const EVENTOS = [
   'AlertaAberto',
   'AlertaEscalonado',
   'AlertaResolvido',
+  'RiscoCidadaoAtualizado',
 ] as const;
 
 export function useTempoReal() {
