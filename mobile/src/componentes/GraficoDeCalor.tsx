@@ -3,8 +3,9 @@ import { View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 
 import type { Leitura } from '@/api/tipos';
-import { INFO_DO_NIVEL, type NivelDeRisco } from '@/dominio/nivel';
+import type { NivelDeRisco } from '@/domain/clima/nivel-de-risco';
 import { useTema } from '@/tema';
+import { TOKEN_DO_NIVEL } from '@/tema/risco';
 import { formatarGraus } from '@/util/formato';
 
 import { Texto } from './Texto';
@@ -30,7 +31,7 @@ export function GraficoDeCalor({ leituras, nivel }: { leituras: Leitura[]; nivel
     return <Texto suave>Ainda não há leituras suficientes nas últimas 24 horas.</Texto>;
   }
 
-  const cor = tema.risco[INFO_DO_NIVEL[nivel].token].borda;
+  const cor = tema.risco[TOKEN_DO_NIVEL[nivel]].borda;
   const valores = leituras.map((l) => l.indiceDeCalorC);
   const tempos = leituras.map((l) => new Date(l.momento).getTime());
   const [min, max] = [Math.min(...valores) - 1, Math.max(...valores) + 1];

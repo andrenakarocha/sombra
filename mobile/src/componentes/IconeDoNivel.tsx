@@ -1,6 +1,6 @@
 import Svg, { Circle, Path } from 'react-native-svg';
 
-import type { NivelDeRisco } from '@/dominio/nivel';
+import type { NivelDeRisco } from '@/domain/clima/nivel-de-risco';
 
 // Mesmos desenhos da design/amostra.html: a forma muda com o nível (círculo, triângulo, octógono).
 export function IconeDoNivel({ nivel, cor, tamanho = 22 }: { nivel: NivelDeRisco; cor: string; tamanho?: number }) {

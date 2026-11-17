@@ -48,6 +48,7 @@ jobs:
             mobile:
               - 'mobile/**'
               - 'design/tokens.json'
+              - 'docs/contratos/**'
             simulador:
               - 'tools/sentinela-sim/**'
               - 'docs/contratos/**'

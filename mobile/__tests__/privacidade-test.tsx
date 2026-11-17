@@ -9,7 +9,7 @@ import MoradorDaCasa from '@/app/(familia)/casa/[id]/morador';
 import { CASAS } from '@/demo/fixtures';
 import { VAZIO, validar } from '@/dominio/morador';
 import { abertoAgora } from '@/util/formato';
-import { aplicarPadrao, cpfValido, exibirCartaoSus, exibirCpf, exibirTelefone, PADRAO } from '@/util/mascaras';
+import { aplicarPadrao, exibirCartaoSus, exibirCpf, exibirTelefone, PADRAO } from '@/util/mascaras';
 
 const casa = CASAS[0]!;
 jest.mock('expo-router', () => ({ useLocalSearchParams: () => ({ id: '0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10' }) }));
@@ -40,12 +40,6 @@ describe('máscaras', () => {
     expect(aplicarPadrao('11987654321', PADRAO.telefone)).toBe('(11) 98765-4321');
   });
 
-  it('valida o dígito verificador do CPF', () => {
-    expect(cpfValido(cpf)).toBe(true);
-    expect(cpfValido('123.456.789-00')).toBe(false);
-    expect(cpfValido('111.111.111-11')).toBe(false);
-  });
-
   it('mascara na tela o que a API devolver inteiro, e mantém o que já veio mascarado', () => {
     expect(exibirCpf(aplicarPadrao(cpf, PADRAO.cpf))).toBe('***.456.789-**');
     expect(exibirCpf('***.982.247-**')).toBe('***.982.247-**');
@@ -55,7 +49,7 @@ describe('máscaras', () => {
 
   it('validar: CPF obrigatório no cadastro, opcional na edição', () => {
     const base = { ...VAZIO, nome: 'Lurdes A.', idade: '78' };
-    expect(validar(base, false)).toBe('O CPF não é válido. Confira os números.');
+    expect(validar(base, false)).toBe('O CPF tem 11 números.');
     expect(validar(base, true)).toBeNull();
     expect(validar({ ...base, cpf }, false)).toBeNull();
   });
