@@ -36,7 +36,7 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)/entrar" />
         </Stack.Protected>
         <Stack.Protected guard={!!token}>
-          <Stack.Screen name="index" />
+          <Stack.Screen name="(familia)" />
         </Stack.Protected>
       </Stack>
     </QueryClientProvider>

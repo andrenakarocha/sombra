@@ -1,10 +1,19 @@
-import { onlineManager, QueryClient, useQuery } from '@tanstack/react-query';
+import { onlineManager, QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import * as Network from 'expo-network';
 
-import { type Cacheado, lerCasas, salvarCasas } from '@/banco/casas';
+import { lerAlertas, salvarAlertas } from '@/banco/alertas';
+import { type Cacheado, lerCasa, lerCasas, salvarCasa, salvarCasas } from '@/banco/casas';
 
 import { ErroDaApi, requisitar, SemConexao } from './cliente';
-import type { Domicilio, Pagina } from './tipos';
+import type {
+  AcaoDeReconhecimento,
+  Alerta,
+  ContatoDaRede,
+  Domicilio,
+  Leitura,
+  Morador,
+  Pagina,
+} from './tipos';
 
 // networkMode 'always': offline, a consulta roda mesmo assim e cai no cache do SQLite em vez de ficar pausada.
 export const queryClient = new QueryClient({
@@ -49,5 +58,67 @@ export function useCasas() {
         salvarCasas,
         lerCasas,
       ),
+  });
+}
+
+export function useCasa(id: string) {
+  return useQuery({
+    queryKey: ['casa', id],
+    queryFn: () =>
+      comCache(
+        () => requisitar<Domicilio>(`/domicilios/${id}`),
+        salvarCasa,
+        () => lerCasa(id),
+      ),
+  });
+}
+
+// Leituras das últimas 24 h, da mais antiga para a mais recente (a API devolve da mais recente para a mais antiga).
+export function useLeituras24h(id: string) {
+  return useQuery({
+    queryKey: ['leituras', id],
+    queryFn: async () => {
+      const ate = new Date();
+      const de = new Date(ate.getTime() - 24 * 60 * 60 * 1000);
+      const pagina = await requisitar<Pagina<Leitura>>(
+        `/domicilios/${id}/leituras?de=${de.toISOString()}&ate=${ate.toISOString()}&tamanho=100`,
+      );
+      return [...pagina.itens].reverse();
+    },
+  });
+}
+
+export function useMoradores(id: string) {
+  return useQuery({ queryKey: ['moradores', id], queryFn: () => requisitar<Morador[]>(`/domicilios/${id}/moradores`) });
+}
+
+export function useRedeDeCuidado(id: string) {
+  return useQuery({
+    queryKey: ['rede', id],
+    queryFn: () => requisitar<ContatoDaRede[]>(`/domicilios/${id}/rede-de-cuidado`),
+  });
+}
+
+export function useAlertas() {
+  return useQuery({
+    queryKey: ['alertas'],
+    queryFn: () =>
+      comCache(
+        async () => (await requisitar<Pagina<Alerta>>('/alertas?tamanho=100')).itens,
+        salvarAlertas,
+        lerAlertas,
+      ),
+  });
+}
+
+export function useAlerta(id: string) {
+  return useQuery({ queryKey: ['alerta', id], queryFn: () => requisitar<Alerta>(`/alertas/${id}`) });
+}
+
+export function useReconhecer(id: string) {
+  return useMutation({
+    mutationFn: (acao: AcaoDeReconhecimento) =>
+      requisitar<void>(`/alertas/${id}/reconhecer`, { metodo: 'POST', corpo: { acao } }),
+    onSuccess: () => queryClient.invalidateQueries(),
   });
 }
