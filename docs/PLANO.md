@@ -416,9 +416,11 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   comandos; cenários `normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`,
   `payload-adulterado`; testes — 2026-11-17 16:48.
   🔎 `pytest` verde; contra o Mosquitto do compose, publica e recebe um comando de teste.
-- [ ] **F0.12** 🤖 CI: um workflow por componente com `paths:`, mais gitleaks, shellcheck e actionlint; `release.yml`
-  esqueleto (artefatos + `SHA256SUMS` em tag). Os jobs viram checks obrigatórios da `main` (D15).
-  🔎 CI verde no PR; a proteção da `main` lista os checks.
+- [ ] **F0.12** 🤖 CI: um workflow só (`ci.yml`) com filtro por pasta, mais gitleaks, shellcheck e actionlint, e um job
+  agregador `ci-ok`, que vira o check obrigatório da `main` (D15). Actions fixadas por SHA. O `release.yml` nasce na F8.3,
+  quando houver artefatos.
+  🔎 CI verde no PR; a proteção da `main` lista o `ci-ok`.
+  ⏸ 2026-11-17 16:50: `ci.yml` implementado e validado localmente (actionlint, gitleaks); falta rodar no PR #3.
 - [ ] **F0.13** 🤖 ADRs 001–006 (`docs/adr/`): linguagem ubíqua · monorepo · dois serviços donos dos seus bancos · MQTT
   público com HMAC e sem PII · LLM com fallback · índice de calor replicado de propósito com vetores compartilhados.
   🔎 os ADRs existem e a §2.1 os cita.
@@ -632,7 +634,8 @@ provando o antes e o depois.
   🔎 `vagrant up` grava `provision.log` e `auditoria.jsonl` (P11).
 - [ ] **F8.2** 🤖 Etapas 10 (host), 20 (rede), 30 (DNS com dnsmasq, zona `sombra.local`) e 40 (usuários e permissões).
   🔎 `hostnamectl`, `ip a`, `dig api.sombra.local`, `id sombra`.
-- [ ] **F8.3** 🤖 Workflow de release: core linux-x64, jar do clima, dist do painel e `SHA256SUMS`.
+- [ ] **F8.3** 🤖 Workflow de release (`release.yml`, adiado da F0.12): core linux-x64, jar do clima, dist do painel e
+  `SHA256SUMS`, com a mesma fixação de actions por SHA do `ci.yml`.
   🔎 um release de teste no GitHub com os checksums.
 - [ ] **F8.4** 🤖 Etapas 50 (dependências), 60 (banco) e 70 (aplicação: download + SHA256, diretórios, env 0640, units
   endurecidas, migrações, nginx).
@@ -815,7 +818,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 e F0.11 feitas (`make up` verde; simulador da Sentinela com 45 testes). Próximo: **F0.12** (CI), no branch `f0-fundacao-3`.
+**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 e F0.11 feitas (`make up` verde; simulador da Sentinela com 45 testes). F0.12 implementada (falta o 🔎 no PR). Próximo: **F0.13** (ADRs) e **F0.15** (dados do INMET), no branch `f0-fundacao-3`.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -868,3 +871,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🧑 | F0.9 — **direção de arte aprovada pelo André** ("pika"), virando a D16. Lote F0.8–F0.9 enviado por ele; **PR #2** mergeado às 19:40 UTC com o "pode mergear" no chat. O próximo lote segue no branch `f0-fundacao-3` |
 | 2026-11-17 | 🤖 | F0.10 — `compose.yaml` (projeto `sombra`, tudo em 127.0.0.1): Postgres 16 com script de init que cria **um papel e um banco por serviço** e revoga o `CONNECT` público; Mosquitto 2; Core, Clima e painel como placeholders nginx que dizem em qual fase serão trocados. `Makefile` com `env`, `up` (espera os healthchecks), `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`. `tools/novo-env.py`: gera os segredos que faltam, **nunca sobrescreve** valor real (a chave Gemini foi preservada), grava em 600 e só mostra nomes. `.env.example` sem senha duplicada: as strings de conexão passam a ser montadas pelo compose. **Ajuste:** a 5432 do host já é do PostgreSQL local do André; o banco do compose fica em 55432 no host (`DB_PORTA_LOCAL`) e `db:5432` dentro. 🔎 os 5 serviços `healthy`; `/health/live`, `/actuator/health/liveness` e `/healthz` → 200; o papel `sombra_core` é barrado no `sombra_clima` (`permission denied`); ida e volta no MQTT; `make test` e `make lint` verdes |
 | 2026-11-17 | 🤖 | F0.11 — `tools/sentinela-sim/` (Python 3.12 via uv, `paho-mqtt` 2): outra implementação do contrato, com assinatura HMAC, verificação de comandos (assinatura, outra Sentinela, replay, janela de 300 s), `seq` persistido entre execuções, status `online` e Last Will `offline`, logs JSON da §6. Seis cenários determinísticos (`normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`, `payload-adulterado`) e um modo `comando` que publica como o Core. **45 testes**: os 20 vetores do índice de calor e os 6 de assinatura (os mesmos que o ESP32, o Core e o Clima vão rodar), a verificação, os cenários e a integração com o Mosquitto do compose (comando aceito; replay e adulteração recusados; telemetria com assinatura válida). Fumaça pela CLI: `onda-de-calor` sobe ATENCAO → CAUTELA_EXTREMA → PERIGO, um comando chega no meio e é aceito, o "estou bem" é enviado; 24 linhas de log JSON válidas. `make sim`, `make test-sim` e ruff no `make lint`. Catálogo de eventos (§4) e correlação de comandos (`{deviceId}:c{seq}`) atualizados em `docs/observabilidade.md` |
+| 2026-11-17 | 🤖 | F0.12 implementada — `.github/workflows/ci.yml`: job `mudancas` (filtro por pasta) e jobs condicionais (contratos; design, que também confere se o `tokens.css` está em dia; simulador com Mosquitto e uv; ambiente local com `make up`, saúde e isolamento dos bancos; shellcheck; actionlint), `gitleaks` sempre, e `ci-ok` agregando tudo. **Um check obrigatório só**, porque com filtro por pasta um check obrigatório por componente travaria PR que não toca aquela pasta. Actions fixadas por **SHA de commit** (checkout v7.0.1, setup-python v7.1.0, setup-node v7.1.0, setup-uv v10.3.3, paths-filter v4.0.3), com os parâmetros conferidos no `action.yml` de cada SHA (são versões mais novas que o conhecimento do agente). `permissions: contents: read` e `persist-credentials: false`. **Troca:** a `gitleaks-action` v3 está sob licença comercial (EULA); o CI usa o binário do gitleaks (MIT) pela imagem oficial `v8.30.1`. actionlint 1.7.12 e gitleaks rodados localmente: ok, sem vazamentos nos 20 commits. **Escopo:** o `release.yml` foi para a F8.3, quando houver o que publicar |

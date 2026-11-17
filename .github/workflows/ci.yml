@@ -1,0 +1,216 @@
+# Sombra · CI do monorepo.
+# Um workflow só, com filtro por pasta: cada job roda quando a sua parte muda, e o job `ci-ok` agrega todos.
+# A `main` exige só o `ci-ok` (D15), assim um PR que não toca uma pasta nunca fica preso esperando o job dela.
+# Actions fixadas por SHA de commit (a versão está no comentário).
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mudancas:
+    name: o que mudou
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      contratos: ${{ steps.filtro.outputs.contratos }}
+      design: ${{ steps.filtro.outputs.design }}
+      simulador: ${{ steps.filtro.outputs.simulador }}
+      ambiente: ${{ steps.filtro.outputs.ambiente }}
+      scripts: ${{ steps.filtro.outputs.scripts }}
+      workflows: ${{ steps.filtro.outputs.workflows }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filtro
+        with:
+          filters: |
+            contratos:
+              - 'docs/contratos/**'
+              - 'tools/indice-de-calor/**'
+              - 'tools/mqtt-assinatura/**'
+            design:
+              - 'design/**'
+            simulador:
+              - 'tools/sentinela-sim/**'
+              - 'docs/contratos/**'
+            ambiente:
+              - 'compose.yaml'
+              - 'infra/compose/**'
+              - 'Makefile'
+              - 'tools/novo-env.py'
+              - '.env.example'
+            scripts:
+              - '**/*.sh'
+            workflows:
+              - '.github/workflows/**'
+
+  contratos:
+    name: contratos
+    needs: mudancas
+    if: needs.mudancas.outputs.contratos == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+      - name: vetores do índice de calor
+        run: python3 -I tools/indice-de-calor/vetores.py
+      - name: vetores de assinatura MQTT
+        run: python3 -I tools/mqtt-assinatura/vetores.py
+      - name: AsyncAPI
+        run: npx -y @asyncapi/cli@6.3.1 validate docs/contratos/mqtt.asyncapi.yaml
+
+  design:
+    name: design
+    needs: mudancas
+    if: needs.mudancas.outputs.design == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: contraste WCAG dos dois temas
+        run: python3 -I design/tokens.py conferir
+      - name: tokens.css em dia com o tokens.json
+        run: |
+          python3 -I design/tokens.py gerar
+          git diff --exit-code design/tokens.css
+
+  simulador:
+    name: simulador da Sentinela
+    needs: mudancas
+    if: >-
+      needs.mudancas.outputs.simulador == 'true' || needs.mudancas.outputs.ambiente == 'true' ||
+      needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/sentinela-sim
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: broker MQTT (a mesma configuração do compose)
+        working-directory: .
+        run: |
+          docker run -d --name mqtt -p 127.0.0.1:1883:1883 \
+            -v "$PWD/infra/compose/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro" \
+            eclipse-mosquitto:2
+          for _ in $(seq 1 20); do docker exec mqtt mosquitto_sub -h 127.0.0.1 -t '$SYS/broker/version' -C 1 -W 2 >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          working-directory: tools/sentinela-sim
+          enable-cache: true
+      - name: dependências (uv.lock)
+        run: uv sync --locked
+      - name: ruff
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: testes (inclui a integração com o broker)
+        run: uv run pytest -q -rs
+
+  ambiente-local:
+    name: ambiente local (make up)
+    needs: mudancas
+    if: needs.mudancas.outputs.ambiente == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: make env
+        run: make env
+      - name: make up
+        run: make up
+      - name: saúde dos serviços
+        run: |
+          for url in http://127.0.0.1:5080/health/live http://127.0.0.1:8081/actuator/health/liveness http://127.0.0.1:5173/healthz; do
+            curl -fsS -o /dev/null "$url" && echo "$url ok"
+          done
+      - name: cada serviço só entra no próprio banco
+        run: |
+          set -a && . ./.env && set +a
+          docker compose exec -T -e PGPASSWORD="$CORE_DB_PASSWORD" db psql -h 127.0.0.1 -U sombra_core -d sombra_core -tAc 'select 1'
+          if docker compose exec -T -e PGPASSWORD="$CORE_DB_PASSWORD" db psql -h 127.0.0.1 -U sombra_core -d sombra_clima -tAc 'select 1'; then
+            echo "o papel do Core entrou no banco do Clima" && exit 1
+          fi
+          echo "isolamento ok"
+      - name: logs em caso de falha
+        if: failure()
+        run: docker compose logs --no-color
+      - name: make down
+        if: always()
+        run: make down
+
+  scripts:
+    name: shellcheck
+    needs: mudancas
+    if: needs.mudancas.outputs.scripts == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: git ls-files -z '*.sh' | xargs -0 shellcheck
+
+  workflows:
+    name: actionlint
+    needs: mudancas
+    if: needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12 -color
+
+  segredos:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: gitleaks (binário MIT, imagem oficial com versão fixa)
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact --verbose --exit-code 1
+
+  ci-ok:
+    name: ci-ok
+    if: always()
+    needs: [mudancas, contratos, design, simulador, ambiente-local, scripts, workflows, segredos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: nenhum job falhou nem foi cancelado
+        env:
+          RESULTADOS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "resultados: $RESULTADOS"
+          for r in $RESULTADOS; do
+            case "$r" in success|skipped) ;; *) echo "falhou: $r"; exit 1 ;; esac
+          done
