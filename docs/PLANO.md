@@ -611,7 +611,7 @@ provando o antes e o depois.
   ⏸ 2026-11-17: coberto em Jest (CPF, CNS e saúde mascarados; farol da casa com cor + ícone + texto). O app é
   `Cuidador`, então lê `GET /domicilios/{id}/privacidade` (o `/privacidade/risco-cidadao` é do `Operador`). O 🔎
   no aparelho espera a API do Core (F1.7).
-- [ ] **F6.6** 🤖 Modo demonstração (fixtures quando a API não responde) + notificações locais.
+- [x] **F6.6** 🤖 Modo demonstração (fixtures quando a API não responde) + notificações locais — 2026-11-17 18:29.
   🔎 sem backend, o app abre com dados de exemplo e um aviso claro.
 - [ ] **F6.7** 🧑🤖 Acessibilidade (checklist da spec) + testes Jest.
   🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do operador.

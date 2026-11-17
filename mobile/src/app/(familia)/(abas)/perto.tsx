@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCasas, usePontosDeResfriamento } from '@/api/consultas';
 import { mensagemDeErro } from '@/api/mensagens';
 import type { PontoDeResfriamento } from '@/api/tipos';
+import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { Botao } from '@/componentes/Botao';
 import { SeletorDeCasa, useCasaEscolhida } from '@/componentes/SeletorDeCasa';
 import { Texto } from '@/componentes/Texto';
@@ -27,6 +28,7 @@ export default function Perto() {
         <Texto variante="tituloGrande" accessibilityRole="header">
           Perto de mim
         </Texto>
+        <AvisoDemonstracao />
         <Texto suave>Lugares frescos e públicos perto da casa, para passar a hora mais quente do dia.</Texto>
         <SeletorDeCasa casas={casas} escolhida={casa} aoEscolher={escolher} />
 

@@ -6,7 +6,9 @@ import { useEffect } from 'react';
 
 import { API_URL } from '@/config';
 import type { NivelDeRisco } from '@/dominio/nivel';
-import { useSessao } from '@/sessao/sessao';
+import { notificacaoDoEvento, notificar } from '@/notificacoes/notificacoes';
+import { usePreferencias } from '@/sessao/preferencias';
+import { TOKEN_DEMO, useSessao } from '@/sessao/sessao';
 
 import { queryClient, type Resultado } from './consultas';
 import type { Domicilio } from './tipos';
@@ -70,6 +72,16 @@ export function aplicarEvento(cliente: QueryClient, evento: string, payload: unk
   }
 }
 
+// Todo evento do hub (ou da simulação da demonstração) passa por aqui: atualiza o cache e, se for o caso, notifica.
+export function receberEvento(evento: string, payload: Record<string, unknown>) {
+  aplicarEvento(queryClient, evento, payload);
+  const modoIdoso = !!usePreferencias.getState().modoIdosoCasaId;
+  const casas = queryClient.getQueryData<Resultado<Domicilio[]>>(['casas'])?.dados ?? [];
+  const apelido = (id: string) => casas.find((c) => c.id === id)?.apelido ?? 'Sombra';
+  const n = notificacaoDoEvento(evento, payload, { modoIdoso, apelido });
+  if (n) notificar(n, modoIdoso).catch(() => {});
+}
+
 export const EVENTOS = [
   'LeituraRegistrada',
   'SentinelaStatus',
@@ -84,14 +96,14 @@ export function useTempoReal() {
   const token = useSessao((s) => s.token);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token || token === TOKEN_DEMO) return;
     const conexao = new HubConnectionBuilder()
       .withUrl(`${API_URL}/hubs/sombra`, { accessTokenFactory: () => token })
       .withAutomaticReconnect()
       .configureLogging(LogLevel.None)
       .build();
 
-    for (const evento of EVENTOS) conexao.on(evento, (payload) => aplicarEvento(queryClient, evento, payload));
+    for (const evento of EVENTOS) conexao.on(evento, (payload) => receberEvento(evento, payload));
     // Eventos perdidos não são reenviados: ao reconectar, busca tudo de novo.
     conexao.onreconnected(() => queryClient.invalidateQueries());
 

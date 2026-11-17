@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useCasas, usePrivacidade } from '@/api/consultas';
 import { mensagemDeErro } from '@/api/mensagens';
+import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { FarolDePrivacidade } from '@/componentes/FarolDePrivacidade';
 import { SeletorDeCasa, useCasaEscolhida } from '@/componentes/SeletorDeCasa';
 import { Texto } from '@/componentes/Texto';
@@ -21,6 +22,7 @@ export default function Privacidade() {
         <Texto variante="tituloGrande" accessibilityRole="header">
           Privacidade
         </Texto>
+        <AvisoDemonstracao />
         <Texto suave>
           O Sombra guarda CPF, Cartão SUS e dados de saúde com cuidado. Aqui você vê se alguém tentou usar esses dados
           do jeito errado.

@@ -7,6 +7,7 @@ import { mensagemDeErro } from '@/api/mensagens';
 import { Botao } from '@/componentes/Botao';
 import { Campo } from '@/componentes/Campo';
 import { Texto } from '@/componentes/Texto';
+import { TOKEN_DEMO, useSessao } from '@/sessao/sessao';
 import { espaco, useTema } from '@/tema';
 
 export default function Entrar() {
@@ -60,6 +61,13 @@ export default function Entrar() {
             </Texto>
           )}
           <Botao rotulo={enviando ? 'Entrando…' : 'Entrar'} aoTocar={aoEntrar} />
+          <Texto suave>Sem servidor por perto? Dá para conhecer o app com dados de exemplo.</Texto>
+          <Botao
+            rotulo="Ver com dados de exemplo"
+            variante="secundario"
+            dica="Abre o app no modo demonstração, sem conta e sem servidor"
+            aoTocar={() => useSessao.getState().definir(TOKEN_DEMO)}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
