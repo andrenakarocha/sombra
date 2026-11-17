@@ -381,9 +381,9 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   3.12 por projeto), `gh` logado, jq e shellcheck; opcionais por fase (VirtualBox, Vagrant, FFmpeg, gitleaks, psql). O
   pwsh não é preciso: o script de qualidade roda na imagem do SDK. Imprime o que falta e como instalar — 2026-11-17 16:07.
   🔎 sai com 0 na máquina do André, ou com a lista exata do que instalar.
-- [ ] **F0.3** 🧑 🔑 Contas e chaves de que o código precisa agora: dono do repositório (DA1), `gh auth status`, chave
+- [x] **F0.3** 🧑 🔑 Contas e chaves de que o código precisa agora: dono do repositório (DA1), `gh auth status`, chave
   Gemini no `.env` local. Wokwi, Azure DevOps e YouTube podem esperar as fases deles (F5.1, F10.1, F13.7).
-  🔎 `gh auth status` ok; `.env` local tem `GEMINI_API_KEY` (nunca commitado).
+  🔎 `gh auth status` ok; `.env` local tem `GEMINI_API_KEY` (nunca commitado). — 2026-11-17 16:09.
 - [x] **F0.4** 🤖 `git init` do monorepo `sombra` com a estrutura da §3.3 — 2026-11-17 16:09:
   - `README.md` com a Ficha v0, `AGENTS.md` (aponta para `docs/PLANO.md` §0), `prompts.md`, `LICENSE` (MIT),
     `.gitignore`, `.editorconfig`, `.env.example`;
@@ -812,11 +812,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Agora (2026-11-17):** plano mestre escrito (F0.1) a partir da sessão de planejamento: Sombra escolhido, monorepo,
 escopo máximo, decisões D1–D12 fechadas. A entrevista chegou (F0.16 feita) e virou a D13 (escalonamento em
-degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). Próximo: fechar a **F0.3** e seguir para a **F0.5** (GitHub).
+degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). F0.3 fechada. Próximo: **F0.5** (repositório público no GitHub, com confirmação do André).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1, F0.2, F0.4 e F0.16 feitas |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.4 e F0.16 feitas |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -854,3 +854,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🤖 | F0.1 — `git init` do repositório em `year3/second-gs/sombra/` (branch `main`); plano e specs movidos para `docs/`. Os enunciados e a entrevista bruta ficam fora do repositório |
 | 2026-11-17 | 🤖 | F0.2 — `tools/doctor.sh` (só lê o ambiente). Na máquina do André sai com 0: git 2.56, Docker 29.9 + Compose 5.6, .NET SDK 10.0.113, JDK 21.0.13, Node 25.2, uv 0.10.4, gh 2.102 (logado como `andrenakarocha`), jq, shellcheck. Opcional faltando: Vagrant (P11). Sem pwsh local: o script de qualidade do professor roda na imagem do SDK, como no CP06 |
 | 2026-11-17 | 🤖 | F0.4 — scaffold do monorepo: README com a Ficha v0 e a tabela das partes, `AGENTS.md` (aponta para a §0) + `CLAUDE.md` que o importa, `prompts.md` com o registro desde o planejamento, LICENSE MIT com os três integrantes, `.gitignore`, `.editorconfig`, `.env.example`, um README por componente apontando para a fase e a spec, e pastas de `docs/`. Feita antes da F0.3 porque a F0.3 precisa do `.gitignore` para o `.env` local. Nenhum link relativo quebrado (conferido por script) |
+| 2026-11-17 | 🧑🤖 | F0.3 — `gh` logado como `andrenakarocha` (escopos `repo` e `workflow`). `.env` local criado a partir do `.env.example`, em modo 600, com senha aleatória do Postgres e a chave Gemini que já existia no projeto do HENRY (D7; o valor não foi impresso). `git check-ignore` confirma que o `.env` fica fora do Git. A validade e a cota da chave são a P5 (F2.6) |
