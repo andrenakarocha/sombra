@@ -3,15 +3,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { sair } from '@/api/auth';
 import { useCasas } from '@/api/consultas';
+import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { Botao } from '@/componentes/Botao';
 import { Texto } from '@/componentes/Texto';
+import { recomecarDemo, simularOndaDeCalor } from '@/demo/simulacao';
 import { usePreferencias } from '@/sessao/preferencias';
+import { TOKEN_DEMO, useSessao } from '@/sessao/sessao';
 import { espaco, useTema } from '@/tema';
 
 export default function Ajustes() {
   const tema = useTema();
   const casas = useCasas().data?.dados ?? [];
   const definirModoIdoso = usePreferencias((p) => p.definirModoIdoso);
+  const demo = useSessao((s) => s.token === TOKEN_DEMO);
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tema.fundo }}>
@@ -19,6 +23,7 @@ export default function Ajustes() {
         <Texto variante="tituloGrande" accessibilityRole="header">
           Ajustes
         </Texto>
+        <AvisoDemonstracao />
 
         <View style={{ gap: espaco[3] }}>
           <Texto variante="subtitulo" accessibilityRole="header">
@@ -38,8 +43,22 @@ export default function Ajustes() {
           ))}
         </View>
 
+        {demo && (
+          <View style={{ gap: espaco[3] }}>
+            <Texto variante="subtitulo" accessibilityRole="header">
+              Demonstração
+            </Texto>
+            <Texto suave>
+              A onda de calor do roteiro: a casa da Dona Lurdes vai a Perigo agora e, sem resposta em 8 segundos, chega
+              o lembrete leve.
+            </Texto>
+            <Botao rotulo="Simular onda de calor" aoTocar={simularOndaDeCalor} />
+            <Botao rotulo="Recomeçar o exemplo" variante="secundario" aoTocar={recomecarDemo} />
+          </View>
+        )}
+
         <Botao
-          rotulo="Sair da conta"
+          rotulo={demo ? 'Sair da demonstração' : 'Sair da conta'}
           variante="secundario"
           dica="Sai da conta e apaga os dados salvos no aparelho"
           aoTocar={sair}

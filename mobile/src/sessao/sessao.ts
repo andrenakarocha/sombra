@@ -4,6 +4,9 @@ import { create } from 'zustand';
 // O token fica no armazenamento seguro do sistema (Keychain / Keystore), nunca no SQLite.
 const CHAVE_TOKEN = 'sombra.token';
 
+// Com este "token", o cliente responde com os dados de exemplo em vez de chamar o Core.
+export const TOKEN_DEMO = 'modo-demonstracao';
+
 type Sessao = {
   token: string | null;
   carregada: boolean;

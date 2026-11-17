@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { registrarCheckIn } from '@/api/check-in';
 import { useCasa } from '@/api/consultas';
 import type { SituacaoDoCheckIn } from '@/api/tipos';
+import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { Botao } from '@/componentes/Botao';
 import { BotaoGigante } from '@/componentes/BotaoGigante';
 import { Texto } from '@/componentes/Texto';
@@ -57,6 +58,7 @@ export default function ModoIdoso() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: tema.fundo }}>
       <ScrollView contentContainerStyle={{ padding: espaco[5], gap: espaco[4], flexGrow: 1 }}>
+        <AvisoDemonstracao />
         <Texto variante="subtitulo" suave style={{ textAlign: 'center' }}>
           Sua casa agora
         </Texto>

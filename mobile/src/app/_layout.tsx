@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useSincronizacaoDaFila } from '@/api/check-in';
 import { queryClient } from '@/api/consultas';
 import { useTempoReal } from '@/api/tempo-real';
+import { configurarNotificacoes } from '@/notificacoes/notificacoes';
 import { usePreferencias } from '@/sessao/preferencias';
 import { useSessao } from '@/sessao/sessao';
 import { useTema } from '@/tema';
@@ -33,6 +34,10 @@ export default function RootLayout() {
   useEffect(() => {
     if (pronto) SplashScreen.hideAsync();
   }, [pronto]);
+
+  useEffect(() => {
+    if (token) configurarNotificacoes().catch(() => {});
+  }, [token]);
 
   if (!pronto) return null;
 

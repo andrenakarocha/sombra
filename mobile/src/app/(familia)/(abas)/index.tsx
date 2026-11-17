@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useCasas } from '@/api/consultas';
 import { mensagemDeErro } from '@/api/mensagens';
+import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { AvisoOffline } from '@/componentes/AvisoOffline';
 import { CartaoCasa } from '@/componentes/CartaoCasa';
 import { Texto } from '@/componentes/Texto';
@@ -22,6 +23,7 @@ export default function Inicio() {
         <Texto variante="tituloGrande" accessibilityRole="header">
           Suas casas
         </Texto>
+        <AvisoDemonstracao />
 
         {casas.data?.origem === 'cache' && <AvisoOffline atualizadoEm={casas.data.atualizadoEm} />}
         {casas.isPending && <ActivityIndicator accessibilityLabel="Carregando as casas" color={tema.marca} />}

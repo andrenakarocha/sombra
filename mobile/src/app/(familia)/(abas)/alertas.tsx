@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAlertas } from '@/api/consultas';
 import { mensagemDeErro } from '@/api/mensagens';
 import type { Alerta } from '@/api/tipos';
+import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { AvisoOffline } from '@/componentes/AvisoOffline';
 import { Farol } from '@/componentes/Farol';
 import { Texto } from '@/componentes/Texto';
@@ -28,6 +29,7 @@ export default function Alertas() {
         <Texto variante="tituloGrande" accessibilityRole="header">
           Alertas
         </Texto>
+        <AvisoDemonstracao />
 
         {alertas.data?.origem === 'cache' && <AvisoOffline atualizadoEm={alertas.data.atualizadoEm} />}
         {alertas.isPending && <ActivityIndicator accessibilityLabel="Carregando os alertas" color={tema.marca} />}

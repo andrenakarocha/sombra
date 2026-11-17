@@ -42,7 +42,8 @@ export async function comCache<T>(
 ): Promise<Resultado<T>> {
   try {
     const dados = await buscar();
-    await salvar(dados);
+    // O dado já chegou: se o cache falhar, a tela mostra mesmo assim.
+    await salvar(dados).catch(() => {});
     return { dados, atualizadoEm: new Date().toISOString(), origem: 'api' };
   } catch (erro) {
     if (!apiForaDoAr(erro)) throw erro;
