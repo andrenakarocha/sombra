@@ -620,9 +620,10 @@ Roda **antes** da F6.7 e da F6.8, na ordem abaixo. O app continua abrindo no Exp
 - [x] **F6.9** 🤖 Domínio puro (`src/domain`, sem React Native): `Result`, `Clock`, value objects com factory
   (`Temperatura`, `UmidadeRelativa`, `IndiceDeCalor`, `Cpf`, `CartaoSus`, `Telefone`) e a classificação dos 5 níveis.
   🔎 o `IndiceDeCalor` em TypeScript passa nos 20 vetores de `docs/contratos/indice-de-calor.vetores.json` — 2026-11-17.
-- [ ] **F6.10** 🤖 Escalonamento e risco no domínio: máquina de estados do alerta (degraus 0 → 3, prazos por nível,
+- [x] **F6.10** 🤖 Escalonamento e risco no domínio: máquina de estados do alerta (degraus 0 → 3, prazos por nível,
   regra da noite, D13) e risco personalizado explicável (R3: limiar por fator, contribuição de cada um).
-  🔎 testes de toda transição válida e inválida; cada fator explica quanto baixou o limiar.
+  🔎 testes de toda transição válida e inválida; cada fator explica quanto baixou o limiar — 2026-11-17. As reduções
+  do R3 (≥ 80 anos −2 °C · cardiopatia −2,5 · diurético −1,5) são propostas do app: alinhar com o Core (F1.3).
 - [ ] **F6.11** 🤖 Casos de uso, ports, composition root e Zod no contrato: as telas falam só com os casos de uso;
   toda resposta da API passa por um schema Zod antes de entrar no domínio.
   🔎 teste de arquitetura: `domain` não importa nada de fora; `presentation` não importa `infrastructure`.
