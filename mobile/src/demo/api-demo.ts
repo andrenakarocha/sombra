@@ -1,7 +1,7 @@
 // API de mentira para o modo demonstração: responde às mesmas rotas do Core com os dados de exemplo, em memória.
 // Assim o professor abre o app sem subir o backend (spec 05, "Modo demonstração").
 
-import { ErroDaApi } from '@/api/erros';
+import { ErroDaApi } from '@/application/erros';
 import type { Alerta, CheckIn, Domicilio, Leitura, NovoMorador } from '@/application/modelos';
 import { exibirCartaoSus, exibirCpf, exibirTelefone } from '@/util/mascaras';
 
