@@ -26,7 +26,9 @@
       "expo-status-bar",
       "expo-font",
       "expo-splash-screen",
-      "expo-asset"
+      "expo-asset",
+      "expo-sqlite",
+      "expo-secure-store"
     ],
     "scheme": "sombra",
     "experiments": {
