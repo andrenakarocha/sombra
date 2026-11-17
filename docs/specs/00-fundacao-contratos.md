@@ -21,14 +21,16 @@ Deixar o terreno pronto para qualquer frente começar **em paralelo sem se bloqu
    - `docs/contratos/mqtt.asyncapi.yaml` (AsyncAPI 3), com tópicos `sombra/v1/{deviceId}/{telemetria|evento|comando|status}`:
      ```json
      // telemetria (Sentinela → Core)
-     {"v":1,"ts":1763400000,"seq":42,"t":33.4,"rh":61.0,"hi":38.2,"nivel":"CAUTELA_EXTREMA","rssi":-60,"sig":"<hmac-sha256-hex>"}
+     {"v":1,"ts":1763400000,"seq":42,"t":33.4,"rh":40.0,"hi":34.4,"nivel":"CAUTELA_EXTREMA","rssi":-60,"sig":"<hmac-sha256-hex>"}
      // evento (Sentinela → Core)
      {"v":1,"ts":1763400060,"seq":43,"tipo":"CHECKIN_ESTOU_BEM|PEDIDO_DE_AJUDA|BOOT","sig":"…"}
      // comando (Core → Sentinela)
-     {"v":1,"ts":1763400070,"tipo":"PRE_ALERTA|ALERTA|FAMILIA_AVISADA|LEMBRETE_AGUA|CHECKIN_DIARIO|NORMAL","mensagem":"Amanhã: calor perigoso. Encha sua garrafa de água.","sig":"…"}
+     {"v":1,"ts":1763400070,"seq":7,"tipo":"PRE_ALERTA|ALERTA|FAMILIA_AVISADA|LEMBRETE_AGUA|CHECKIN_DIARIO|NORMAL","mensagem":"Amanhã: calor perigoso. Encha sua garrafa de água.","sig":"…"}
      // status (LWT, retido): "online" | "offline"
      ```
-     O HMAC-SHA256 é calculado sobre o JSON canônico sem `sig`, com segredo por dispositivo. O anti-replay usa `seq` crescente e janela de ±5 min em `ts`. **Nenhuma PII no MQTT.**
+     O HMAC-SHA256 é calculado sobre uma **string canônica por tipo** (com o `deviceId` dentro, para a mensagem não
+     servir em outra Sentinela), com segredo por dispositivo; vetores em `docs/contratos/mqtt-assinatura.vetores.json`.
+     O anti-replay usa `seq` crescente e janela de ±5 min em `ts`. **Nenhuma PII no MQTT.** Detalhe no AsyncAPI.
    - `docs/contratos/core-api.md` e `docs/contratos/clima-service.md`: tabela de endpoints + exemplos JSON (rascunho). Depois, o OpenAPI **gerado pelo código** vira a fonte da verdade e o CI exporta para `docs/contratos/*.openapi.json`.
    - `docs/contratos/signalr.md`: eventos do hub `/hubs/sombra` (`LeituraRegistrada`, `AlertaAberto`, `AlertaEscalonado`, `AlertaResolvido`, `CheckInRegistrado`, `RiscoCidadaoAtualizado`, `AlertaDeInfra`).
    - **Portas e hosts:** core `5080` · clima `8081` · painel `5173` (dev) · postgres `5432` · mosquitto `1883` (dev) · VM `192.168.56.10` `sombra-srv01` · `api|clima|painel.sombra.local`.

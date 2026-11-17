@@ -1,0 +1,270 @@
+asyncapi: 3.1.0
+info:
+  title: Sombra · Sentinela ↔ Core (MQTT)
+  version: 1.0.0
+  description: |
+    Contrato entre a Sentinela (ESP32) e o Core API. Descrito do ponto de vista da **Sentinela**: ela envia telemetria,
+    eventos e status, e recebe comandos.
+
+    **Regras que valem para todas as mensagens**
+    - **Nenhum dado pessoal** trafega aqui: só o `deviceId`, medições e códigos (ADR-004).
+    - **Assinatura:** `sig` = HMAC-SHA256, em hexadecimal minúsculo, da **string canônica** da mensagem, com o segredo
+      de 32 bytes daquela Sentinela. O segredo é gerado pelo Core no vínculo da Sentinela, mostrado uma vez e guardado
+      cifrado. Mensagem com assinatura inválida é descartada e vira evento de segurança.
+    - **Strings canônicas** (campos separados por `|`; números decimais com uma casa, ponto como separador):
+      - telemetria: `T|v|deviceId|ts|seq|t|rh|hi|nivel` (ex.: `T|1|snt-7f3a9c|1763400000|42|33.4|40.0|34.4|CAUTELA_EXTREMA`)
+      - evento: `E|v|deviceId|ts|seq|tipo`
+      - comando: `C|v|deviceId|ts|seq|tipo|mensagem`
+    - **Arredondamento:** a Sentinela arredonda `t`, `rh` e `hi` para uma casa **antes** de montar o payload e a
+      assinatura; quem recebe formata o número recebido com uma casa para conferir.
+    - **Vetores:** `docs/contratos/mqtt-assinatura.vetores.json` (segredo só de teste); os exemplos abaixo usam esse
+      segredo e a Sentinela `snt-7f3a9c`. Conferir com `tools/mqtt-assinatura/vetores.py`.
+    - **Anti-replay:** quem recebe guarda o último `seq` de cada Sentinela e de cada sentido. Aceita só `seq` maior que
+      o último e `ts` a no máximo 300 s do relógio local (NTP na Sentinela). A Sentinela guarda o próprio `seq` na
+      memória não volátil, para continuar crescendo depois de reiniciar.
+    - **Tempo:** `ts` em segundos Unix (UTC).
+    - Os níveis seguem `docs/contratos/niveis-de-risco.md`.
+  license:
+    name: MIT
+defaultContentType: application/json
+
+servers:
+  local:
+    host: localhost:1883
+    protocol: mqtt
+    description: Mosquitto do compose (desenvolvimento, testes e CI).
+  publico:
+    host: broker.hivemq.com:1883
+    protocol: mqtt
+    description: Broker público usado pela Sentinela no Wokwi (premissa P9). Por isso a assinatura e a ausência de PII.
+
+channels:
+  telemetria:
+    address: sombra/v1/{deviceId}/telemetria
+    description: Medições da casa, a cada 10 s ou quando o nível muda.
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+    messages:
+      telemetria:
+        $ref: '#/components/messages/Telemetria'
+  evento:
+    address: sombra/v1/{deviceId}/evento
+    description: Botões e ciclo de vida da Sentinela. Eventos feitos sem rede ficam numa fila e são enviados ao reconectar.
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+    messages:
+      evento:
+        $ref: '#/components/messages/Evento'
+  comando:
+    address: sombra/v1/{deviceId}/comando
+    description: O Core fala com a Sentinela (pré-alerta, lembretes, "família avisada").
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+    messages:
+      comando:
+        $ref: '#/components/messages/Comando'
+  status:
+    address: sombra/v1/{deviceId}/status
+    description: Presença da Sentinela. `online` ao conectar; `offline` publicado pelo broker como Last Will.
+    parameters:
+      deviceId:
+        $ref: '#/components/parameters/deviceId'
+    messages:
+      status:
+        $ref: '#/components/messages/Status'
+
+operations:
+  enviarTelemetria:
+    action: send
+    channel:
+      $ref: '#/channels/telemetria'
+    bindings:
+      mqtt:
+        qos: 0
+        retain: false
+        bindingVersion: 0.2.0
+  enviarEvento:
+    action: send
+    channel:
+      $ref: '#/channels/evento'
+    bindings:
+      mqtt:
+        qos: 1
+        retain: false
+        bindingVersion: 0.2.0
+  receberComando:
+    action: receive
+    channel:
+      $ref: '#/channels/comando'
+    bindings:
+      mqtt:
+        qos: 1
+        retain: false
+        bindingVersion: 0.2.0
+  enviarStatus:
+    action: send
+    channel:
+      $ref: '#/channels/status'
+    bindings:
+      mqtt:
+        qos: 1
+        retain: true
+        bindingVersion: 0.2.0
+
+components:
+  parameters:
+    deviceId:
+      description: Identificador público da Sentinela, `snt-` seguido de 6 dígitos hexadecimais. Não identifica a pessoa.
+      examples:
+        - snt-7f3a9c
+
+  messages:
+    Telemetria:
+      name: Telemetria
+      title: Medição da casa
+      payload:
+        $ref: '#/components/schemas/Telemetria'
+      examples:
+        - name: cautelaExtrema
+          payload:
+            v: 1
+            ts: 1763400000
+            seq: 42
+            t: 33.4
+            rh: 40.0
+            hi: 34.4
+            nivel: CAUTELA_EXTREMA
+            rssi: -60
+            sig: e275562cd298b112e0a01eebc6d91bfb6d48d40ecb0971c858c09adebd9c0f61
+    Evento:
+      name: Evento
+      title: Botão ou ciclo de vida
+      payload:
+        $ref: '#/components/schemas/Evento'
+      examples:
+        - name: estouBem
+          payload:
+            v: 1
+            ts: 1763400060
+            seq: 44
+            tipo: CHECKIN_ESTOU_BEM
+            sig: 5fb4a74bd56f6ea799bdc3f81a972ea4cad8b62a744a03f0e5daa8f4c3c801f7
+    Comando:
+      name: Comando
+      title: Mensagem do Core para a Sentinela
+      payload:
+        $ref: '#/components/schemas/Comando'
+      examples:
+        - name: preAlerta
+          payload:
+            v: 1
+            ts: 1763400070
+            seq: 7
+            tipo: PRE_ALERTA
+            mensagem: "Amanhã: calor perigoso. Encha sua garrafa de água."
+            sig: d1619c0481fb6608686697ee857359e1f302af62218f0997c9796b04610005e4
+    Status:
+      name: Status
+      title: Presença
+      payload:
+        type: string
+        enum: [online, offline]
+
+  schemas:
+    Versao:
+      type: integer
+      const: 1
+      description: Versão do contrato.
+    Instante:
+      type: integer
+      minimum: 0
+      description: Segundos Unix (UTC).
+    Sequencia:
+      type: integer
+      minimum: 0
+      description: Contador crescente por Sentinela e por sentido (anti-replay).
+    Assinatura:
+      type: string
+      pattern: '^[0-9a-f]{64}$'
+      description: HMAC-SHA256 da string canônica, em hexadecimal minúsculo.
+    NivelDeRisco:
+      type: string
+      enum: [NORMAL, ATENCAO, CAUTELA_EXTREMA, PERIGO, PERIGO_EXTREMO]
+
+    Telemetria:
+      type: object
+      additionalProperties: false
+      required: [v, ts, seq, t, rh, hi, nivel, sig]
+      properties:
+        v:
+          $ref: '#/components/schemas/Versao'
+        ts:
+          $ref: '#/components/schemas/Instante'
+        seq:
+          $ref: '#/components/schemas/Sequencia'
+        t:
+          type: number
+          minimum: -10
+          maximum: 60
+          description: Temperatura em °C (DHT22), uma casa decimal. Fora da faixa física, a leitura é recusada (R9).
+        rh:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Umidade relativa em %, uma casa decimal.
+        hi:
+          type: number
+          description: Índice de calor em °C calculado na própria Sentinela (o Core recalcula e compara).
+        nivel:
+          $ref: '#/components/schemas/NivelDeRisco'
+        rssi:
+          type: integer
+          maximum: 0
+          description: Sinal do Wi-Fi em dBm (diagnóstico; fora da assinatura).
+        sig:
+          $ref: '#/components/schemas/Assinatura'
+
+    Evento:
+      type: object
+      additionalProperties: false
+      required: [v, ts, seq, tipo, sig]
+      properties:
+        v:
+          $ref: '#/components/schemas/Versao'
+        ts:
+          $ref: '#/components/schemas/Instante'
+        seq:
+          $ref: '#/components/schemas/Sequencia'
+        tipo:
+          type: string
+          enum: [CHECKIN_ESTOU_BEM, PEDIDO_DE_AJUDA, BOOT]
+          description: |
+            `CHECKIN_ESTOU_BEM`: botão verde (serve para o alerta aberto e para o check-in diário).
+            `PEDIDO_DE_AJUDA`: botão vermelho com pressão longa (vai direto ao degrau 3).
+            `BOOT`: a Sentinela ligou ou reiniciou.
+        sig:
+          $ref: '#/components/schemas/Assinatura'
+
+    Comando:
+      type: object
+      additionalProperties: false
+      required: [v, ts, seq, tipo, mensagem, sig]
+      properties:
+        v:
+          $ref: '#/components/schemas/Versao'
+        ts:
+          $ref: '#/components/schemas/Instante'
+        seq:
+          $ref: '#/components/schemas/Sequencia'
+        tipo:
+          type: string
+          enum: [PRE_ALERTA, ALERTA, FAMILIA_AVISADA, LEMBRETE_AGUA, CHECKIN_DIARIO, NORMAL]
+        mensagem:
+          type: string
+          maxLength: 80
+          description: Texto curto para o OLED, em linguagem simples, sem dado pessoal.
+        sig:
+          $ref: '#/components/schemas/Assinatura'
