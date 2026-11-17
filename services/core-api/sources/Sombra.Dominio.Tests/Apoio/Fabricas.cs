@@ -1,9 +1,9 @@
 using System;
 using Sombra.Dominio.Calor;
 using Sombra.Dominio.Casas;
-using Sombra.Dominio.Sentinelas;
 using Sombra.Dominio.Pessoas;
 using Sombra.Dominio.Saude;
+using Sombra.Dominio.Sentinelas;
 
 namespace Sombra.Dominio.Tests.Apoio;
 
