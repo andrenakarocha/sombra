@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sombra · Direção de arte</title>
+  <meta name="description" content="Proposta de direção de arte do Sombra (F0.9): paleta, tipografia, níveis de risco e componentes-base.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,600;0,800;1,400&family=Fraunces:opsz,wght,SOFT@9..144,400..800,0..100&display=swap">
+  <link rel="stylesheet" href="tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--fundo);
+      color: var(--texto);
+      font-family: var(--fonte-texto);
+      font-size: var(--tamanho-texto);
+      line-height: 1.55;
+      font-feature-settings: "kern", "liga";
+    }
+    h1, h2, h3 {
+      font-family: var(--fonte-display);
+      font-variation-settings: "SOFT" 100, "opsz" 96;
+      line-height: 1.08;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+    p { margin: 0; }
+    a { color: var(--marca); text-underline-offset: 3px; }
+    :focus-visible { outline: 3px solid var(--foco); outline-offset: 3px; border-radius: 6px; }
+    .mono { font-family: var(--fonte-mono); font-size: 0.86em; }
+    .suave { color: var(--texto-suave); }
+    .rotulo {
+      font-family: var(--fonte-mono);
+      font-size: var(--tamanho-pequeno);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--destaque);
+    }
+    .conteudo { width: min(1180px, 100% - 32px); margin-inline: auto; }
+
+    /* ── Topo: luz filtrada pela folhagem ───────────────────────────── */
+    .topo {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      border-bottom: 1px solid var(--borda);
+      background:
+        radial-gradient(120% 90% at 85% 0%, color-mix(in oklab, var(--cor-ocre-300) 45%, transparent), transparent 60%),
+        linear-gradient(180deg, var(--superficie-alternativa), var(--fundo));
+    }
+    .folhagem {
+      position: absolute;
+      inset: -12%;
+      width: 124%;
+      height: 124%;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.13;
+      mix-blend-mode: multiply;
+      animation: vento 22s ease-in-out infinite alternate;
+    }
+    .folhagem .noite { display: none; }
+    @keyframes vento {
+      from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1.02); }
+      to { transform: translate3d(-3%, 2%, 0) rotate(1.2deg) scale(1.07); }
+    }
+    .topo-grade {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: var(--espaco-7);
+      align-items: end;
+      padding-block: var(--espaco-7) var(--espaco-8);
+    }
+    .barra {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--espaco-4);
+      padding-top: var(--espaco-5);
+      flex-wrap: wrap;
+    }
+    .marca-linha { display: flex; align-items: center; gap: var(--espaco-3); }
+    .marca-linha strong { font-family: var(--fonte-display); font-size: var(--tamanho-subtitulo); font-weight: 700; }
+    .tema {
+      display: inline-flex;
+      border: 1px solid var(--borda);
+      border-radius: var(--raio-pilula);
+      background: var(--superficie);
+      padding: 4px;
+    }
+    .tema button {
+      font: inherit;
+      font-size: var(--tamanho-pequeno);
+      min-height: 40px;
+      padding: 0 var(--espaco-4);
+      border: 0;
+      border-radius: var(--raio-pilula);
+      background: transparent;
+      color: var(--texto-suave);
+      cursor: pointer;
+    }
+    .tema button[aria-pressed="true"] { background: var(--marca); color: var(--texto-sobre-marca); font-weight: 600; }
+    .titulo-hero {
+      font-size: clamp(64px, 13vw, 168px);
+      font-weight: 800;
+      font-variation-settings: "SOFT" 100, "opsz" 144;
+      letter-spacing: -0.035em;
+      line-height: 0.88;
+      color: var(--marca);
+      margin-top: var(--espaco-6);
+    }
+    .lema {
+      font-family: var(--fonte-display);
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(24px, 3.4vw, 38px);
+      line-height: 1.15;
+      margin-top: var(--espaco-4);
+    }
+    .conceito { display: grid; gap: var(--espaco-4); max-width: 46ch; }
+    .conceito p { font-size: 19px; }
+    .meta { display: flex; gap: var(--espaco-3); flex-wrap: wrap; margin-top: var(--espaco-4); }
+    .meta span {
+      font-family: var(--fonte-mono);
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: var(--raio-pilula);
+      border: 1px solid var(--borda);
+      background: color-mix(in oklab, var(--superficie) 80%, transparent);
+    }
+
+    /* ── Seções ─────────────────────────────────────────────────────── */
+    section { padding-block: var(--espaco-8); border-bottom: 1px solid var(--borda); }
+    .cabeca { display: grid; grid-template-columns: 220px 1fr; gap: var(--espaco-6); margin-bottom: var(--espaco-6); }
+    .cabeca h2 { font-size: var(--tamanho-titulo-grande); font-weight: 650; }
+    .cabeca p { max-width: 62ch; margin-top: var(--espaco-3); }
+
+    /* Paleta */
+    .paleta { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--espaco-4); }
+    .familia { display: grid; gap: 6px; align-content: start; }
+    .familia h3 { font-size: var(--tamanho-subtitulo); font-weight: 600; margin-bottom: 4px; }
+    .amostra {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      height: 64px;
+      padding: 8px 10px;
+      border-radius: var(--raio-pequeno);
+      font-family: var(--fonte-mono);
+      font-size: 12px;
+      border: 1px solid color-mix(in oklab, var(--texto) 10%, transparent);
+    }
+
+    /* Níveis de risco */
+    .escala { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border-radius: var(--raio-grande); overflow: hidden; border: 1px solid var(--borda); }
+    .nivel { padding: var(--espaco-5) var(--espaco-4); display: grid; gap: var(--espaco-3); align-content: start; min-height: 260px; }
+    .nivel .icone { width: 40px; height: 40px; }
+    .nivel .codigo { font-family: var(--fonte-mono); font-size: 13px; letter-spacing: 0.04em; font-weight: 600; }
+    .nivel .faixa { font-family: var(--fonte-display); font-size: 30px; font-weight: 650; line-height: 1; }
+    .nivel p { font-size: 17px; line-height: 1.35; }
+    .n-normal { background: var(--risco-normal-fundo); color: var(--risco-normal-texto); }
+    .n-atencao { background: var(--risco-atencao-fundo); color: var(--risco-atencao-texto); }
+    .n-cautela { background: var(--risco-cautela-extrema-fundo); color: var(--risco-cautela-extrema-texto); }
+    .n-perigo { background: var(--risco-perigo-fundo); color: var(--risco-perigo-texto); }
+    .n-extremo { background: var(--risco-perigo-extremo-fundo); color: var(--risco-perigo-extremo-texto); }
+    .regra { margin-top: var(--espaco-4); }
+
+    /* Componentes */
+    .componentes { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: var(--espaco-6); align-items: start; }
+    .coluna { display: grid; gap: var(--espaco-6); }
+    .cartao {
+      background: var(--superficie);
+      border: 1px solid var(--borda);
+      border-radius: var(--raio-grande);
+      padding: var(--espaco-5);
+      box-shadow: 0 1px 0 color-mix(in oklab, var(--texto) 6%, transparent), 0 18px 40px -28px color-mix(in oklab, var(--folhagem) 55%, transparent);
+    }
+    .cartao-topo { display: flex; justify-content: space-between; align-items: start; gap: var(--espaco-4); }
+    .cartao h3 { font-size: var(--tamanho-titulo); font-weight: 650; }
+    .online { display: inline-flex; align-items: center; gap: 6px; font-size: var(--tamanho-pequeno); color: var(--texto-suave); margin-top: 4px; }
+    .online::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--risco-normal-borda); }
+    .selo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 14px 0 10px;
+      border-radius: var(--raio-pilula);
+      font-weight: 700;
+      font-size: 16px;
+      white-space: nowrap;
+      border: 2px solid;
+    }
+    .selo svg { width: 22px; height: 22px; flex: none; }
+    .selo.n-cautela { border-color: var(--risco-cautela-extrema-borda); }
+    .leitura { display: grid; grid-template-columns: auto 1fr; gap: var(--espaco-5); align-items: end; margin-block: var(--espaco-5); }
+    .numero { font-family: var(--fonte-display); font-variation-settings: "SOFT" 100, "opsz" 144; font-weight: 700; font-size: 88px; line-height: 0.85; letter-spacing: -0.03em; }
+    .numero small { font-size: 0.42em; font-weight: 600; letter-spacing: 0; }
+    .grafico { width: 100%; height: 84px; }
+    .dados { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--espaco-4); padding-block: var(--espaco-4); border-top: 1px dashed var(--borda); }
+    .dados dt { font-size: var(--tamanho-pequeno); color: var(--texto-suave); }
+    .dados dd { margin: 2px 0 0; font-weight: 700; font-size: 20px; }
+    .acoes { display: flex; gap: var(--espaco-3); flex-wrap: wrap; margin-top: var(--espaco-4); }
+    .botao {
+      font: inherit;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: var(--toque-minimo);
+      padding: 0 var(--espaco-5);
+      border-radius: var(--raio-pilula);
+      border: 2px solid var(--marca);
+      cursor: pointer;
+      transition: transform var(--duracao-rapida) ease, background-color var(--duracao-media) ease;
+    }
+    .botao:active { transform: scale(0.97); }
+    .botao.primario { background: var(--marca); color: var(--texto-sobre-marca); }
+    .botao.secundario { background: transparent; color: var(--marca); }
+    .botao svg { width: 22px; height: 22px; }
+
+    /* Modo Idoso */
+    .celular {
+      width: min(360px, 100%);
+      justify-self: center;
+      border-radius: 44px;
+      padding: 14px;
+      background: var(--cor-tinta-900);
+      box-shadow: 0 0 0 1px var(--borda), 0 40px 80px -40px color-mix(in oklab, var(--folhagem) 70%, transparent);
+    }
+    .tela {
+      border-radius: 32px;
+      background: var(--fundo);
+      padding: var(--espaco-6) var(--espaco-5) var(--espaco-5);
+      display: grid;
+      gap: var(--espaco-4);
+      text-align: center;
+    }
+    .tela .numero { font-size: var(--tamanho-idoso-numero); color: var(--risco-cautela-extrema-borda); }
+    .tela .frase { font-size: var(--tamanho-idoso-texto); line-height: 1.2; font-weight: 600; }
+    .gigante {
+      font: inherit;
+      font-weight: 800;
+      font-size: var(--tamanho-idoso-botao);
+      letter-spacing: 0.02em;
+      min-height: var(--toque-idoso);
+      border-radius: var(--raio-grande);
+      border: 0;
+      display: grid;
+      place-items: center;
+      gap: 2px;
+      cursor: pointer;
+    }
+    .gigante small { font-size: 16px; font-weight: 600; letter-spacing: 0; }
+    .gigante.bem { background: var(--risco-normal-fundo); color: var(--risco-normal-texto); }
+    .gigante.ajuda { background: var(--risco-perigo-fundo); color: var(--risco-perigo-texto); min-height: 96px; font-size: 26px; }
+    .proximo { font-size: 17px; color: var(--texto-suave); line-height: 1.35; }
+
+    /* Farol de privacidade */
+    .farol { display: grid; grid-template-columns: auto 1fr; gap: var(--espaco-5); align-items: center; }
+    .luzes { display: grid; gap: 10px; padding: 12px; border-radius: var(--raio-pilula); background: var(--cor-tinta-900); }
+    .luzes span { width: 30px; height: 30px; border-radius: 50%; opacity: 0.22; }
+    .luzes .v { background: var(--cor-risco-verde-claro); }
+    .luzes .a { background: var(--cor-risco-amarelo-claro); opacity: 1; box-shadow: 0 0 18px var(--cor-risco-amarelo-claro); }
+    .luzes .r { background: var(--cor-risco-vermelho-claro); }
+    .farol blockquote { margin: var(--espaco-3) 0 0; font-family: var(--fonte-display); font-size: 22px; line-height: 1.3; font-weight: 500; }
+    .farol .selo { border-color: var(--risco-atencao-borda); }
+
+    /* Tipografia */
+    .tipos { display: grid; gap: var(--espaco-5); }
+    .tipo { display: grid; grid-template-columns: 220px 1fr; gap: var(--espaco-5); align-items: baseline; padding-bottom: var(--espaco-4); border-bottom: 1px dashed var(--borda); }
+    .tipo:last-child { border-bottom: 0; }
+
+    /* Princípios */
+    .principios { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--espaco-5); }
+    .principios li { list-style: none; }
+    .principios ol { padding: 0; margin: 0; display: contents; }
+    .principios h3 { font-size: var(--tamanho-subtitulo); font-weight: 650; margin-bottom: var(--espaco-2); }
+    footer { padding-block: var(--espaco-6); font-size: var(--tamanho-pequeno); }
+
+    /* Entrada */
+    .entra { animation: entra var(--duracao-lenta) cubic-bezier(.2, .7, .2, 1) both; }
+    .entra:nth-child(2) { animation-delay: 90ms; }
+    .entra:nth-child(3) { animation-delay: 180ms; }
+    @keyframes entra { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-tema="claro"]) .folhagem { mix-blend-mode: screen; opacity: 0.07; }
+      :root:not([data-tema="claro"]) .topo { background: radial-gradient(110% 80% at 85% 0%, color-mix(in oklab, var(--cor-sombra-900) 70%, transparent), transparent 65%), var(--fundo); }
+      :root:not([data-tema="claro"]) .folhagem .dia { display: none; }
+      :root:not([data-tema="claro"]) .folhagem .noite { display: inline; }
+    }
+    :root[data-tema="escuro"] .folhagem { mix-blend-mode: screen; opacity: 0.07; }
+    :root[data-tema="escuro"] .topo { background: radial-gradient(110% 80% at 85% 0%, color-mix(in oklab, var(--cor-sombra-900) 70%, transparent), transparent 65%), var(--fundo); }
+    :root[data-tema="escuro"] .folhagem .dia { display: none; }
+    :root[data-tema="escuro"] .folhagem .noite { display: inline; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .folhagem, .entra { animation: none; }
+      .botao { transition: none; }
+    }
+    @media (max-width: 900px) {
+      .topo-grade, .componentes, .cabeca, .tipo { grid-template-columns: 1fr; }
+      .paleta { grid-template-columns: repeat(2, 1fr); }
+      .escala { grid-template-columns: 1fr; }
+      .nivel { min-height: 0; }
+      .principios { grid-template-columns: 1fr; }
+      .dados { grid-template-columns: 1fr 1fr; }
+      .cartao-topo { flex-direction: column; }
+      .leitura { grid-template-columns: 1fr; gap: var(--espaco-3); }
+      .farol { grid-template-columns: 1fr; }
+      .luzes { grid-auto-flow: column; justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- Luz filtrada pela folhagem: ruído fractal recortado em manchas -->
+      <filter id="folhas-dia" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011 0.016" numOctaves="3" seed="11"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0.043  0 0 0 0 0.231  0 0 0 0 0.224  0 0 0 16 -7.1"/>
+        <feGaussianBlur stdDeviation="1.2"/>
+      </filter>
+      <filter id="folhas-noite" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011 0.016" numOctaves="3" seed="11"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0.941  0 0 0 0 0.812  0 0 0 0 0.514  0 0 0 -18 8.6"/>
+        <feGaussianBlur stdDeviation="1.2"/>
+      </filter>
+      <symbol id="i-normal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m7.5 12.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-atencao" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5v7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.5" fill="currentColor"/></symbol>
+      <symbol id="i-cautela" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M9 6.5v7M15 6.5v7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="9" cy="17.2" r="1.5" fill="currentColor"/><circle cx="15" cy="17.2" r="1.5" fill="currentColor"/></symbol>
+      <symbol id="i-perigo" viewBox="0 0 24 24"><path d="M12 2.8 22 20.5H2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.4" fill="currentColor"/></symbol>
+      <symbol id="i-extremo" viewBox="0 0 24 24"><path d="M8.1 2.5h7.8l5.6 5.6v7.8l-5.6 5.6H8.1l-5.6-5.6V8.1z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 7v6.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.8" r="1.5" fill="currentColor"/></symbol>
+      <symbol id="i-telefone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4-2 1.3a11 11 0 0 0 7.4 7.4l1.3-2 4 1.6V19a1.7 1.7 0 0 1-1.8 1.7A16.5 16.5 0 0 1 3.3 5.3 1.7 1.7 0 0 1 5 3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+      <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 2.5 20 5.6v6.1c0 4.8-3.3 8.4-8 9.8-4.7-1.4-8-5-8-9.8V5.6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 7.5v6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.6" r="1.4" fill="currentColor"/></symbol>
+      <symbol id="marca" viewBox="0 0 64 64">
+        <circle cx="42" cy="21" r="11" fill="var(--cor-ocre-500)"/>
+        <path d="M14 33.5h36V54a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2z" fill="var(--marca)"/>
+        <path d="M28 56V45.5a4 4 0 0 1 8 0V56z" fill="var(--fundo)"/>
+        <path d="M7 35 32 15.5 57 35" fill="none" stroke="var(--cor-telha-500)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <header class="topo">
+    <svg class="folhagem" aria-hidden="true" focusable="false">
+      <rect class="dia" width="100%" height="100%" filter="url(#folhas-dia)"/>
+      <rect class="noite" width="100%" height="100%" filter="url(#folhas-noite)"/>
+    </svg>
+    <div class="conteudo">
+      <div class="barra">
+        <div class="marca-linha">
+          <svg width="44" height="44" aria-hidden="true"><use href="#marca"/></svg>
+          <strong>Sombra</strong>
+        </div>
+        <div class="tema" role="group" aria-label="Tema da página">
+          <button type="button" data-tema="sistema" aria-pressed="true">Sistema</button>
+          <button type="button" data-tema="claro" aria-pressed="false">Claro</button>
+          <button type="button" data-tema="escuro" aria-pressed="false">Escuro</button>
+        </div>
+      </div>
+      <div class="topo-grade">
+        <div class="entra">
+          <p class="rotulo">Direção de arte · proposta F0.9</p>
+          <h1 class="titulo-hero">Sombra</h1>
+          <p class="lema">Ninguém enfrenta o calor sozinho.</p>
+        </div>
+        <div class="conceito entra">
+          <p><strong>Luz filtrada pela folhagem.</strong> A identidade nasce do território da entrevista: paredes cor de
+            ocre, telhado de barro e a sombra recortada das árvores na calçada, que é o lugar mais fresco da rua às
+            três da tarde.</p>
+          <p class="suave">O verde-petróleo da sombra é a calma e a marca. A telha e o ocre são o calor. O risco sobe do
+            verde ao vinho, e nunca só pela cor.</p>
+          <div class="meta"><span>Fraunces</span><span>Atkinson Hyperlegible Next</span><span>contraste ≥ 7:1 no texto</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section aria-labelledby="t-niveis">
+      <div class="conteudo">
+        <div class="cabeca">
+          <p class="rotulo">01 · Níveis</p>
+          <div>
+            <h2 id="t-niveis">Os cinco níveis de calor</h2>
+            <p class="suave">Faixas de índice de calor da NWS, em °C, do <a href="../docs/contratos/niveis-de-risco.md">contrato de níveis</a>.
+              Cada nível tem cor, ícone de forma própria e uma frase que uma pessoa de 80 anos entende.</p>
+          </div>
+        </div>
+        <div class="escala" role="list">
+          <div class="nivel n-normal" role="listitem">
+            <svg class="icone" aria-hidden="true"><use href="#i-normal"/></svg>
+            <span class="codigo">NORMAL</span>
+            <span class="faixa">&lt; 26,7°</span>
+            <p>Tudo bem por aqui.</p>
+          </div>
+          <div class="nivel n-atencao" role="listitem">
+            <svg class="icone" aria-hidden="true"><use href="#i-atencao"/></svg>
+            <span class="codigo">ATENCAO</span>
+            <span class="faixa">26,7–32,2°</span>
+            <p>Está quente. Beba água.</p>
+          </div>
+          <div class="nivel n-cautela" role="listitem">
+            <svg class="icone" aria-hidden="true"><use href="#i-cautela"/></svg>
+            <span class="codigo">CAUTELA_EXTREMA</span>
+            <span class="faixa">32,2–39,4°</span>
+            <p>Calor forte. Fique na sombra e beba água.</p>
+          </div>
+          <div class="nivel n-perigo" role="listitem">
+            <svg class="icone" aria-hidden="true"><use href="#i-perigo"/></svg>
+            <span class="codigo">PERIGO</span>
+            <span class="faixa">39,4–51,7°</span>
+            <p>Calor perigoso. Aperte o botão verde se você está bem.</p>
+          </div>
+          <div class="nivel n-extremo" role="listitem">
+            <svg class="icone" aria-hidden="true"><use href="#i-extremo"/></svg>
+            <span class="codigo">PERIGO_EXTREMO</span>
+            <span class="faixa">≥ 51,7°</span>
+            <p>Calor extremo. Peça ajuda.</p>
+          </div>
+        </div>
+        <p class="regra suave"><span class="mono">cor + forma + texto</span> · o ícone muda de forma a cada nível
+          (círculo, triângulo, octógono) para quem não distingue cores.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-componentes">
+      <div class="conteudo">
+        <div class="cabeca">
+          <p class="rotulo">02 · Componentes</p>
+          <div>
+            <h2 id="t-componentes">O que a família vê, e o que a Dona Lurdes vê</h2>
+            <p class="suave">Componentes-base do app e do painel. Dados fictícios.</p>
+          </div>
+        </div>
+        <div class="componentes">
+          <div class="coluna">
+            <article class="cartao" aria-labelledby="t-casa">
+              <div class="cartao-topo">
+                <div>
+                  <h3 id="t-casa">Casa da Dona Lurdes</h3>
+                  <span class="online">Sentinela online · Santana</span>
+                </div>
+                <span class="selo n-cautela"><svg aria-hidden="true"><use href="#i-cautela"/></svg>Cautela extrema</span>
+              </div>
+              <div class="leitura">
+                <p class="numero" aria-label="Índice de calor 34,4 graus">34,4<small>°C</small></p>
+                <svg class="grafico" viewBox="0 0 300 84" preserveAspectRatio="none" role="img" aria-label="Índice de calor subindo nas últimas 24 horas">
+                  <defs>
+                    <linearGradient id="g-calor" x1="0" x2="1">
+                      <stop offset="0" stop-color="var(--risco-normal-fundo)"/>
+                      <stop offset=".55" stop-color="var(--risco-atencao-fundo)"/>
+                      <stop offset="1" stop-color="var(--risco-cautela-extrema-fundo)"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0 70 C40 72 60 66 90 60 S150 58 180 44 240 22 300 14 V84 H0Z" fill="url(#g-calor)" opacity=".22"/>
+                  <path d="M0 70 C40 72 60 66 90 60 S150 58 180 44 240 22 300 14" fill="none" stroke="url(#g-calor)" stroke-width="4" stroke-linecap="round"/>
+                  <circle cx="300" cy="14" r="5" fill="var(--risco-cautela-extrema-borda)"/>
+                </svg>
+              </div>
+              <dl class="dados">
+                <div><dt>Último "estou bem"</dt><dd>12:02</dd></div>
+                <div><dt>Responder até</dt><dd>18:30</dd></div>
+                <div><dt>Previsão 24 h</dt><dd>Perigo · 83%</dd></div>
+              </dl>
+              <div class="acoes">
+                <button class="botao primario" type="button"><svg aria-hidden="true"><use href="#i-telefone"/></svg>Ligar para ela</button>
+                <button class="botao secundario" type="button">Ver a casa</button>
+              </div>
+            </article>
+
+            <article class="cartao" aria-labelledby="t-privacidade">
+              <div class="farol">
+                <div class="luzes" aria-hidden="true"><span class="r"></span><span class="a"></span><span class="v"></span></div>
+                <div>
+                  <p class="rotulo">Risco Cidadão · privacidade</p>
+                  <h3 id="t-privacidade" style="font-size:var(--tamanho-subtitulo);margin-top:6px">
+                    <span class="selo n-atencao"><svg aria-hidden="true"><use href="#i-escudo"/></svg>Atenção</span>
+                  </h3>
+                  <blockquote>"Tentaram acessar o laudo de saúde da Dona Lurdes, mas o Sombra bloqueou para proteger a privacidade dela."</blockquote>
+                  <p class="suave" style="margin-top:8px;font-size:15px">Mensagem traduzida pela IA a partir de um evento técnico sem dados pessoais.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="celular" aria-label="Modo Idoso no celular">
+            <div class="tela">
+              <p class="rotulo" style="color:var(--texto-suave)">Sua casa agora</p>
+              <p class="numero" aria-label="34 graus">34°</p>
+              <p class="frase">Calor forte. Fique na sombra e beba água.</p>
+              <button class="gigante bem" type="button">ESTOU BEM<small>aperte uma vez</small></button>
+              <button class="gigante ajuda" type="button">PRECISO DE AJUDA<small>segure por 2 segundos</small></button>
+              <p class="proximo">Se não apertar até 18:30, sua filha recebe um lembrete.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-paleta">
+      <div class="conteudo">
+        <div class="cabeca">
+          <p class="rotulo">03 · Paleta</p>
+          <div>
+            <h2 id="t-paleta">Cores do território</h2>
+            <p class="suave">Primitivos em <span class="mono">design/tokens.json</span>. As telas usam só os semânticos
+              (<span class="mono">--fundo</span>, <span class="mono">--marca</span>, <span class="mono">--risco-*</span>), que mudam
+              sozinhos no tema escuro. Os 50 pares de contraste são conferidos por <span class="mono">design/tokens.py conferir</span>.</p>
+          </div>
+        </div>
+        <div class="paleta">
+          <div class="familia"><h3>Areia</h3>
+            <div class="amostra" style="background:var(--cor-areia-0);color:var(--cor-tinta-900)"><span>0</span><span>#FFFDF8</span></div>
+            <div class="amostra" style="background:var(--cor-areia-50);color:var(--cor-tinta-900)"><span>50</span><span>#FBF7EF</span></div>
+            <div class="amostra" style="background:var(--cor-areia-100);color:var(--cor-tinta-900)"><span>100</span><span>#F5EEDF</span></div>
+            <div class="amostra" style="background:var(--cor-areia-300);color:var(--cor-tinta-900)"><span>300</span><span>#D8C9AB</span></div>
+          </div>
+          <div class="familia"><h3>Sombra</h3>
+            <div class="amostra" style="background:var(--cor-sombra-100);color:var(--cor-tinta-900)"><span>100</span><span>#CFE8E3</span></div>
+            <div class="amostra" style="background:var(--cor-sombra-300);color:var(--cor-tinta-900)"><span>300</span><span>#5FB3A8</span></div>
+            <div class="amostra" style="background:var(--cor-sombra-700);color:var(--cor-areia-50)"><span>700</span><span>#12524F</span></div>
+            <div class="amostra" style="background:var(--cor-sombra-900);color:var(--cor-areia-50)"><span>900</span><span>#0B3B39</span></div>
+          </div>
+          <div class="familia"><h3>Telha</h3>
+            <div class="amostra" style="background:var(--cor-telha-300);color:var(--cor-tinta-900)"><span>300</span><span>#E08A62</span></div>
+            <div class="amostra" style="background:var(--cor-telha-500);color:var(--cor-areia-50)"><span>500</span><span>#B04F27</span></div>
+            <div class="amostra" style="background:var(--cor-telha-700);color:var(--cor-areia-50)"><span>700</span><span>#8F3B1D</span></div>
+          </div>
+          <div class="familia"><h3>Ocre</h3>
+            <div class="amostra" style="background:var(--cor-ocre-300);color:var(--cor-tinta-900)"><span>300</span><span>#F0CF83</span></div>
+            <div class="amostra" style="background:var(--cor-ocre-500);color:var(--cor-tinta-900)"><span>500</span><span>#D9A441</span></div>
+          </div>
+          <div class="familia"><h3>Tinta e noite</h3>
+            <div class="amostra" style="background:var(--cor-tinta-900);color:var(--cor-areia-50)"><span>tinta 900</span><span>#142224</span></div>
+            <div class="amostra" style="background:var(--cor-tinta-700);color:var(--cor-areia-50)"><span>tinta 700</span><span>#33464A</span></div>
+            <div class="amostra" style="background:var(--cor-noite-950);color:var(--cor-areia-100)"><span>noite 950</span><span>#0C1617</span></div>
+            <div class="amostra" style="background:var(--cor-noite-800);color:var(--cor-areia-100)"><span>noite 800</span><span>#1A2C2E</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-tipos">
+      <div class="conteudo">
+        <div class="cabeca">
+          <p class="rotulo">04 · Tipografia</p>
+          <div>
+            <h2 id="t-tipos">Acolhedora nos títulos, legível em tudo</h2>
+            <p class="suave"><strong>Fraunces</strong> é uma serifa macia, com o calor de um bilhete escrito à mão.
+              <strong>Atkinson Hyperlegible Next</strong> foi desenhada para baixa visão: letras que não se confundem (I, l, 1 e O, 0).
+              Texto base de 18 px; no Modo Idoso, 28 px.</p>
+          </div>
+        </div>
+        <div class="tipos">
+          <div class="tipo"><span class="mono suave">Display · Fraunces 64</span><span style="font-family:var(--fonte-display);font-size:var(--tamanho-display);font-weight:700;line-height:1;font-variation-settings:'SOFT' 100">Amanhã vai fazer calor.</span></div>
+          <div class="tipo"><span class="mono suave">Título · Fraunces 28</span><span style="font-family:var(--fonte-display);font-size:var(--tamanho-titulo);font-weight:650">A casa da Dona Lurdes está no laranja</span></div>
+          <div class="tipo"><span class="mono suave">Texto · Atkinson 18</span><span>Se ela não responder até 18:30, a filha recebe um lembrete leve. Só vira alerta para todos se o calor chegar a perigo.</span></div>
+          <div class="tipo"><span class="mono suave">Modo Idoso · Atkinson 28</span><span style="font-size:var(--tamanho-idoso-texto);font-weight:600;line-height:1.2">Beba um copo de água agora.</span></div>
+          <div class="tipo"><span class="mono suave">Dados · Atkinson Mono</span><span class="mono">snt-7f3a9c · seq 57 · hi 34.4 °C · correlationId snt-7f3a9c:57</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-principios">
+      <div class="conteudo">
+        <div class="cabeca">
+          <p class="rotulo">05 · Princípios</p>
+          <div><h2 id="t-principios">Três regras que valem em toda tela</h2></div>
+        </div>
+        <div class="principios">
+          <ol>
+            <li><h3>Calma antes de alarme</h3><p class="suave">A Dona Cida pediu: nada piscando toda hora. Movimento só quando importa, e nenhum com "reduzir movimento" ligado.</p></li>
+            <li><h3>Diga o que vem depois</h3><p class="suave">Toda tela que pede uma ação explica o que acontece se ninguém responder.</p></li>
+            <li><h3>Nunca só pela cor</h3><p class="suave">Cor, forma e palavra juntas. Contraste ≥ 7:1 no texto principal e alvos de toque de 48 px (120 px no Modo Idoso).</p></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="conteudo suave">
+    Sombra · GS 2026.2 · FIAP · proposta de direção de arte (F0.9). Tokens em <span class="mono">design/tokens.json</span>.
+  </footer>
+
+  <script>
+    (function () {
+      var raiz = document.documentElement;
+      var botoes = document.querySelectorAll(".tema button");
+      function aplicar(tema) {
+        if (tema === "sistema") { raiz.removeAttribute("data-tema"); } else { raiz.setAttribute("data-tema", tema); }
+        botoes.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.tema === tema)); });
+        try { localStorage.setItem("sombra-tema", tema); } catch (e) { /* armazenamento indisponível */ }
+      }
+      var salvo = "sistema";
+      try { salvo = localStorage.getItem("sombra-tema") || "sistema"; } catch (e) { /* segue no sistema */ }
+      var pedido = new URLSearchParams(location.search).get("tema");
+      aplicar(pedido || salvo);
+      botoes.forEach(function (b) { b.addEventListener("click", function () { aplicar(b.dataset.tema); }); });
+    })();
+  </script>
+</body>
+</html>
