@@ -6,7 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { registrarCheckIn, sincronizarFila } from '@/api/check-in';
 import { ErroDaApi, SemConexao } from '@/api/cliente';
 import { queryClient, type Resultado } from '@/api/consultas';
-import type { Domicilio } from '@/api/tipos';
+import type { Domicilio } from '@/application/modelos';
 import ModoIdoso from '@/app/idoso';
 import type { CheckInNaFila } from '@/banco/fila';
 import { CASAS } from '@/demo/fixtures';

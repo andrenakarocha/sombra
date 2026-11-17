@@ -1,4 +1,4 @@
-import type { NovoMorador } from '@/api/tipos';
+import type { NovoMorador } from '@/application/modelos';
 import { CartaoSus } from '@/domain/morador/cartao-sus';
 import { Cpf } from '@/domain/morador/cpf';
 import { Telefone } from '@/domain/morador/telefone';

@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { registrarCheckIn } from '@/api/check-in';
 import { useCasa } from '@/api/consultas';
-import type { SituacaoDoCheckIn } from '@/api/tipos';
+import type { SituacaoDoCheckIn } from '@/application/modelos';
 import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { Botao } from '@/componentes/Botao';
 import { BotaoGigante } from '@/componentes/BotaoGigante';

@@ -1,4 +1,4 @@
-import type { Alerta } from '@/api/tipos';
+import type { Alerta } from '@/application/modelos';
 
 import { banco } from './banco';
 import type { Cacheado } from './casas';

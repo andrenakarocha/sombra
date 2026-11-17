@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-import type { Domicilio } from '@/api/tipos';
+import type { Domicilio } from '@/application/modelos';
 import { espaco, raio, toque, useTema } from '@/tema';
 
 import { Texto } from './Texto';

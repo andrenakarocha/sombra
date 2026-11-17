@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import type { FarolDePrivacidade as Farol } from '@/api/tipos';
+import type { FarolDePrivacidade as Farol } from '@/application/modelos';
 import { raio, useTema } from '@/tema';
 
 import { Texto } from './Texto';

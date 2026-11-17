@@ -3,7 +3,7 @@ import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 import { useAlerta, useReconhecer } from '@/api/consultas';
 import { mensagemDeErro } from '@/api/mensagens';
-import type { AcaoDeReconhecimento } from '@/api/tipos';
+import type { AcaoDeReconhecimento } from '@/application/modelos';
 import { Botao } from '@/componentes/Botao';
 import { Farol } from '@/componentes/Farol';
 import { Texto } from '@/componentes/Texto';

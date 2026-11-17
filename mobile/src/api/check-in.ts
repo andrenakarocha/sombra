@@ -8,7 +8,7 @@ import { useSessao } from '@/sessao/sessao';
 
 import { ErroDaApi, requisitar, SemConexao } from './cliente';
 import { queryClient } from './consultas';
-import type { CheckIn, SituacaoDoCheckIn } from './tipos';
+import type { CheckIn, SituacaoDoCheckIn } from '@/application/modelos';
 
 type Fila = {
   pendentes: () => Promise<CheckInNaFila[]>;

@@ -5,7 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { requisitar } from '@/api/cliente';
 import { queryClient, type Resultado } from '@/api/consultas';
-import type { Domicilio } from '@/api/tipos';
+import type { Domicilio } from '@/application/modelos';
 import Entrar from '@/app/(auth)/entrar';
 import Inicio from '@/app/(familia)/(abas)/index';
 import { reiniciarDemo } from '@/demo/api-demo';
