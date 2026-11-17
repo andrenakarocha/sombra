@@ -1,5 +1,7 @@
 using System;
+using Sombra.Dominio.Calor;
 using Sombra.Dominio.Casas;
+using Sombra.Dominio.Sentinelas;
 using Sombra.Dominio.Pessoas;
 using Sombra.Dominio.Saude;
 
@@ -32,6 +34,19 @@ internal static class Fabricas
             "Casa da Dona Lurdes",
             Endereco.Criar("Rua das Flores", "12", "Santana", "São Paulo", "SP", "02012-000"),
             "SP-MIRANTE");
+
+    /// <summary>Uma leitura da Sentinela de uma casa com uma moradora de 70 anos (limites padrão).</summary>
+    /// <param name="temperatura">A temperatura, em °C.</param>
+    /// <param name="umidade">A umidade relativa, em %.</param>
+    /// <param name="momento">O instante da leitura.</param>
+    /// <returns>A leitura classificada.</returns>
+    internal static Leitura Leitura(double temperatura, double umidade, DateTimeOffset momento)
+    {
+        Domicilio casa = Casa();
+        casa.AdicionarMorador(Morador(70));
+        casa.VincularSentinela("snt-7f3a9c");
+        return casa.RegistrarLeitura("snt-7f3a9c", momento, Temperatura.Criar(temperatura), UmidadeRelativa.Criar(umidade));
+    }
 
     /// <summary>A filha (familiar) e a vizinha, nessa ordem.</summary>
     /// <returns>Os dois contatos.</returns>
