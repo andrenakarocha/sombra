@@ -1,0 +1,29 @@
+<Project>
+  <!--
+    Aplicado automaticamente a TODOS os projetos abaixo desta pasta.
+    Base: Directory.Build.props do Prof. Cassiolato (CP06). Única mudança: a referência ao StyleCop.Analyzers
+    (mesma versão, 1.1.118) foi para o Directory.Packages.props como GlobalPackageReference, porque o Core usa
+    Central Package Management.
+  -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Nullable habilitado: melhores warnings e código mais seguro. -->
+    <Nullable>enable</Nullable>
+
+    <!-- Warnings não são tratados como erro aqui; o `make build` passa -warnaserror. -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+
+    <!-- Nível de warnings da linguagem. -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>Recommended</AnalysisMode>
+
+    <!-- Analisadores oficiais e regras do .editorconfig também no build. -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Desabilita implicit usings (System, System.Linq, etc.). -->
+    <ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+</Project>

@@ -444,9 +444,11 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
 
 **Objetivo:** a rubrica de C# coberta no piso, com o roteiro de alerta rodando contra o simulador. **Spec:** 01.
 
-- [ ] **F1.1** 🤖 Scaffold .NET 10 (`.slnx`): `Sombra.Dominio`, `Sombra.Aplicacao`, `Sombra.Infraestrutura`,
-  `Sombra.Privacidade`, `Sombra.Api` + projetos de teste; props, editorconfig e StyleCop do CP06; Central Package
-  Management; `Invoke-CodeQuality.ps1` e workflow do professor.
+- [x] **F1.1** 🤖 Scaffold .NET 10 (`.slnx`) em `sources/` (o layout que o pipeline do professor lê): `Sombra.Dominio`,
+  `Sombra.Aplicacao`, `Sombra.Infraestrutura`, `Sombra.Privacidade`, `Sombra.Api`; props, editorconfig e StyleCop do
+  CP06; Central Package Management; `Invoke-CodeQuality.ps1` do professor, sem alteração. Todo `dotnet` roda na imagem
+  do SDK 10.0.404 (o SDK do Arch não traz o ASP.NET Core). Os projetos de teste (MSTest) nascem com o primeiro teste
+  de cada um, e o job do Core no CI chega com eles (F1.2) — 2026-11-17.
   🔎 `make build` sem warnings; `make quality` = 100 (P3).
 - [ ] **F1.2** 🤖 Value objects com testes: `Cpf`, `CartaoSus`, `Telefone`, `Endereco`, `Temperatura`, `UmidadeRelativa`,
   `IndiceDeCalor`, `LimitesTermicos`.
@@ -822,12 +824,12 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** F0 concluída. Próximo: **F1** (Core em C#).
+**Agora:** F1 em andamento: F1.1 feita, com o pipeline do professor em 100/100. Próximo: **F1.2** (value objects). Em paralelo: Matheus no ML (F4) e João no app (F6).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
-| F1 Core (C#) | ⬜ não iniciada | | | |
+| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1 feita (quality 100/100) |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |

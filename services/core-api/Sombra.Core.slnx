@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/sources/">
+    <Project Path="sources/Sombra.Api/Sombra.Api.csproj" />
+    <Project Path="sources/Sombra.Aplicacao/Sombra.Aplicacao.csproj" />
+    <Project Path="sources/Sombra.Dominio/Sombra.Dominio.csproj" />
+    <Project Path="sources/Sombra.Infraestrutura/Sombra.Infraestrutura.csproj" />
+    <Project Path="sources/Sombra.Privacidade/Sombra.Privacidade.csproj" />
+  </Folder>
+</Solution>

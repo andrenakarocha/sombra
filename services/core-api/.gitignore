@@ -1,0 +1,7 @@
+# .NET (o .gitignore da raiz do monorepo também cobre; este fica para o pipeline de qualidade, que confere a raiz do Core)
+bin/
+obj/
+artifacts/
+TestResults/
+*.user
+.vs/
