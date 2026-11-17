@@ -17,3 +17,4 @@ integrante revisa, testa e aprova antes do commit. Decisões de produto, a entre
 | 2026-11-17 | F0.2 | "Pode seguir." | Escreveu `tools/doctor.sh`, que confere as ferramentas de cada fase | Rodado na máquina do André, saiu com 0 |
 | 2026-11-17 | F0.4 | "Pode seguir." | Criou a estrutura do monorepo, o README com a Ficha, este arquivo e os arquivos de base | André revisa no primeiro push (F0.5) |
 | 2026-11-17 | F0.5 | "Público agora; PR obrigatório para todos." Depois: "um PR por lote". | Criou o repositório, as labels, os templates e a proteção da `main` pelo `gh`; propôs o fluxo por lote quando o hook mostrou que o push é manual | André escolheu a visibilidade, a proteção e o fluxo de PR |
+| 2026-11-17 | F0.6 | "Pode seguir." | Conferiu a equação do índice de calor na página oficial da NWS, escreveu a implementação de referência, os 20 vetores de teste, o contrato de níveis e o glossário | Contrato e glossário entram no PR do lote para revisão do André |

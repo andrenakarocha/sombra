@@ -38,10 +38,12 @@ services/core-api/
 ## Regras de negócio (no domínio, cada uma com teste)
 - **R1** · CPF e Cartão SUS (CNS) válidos pelo dígito verificador.
 - **R2** · Índice de calor pela regressão de Rothfusz (NOAA), com os vetores de teste compartilhados.
-- **R3** · Limites térmicos **personalizados** pelos fatores de risco do morador (≥ 80 anos, cardiopatia, uso de diurético reduzem o limiar de perigo), com piso de 27 °C.
+- **R3** · Limites térmicos **personalizados** pelos fatores de risco do morador (≥ 80 anos, cardiopatia, uso de diurético reduzem o limiar de perigo), com piso de 26,67 °C (início de `ATENCAO`).
 - **R4** · Um alerta aberto por domicílio por vez. Novas leituras **atualizam** o alerta em vez de duplicá-lo.
 - **R5** · Máquina de estados do alerta: `Aberto → AguardandoCheckIn → (Confirmado | Escalonado(n)) → Resolvido | Expirado`. Uma transição inválida lança `RegraVioladaException` (vira 422).
-- **R6** · Prazo de check-in por nível (Perigo: 15 min · Cautela extrema: 30 min · Atenção: 60 min), com relógio injetável (`IRelogio`) para acelerar na demo.
+- **R6** · O "estou bem" é pedido a partir de `CAUTELA_EXTREMA`, com prazo por nível (`PERIGO` e acima: 15 min ·
+  `CAUTELA_EXTREMA`: 30 min; `ATENCAO` só tem o lembrete de água), conforme o
+  [contrato de níveis](../contratos/niveis-de-risco.md). Relógio injetável (`IRelogio`) para acelerar na demo.
 - **R7** · "Pedido de ajuda" notifica **toda** a rede de cuidado na hora.
 - **R8** · **Escalonamento em degraus** (D13, da entrevista):
   - (0) a Sentinela lembra a pessoa e explica o próximo passo;
