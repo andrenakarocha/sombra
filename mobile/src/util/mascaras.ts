@@ -20,16 +20,6 @@ export function aplicarPadrao(valor: string, padrao: string) {
   return saida;
 }
 
-export function cpfValido(cpf: string) {
-  const d = digitos(cpf);
-  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
-  const verificador = (n: number) => {
-    const soma = [...d.slice(0, n)].reduce((s, c, i) => s + Number(c) * (n + 1 - i), 0);
-    return ((soma * 10) % 11) % 10;
-  };
-  return verificador(9) === Number(d[9]) && verificador(10) === Number(d[10]);
-}
-
 const jaMascarado = (valor: string) => valor.includes('*') || valor.startsWith('[');
 
 // Defesa em profundidade: se a API devolver um valor inteiro, a tela mascara no formato do contrato (core-api.md).

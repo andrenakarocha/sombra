@@ -8,7 +8,7 @@ import { Botao } from '@/componentes/Botao';
 import { Farol } from '@/componentes/Farol';
 import { GraficoDeCalor } from '@/componentes/GraficoDeCalor';
 import { Texto } from '@/componentes/Texto';
-import { INFO_DO_NIVEL } from '@/dominio/nivel';
+import { INFO_DO_NIVEL } from '@/domain/clima/nivel-de-risco';
 import { espaco, useTema } from '@/tema';
 import { formatarGraus, formatarHora } from '@/util/formato';
 import { ligar, podeLigar } from '@/util/ligar';

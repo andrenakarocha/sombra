@@ -11,9 +11,10 @@ import { Botao } from '@/componentes/Botao';
 import { BotaoGigante } from '@/componentes/BotaoGigante';
 import { Texto } from '@/componentes/Texto';
 import { proximoPasso } from '@/dominio/alerta';
-import { INFO_DO_NIVEL } from '@/dominio/nivel';
+import { INFO_DO_NIVEL } from '@/domain/clima/nivel-de-risco';
 import { usePreferencias } from '@/sessao/preferencias';
 import { espaco, fonte, tamanho, toque, useTema } from '@/tema';
+import { TOKEN_DO_NIVEL } from '@/tema/risco';
 import { ligar } from '@/util/ligar';
 import { falar } from '@/util/voz';
 
@@ -71,7 +72,7 @@ export default function ModoIdoso() {
               fontSize: tamanho.idosoNumero,
               lineHeight: Math.round(tamanho.idosoNumero * 1.05),
               textAlign: 'center',
-              color: tema.risco[INFO_DO_NIVEL[nivel].token].borda,
+              color: tema.risco[TOKEN_DO_NIVEL[nivel]].borda,
             }}
           >
             {graus}°

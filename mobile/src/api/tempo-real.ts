@@ -5,7 +5,7 @@ import type { QueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { API_URL } from '@/config';
-import type { NivelDeRisco } from '@/dominio/nivel';
+import type { NivelDeRisco } from '@/domain/clima/nivel-de-risco';
 import { notificacaoDoEvento, notificar } from '@/notificacoes/notificacoes';
 import { usePreferencias } from '@/sessao/preferencias';
 import { TOKEN_DEMO, useSessao } from '@/sessao/sessao';

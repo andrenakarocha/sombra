@@ -1,7 +1,7 @@
 // Tipos do contrato REST do Core (docs/contratos/core-api.md). Na F1.7 o OpenAPI do Core vira a fonte da verdade.
 // O contrato ainda não detalha Alerta, Morador e a rede de cuidado: os campos marcados com "rascunho" são a leitura do app.
 
-import type { NivelDeRisco } from '@/dominio/nivel';
+import type { NivelDeRisco } from '@/domain/clima/nivel-de-risco';
 
 export type Leitura = {
   momento: string;
