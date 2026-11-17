@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sombra.Dominio\Sombra.Dominio.csproj" />
+  </ItemGroup>
+
+  <!-- Os mesmos vetores que a Sentinela, o Clima, o ML e o simulador rodam (ADR-006). -->
+  <ItemGroup>
+    <None Include="..\..\..\..\docs\contratos\indice-de-calor.vetores.json" Link="Contratos\indice-de-calor.vetores.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
