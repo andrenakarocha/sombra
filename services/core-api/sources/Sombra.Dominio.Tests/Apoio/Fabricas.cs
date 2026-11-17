@@ -1,0 +1,44 @@
+using System;
+using Sombra.Dominio.Casas;
+using Sombra.Dominio.Pessoas;
+using Sombra.Dominio.Saude;
+
+namespace Sombra.Dominio.Tests.Apoio;
+
+/// <summary>Monta objetos de domínio com dados fictícios (a persona "Dona Lurdes" e a rede dela).</summary>
+internal static class Fabricas
+{
+    /// <summary>A data de referência dos testes.</summary>
+    internal static readonly DateOnly Hoje = new(2026, 11, 18);
+
+    /// <summary>Cria um morador com a idade e os fatores pedidos.</summary>
+    /// <param name="idade">A idade em anos completos na data <see cref="Hoje"/>.</param>
+    /// <param name="semente">Semente do CPF sintético.</param>
+    /// <param name="fatores">Os fatores declarados.</param>
+    /// <returns>O morador.</returns>
+    internal static Morador Morador(int idade, int semente = 1, params FatorDeRisco[] fatores)
+        => global::Sombra.Dominio.Casas.Morador.Cadastrar(
+            "Lurdes A.",
+            Hoje.AddYears(-idade),
+            Cpf.Criar(DocumentosSinteticos.Cpf(semente)),
+            null,
+            PerfilDeSaude.Com(fatores),
+            Hoje);
+
+    /// <summary>Cria uma casa em Santana, região SP-MIRANTE, sem moradores.</summary>
+    /// <returns>A casa.</returns>
+    internal static Domicilio Casa()
+        => Domicilio.Cadastrar(
+            "Casa da Dona Lurdes",
+            Endereco.Criar("Rua das Flores", "12", "Santana", "São Paulo", "SP", "02012-000"),
+            "SP-MIRANTE");
+
+    /// <summary>A filha (familiar) e a vizinha, nessa ordem.</summary>
+    /// <returns>Os dois contatos.</returns>
+    internal static ContatoDeCuidado[] FilhaEVizinha()
+        =>
+        [
+            new("Ana", Telefone.Criar("11987654321"), PapelDoContato.Familiar),
+            new("Cida (vizinha)", Telefone.Criar("11912345678"), PapelDoContato.Vizinho),
+        ];
+}

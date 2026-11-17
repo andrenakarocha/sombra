@@ -1,0 +1,48 @@
+namespace Sombra.Dominio.Saude;
+
+/// <summary>
+/// O que deixa uma pessoa mais vulnerável ao calor. Cada fator reduz os limites térmicos dela (regra R3); a soma é
+/// limitada em <see cref="Calor.LimitesTermicos.ReducaoMaxima"/>. Os valores são uma calibração do protótipo, não uma
+/// recomendação médica.
+/// </summary>
+public abstract record FatorDeRisco
+{
+    /// <summary>Gets o código estável do fator, usado na API e no banco.</summary>
+    public abstract string Codigo { get; }
+
+    /// <summary>Gets quantos °C este fator reduz os limites térmicos.</summary>
+    public abstract double ReducaoGraus { get; }
+}
+
+/// <summary>Pessoa com 80 anos ou mais: sente menos sede e regula pior a temperatura.</summary>
+public sealed record IdadeAvancada : FatorDeRisco
+{
+    /// <summary>A idade a partir da qual o fator vale.</summary>
+    public const int IdadeMinima = 80;
+
+    /// <inheritdoc/>
+    public override string Codigo => "IDADE_AVANCADA";
+
+    /// <inheritdoc/>
+    public override double ReducaoGraus => 2.0;
+}
+
+/// <summary>Doença cardíaca: o calor sobrecarrega o coração.</summary>
+public sealed record Cardiopatia : FatorDeRisco
+{
+    /// <inheritdoc/>
+    public override string Codigo => "CARDIOPATIA";
+
+    /// <inheritdoc/>
+    public override double ReducaoGraus => 2.0;
+}
+
+/// <summary>Uso de diurético: aumenta a perda de água e o risco de desidratação.</summary>
+public sealed record UsoDeDiuretico : FatorDeRisco
+{
+    /// <inheritdoc/>
+    public override string Codigo => "USO_DE_DIURETICO";
+
+    /// <inheritdoc/>
+    public override double ReducaoGraus => 1.5;
+}
