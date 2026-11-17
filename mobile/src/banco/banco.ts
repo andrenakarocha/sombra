@@ -17,6 +17,17 @@ export const MIGRACOES: string[] = [
      atualizado_em TEXT NOT NULL
    );
    CREATE INDEX alertas_domicilio ON alertas (domicilio_id);`,
+  // 3 · fila offline de check-ins (um "estou bem" nunca se perde) e preferências do aparelho
+  `CREATE TABLE fila_checkins (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+     domicilio_id TEXT NOT NULL,
+     situacao TEXT NOT NULL CHECK (situacao IN ('ESTOU_BEM', 'PRECISO_DE_AJUDA')),
+     momento TEXT NOT NULL
+   );
+   CREATE TABLE preferencias (
+     chave TEXT PRIMARY KEY NOT NULL,
+     valor TEXT NOT NULL
+   );`,
 ];
 
 type BancoMigravel = Pick<SQLite.SQLiteDatabase, 'getFirstAsync' | 'execAsync' | 'withTransactionAsync'>;

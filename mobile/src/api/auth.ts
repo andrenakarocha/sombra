@@ -1,4 +1,5 @@
 import { limparCache } from '@/banco/casas';
+import { usePreferencias } from '@/sessao/preferencias';
 import { useSessao } from '@/sessao/sessao';
 
 import { requisitar } from './cliente';
@@ -14,4 +15,5 @@ export async function sair() {
   await useSessao.getState().encerrar();
   queryClient.clear();
   await limparCache();
+  await usePreferencias.getState().definirModoIdoso(null);
 }

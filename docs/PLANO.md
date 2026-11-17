@@ -604,6 +604,8 @@ provando o antes e o depois.
   espera o hub do Core (F1.7).
 - [ ] **F6.4** 🤖 Modo Idoso (gigante, voz, háptico) + fila offline de check-in.
   🔎 check-in feito em modo avião sincroniza ao voltar a rede.
+  ⏸ 2026-11-17: coberto em Jest (sem rede → fila no SQLite → enviado com o horário do toque quando a rede volta); o
+  🔎 no aparelho espera a API do Core (F1.7).
 - [ ] **F6.5** 🤖 Perto de mim, Privacidade (farol) e cadastro de morador com máscaras.
   🔎 CPF aparece mascarado; o farol reflete `/risco-cidadao`.
 - [ ] **F6.6** 🤖 Modo demonstração (fixtures quando a API não responde) + notificações locais.
