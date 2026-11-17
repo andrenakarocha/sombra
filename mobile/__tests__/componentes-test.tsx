@@ -4,7 +4,7 @@ import { BotaoGigante } from '@/componentes/BotaoGigante';
 import { CartaoCasa } from '@/componentes/CartaoCasa';
 import { Farol } from '@/componentes/Farol';
 import { CASAS } from '@/demo/fixtures';
-import { INFO_DO_NIVEL, NIVEIS } from '@/dominio/nivel';
+import { INFO_DO_NIVEL, NIVEIS } from '@/domain/clima/nivel-de-risco';
 
 const casa = CASAS[0]!;
 
