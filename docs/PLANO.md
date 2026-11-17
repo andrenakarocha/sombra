@@ -613,6 +613,45 @@ provando o antes e o depois.
   no aparelho espera a API do Core (F1.7).
 - [x] **F6.6** 🤖 Modo demonstração (fixtures quando a API não responde) + notificações locais — 2026-11-17 18:29.
   🔎 sem backend, o app abre com dados de exemplo e um aviso claro.
+**Nível alto (operador, 2026-11-17).** A régua são os apps mobile anteriores do time (Pitlane, Obscurial, Orbital
+Guardian): domínio puro e testável, local-first de verdade, recursos nativos com propósito, qualidade medida no CI.
+Roda **antes** da F6.7 e da F6.8, na ordem abaixo. O app continua abrindo no Expo Go; o APK via EAS é um extra.
+
+- [ ] **F6.9** 🤖 Domínio puro (`src/domain`, sem React Native): `Result`, `Clock`, value objects com factory
+  (`Temperatura`, `UmidadeRelativa`, `IndiceDeCalor`, `Cpf`, `CartaoSus`, `Telefone`) e a classificação dos 5 níveis.
+  🔎 o `IndiceDeCalor` em TypeScript passa nos 20 vetores de `docs/contratos/indice-de-calor.vetores.json`.
+- [ ] **F6.10** 🤖 Escalonamento e risco no domínio: máquina de estados do alerta (degraus 0 → 3, prazos por nível,
+  regra da noite, D13) e risco personalizado explicável (R3: limiar por fator, contribuição de cada um).
+  🔎 testes de toda transição válida e inválida; cada fator explica quanto baixou o limiar.
+- [ ] **F6.11** 🤖 Casos de uso, ports, composition root e Zod no contrato: as telas falam só com os casos de uso;
+  toda resposta da API passa por um schema Zod antes de entrar no domínio.
+  🔎 teste de arquitetura: `domain` não importa nada de fora; `presentation` não importa `infrastructure`.
+- [ ] **F6.12** 🤖 Local-first: porta `SqlDatabase` (`expo-sqlite` no aparelho, `sql.js` no Jest), migrações
+  versionadas e repositórios; o SQLite vira a fonte da verdade das telas.
+  🔎 repositórios testados com SQL real no Jest.
+- [ ] **F6.13** 🤖 Outbox única + motor de sincronização: toda escrita (check-in, reconhecer, morador) com
+  `operationId` idempotente, aplicação otimista, backoff exponencial com jitter e dead-letter.
+  🔎 testes: offline → fila → volta a rede → enviado uma vez só; erro definitivo → dead-letter.
+- [ ] **F6.14** 🤖 Central de sincronização (pendentes, dead-letter, reenviar, forçar offline) + sincronização em
+  segundo plano (`expo-background-task`, quando o sistema permitir).
+  🔎 forçar offline na tela → check-in fica pendente → desligar → enviado.
+- [ ] **F6.15** 🤖 Replay da onda de calor **real** de nov/2023: script extrai as horas da A701 dos CSVs versionados
+  (`ml/dados/brutos`) para um JSON com proveniência (SHA-256); o modo demonstração toca hora a hora com o índice de
+  calor calculado no aparelho.
+  🔎 o replay chega a `PERIGO` com dados reais do INMET e o card fica vermelho ao vivo.
+- [ ] **F6.16** 🤖 Risco explicável na tela da casa: "por que a Dona Lurdes está em risco" (fatores e limiar).
+  🔎 o limiar exibido bate com o domínio para cada combinação de fatores.
+- [ ] **F6.17** 🤖 Perto de mim com GPS e bússola: distância (haversine) e uma seta grande até o ponto fresco.
+  🔎 testes de distância e rumo; seta conferida no aparelho do operador.
+- [ ] **F6.18** 🤖 Parear a Sentinela por QR (câmera; o segredo HMAC vai para o SecureStore) + Rotina (check-in
+  diário e lembrete de água agendados, nunca entre 22h e 7h).
+  🔎 testes do parser do QR e dos horários; QR lido no aparelho.
+- [ ] **F6.19** 🤖 Biometria na área da família (protege a PII) + Centro de Privacidade (exportar os dados locais em
+  JSON, LGPD art. 18, e apagar tudo do aparelho).
+  🔎 testes do bloqueio e do export sem PII inteira.
+- [ ] **F6.20** 🤖🔑 Qualidade: teste do app inteiro (rotas reais), gate de cobertura ≥ 95% no CI e APK via EAS
+  (`eas.json`; o job roda só com `EXPO_TOKEN` nos secrets, pedido ao dono do repositório).
+  🔎 CI verde com o gate; APK gerado quando o token existir.
 - [ ] **F6.7** 🧑🤖 Acessibilidade (checklist da spec) + testes Jest.
   🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do operador.
 - [ ] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
