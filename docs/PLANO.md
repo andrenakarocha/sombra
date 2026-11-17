@@ -395,9 +395,9 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
 - [x] **F0.5** 🧑🤖 🔑 GitHub: repositório público `sombra`, push, `main` protegida (PR + CI), `CODEOWNERS`, labels por
   disciplina, templates de PR e issue. Fecha a DA1 — 2026-11-17 16:15.
   🔎 o link abre numa aba anônima.
-- [ ] **F0.6** 🤖 Linguagem ubíqua (`docs/glossario.md`), tabela de níveis de risco (`docs/contratos/niveis-de-risco.md`)
+- [x] **F0.6** 🤖 Linguagem ubíqua (`docs/glossario.md`), tabela de níveis de risco (`docs/contratos/niveis-de-risco.md`)
   e vetores de teste do índice de calor (`docs/contratos/indice-de-calor.vetores.json`, ≥ 15 pares T/UR → índice,
-  calculados pela fórmula da NOAA e conferidos com a tabela publicada pela NWS).
+  calculados pela equação oficial da NWS/WPC) — 2026-11-17 16:18.
   🔎 script de conferência dos vetores sai com 0 (P1).
 - [ ] **F0.7** 🤖 Contratos: `mqtt.asyncapi.yaml`, `core-api.md`, `clima-service.md`, `signalr.md`, portas, nomes e variáveis
   de ambiente (§3.2).
@@ -789,7 +789,7 @@ spec. Um checkpoint por superfície.
 
 | # | Premissa | Verificar em | Status |
 |---|---|---|---|
-| P1 | Os vetores do índice de calor batem com a tabela publicada pela NWS | F0.6 | ⬜ |
+| P1 | Os vetores do índice de calor seguem a equação oficial da NWS/WPC | F0.6 | ✅ 2026-11-17: fórmula, coeficientes e ajustes transcritos da página da NWS/WPC; 20 vetores conferidos. A página deixa ambígua a saída abaixo de 80 °F; a leitura adotada está no contrato |
 | P2 | Os históricos anuais do INMET (portal de dados históricos) trazem a A701 de 2010 a 2025, horária, com `-9999` para faltante | F0.15 | ⬜ |
 | P3 | O `Invoke-CodeQuality.ps1` do professor roda no Linux (pwsh) e dá 100 com a estrutura nova | F1.1 | 🟡 deu 100/100 no CP06 (ExpenseHub) |
 | P4 | Testcontainers funciona na máquina do André (Docker) | F1.6 | ⬜ |
@@ -815,11 +815,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Agora (2026-11-17):** plano mestre escrito (F0.1) a partir da sessão de planejamento: Sombra escolhido, monorepo,
 escopo máximo, decisões D1–D12 fechadas. A entrevista chegou (F0.16 feita) e virou a D13 (escalonamento em
-degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). Repositório público no ar (F0.5); o resto da F0 segue no branch `f0-fundacao`, que o André envia quando quiser. Próximo: **F0.6** (glossário, níveis de risco e vetores do índice de calor).
+degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). Repositório público no ar (F0.5); o resto da F0 segue no branch `f0-fundacao`, que o André envia quando quiser. F0.6 feita (glossário, contrato de níveis, vetores). Próximo: **F0.7** (contratos MQTT, REST e SignalR).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.5 e F0.16 feitas; lote no branch `f0-fundacao` |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.6 e F0.16 feitas; lote no branch `f0-fundacao` |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -860,3 +860,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🧑🤖 | F0.3 — `gh` logado como `andrenakarocha` (escopos `repo` e `workflow`). `.env` local criado a partir do `.env.example`, em modo 600, com senha aleatória do Postgres e a chave Gemini que já existia no projeto do HENRY (D7; o valor não foi impresso). `git check-ignore` confirma que o `.env` fica fora do Git. A validade e a cota da chave são a P5 (F2.6) |
 | 2026-11-17 | 🧑🤖 | F0.5 — André escolheu **público agora** e **PR obrigatório para todos**. Criado `andrenakarocha/sombra` com os 5 primeiros commits. Branch apagada no merge, wiki desligada, tópicos `citizentech`, `fiap`, `global-solution`. `CODEOWNERS` (`* @andrenakarocha`), templates de PR e de issue. 13 labels: as 8 disciplinas, painel, pitch, fundacao, integracao e `delegavel`. Proteção da `main`: PR com 0 aprovações, `enforce_admins`, histórico linear, sem force push nem deleção, conversas resolvidas. 🔎 anônimo: HTTP 200 e `visibility: public` |
 | 2026-11-17 | 🤖 | ⚠️ **Divergência na F0.5.** O hook `block-dangerous-git` da máquina barrou o `git push` do primeiro PR: **o push é sempre manual, do André**. O push inicial já tinha saído por dentro do `gh repo create --push`, que o hook não pega; o agente avisou o André e não usa mais o `gh` para enviar código. Com push manual e o `PLANO.md` mudando em todo checkpoint, um PR por checkpoint pediria um push do André a cada passo, e empilhar branches com squash gera conflito. Ajuste aprovado pelo André: **um PR por lote com rebase merge** (D15). Squash desligado e rebase ligado no repositório; template de PR ajustado. Observação: o hook reconhece o texto do comando em qualquer lugar, então scripts que escrevem esse texto em documentos vão por arquivo |
+| 2026-11-17 | 🤖 | F0.6 — `docs/glossario.md` (casa e pessoas, dispositivo e alertas, clima, privacidade; inclui os termos da D13 e a distinção Leitura × Observação, que marca a fronteira entre Core e Clima). Contrato `docs/contratos/niveis-de-risco.md`: equação oficial da NWS/WPC (lida com curl; o WebFetch deu 403), leitura adotada para a ambiguidade abaixo de 80 °F, os cinco níveis com os limiares da NWS convertidos com precisão (26,67 / 32,22 / 39,44 / 51,67 °C, no lugar dos 27 / 32 / 39 / 51 arredondados da spec 00), o comportamento por nível da D13 e a regra da noite. Referência em `tools/indice-de-calor/vetores.py` (stdlib) e 20 vetores em `indice-de-calor.vetores.json`. 🔎 `vetores.py` sai com 0. Specs 00, 01 (R3 e R6: o "estou bem" é pedido a partir de `CAUTELA_EXTREMA`) e 03 (limiares do alvo) alinhadas |

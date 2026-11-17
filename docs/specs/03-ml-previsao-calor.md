@@ -16,7 +16,8 @@ Classificação binária. Um falso negativo (não avisar num dia perigoso) custa
 ## Pipeline do notebook (`ml/notebooks/sombra_calor.ipynb`, entregue executado)
 1. **Problema e dados:** contexto do cidadão, a pergunta, a fonte, o período, o volume.
 2. **Limpeza:** `-9999` → NaN, horário UTC → America/Sao_Paulo, buracos curtos interpolados (≤ 3 h) e dias com > 25% faltando descartados (com contagem documentada).
-3. **Alvo:** índice de calor horário (Rothfusz, os mesmos vetores de teste do resto do sistema). `alvo = 1` se o **máximo das próximas 24 h ≥ limiar**. O limiar é definido na EDA, ancorado na tabela NOAA/NWS (≥ 32 °C, "cautela extrema", ou ≥ 39 °C, "perigo", conforme o balanceamento real), e justificado.
+3. **Alvo:** índice de calor horário (Rothfusz, os mesmos vetores de teste do resto do sistema). `alvo = 1` se o **máximo das próximas 24 h ≥ limiar**. O limiar é definido na EDA, ancorado na tabela NOAA/NWS (≥ 32,22 °C, "cautela extrema", ou ≥ 39,44 °C, "perigo", conforme o balanceamento real; ver
+   `docs/contratos/niveis-de-risco.md`), e justificado.
 4. **Features:** médias, máximos e tendências das últimas 3/6/12/24 h, deltas, ponto de orvalho, radiação acumulada, pressão (variação), hora e dia do ano em seno/cosseno. Uma amostra **a cada 6 h** (00/06/12/18 h) para reduzir autocorrelação.
 5. **Divisão temporal, sem embaralhar:** treino **2010–2021**, teste **2022–2025** (inclui as ondas de calor recordes de 2023–2024, que o modelo nunca viu).
 6. **Modelos:** baseline de **persistência** ("amanhã igual a hoje") + **Regressão Logística** como referência + **XGBoost** (modelo principal).

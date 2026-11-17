@@ -13,17 +13,10 @@ Deixar o terreno pronto para qualquer frente começar **em paralelo sem se bloqu
 2. **Esqueleto** das pastas (PLANO §3.3) + `README.md` com a Ficha v0 + `prompts.md` + `LICENSE` (MIT) + `.gitignore` + `.editorconfig` raiz + `.env.example`.
    → verificar: `tree -L 2` bate com o plano.
 3. **Linguagem ubíqua** em `docs/glossario.md`: Domicílio · Morador · Perfil de saúde · Rede de cuidado · Contato de cuidado · Sentinela · Leitura · Índice de calor · Nível de risco · Alerta de calor (preventivo / de Sentinela) · Check-in ("estou bem") · Pedido de ajuda · Escalonamento · Região climática · Estação · Observação · Previsão de calor · Ponto de resfriamento · Evento de segurança · Risco Cidadão.
-4. **Tabela única de níveis de risco** em `docs/contratos/niveis-de-risco.md`, usada pela Sentinela, pelo Core, pelo Clima, pelo ML, pelo app e pelo painel:
-
-   | Nível | Índice de calor (°C) | Cor | Ícone | Texto para o cidadão |
-   |---|---|---|---|---|
-   | `NORMAL` | < 27 | verde | ✓ | "Tudo bem por aqui." |
-   | `ATENCAO` | 27 a < 32 | amarelo | ! | "Está quente. Beba água." |
-   | `CAUTELA_EXTREMA` | 32 a < 39 | laranja | !! | "Calor forte. Fique na sombra e beba água." |
-   | `PERIGO` | 39 a < 51 | vermelho | ⚠ | "Calor perigoso. Aperte o botão verde se você está bem." |
-   | `PERIGO_EXTREMO` | ≥ 51 | vinho | ⛔ | "Calor extremo. Peça ajuda." |
-
-   Faixas da tabela de índice de calor da NOAA/NWS (convertidas de °F). Fórmula: regressão de Rothfusz (com a fórmula simples de Steadman abaixo de 26,7 °C). **Os mesmos vetores de teste** (`docs/contratos/indice-de-calor.vetores.json`) valem para C#, Java, C++ e Python.
+4. **Níveis de risco e índice de calor:** contrato único em `docs/contratos/niveis-de-risco.md` (os cinco níveis da
+   NWS em °C, o comportamento de cada nível conforme a D13 e a leitura adotada da equação oficial). Implementação de
+   referência e vetores em `tools/indice-de-calor/vetores.py` e `docs/contratos/indice-de-calor.vetores.json`, rodados
+   pelos testes de C#, Java, C++ e Python.
 5. **Contratos**
    - `docs/contratos/mqtt.asyncapi.yaml` (AsyncAPI 3), com tópicos `sombra/v1/{deviceId}/{telemetria|evento|comando|status}`:
      ```json

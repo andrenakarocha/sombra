@@ -1,0 +1,152 @@
+{
+  "fonte": "NWS/WPC, The Heat Index Equation (Rothfusz 1990, SR 90-23): https://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml",
+  "toleranciaC": 0.05,
+  "limiaresC": {
+    "ATENCAO": 26.67,
+    "CAUTELA_EXTREMA": 32.22,
+    "PERIGO": 39.44,
+    "PERIGO_EXTREMO": 51.67
+  },
+  "vetores": [
+    {
+      "temperaturaC": 10.0,
+      "umidadePct": 90.0,
+      "indiceDeCalorC": 9.41,
+      "nivel": "NORMAL",
+      "caso": "frio e úmido: fórmula simples"
+    },
+    {
+      "temperaturaC": 20.0,
+      "umidadePct": 60.0,
+      "indiceDeCalorC": 19.62,
+      "nivel": "NORMAL",
+      "caso": "ameno: fórmula simples"
+    },
+    {
+      "temperaturaC": 25.0,
+      "umidadePct": 50.0,
+      "indiceDeCalorC": 24.86,
+      "nivel": "NORMAL",
+      "caso": "abaixo do limiar de 80 °F: fórmula simples"
+    },
+    {
+      "temperaturaC": 26.0,
+      "umidadePct": 80.0,
+      "indiceDeCalorC": 26.74,
+      "nivel": "ATENCAO",
+      "caso": "fórmula simples já em ATENCAO"
+    },
+    {
+      "temperaturaC": 27.0,
+      "umidadePct": 40.0,
+      "indiceDeCalorC": 26.86,
+      "nivel": "ATENCAO",
+      "caso": "logo acima do limiar: regressão"
+    },
+    {
+      "temperaturaC": 28.0,
+      "umidadePct": 85.0,
+      "indiceDeCalorC": 32.9,
+      "nivel": "CAUTELA_EXTREMA",
+      "caso": "umidade 85%: sem ajuste de umidade alta"
+    },
+    {
+      "temperaturaC": 28.0,
+      "umidadePct": 90.0,
+      "indiceDeCalorC": 34.0,
+      "nivel": "CAUTELA_EXTREMA",
+      "caso": "umidade alta (> 85%, 80–87 °F): ajuste somado"
+    },
+    {
+      "temperaturaC": 29.0,
+      "umidadePct": 100.0,
+      "indiceDeCalorC": 40.2,
+      "nivel": "PERIGO",
+      "caso": "saturado (> 85%, 80–87 °F): ajuste somado"
+    },
+    {
+      "temperaturaC": 30.0,
+      "umidadePct": 50.0,
+      "indiceDeCalorC": 31.05,
+      "nivel": "ATENCAO",
+      "caso": "tarde quente em SP"
+    },
+    {
+      "temperaturaC": 30.0,
+      "umidadePct": 70.0,
+      "indiceDeCalorC": 35.04,
+      "nivel": "CAUTELA_EXTREMA",
+      "caso": "tarde quente e úmida"
+    },
+    {
+      "temperaturaC": 31.0,
+      "umidadePct": 95.0,
+      "indiceDeCalorC": 46.78,
+      "nivel": "PERIGO",
+      "caso": "acima de 87 °F: sem ajuste de umidade alta"
+    },
+    {
+      "temperaturaC": 32.0,
+      "umidadePct": 40.0,
+      "indiceDeCalorC": 32.28,
+      "nivel": "CAUTELA_EXTREMA",
+      "caso": "dia seco de onda de calor"
+    },
+    {
+      "temperaturaC": 32.0,
+      "umidadePct": 60.0,
+      "indiceDeCalorC": 37.07,
+      "nivel": "CAUTELA_EXTREMA",
+      "caso": "onda de calor úmida"
+    },
+    {
+      "temperaturaC": 34.0,
+      "umidadePct": 30.0,
+      "indiceDeCalorC": 33.29,
+      "nivel": "CAUTELA_EXTREMA",
+      "caso": "muito quente e seco"
+    },
+    {
+      "temperaturaC": 35.0,
+      "umidadePct": 50.0,
+      "indiceDeCalorC": 40.68,
+      "nivel": "PERIGO",
+      "caso": "pico de onda de calor"
+    },
+    {
+      "temperaturaC": 36.0,
+      "umidadePct": 60.0,
+      "indiceDeCalorC": 48.14,
+      "nivel": "PERIGO",
+      "caso": "casa fechada no pico da tarde"
+    },
+    {
+      "temperaturaC": 38.0,
+      "umidadePct": 10.0,
+      "indiceDeCalorC": 34.73,
+      "nivel": "CAUTELA_EXTREMA",
+      "caso": "umidade baixa (< 13%, 80–112 °F): ajuste subtraído"
+    },
+    {
+      "temperaturaC": 40.0,
+      "umidadePct": 30.0,
+      "indiceDeCalorC": 43.13,
+      "nivel": "PERIGO",
+      "caso": "calor extremo seco"
+    },
+    {
+      "temperaturaC": 40.0,
+      "umidadePct": 60.0,
+      "indiceDeCalorC": 62.64,
+      "nivel": "PERIGO_EXTREMO",
+      "caso": "calor extremo úmido"
+    },
+    {
+      "temperaturaC": 43.0,
+      "umidadePct": 50.0,
+      "indiceDeCalorC": 65.37,
+      "nivel": "PERIGO_EXTREMO",
+      "caso": "fora da faixa típica de SP"
+    }
+  ]
+}
