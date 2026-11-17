@@ -38,6 +38,8 @@ export default function AbasLayout() {
           tabBarAccessibilityLabel: ativos ? `Alertas, ${ativos} ativos` : 'Alertas',
         }}
       />
+      <Tabs.Screen name="perto" options={{ title: 'Perto de mim', tabBarIcon: icone('location-outline') }} />
+      <Tabs.Screen name="privacidade" options={{ title: 'Privacidade', tabBarIcon: icone('shield-checkmark-outline') }} />
       <Tabs.Screen name="ajustes" options={{ title: 'Ajustes', tabBarIcon: icone('settings-outline') }} />
     </Tabs>
   );

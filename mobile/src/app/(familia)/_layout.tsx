@@ -16,6 +16,7 @@ export default function FamiliaLayout() {
     >
       <Stack.Screen name="(abas)" options={{ headerShown: false }} />
       <Stack.Screen name="casa/[id]" options={{ title: 'Casa' }} />
+      <Stack.Screen name="casa/[id]/morador" options={{ title: 'Morador' }} />
       <Stack.Screen name="alerta/[id]" options={{ title: 'Alerta' }} />
     </Stack>
   );

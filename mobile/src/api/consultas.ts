@@ -12,7 +12,10 @@ import type {
   Domicilio,
   Leitura,
   Morador,
+  NovoMorador,
   Pagina,
+  PontoDeResfriamento,
+  PrivacidadeDaCasa,
 } from './tipos';
 
 // networkMode 'always': offline, a consulta roda mesmo assim e cai no cache do SQLite em vez de ficar pausada.
@@ -120,5 +123,32 @@ export function useReconhecer(id: string) {
     mutationFn: (acao: AcaoDeReconhecimento) =>
       requisitar<void>(`/alertas/${id}/reconhecer`, { metodo: 'POST', corpo: { acao } }),
     onSuccess: () => queryClient.invalidateQueries(),
+  });
+}
+
+export function usePontosDeResfriamento(id: string | undefined) {
+  return useQuery({
+    queryKey: ['pontos', id],
+    enabled: !!id,
+    queryFn: () => requisitar<PontoDeResfriamento[]>(`/domicilios/${id}/pontos-de-resfriamento?raioKm=3`),
+  });
+}
+
+export function usePrivacidade(id: string | undefined) {
+  return useQuery({
+    queryKey: ['privacidade', id],
+    enabled: !!id,
+    queryFn: () => requisitar<PrivacidadeDaCasa>(`/domicilios/${id}/privacidade`),
+  });
+}
+
+export function useSalvarMorador(domicilioId: string, moradorId?: string) {
+  return useMutation({
+    mutationFn: (morador: NovoMorador) =>
+      requisitar<Morador>(`/domicilios/${domicilioId}/moradores${moradorId ? `/${moradorId}` : ''}`, {
+        metodo: moradorId ? 'PUT' : 'POST',
+        corpo: morador,
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['moradores', domicilioId] }),
   });
 }
