@@ -11,7 +11,7 @@ DOTNET := docker run --rm --user $$(id -u):$$(id -g) -e HOME=/tmp -e DOTNET_CLI_
 	-v $(RAIZ):/repo -v $(HOME)/.nuget/packages:/nuget $(if $(GITLEAKS),-v $(GITLEAKS):/usr/local/bin/gitleaks:ro) \
 	-w /repo/services/core-api $(SDK_IMAGE)
 
-.PHONY: help restore build test format format-fix quality
+.PHONY: help restore build test coverage format format-fix quality
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-11s %s\n", $$1, $$2}'
@@ -25,6 +25,11 @@ build: restore ## Compila com warnings tratados como erro
 
 test: build ## Roda os testes (MSTest)
 	@$(DOTNET) dotnet test Sombra.Core.slnx --no-build --nologo -v quiet
+
+coverage: build ## Cobertura do domínio (mínimo de 90% de linhas)
+	@rm -rf artifacts/coverage
+	@$(DOTNET) dotnet test sources/Sombra.Dominio.Tests --no-build --nologo -v quiet --collect:"XPlat Code Coverage" --results-directory artifacts/coverage >/dev/null
+	@python3 -I scripts/cobertura.py artifacts/coverage Sombra.Dominio 90
 
 format: restore ## Confere formatação e estilo sem mudar nada
 	@$(DOTNET) dotnet format Sombra.Core.slnx --verify-no-changes --no-restore --severity warn

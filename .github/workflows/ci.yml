@@ -150,6 +150,8 @@ jobs:
           persist-credentials: false
       - name: build (warnings como erro) e testes, na imagem do SDK 10.0.404
         run: make -C services/core-api test
+      - name: cobertura do domínio (mínimo 90% de linhas)
+        run: make -C services/core-api coverage
       - name: formatação e estilo
         run: make -C services/core-api format
       - name: pipeline de qualidade do professor (nota 100 obrigatória)

@@ -456,9 +456,9 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
 - [x] **F1.3** 🤖 Agregados `Domicilio`, `Morador` (+ `PerfilDeSaude`, fatores de risco polimórficos), `RedeDeCuidado`,
   `Sentinela`, `Leitura`; regras R1, R3, R8 e R9.
   🔎 testes de cada regra, inclusive as violações — 2026-11-17 (61 testes; R10 também, na leitura).
-- [ ] **F1.4** 🤖 `AlertaDeCalor` abstrato → `AlertaPreventivo` e `AlertaDeSentinela`; máquina de estados; `CheckIn`; eventos
-  de domínio; regras R4–R7 e R10.
-  🔎 testes de todas as transições válidas e inválidas; cobertura do domínio ≥ 90%.
+- [x] **F1.4** 🤖 `AlertaDeCalor` abstrato → `AlertaPreventivo`, `AlertaDeSentinela` e `AlertaDePedidoDeAjuda`; máquina
+  de estados; escalonamento em degraus (D13); `CheckIn`; `Rotina` (R11, R12); eventos de domínio; regras R4–R7 e R10.
+  🔎 testes de todas as transições válidas e inválidas; cobertura do domínio ≥ 90%. — 2026-11-17 (80 testes; 91,7% das linhas; `make coverage` no CI).
 - [ ] **F1.5** 🤖 Aplicação: casos de uso, portas (`IDomicilioRepository`, `IAlertaRepository`, `IClimaGateway`,
   `INotificador`, `IRelogio`, `IUnitOfWork`), DTOs e validação.
   🔎 testes dos casos de uso com fakes.
@@ -824,12 +824,12 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** F1 em andamento: F1.1–F1.3 feitas (value objects e agregados, 61 testes, quality 100/100). Próximo: **F1.4** (alertas e máquina de estados). Em paralelo: ML (F4) e app (F6).
+**Agora:** F1 em andamento: domínio completo (F1.1–F1.4: 80 testes, cobertura 91,7%, quality 100/100). Próximo: **F1.5** (aplicação: casos de uso e portas). Em paralelo: ML (F4) e app (F6).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
-| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.3 feitas (quality 100/100) |
+| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.4 feitas: domínio completo (quality 100/100, cobertura 91,7%) |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
