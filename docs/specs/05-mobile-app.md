@@ -11,7 +11,7 @@ A **porta de entrada** do Sombra no celular, com dois públicos:
 - **Modo Idoso:** uma tela só, gigante, com o "ESTOU BEM", para quem tem celular mas não tem intimidade com ele.
 
 ## Stack
-Expo SDK 54 · Expo Router 6 · TypeScript estrito · TanStack Query (API) · zustand (sessão) · **expo-sqlite** (banco local) · expo-secure-store (token) · `@microsoft/signalr` (tempo real) · expo-notifications (notificação local nos eventos) · **expo-speech** (o Modo Idoso fala) · expo-haptics · react-native-svg (gráficos).
+Expo SDK 58 · Expo Router 58 · TypeScript estrito · TanStack Query (API) · zustand (sessão) · **expo-sqlite** (banco local) · expo-secure-store (token) · `@microsoft/signalr` (tempo real) · expo-notifications (notificação local nos eventos) · **expo-speech** (o Modo Idoso fala) · expo-haptics · react-native-svg (gráficos).
 
 ## Telas e navegação
 ```

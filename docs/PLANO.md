@@ -229,7 +229,7 @@ sombra/
 ├── services/core-api/        C# · .NET 10 (+ src/Sombra.Privacidade = Cyber)
 ├── services/clima-service/   Java 21 · Spring Boot 3.5
 ├── web/painel/               Vite · React · TS
-├── mobile/                   Expo SDK 54
+├── mobile/                   Expo SDK 58
 ├── iot/sentinela/            ESP32 · Wokwi
 ├── ml/                       notebook · RELATORIO_ML.md · dados/ · modelo/
 ├── infra/                    bash · systemd · nginx · Vagrant
@@ -616,7 +616,7 @@ provando o antes e o depois.
 
 **Objetivo:** os 6 critérios da rubrica de Mobile. **Spec:** 05.
 
-- [ ] **F6.1** 🤖 Scaffold Expo SDK 54 + Expo Router + TS estrito + tema dos tokens + `Farol`, `CartaoCasa`,
+- [ ] **F6.1** 🤖 Scaffold Expo SDK 58 + Expo Router + TS estrito + tema dos tokens + `Farol`, `CartaoCasa`,
   `BotaoGigante` + lint, typecheck e Jest.
   🔎 `npx expo-doctor` ok; o app abre no Expo Go.
 - [ ] **F6.2** 🤖 Cliente da API (TanStack Query), login (secure-store) e SQLite com migrações para cache.
@@ -833,7 +833,7 @@ spec. Um checkpoint por superfície.
 | P7 | A Open-Meteo dá, sem chave, as variáveis horárias que o modelo usa (temperatura, umidade, pressão, radiação, vento), incluindo horas passadas | F3.5 | ⬜ |
 | P8 | XGBoost → ONNX (onnxmltools) e ONNX Runtime Java dão a mesma probabilidade | F4.6, F9.1 | ⬜ |
 | P9 | O ESP32 no Wokwi conecta num broker MQTT público pela rede `Wokwi-GUEST`, e o projeto abre por link público | F5.3, F5.5 | ⬜ |
-| P10 | `@microsoft/signalr` funciona no Expo SDK 54 (Expo Go) | F6.3 | ⬜ |
+| P10 | `@microsoft/signalr` funciona no Expo SDK 58 (Expo Go) | F6.3 | ⬜ |
 | P11 | Vagrant + VirtualBox sobem Ubuntu 24.04 na máquina de desenvolvimento (Arch) | F8.1 | 🟡 2026-11-17 (doctor): VirtualBox 7.2.22 instalado; **Vagrant ausente** e fora dos repositórios oficiais do Arch (só AUR). Alternativa: VBoxManage + imagem cloud do Ubuntu com cloud-init. Decidir na F8.1 |
 | P12 | A API REST do Azure DevOps cria Test Cases com passos e vínculos sem licença de Test Plans | F10.4 | ⬜ |
 | P13 | Há uma conta Azure for Students ativa | F11.8 | ⬜ |
