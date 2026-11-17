@@ -150,21 +150,23 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | # | Decisão | Origem |
 |---|---|---|
 | D1 | CitizenTech **Sombra**: calor extremo e idosos que moram sozinhos | André, 2026-11-17 |
-| D2 | **Monorepo** público, uma pasta por parte, Ficha no topo do README (o brief pede isso) | André, 2026-11-17 |
+| D2 | **Monorepo** público, uma pasta por parte, Ficha no topo do README (o brief pede isso) (ADR-002) | André, 2026-11-17 |
 | D3 | **Escopo máximo** nas 8 disciplinas, tudo integrado; "não se preocupar com prazo" | André, 2026-11-17 |
-| D4 | **Dois backends que conversam:** Core em C#/.NET 10 (disciplina C#) e Clima em Java/Spring (disciplina SOA). Cada um é dono do seu banco | plano, aceito |
+| D4 | **Dois backends que conversam:** Core em C#/.NET 10 (disciplina C#) e Clima em Java/Spring (disciplina SOA). Cada um é dono do seu banco (ADR-003) | plano, aceito |
 | D5 | **Cyber dentro do Core**, no projeto `Sombra.Privacidade` (middleware e guardas no backend, como o professor descreveu); dashboard no painel e no app | plano, aceito |
 | D6 | **ML com INMET A701 (2010–2025)**, XGBoost exportado em ONNX e servido pelo Clima | plano, aceito |
-| D7 | **LLM: Gemini Flash** (chave já existe), com cache e fallback em templates | André, 2026-11-17 |
+| D7 | **LLM: Gemini Flash** (chave já existe), com cache e fallback em templates (ADR-005) | André, 2026-11-17 |
 | D8 | **VM local com Vagrant** para a entrega de OS; os mesmos scripts sobem uma VM no Azure como extra (F11.8) | André, 2026-11-17 |
 | D9 | **QA:** Feature com *Como/Quero/Para* + critérios *Dado/Quando/Então*; Test Case com objetivo, preparação, entradas, passos e saída esperada | André, 2026-11-17 |
 | D10 | **André executa o máximo**, fica com o que é mais difícil e com **todas as contas e acessos** (GitHub, Azure, Wokwi, Gemini, YouTube, VM). Matheus e João recebem o que o André delegar, de preferência checkpoints 🤝 | André, 2026-11-17 |
-| D11 | Linguagem ubíqua do domínio em **português** (Domicílio, Sentinela, Alerta de calor) + sufixos técnicos em inglês (`Repository`, `Controller`), no padrão do guia de SOA (ADR-001) | plano, aceito |
+| D11 | Linguagem ubíqua do domínio em **português** (Domicílio, Sentinela, Alerta de calor) + sufixos técnicos em inglês (`Repository`, `Controller`), no padrão do guia de SOA (ADR-001) (ADR-001) | plano, aceito |
 | D12 | Tipografia **Atkinson Hyperlegible** e farol acessível (cor + ícone + texto) em todas as superfícies | plano, aceito |
 | D13 | **Ajustes da entrevista** (Dona Cida e a filha): escalonamento em degraus (lembrete à pessoa → lembrete leve à família → "quem está perto" → alerta só em perigo ou pedido de ajuda); Sentinela discreta (sem piscar nem apitar sem parar); check-in diário opcional; lembrete de água no pico da tarde; lembretes nunca entre 22h e 7h; "o que acontece se eu esquecer" sempre explicado | entrevista, 2026-11-17 |
 | D15 | **Repositório público `andrenakarocha/sombra`** com a `main` protegida para todos, inclusive o admin: PR obrigatório (0 aprovações), histórico linear, sem force push. **Um PR por lote**, com **rebase merge** (um commit por checkpoint na `main`). **O push é manual, do André**, e **cada merge, release ou publicação precisa do "pode mergear" dele no chat** (hooks da máquina); o agente abre o PR e roda só aquele comando. Os checks do CI viram obrigatórios na F0.12 | André, 2026-11-17 (fecha a DA1) |
 | D16 | **Direção de arte "luz filtrada pela folhagem"** (`design/`): tokens com temas claro e escuro, contraste conferido por script (≥ 7:1 no texto principal), Fraunces + Atkinson Hyperlegible Next, risco com cor + forma + texto | André, 2026-11-17 (fecha a DA5) |
 | D14 | **Fotos do território fora das entregas** (padronizadas pelo time); uso possível só no pitch, com a placa do carro desfocada. A transcrição vai para o repositório com "a filha" no lugar do nome dela | André, 2026-11-17 |
+
+As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11), 002 (D2), 003 (D4), 004 (MQTT assinado e sem PII), 005 (D7) e 006 (índice de calor replicado com vetores).
 
 ### 2.2 Decisões abertas
 
@@ -421,9 +423,9 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   quando houver artefatos.
   🔎 CI verde no PR; a proteção da `main` lista o `ci-ok`.
   ⏸ 2026-11-17 16:50: `ci.yml` implementado e validado localmente (actionlint, gitleaks); falta rodar no PR #3.
-- [ ] **F0.13** 🤖 ADRs 001–006 (`docs/adr/`): linguagem ubíqua · monorepo · dois serviços donos dos seus bancos · MQTT
+- [x] **F0.13** 🤖 ADRs 001–006 (`docs/adr/`): linguagem ubíqua · monorepo · dois serviços donos dos seus bancos · MQTT
   público com HMAC e sem PII · LLM com fallback · índice de calor replicado de propósito com vetores compartilhados.
-  🔎 os ADRs existem e a §2.1 os cita.
+  🔎 os ADRs existem e a §2.1 os cita — 2026-11-17 16:53.
 - [ ] **F0.14** 🤖 Issues e GitHub Project a partir dos checkpoints, com label `delegavel` nos 🤝 (é o que facilita
   passar trabalho ao Matheus e ao João).
   🔎 `gh issue list --label delegavel` lista os 🤝.
@@ -818,7 +820,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 e F0.11 feitas (`make up` verde; simulador da Sentinela com 45 testes). F0.12 implementada (falta o 🔎 no PR). Próximo: **F0.13** (ADRs) e **F0.15** (dados do INMET), no branch `f0-fundacao-3`.
+**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 e F0.11 feitas (`make up` verde; simulador da Sentinela com 45 testes). F0.12 implementada (falta o 🔎 no PR). F0.13 feita (ADRs). Próximo: **F0.15** (dados do INMET, baixando) e **F0.14** (issues), no branch `f0-fundacao-3`.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -872,3 +874,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🤖 | F0.10 — `compose.yaml` (projeto `sombra`, tudo em 127.0.0.1): Postgres 16 com script de init que cria **um papel e um banco por serviço** e revoga o `CONNECT` público; Mosquitto 2; Core, Clima e painel como placeholders nginx que dizem em qual fase serão trocados. `Makefile` com `env`, `up` (espera os healthchecks), `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`. `tools/novo-env.py`: gera os segredos que faltam, **nunca sobrescreve** valor real (a chave Gemini foi preservada), grava em 600 e só mostra nomes. `.env.example` sem senha duplicada: as strings de conexão passam a ser montadas pelo compose. **Ajuste:** a 5432 do host já é do PostgreSQL local do André; o banco do compose fica em 55432 no host (`DB_PORTA_LOCAL`) e `db:5432` dentro. 🔎 os 5 serviços `healthy`; `/health/live`, `/actuator/health/liveness` e `/healthz` → 200; o papel `sombra_core` é barrado no `sombra_clima` (`permission denied`); ida e volta no MQTT; `make test` e `make lint` verdes |
 | 2026-11-17 | 🤖 | F0.11 — `tools/sentinela-sim/` (Python 3.12 via uv, `paho-mqtt` 2): outra implementação do contrato, com assinatura HMAC, verificação de comandos (assinatura, outra Sentinela, replay, janela de 300 s), `seq` persistido entre execuções, status `online` e Last Will `offline`, logs JSON da §6. Seis cenários determinísticos (`normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`, `payload-adulterado`) e um modo `comando` que publica como o Core. **45 testes**: os 20 vetores do índice de calor e os 6 de assinatura (os mesmos que o ESP32, o Core e o Clima vão rodar), a verificação, os cenários e a integração com o Mosquitto do compose (comando aceito; replay e adulteração recusados; telemetria com assinatura válida). Fumaça pela CLI: `onda-de-calor` sobe ATENCAO → CAUTELA_EXTREMA → PERIGO, um comando chega no meio e é aceito, o "estou bem" é enviado; 24 linhas de log JSON válidas. `make sim`, `make test-sim` e ruff no `make lint`. Catálogo de eventos (§4) e correlação de comandos (`{deviceId}:c{seq}`) atualizados em `docs/observabilidade.md` |
 | 2026-11-17 | 🤖 | F0.12 implementada — `.github/workflows/ci.yml`: job `mudancas` (filtro por pasta) e jobs condicionais (contratos; design, que também confere se o `tokens.css` está em dia; simulador com Mosquitto e uv; ambiente local com `make up`, saúde e isolamento dos bancos; shellcheck; actionlint), `gitleaks` sempre, e `ci-ok` agregando tudo. **Um check obrigatório só**, porque com filtro por pasta um check obrigatório por componente travaria PR que não toca aquela pasta. Actions fixadas por **SHA de commit** (checkout v7.0.1, setup-python v7.1.0, setup-node v7.1.0, setup-uv v10.3.3, paths-filter v4.0.3), com os parâmetros conferidos no `action.yml` de cada SHA (são versões mais novas que o conhecimento do agente). `permissions: contents: read` e `persist-credentials: false`. **Troca:** a `gitleaks-action` v3 está sob licença comercial (EULA); o CI usa o binário do gitleaks (MIT) pela imagem oficial `v8.30.1`. actionlint 1.7.12 e gitleaks rodados localmente: ok, sem vazamentos nos 20 commits. **Escopo:** o `release.yml` foi para a F8.3, quando houver o que publicar |
+| 2026-11-17 | 🤖 | F0.13 — seis ADRs em `docs/adr/` (contexto, decisão, consequências, alternativas) e o índice: 001 linguagem ubíqua, 002 monorepo, 003 dois serviços donos dos seus bancos (com o isolamento por papel verificado no CI), 004 MQTT público assinado e sem PII, 005 LLM sem PII e com fallback, 006 índice de calor replicado com vetores. A §2.1 cita cada um (D2, D4, D7, D11 e as duas decisões técnicas) |
