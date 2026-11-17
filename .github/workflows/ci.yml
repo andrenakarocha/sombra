@@ -27,6 +27,7 @@ jobs:
       contratos: ${{ steps.filtro.outputs.contratos }}
       design: ${{ steps.filtro.outputs.design }}
       simulador: ${{ steps.filtro.outputs.simulador }}
+      core: ${{ steps.filtro.outputs.core }}
       ambiente: ${{ steps.filtro.outputs.ambiente }}
       scripts: ${{ steps.filtro.outputs.scripts }}
       workflows: ${{ steps.filtro.outputs.workflows }}
@@ -47,6 +48,9 @@ jobs:
             simulador:
               - 'tools/sentinela-sim/**'
               - 'docs/contratos/**'
+            core:
+              - 'services/core-api/**'
+              - 'docs/contratos/indice-de-calor.vetores.json'
             ambiente:
               - 'compose.yaml'
               - 'infra/compose/**'
@@ -134,6 +138,26 @@ jobs:
       - name: testes (inclui a integração com o broker)
         run: uv run pytest -q -rs
 
+  core:
+    name: Core API (C#)
+    needs: mudancas
+    if: needs.mudancas.outputs.core == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: build (warnings como erro) e testes, na imagem do SDK 10.0.404
+        run: make -C services/core-api test
+      - name: formatação e estilo
+        run: make -C services/core-api format
+      - name: pipeline de qualidade do professor (nota 100 obrigatória)
+        run: |
+          make -C services/core-api quality
+          cat services/core-api/artifacts/code-quality/report.md >> "$GITHUB_STEP_SUMMARY"
+          python3 -I -c "import json,sys; r=json.load(open('services/core-api/artifacts/code-quality/report.json')); n=r['score']['final']; print('nota', n); sys.exit(0 if n == 100 else 1)"
+
   ambiente-local:
     name: ambiente local (make up)
     needs: mudancas
@@ -203,7 +227,7 @@ jobs:
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [mudancas, contratos, design, simulador, ambiente-local, scripts, workflows, segredos]
+    needs: [mudancas, contratos, design, simulador, core, ambiente-local, scripts, workflows, segredos]
     runs-on: ubuntu-latest
     steps:
       - name: nenhum job falhou nem foi cancelado

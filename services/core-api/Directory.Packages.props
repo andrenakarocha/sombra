@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageVersion Include="MSTest" Version="4.5.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Analisador de estilo em todos os projetos (o mesmo do Directory.Build.props do professor). -->
     <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
   </ItemGroup>

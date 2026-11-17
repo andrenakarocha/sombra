@@ -11,7 +11,7 @@ DOTNET := docker run --rm --user $$(id -u):$$(id -g) -e HOME=/tmp -e DOTNET_CLI_
 	-v $(RAIZ):/repo -v $(HOME)/.nuget/packages:/nuget $(if $(GITLEAKS),-v $(GITLEAKS):/usr/local/bin/gitleaks:ro) \
 	-w /repo/services/core-api $(SDK_IMAGE)
 
-.PHONY: help restore build format format-fix quality
+.PHONY: help restore build test format format-fix quality
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-11s %s\n", $$1, $$2}'
@@ -22,6 +22,9 @@ restore: ## Restaura os pacotes
 
 build: restore ## Compila com warnings tratados como erro
 	@$(DOTNET) dotnet build Sombra.Core.slnx --no-restore --nologo -warnaserror -v minimal
+
+test: build ## Roda os testes (MSTest)
+	@$(DOTNET) dotnet test Sombra.Core.slnx --no-build --nologo -v quiet
 
 format: restore ## Confere formatação e estilo sem mudar nada
 	@$(DOTNET) dotnet format Sombra.Core.slnx --verify-no-changes --no-restore --severity warn

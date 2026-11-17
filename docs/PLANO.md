@@ -450,9 +450,9 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
   do SDK 10.0.404 (o SDK do Arch não traz o ASP.NET Core). Os projetos de teste (MSTest) nascem com o primeiro teste
   de cada um, e o job do Core no CI chega com eles (F1.2) — 2026-11-17.
   🔎 `make build` sem warnings; `make quality` = 100 (P3).
-- [ ] **F1.2** 🤖 Value objects com testes: `Cpf`, `CartaoSus`, `Telefone`, `Endereco`, `Temperatura`, `UmidadeRelativa`,
+- [x] **F1.2** 🤖 Value objects com testes: `Cpf`, `CartaoSus`, `Telefone`, `Endereco`, `Temperatura`, `UmidadeRelativa`,
   `IndiceDeCalor`, `LimitesTermicos`.
-  🔎 testes verdes; os vetores compartilhados passam.
+  🔎 testes verdes; os vetores compartilhados passam — 2026-11-17 (48 testes; quality 100/100; job do Core no CI).
 - [ ] **F1.3** 🤖 Agregados `Domicilio`, `Morador` (+ `PerfilDeSaude`, fatores de risco polimórficos), `RedeDeCuidado`,
   `Sentinela`, `Leitura`; regras R1, R3, R8 e R9.
   🔎 testes de cada regra, inclusive as violações.
@@ -824,12 +824,12 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** F1 em andamento: F1.1 feita, com o pipeline do professor em 100/100. Próximo: **F1.2** (value objects). Em paralelo: Matheus no ML (F4) e João no app (F6).
+**Agora:** F1 em andamento: F1.1 e F1.2 feitas (value objects, 48 testes, quality 100/100). Próximo: **F1.3** (agregados). Em paralelo: ML (F4) e app (F6) com os outros operadores.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
-| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1 feita (quality 100/100) |
+| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1 e F1.2 feitas (quality 100/100) |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
