@@ -418,11 +418,10 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   comandos; cenários `normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`,
   `payload-adulterado`; testes — 2026-11-17 16:48.
   🔎 `pytest` verde; contra o Mosquitto do compose, publica e recebe um comando de teste.
-- [ ] **F0.12** 🤖 CI: um workflow só (`ci.yml`) com filtro por pasta, mais gitleaks, shellcheck e actionlint, e um job
+- [x] **F0.12** 🤖 CI: um workflow só (`ci.yml`) com filtro por pasta, mais gitleaks, shellcheck e actionlint, e um job
   agregador `ci-ok`, que vira o check obrigatório da `main` (D15). Actions fixadas por SHA. O `release.yml` nasce na F8.3,
   quando houver artefatos.
-  🔎 CI verde no PR; a proteção da `main` lista o `ci-ok`.
-  ⏸ 2026-11-17 16:50: `ci.yml` implementado e validado localmente (actionlint, gitleaks); falta rodar no PR #3.
+  🔎 CI verde no PR; a proteção da `main` lista o `ci-ok` — 2026-11-17 (PR #3).
 - [x] **F0.13** 🤖 ADRs 001–006 (`docs/adr/`): linguagem ubíqua · monorepo · dois serviços donos dos seus bancos · MQTT
   público com HMAC e sem PII · LLM com fallback · índice de calor replicado de propósito com vetores compartilhados.
   🔎 os ADRs existem e a §2.1 os cita — 2026-11-17 16:53.
@@ -823,11 +822,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** F0 quase fechada; falta o 🔎 da F0.12 (CI verde no PR do lote `f0-fundacao-3`). Depois vem a **F1** (Core em C#).
+**Agora:** F0 concluída. Próximo: **F1** (Core em C#).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.11 e F0.13–F0.16 feitas; F0.12 espera o CI no PR do lote `f0-fundacao-3` |
+| F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
