@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sombra.Aplicacao\Sombra.Aplicacao.csproj" />
+    <ProjectReference Include="..\Sombra.Dominio\Sombra.Dominio.csproj" />
+    <ProjectReference Include="..\Sombra.Privacidade\Sombra.Privacidade.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>

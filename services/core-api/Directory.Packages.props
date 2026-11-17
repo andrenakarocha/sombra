@@ -1,0 +1,12 @@
+<Project>
+  <!-- Central Package Management: a versão de cada pacote mora só aqui. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Analisador de estilo em todos os projetos (o mesmo do Directory.Build.props do professor). -->
+    <GlobalPackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
+  </ItemGroup>
+</Project>

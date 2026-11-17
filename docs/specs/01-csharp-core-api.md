@@ -22,13 +22,13 @@ O **coração do Sombra**: domicílios, moradores, rede de cuidado, Sentinelas, 
 ```
 services/core-api/
 ├── Sombra.Core.slnx · Directory.Build.props · Directory.Packages.props · .editorconfig
-├── src/
+├── sources/                       (layout do pipeline do professor; os testes também ficam aqui)
 │   ├── Sombra.Dominio/          entidades, VOs, regras, eventos (zero dependências)
 │   ├── Sombra.Aplicacao/        casos de uso, portas (interfaces), DTOs, validação
 │   ├── Sombra.Infraestrutura/   EF Core, repositórios, MQTTnet, ClimaClient, notificadores, outbox
 │   ├── Sombra.Privacidade/      módulo de Cyber (spec 07)
 │   └── Sombra.Api/              controllers, middlewares, hub SignalR, Program.cs
-├── tests/
+├── sources/ (testes, MSTest)
 │   ├── Sombra.Dominio.Tests/ · Sombra.Aplicacao.Tests/ · Sombra.Privacidade.Tests/
 │   ├── Sombra.Api.IntegrationTests/   (WebApplicationFactory + Testcontainers Postgres e Mosquitto)
 │   └── Sombra.ArchitectureTests/
