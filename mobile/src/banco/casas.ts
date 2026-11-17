@@ -1,4 +1,4 @@
-import type { Domicilio } from '@/api/tipos';
+import type { Domicilio } from '@/application/modelos';
 
 import { banco } from './banco';
 

@@ -615,7 +615,9 @@ provando o antes e o depois.
   🔎 sem backend, o app abre com dados de exemplo e um aviso claro.
 **Nível alto (operador, 2026-11-17).** A régua são os apps mobile anteriores do time (Pitlane, Obscurial, Orbital
 Guardian): domínio puro e testável, local-first de verdade, recursos nativos com propósito, qualidade medida no CI.
-Roda **antes** da F6.7 e da F6.8, na ordem abaixo. O app continua abrindo no Expo Go; o APK via EAS é um extra.
+Roda **antes** da F6.7 e da F6.8. Ordem de execução: F6.9 → F6.10 → F6.12 → F6.13 → F6.11 (os repositórios e a
+outbox nascem testados sozinhos; a F6.11 faz a virada das telas) → F6.14 em diante. O app continua abrindo no Expo
+Go; o APK via EAS é um extra.
 
 - [x] **F6.9** 🤖 Domínio puro (`src/domain`, sem React Native): `Result`, `Clock`, value objects com factory
   (`Temperatura`, `UmidadeRelativa`, `IndiceDeCalor`, `Cpf`, `CartaoSus`, `Telefone`) e a classificação dos 5 níveis.
@@ -627,9 +629,9 @@ Roda **antes** da F6.7 e da F6.8, na ordem abaixo. O app continua abrindo no Exp
 - [ ] **F6.11** 🤖 Casos de uso, ports, composition root e Zod no contrato: as telas falam só com os casos de uso;
   toda resposta da API passa por um schema Zod antes de entrar no domínio.
   🔎 teste de arquitetura: `domain` não importa nada de fora; `presentation` não importa `infrastructure`.
-- [ ] **F6.12** 🤖 Local-first: porta `SqlDatabase` (`expo-sqlite` no aparelho, `sql.js` no Jest), migrações
-  versionadas e repositórios; o SQLite vira a fonte da verdade das telas.
-  🔎 repositórios testados com SQL real no Jest.
+- [x] **F6.12** 🤖 Local-first: porta `SqlDatabase` (`expo-sqlite` no aparelho, `sql.js` no Jest), migrações
+  versionadas e repositórios; o SQLite vira a fonte da verdade das telas (a virada das telas é na F6.11).
+  🔎 repositórios testados com SQL real no Jest — 2026-11-17 (inclui a migração 3 → 4 sem perder check-in da fila).
 - [ ] **F6.13** 🤖 Outbox única + motor de sincronização: toda escrita (check-in, reconhecer, morador) com
   `operationId` idempotente, aplicação otimista, backoff exponencial com jitter e dead-letter.
   🔎 testes: offline → fila → volta a rede → enviado uma vez só; erro definitivo → dead-letter.

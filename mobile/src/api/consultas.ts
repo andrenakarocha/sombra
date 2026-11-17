@@ -16,7 +16,7 @@ import type {
   Pagina,
   PontoDeResfriamento,
   PrivacidadeDaCasa,
-} from './tipos';
+} from '@/application/modelos';
 
 // networkMode 'always': offline, a consulta roda mesmo assim e cai no cache do SQLite em vez de ficar pausada.
 export const queryClient = new QueryClient({

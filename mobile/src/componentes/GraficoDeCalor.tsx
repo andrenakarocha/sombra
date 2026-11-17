@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 
-import type { Leitura } from '@/api/tipos';
+import type { Leitura } from '@/application/modelos';
 import type { NivelDeRisco } from '@/domain/clima/nivel-de-risco';
 import { useTema } from '@/tema';
 import { TOKEN_DO_NIVEL } from '@/tema/risco';

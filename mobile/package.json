@@ -29,16 +29,19 @@
     "react-native-safe-area-context": "~5.11.1",
     "react-native-screens": "~4.30.1",
     "react-native-svg": "15.16.0",
+    "zod": "^4.6.7",
     "zustand": "^5.1.0"
   },
   "devDependencies": {
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
+    "@types/sql.js": "^1.4.11",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
     "jest": "~30.5.2",
     "jest-expo": "~58.0.15",
+    "sql.js": "^1.16.0",
     "test-renderer": "^1.3.1",
     "typescript": "~6.0.3"
   },
@@ -59,6 +62,10 @@
     ],
     "setupFiles": [
       "./jest.setup.ts"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^@test/(.*)$": "<rootDir>/test-utils/$1"
+    },
+    "testTimeout": 15000
   }
 }

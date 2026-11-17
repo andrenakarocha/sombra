@@ -9,7 +9,7 @@ import type {
   Morador,
   PontoDeResfriamento,
   PrivacidadeDaCasa,
-} from '@/api/tipos';
+} from '@/application/modelos';
 
 const LURDES = '0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10';
 const ANTONIO = '7c2d9e4f-1a3b-4c5d-8e6f-0a1b2c3d4e5f';

@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useCasas, usePontosDeResfriamento } from '@/api/consultas';
 import { mensagemDeErro } from '@/api/mensagens';
-import type { PontoDeResfriamento } from '@/api/tipos';
+import type { PontoDeResfriamento } from '@/application/modelos';
 import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
 import { Botao } from '@/componentes/Botao';
 import { SeletorDeCasa, useCasaEscolhida } from '@/componentes/SeletorDeCasa';

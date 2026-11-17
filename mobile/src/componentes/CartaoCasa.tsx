@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import type { Domicilio } from '@/api/tipos';
+import type { Domicilio } from '@/application/modelos';
 import { espaco, fonte, raio, useTema } from '@/tema';
 import { formatarGraus, formatarHora } from '@/util/formato';
 
