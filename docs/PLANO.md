@@ -377,8 +377,9 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
 
 - [x] **F0.1** 🤖 Plano mestre neste formato + specs por disciplina — 2026-11-17.
   🔎 `docs/PLANO.md` e `docs/specs/` existem no repositório `year3/second-gs/sombra/`.
-- [ ] **F0.2** 🤖 `tools/doctor.sh`: confere .NET SDK 10, JDK 21, Node ≥ 22, Python 3.12, Docker + Compose, pwsh, Vagrant +
-  VirtualBox, FFmpeg, `gh` logado. Imprime o que falta e como instalar.
+- [x] **F0.2** 🤖 `tools/doctor.sh`: confere git, Docker + Compose, .NET SDK 10, JDK 21, Node ≥ 22, uv (instala o Python
+  3.12 por projeto), `gh` logado, jq e shellcheck; opcionais por fase (VirtualBox, Vagrant, FFmpeg, gitleaks, psql). O
+  pwsh não é preciso: o script de qualidade roda na imagem do SDK. Imprime o que falta e como instalar — 2026-11-17 16:07.
   🔎 sai com 0 na máquina do André, ou com a lista exata do que instalar.
 - [ ] **F0.3** 🧑 🔑 Contas e chaves de que o código precisa agora: dono do repositório (DA1), `gh auth status`, chave
   Gemini no `.env` local. Wokwi, Azure DevOps e YouTube podem esperar as fases deles (F5.1, F10.1, F13.7).
@@ -795,7 +796,7 @@ spec. Um checkpoint por superfície.
 | P8 | XGBoost → ONNX (onnxmltools) e ONNX Runtime Java dão a mesma probabilidade | F4.6, F9.1 | ⬜ |
 | P9 | O ESP32 no Wokwi conecta num broker MQTT público pela rede `Wokwi-GUEST`, e o projeto abre por link público | F5.3, F5.5 | ⬜ |
 | P10 | `@microsoft/signalr` funciona no Expo SDK 54 (Expo Go) | F6.3 | ⬜ |
-| P11 | Vagrant + VirtualBox sobem Ubuntu 24.04 no Arch do André | F8.1 | 🟡 a pasta `~/VirtualBox VMs` existe; o Vagrant não foi conferido |
+| P11 | Vagrant + VirtualBox sobem Ubuntu 24.04 no Arch do André | F8.1 | 🟡 2026-11-17 (doctor): VirtualBox 7.2.22 instalado; **Vagrant ausente** e fora dos repositórios oficiais do Arch (só AUR). Alternativa: VBoxManage + imagem cloud do Ubuntu com cloud-init. Decidir na F8.1 |
 | P12 | A API REST do Azure DevOps cria Test Cases com passos e vínculos sem licença de Test Plans | F10.4 | ⬜ |
 | P13 | O André tem Azure for Students ativo | F11.8 | ⬜ |
 | P14 | O pipeline do HENRY (HyperFrames, FFmpeg, Chrome headless, voz Gemini TTS) roda de novo, com cota de TTS | F13.1 | 🟡 rodou em out/2026 no Challenge |
@@ -811,11 +812,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Agora (2026-11-17):** plano mestre escrito (F0.1) a partir da sessão de planejamento: Sombra escolhido, monorepo,
 escopo máximo, decisões D1–D12 fechadas. A entrevista chegou (F0.16 feita) e virou a D13 (escalonamento em
-degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. Próximo: **F0.2** (doctor) e, em paralelo, a **F0.3** (contas do André).
+degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 feita (doctor verde). Próximo: **F0.3** e **F0.4** (scaffold).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1 feita |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1, F0.2 e F0.16 feitas |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -851,3 +852,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🤖 | Ajustes (a)–(h) aplicados como D13, sem veto do André: specs 00, 01, 04, 05, 06, 09 e 10, mais §1.4, §3.4, §7, F0.11, F10.2, F11.4, F12.2 e F13.4. DA2 passa a incluir a cidade (se não for a capital, a estação INMET da D6 muda) e fecha antes da F0.15 |
 | 2026-11-17 | 🧑 | André: a Dona Cida mora em **São Paulo** (capital); a A701 continua valendo (D6). Bairro fica "a preencher" até a F12.1 (DA2) |
 | 2026-11-17 | 🤖 | F0.1 — `git init` do repositório em `year3/second-gs/sombra/` (branch `main`); plano e specs movidos para `docs/`. Os enunciados e a entrevista bruta ficam fora do repositório |
+| 2026-11-17 | 🤖 | F0.2 — `tools/doctor.sh` (só lê o ambiente). Na máquina do André sai com 0: git 2.56, Docker 29.9 + Compose 5.6, .NET SDK 10.0.113, JDK 21.0.13, Node 25.2, uv 0.10.4, gh 2.102 (logado como `andrenakarocha`), jq, shellcheck. Opcional faltando: Vagrant (P11). Sem pwsh local: o script de qualidade do professor roda na imagem do SDK, como no CP06 |
