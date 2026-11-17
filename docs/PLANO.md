@@ -426,9 +426,10 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
 - [x] **F0.13** 🤖 ADRs 001–006 (`docs/adr/`): linguagem ubíqua · monorepo · dois serviços donos dos seus bancos · MQTT
   público com HMAC e sem PII · LLM com fallback · índice de calor replicado de propósito com vetores compartilhados.
   🔎 os ADRs existem e a §2.1 os cita — 2026-11-17 16:53.
-- [ ] **F0.14** 🤖 Issues e GitHub Project a partir dos checkpoints, com label `delegavel` nos 🤝 (é o que facilita
-  passar trabalho ao Matheus e ao João).
-  🔎 `gh issue list --label delegavel` lista os 🤝.
+- [x] **F0.14** 🤖 Handoff para delegar, **sem issues nem quadro** (decisão do André): o `AGENTS.md` ensina o agente de
+  quem chega dizendo "sou o João, quero fazer a minha parte" (lista os 🤝 abertos, confirma, segue a §0 e a spec,
+  entrega por PR) e traz o prompt pronto para o grupo — 2026-11-17 16:56.
+  🔎 o `AGENTS.md` tem o fluxo de delegação e o prompt.
 - [ ] **F0.15** 🤖 `ml/scripts/baixar_dados.py`: baixa os históricos anuais do INMET (2010–2025), extrai só a A701,
   confere checksums e grava em `ml/dados/brutos/` com `PROVENIENCIA.md`. Insumo comum do ML (F4) e do seed do Clima (F3.3).
   🔎 16 arquivos anuais da A701 presentes, colunas esperadas, `-9999` contado (P2).
@@ -772,8 +773,9 @@ spec. Um checkpoint por superfície.
 - **Podem correr juntos:** F3 com F1 (serviços e bancos separados) · F4 com qualquer fase · F10.2–F10.3 a partir da F0 ·
   F13.1–F13.3 a partir da F9.
 - **Nunca em paralelo:** duas sessões no mesmo serviço · migrações do mesmo banco · duas sessões editando a mesma spec.
-- **Ao delegar:** a issue 🤝 do checkpoint (F0.14) leva o link da spec, o contrato e o 🔎. Quem recebe segue a §0 e abre
-  um PR por checkpoint.
+- **Ao delegar:** o André manda o repositório e o prompt do `AGENTS.md` (F0.14). O agente de quem recebe lista os 🤝
+  abertos, segue a §0 e a spec e entrega por PR. Sem issues nem quadro: o plano é o quadro. Antes do primeiro PR,
+  o André adiciona a pessoa como colaboradora no GitHub.
 
 ---
 
@@ -820,7 +822,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 e F0.11 feitas (`make up` verde; simulador da Sentinela com 45 testes). F0.12 implementada (falta o 🔎 no PR). F0.13 feita (ADRs). Próximo: **F0.15** (dados do INMET, baixando) e **F0.14** (issues), no branch `f0-fundacao-3`.
+**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 e F0.11 feitas (`make up` verde; simulador da Sentinela com 45 testes). F0.12 implementada (falta o 🔎 no PR). F0.13 feita (ADRs). F0.14 feita (handoff no `AGENTS.md`, sem issues). Próximo: **F0.15** (dados do INMET), no branch `f0-fundacao-3`.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -875,3 +877,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🤖 | F0.11 — `tools/sentinela-sim/` (Python 3.12 via uv, `paho-mqtt` 2): outra implementação do contrato, com assinatura HMAC, verificação de comandos (assinatura, outra Sentinela, replay, janela de 300 s), `seq` persistido entre execuções, status `online` e Last Will `offline`, logs JSON da §6. Seis cenários determinísticos (`normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`, `payload-adulterado`) e um modo `comando` que publica como o Core. **45 testes**: os 20 vetores do índice de calor e os 6 de assinatura (os mesmos que o ESP32, o Core e o Clima vão rodar), a verificação, os cenários e a integração com o Mosquitto do compose (comando aceito; replay e adulteração recusados; telemetria com assinatura válida). Fumaça pela CLI: `onda-de-calor` sobe ATENCAO → CAUTELA_EXTREMA → PERIGO, um comando chega no meio e é aceito, o "estou bem" é enviado; 24 linhas de log JSON válidas. `make sim`, `make test-sim` e ruff no `make lint`. Catálogo de eventos (§4) e correlação de comandos (`{deviceId}:c{seq}`) atualizados em `docs/observabilidade.md` |
 | 2026-11-17 | 🤖 | F0.12 implementada — `.github/workflows/ci.yml`: job `mudancas` (filtro por pasta) e jobs condicionais (contratos; design, que também confere se o `tokens.css` está em dia; simulador com Mosquitto e uv; ambiente local com `make up`, saúde e isolamento dos bancos; shellcheck; actionlint), `gitleaks` sempre, e `ci-ok` agregando tudo. **Um check obrigatório só**, porque com filtro por pasta um check obrigatório por componente travaria PR que não toca aquela pasta. Actions fixadas por **SHA de commit** (checkout v7.0.1, setup-python v7.1.0, setup-node v7.1.0, setup-uv v10.3.3, paths-filter v4.0.3), com os parâmetros conferidos no `action.yml` de cada SHA (são versões mais novas que o conhecimento do agente). `permissions: contents: read` e `persist-credentials: false`. **Troca:** a `gitleaks-action` v3 está sob licença comercial (EULA); o CI usa o binário do gitleaks (MIT) pela imagem oficial `v8.30.1`. actionlint 1.7.12 e gitleaks rodados localmente: ok, sem vazamentos nos 20 commits. **Escopo:** o `release.yml` foi para a F8.3, quando houver o que publicar |
 | 2026-11-17 | 🤖 | F0.13 — seis ADRs em `docs/adr/` (contexto, decisão, consequências, alternativas) e o índice: 001 linguagem ubíqua, 002 monorepo, 003 dois serviços donos dos seus bancos (com o isolamento por papel verificado no CI), 004 MQTT público assinado e sem PII, 005 LLM sem PII e com fallback, 006 índice de calor replicado com vetores. A §2.1 cita cada um (D2, D4, D7, D11 e as duas decisões técnicas) |
+| 2026-11-17 | 🧑🤖 | F0.14 — **decisão do André: sem issues e sem GitHub Project.** O plano e os checkpoints bastam; a delegação é por handoff ("abre o Claude de vocês e fala: sou o João, quero fazer minha parte"). O `AGENTS.md` ganhou o fluxo para o agente de quem chega e o prompt pronto para o grupo. §9 ajustada. A label `delegavel` criada na F0.5 fica sem uso |
