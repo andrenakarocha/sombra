@@ -1,11 +1,9 @@
 import { Stack } from 'expo-router';
 
-import { useTempoReal } from '@/api/tempo-real';
 import { fonte, useTema } from '@/tema';
 
 export default function FamiliaLayout() {
   const tema = useTema();
-  useTempoReal();
   return (
     <Stack
       screenOptions={{
