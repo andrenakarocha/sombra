@@ -42,6 +42,9 @@ __pycache__/
 # Dados: os ZIPs do INMET ficam fora; os CSVs filtrados da A701 são versionados (F0.15)
 ml/dados/**/*.zip
 
+# Estado local do simulador da Sentinela (seq)
+tools/sentinela-sim/.estado/
+
 # Infra
 .vagrant/
 *.log

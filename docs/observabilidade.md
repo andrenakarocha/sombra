@@ -42,8 +42,8 @@ serviços, a regra é verificada em revisão e pelo gitleaks.
 ## 3. Correlação ponta a ponta
 
 - **HTTP:** o header `X-Correlation-Id` é aceito, propagado e devolvido. Sem ele, o serviço gera 16 caracteres hex.
-- **MQTT:** uma mensagem da Sentinela vira o `correlationId` `{deviceId}:{seq}` (ex.: `snt-7f3a9c:57`). Assim dá
-  para achar no log exatamente a mensagem que o botão gerou.
+- **MQTT:** uma mensagem da Sentinela vira o `correlationId` `{deviceId}:{seq}` (ex.: `snt-7f3a9c:57`), e um
+  comando do Core vira `{deviceId}:c{seq}`. Assim dá para achar no log exatamente a mensagem que o botão gerou.
 - **Atravessa:** Core → Clima (header) · Core → SignalR (campo `correlationId` do evento) · Core → outbox (coluna) →
   comando MQTT e tradução por IA (log com o mesmo ID).
 - **Formato aceito:** até 64 caracteres em `[A-Za-z0-9:_-]`. Fora disso, o serviço descarta e gera um novo.
@@ -61,7 +61,7 @@ Nome `<contexto>.<fato>` em português, no particípio. Evento novo entra aqui n
 | Core | `leitura.registrada`, `leitura.recusada`, `mqtt.assinatura_invalida`, `mqtt.replay_descartado`, `sentinela.online`, `sentinela.offline`, `alerta.aberto`, `alerta.escalonado`, `alerta.reconhecido`, `alerta.resolvido`, `checkin.registrado`, `pedido_de_ajuda.recebido`, `lembrete.enviado`, `comando.publicado`, `clima.indisponivel`, `clima.recuperado` |
 | Core · Privacidade | `privacidade.pii_detectada`, `privacidade.vazamento_bloqueado`, `privacidade.saida_externa_bloqueada`, `ia.traducao_gerada`, `ia.fallback_template`, `risco_cidadao.atualizado` |
 | Clima | `observacao.registrada`, `observacao.recusada`, `previsao.calculada` (com `fonte`: `onnx` ou `regra`), `modelo.carregado`, `modelo.indisponivel`, `fonte_meteorologica.falhou`, `replay.iniciado`, `replay.encerrado` |
-| Sentinela (serial) | `boot`, `wifi.conectado`, `mqtt.conectado`, `mqtt.desconectado`, `nivel.mudou`, `checkin.enviado`, `fila.descarregada` |
+| Sentinela (serial) e simulador | `boot`, `wifi.conectado`, `mqtt.conectado`, `mqtt.desconectado`, `telemetria.enviada`, `nivel.mudou`, `checkin.enviado`, `evento.enviado`, `comando.aceito`, `comando.recusado`, `fila.descarregada`; só no simulador: `telemetria.adulterada_enviada`, `comando.publicado`, `simulador.ouvindo` |
 | VM | `provision.etapa_iniciada`, `provision.etapa_concluida`, `provision.etapa_falhou`, `monitor.verificacao`, `monitor.alerta`, `monitor.servico_inativo` |
 
 ## 5. Por stack

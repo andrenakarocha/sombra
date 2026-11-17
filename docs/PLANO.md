@@ -412,9 +412,9 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   com `/health`) + `Makefile` (`env`, `up`, `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`; o `demo` chega
   na F9.2) — 2026-11-17 16:43.
   🔎 `make up` → os três `/health` respondem 200; o papel de um serviço é barrado no banco do outro.
-- [ ] **F0.11** 🤖 Simulador da Sentinela (`tools/sentinela-sim/`, Python): telemetria e eventos assinados (HMAC), obedece
+- [x] **F0.11** 🤖 Simulador da Sentinela (`tools/sentinela-sim/`, Python): telemetria e eventos assinados (HMAC), obedece
   comandos; cenários `normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`,
-  `payload-adulterado`; testes.
+  `payload-adulterado`; testes — 2026-11-17 16:48.
   🔎 `pytest` verde; contra o Mosquitto do compose, publica e recebe um comando de teste.
 - [ ] **F0.12** 🤖 CI: um workflow por componente com `paths:`, mais gitleaks, shellcheck e actionlint; `release.yml`
   esqueleto (artefatos + `SHA256SUMS` em tag). Os jobs viram checks obrigatórios da `main` (D15).
@@ -815,11 +815,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 feita (`make up` verde). Próximo: **F0.11** (simulador da Sentinela), no branch `f0-fundacao-3`.
+**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 e F0.11 feitas (`make up` verde; simulador da Sentinela com 45 testes). Próximo: **F0.12** (CI), no branch `f0-fundacao-3`.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.10 e F0.16 feitas (F0.1–F0.9 na `main` pelos PRs #1 e #2); lote seguinte no branch `f0-fundacao-3` |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.11 e F0.16 feitas (F0.1–F0.9 na `main` pelos PRs #1 e #2); lote seguinte no branch `f0-fundacao-3` |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -867,3 +867,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🤖 | F0.9 (proposta) — direção de arte "luz filtrada pela folhagem", tirada das fotos e da entrevista (paredes ocre, telhado de barro, sombra de árvore na calçada). `design/tokens.json` (primitivos e semânticos dos temas claro e escuro, com aliases), `tokens.py gerar` (CSS) e `tokens.py conferir`: **50 pares de contraste WCAG 2.2 passam nos dois temas**, com o texto principal entre 12,6:1 e 16:1 e os selos de risco ≥ 5:1. `amostra.html`: os cinco níveis com ícone de forma própria, cartão da casa, Modo Idoso, farol de privacidade, paleta e tipografia (Fraunces + Atkinson Hyperlegible Next). Revisada em capturas reais (Chromium headless, 1440 e 390 px, claro e escuro). A revisão corrigiu a textura com cara de camuflagem, a paleta desalinhada, a moldura do celular invisível no escuro e o cartão quebrando no mobile. Falta a aprovação do André |
 | 2026-11-17 | 🧑 | F0.9 — **direção de arte aprovada pelo André** ("pika"), virando a D16. Lote F0.8–F0.9 enviado por ele; **PR #2** mergeado às 19:40 UTC com o "pode mergear" no chat. O próximo lote segue no branch `f0-fundacao-3` |
 | 2026-11-17 | 🤖 | F0.10 — `compose.yaml` (projeto `sombra`, tudo em 127.0.0.1): Postgres 16 com script de init que cria **um papel e um banco por serviço** e revoga o `CONNECT` público; Mosquitto 2; Core, Clima e painel como placeholders nginx que dizem em qual fase serão trocados. `Makefile` com `env`, `up` (espera os healthchecks), `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`. `tools/novo-env.py`: gera os segredos que faltam, **nunca sobrescreve** valor real (a chave Gemini foi preservada), grava em 600 e só mostra nomes. `.env.example` sem senha duplicada: as strings de conexão passam a ser montadas pelo compose. **Ajuste:** a 5432 do host já é do PostgreSQL local do André; o banco do compose fica em 55432 no host (`DB_PORTA_LOCAL`) e `db:5432` dentro. 🔎 os 5 serviços `healthy`; `/health/live`, `/actuator/health/liveness` e `/healthz` → 200; o papel `sombra_core` é barrado no `sombra_clima` (`permission denied`); ida e volta no MQTT; `make test` e `make lint` verdes |
+| 2026-11-17 | 🤖 | F0.11 — `tools/sentinela-sim/` (Python 3.12 via uv, `paho-mqtt` 2): outra implementação do contrato, com assinatura HMAC, verificação de comandos (assinatura, outra Sentinela, replay, janela de 300 s), `seq` persistido entre execuções, status `online` e Last Will `offline`, logs JSON da §6. Seis cenários determinísticos (`normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`, `payload-adulterado`) e um modo `comando` que publica como o Core. **45 testes**: os 20 vetores do índice de calor e os 6 de assinatura (os mesmos que o ESP32, o Core e o Clima vão rodar), a verificação, os cenários e a integração com o Mosquitto do compose (comando aceito; replay e adulteração recusados; telemetria com assinatura válida). Fumaça pela CLI: `onda-de-calor` sobe ATENCAO → CAUTELA_EXTREMA → PERIGO, um comando chega no meio e é aceito, o "estou bem" é enviado; 24 linhas de log JSON válidas. `make sim`, `make test-sim` e ruff no `make lint`. Catálogo de eventos (§4) e correlação de comandos (`{deviceId}:c{seq}`) atualizados em `docs/observabilidade.md` |
