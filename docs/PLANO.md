@@ -163,6 +163,7 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | D12 | Tipografia **Atkinson Hyperlegible** e farol acessível (cor + ícone + texto) em todas as superfícies | plano, aceito |
 | D13 | **Ajustes da entrevista** (Dona Cida e a filha): escalonamento em degraus (lembrete à pessoa → lembrete leve à família → "quem está perto" → alerta só em perigo ou pedido de ajuda); Sentinela discreta (sem piscar nem apitar sem parar); check-in diário opcional; lembrete de água no pico da tarde; lembretes nunca entre 22h e 7h; "o que acontece se eu esquecer" sempre explicado | entrevista, 2026-11-17 |
 | D15 | **Repositório público `andrenakarocha/sombra`** com a `main` protegida para todos, inclusive o admin: PR obrigatório (0 aprovações), histórico linear, sem force push. **Um PR por lote**, com **rebase merge** (um commit por checkpoint na `main`). **O push é manual, do André**, e **cada merge, release ou publicação precisa do "pode mergear" dele no chat** (hooks da máquina); o agente abre o PR e roda só aquele comando. Os checks do CI viram obrigatórios na F0.12 | André, 2026-11-17 (fecha a DA1) |
+| D16 | **Direção de arte "luz filtrada pela folhagem"** (`design/`): tokens com temas claro e escuro, contraste conferido por script (≥ 7:1 no texto principal), Fraunces + Atkinson Hyperlegible Next, risco com cor + forma + texto | André, 2026-11-17 (fecha a DA5) |
 | D14 | **Fotos do território fora das entregas** (padronizadas pelo time); uso possível só no pitch, com a placa do carro desfocada. A transcrição vai para o repositório com "a filha" no lugar do nome dela | André, 2026-11-17 |
 
 ### 2.2 Decisões abertas
@@ -172,7 +173,6 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | DA2 | Bairro da Ficha · persona fictícia do sistema | cidade **São Paulo** confirmada (a A701 continua valendo); bairro "a preencher"; persona "Dona Lurdes, 78 anos", inspirada na Dona Cida | F12.1 (não bloqueia nada) |
 | DA3 | Subir a VM pública no Azure | sim, se a F8 fechar com folga | F11.8 |
 | DA4 | Voz do pitch: TTS (Gemini, como no HENRY) ou voz de alguém do time | TTS | F13.3 |
-| DA5 | Direção de arte do Sombra | proposta da F0.9 | F0.9 |
 
 ### 2.3 Fora do escopo (ideias para depois)
 
@@ -405,11 +405,9 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   🔎 `npx @asyncapi/cli validate docs/contratos/mqtt.asyncapi.yaml` passa.
 - [x] **F0.8** 🤖 `docs/observabilidade.md` (§6 detalhada: campos, nomes de evento, correlação, exemplos por stack) — 2026-11-17 16:28.
   🔎 cada spec de serviço cita a seção que lhe cabe.
-- [ ] **F0.9** 🧑🤖 Direção de arte: `design/tokens.json` + `design/README.md` + uma página de amostra (farol nos 5 níveis,
-  cartão de casa, botão gigante, tipografia, claro e escuro). Fecha a DA5.
+- [x] **F0.9** 🧑🤖 Direção de arte: `design/tokens.json` + `design/README.md` + uma página de amostra (farol nos 5 níveis,
+  cartão de casa, botão gigante, tipografia, claro e escuro). Fecha a DA5 — 2026-11-17 16:40.
   🔎 André aprova a amostra; aprovação registrada na §13.
-  ⏸ 2026-11-17 16:35: proposta pronta em `design/` (tokens, CSS gerado, conferência de contraste e `amostra.html`);
-  aguardando a aprovação do André.
 - [ ] **F0.10** 🤖 `compose.yaml` (Postgres com os 2 bancos via init, Mosquitto, placeholders do Core, do Clima e do painel
   com `/health`) + `Makefile` (`up`, `down`, `logs`, `test`, `demo`, `lint`, `db-reset`).
   🔎 `make up` → os três `/health` respondem 200.
@@ -816,11 +814,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D15) e entrevista incorporada (D13, D14). Repositório público com F0.1–F0.7 na `main` (PR #1); F0.8 feita no branch `f0-fundacao-2`. F0.9 com proposta pronta, aguardando a aprovação do André. Próximo: F0.10–F0.15, que não dependem dela.
+**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. Próximo: **F0.10** (compose e Makefile), no branch `f0-fundacao-3`.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.8 e F0.16 feitas (F0.1–F0.7 na `main` pelo PR #1); lote seguinte no branch `f0-fundacao-2` |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.9 e F0.16 feitas (na `main` pelos PRs #1 e #2); lote seguinte no branch `f0-fundacao-3` |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -866,3 +864,4 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🧑🤖 | Lote F0.5–F0.7 enviado pelo André; **PR #1** aberto pelo agente. O hook `guard-autonomous-policy` barrou o merge: merge, release e publicação exigem aprovação humana explícita, valendo para um comando só. Decisão do André: **ele aprova cada merge no chat** e o agente roda só o merge por rebase, com a variável de aprovação do hook. PR #1 mergeado às 19:26 UTC (aprovado no chat); `main` linear com um commit por checkpoint. O próximo lote segue no branch `f0-fundacao-2`. A F8.3 (`gh release`) também vai pedir esse ok |
 | 2026-11-17 | 🤖 | F0.8 — `docs/observabilidade.md`: os 8 campos obrigatórios, níveis com exemplos, o que nunca vai para o log, correlação ponta a ponta (HTTP `X-Correlation-Id`; MQTT `{deviceId}:{seq}`; propagação para Clima, SignalR, outbox e IA; código curto do erro na tela), catálogo de eventos por serviço, como fazer em cada stack (Serilog + Expressions; formatter próprio do Spring; logging do Python; `jq -cn` no bash; serial legível no ESP32), saúde, versão e trilhas de auditoria, retenção e um checklist de pronto. 🔎 as specs 01, 02, 04, 05, 06, 07 e 08 citam as seções que lhes cabem |
 | 2026-11-17 | 🤖 | F0.9 (proposta) — direção de arte "luz filtrada pela folhagem", tirada das fotos e da entrevista (paredes ocre, telhado de barro, sombra de árvore na calçada). `design/tokens.json` (primitivos e semânticos dos temas claro e escuro, com aliases), `tokens.py gerar` (CSS) e `tokens.py conferir`: **50 pares de contraste WCAG 2.2 passam nos dois temas**, com o texto principal entre 12,6:1 e 16:1 e os selos de risco ≥ 5:1. `amostra.html`: os cinco níveis com ícone de forma própria, cartão da casa, Modo Idoso, farol de privacidade, paleta e tipografia (Fraunces + Atkinson Hyperlegible Next). Revisada em capturas reais (Chromium headless, 1440 e 390 px, claro e escuro). A revisão corrigiu a textura com cara de camuflagem, a paleta desalinhada, a moldura do celular invisível no escuro e o cartão quebrando no mobile. Falta a aprovação do André |
+| 2026-11-17 | 🧑 | F0.9 — **direção de arte aprovada pelo André** ("pika"), virando a D16. Lote F0.8–F0.9 enviado por ele; **PR #2** mergeado às 19:40 UTC com o "pode mergear" no chat. O próximo lote segue no branch `f0-fundacao-3` |
