@@ -474,13 +474,14 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
   🔎 uma requisição gera uma linha JSON com `correlationId` e nenhum dado pessoal.
 - [ ] **F1.9** 🤖 Workers e tempo real:
   - `IngestaoMqttWorker`: MQTTnet → HMAC + anti-replay → `Channel<T>` → `RegistrarLeitura`;
-  - `EscalonadorDeAlertasWorker`: a cada 15 s;
+  - `EscalonadorDeAlertasWorker`: a cada 15 s; na mesma volta roda o caso de uso `LembrarRotina` (check-in diário
+    esquecido vira lembrete leve, R11; lembrete de água no pico da tarde, no máximo 2 por dia, nunca à noite, R12);
   - `MonitorDePrevisaoWorker`: contra um stub do contrato do Clima até a F3.9;
   - `PublicadorDeComandosWorker`: outbox → MQTT;
   - hub SignalR `/hubs/sombra`.
 
   🔎 com o simulador: `onda-de-calor` abre o alerta e emite no hub; `sem-resposta` escalona; `payload-adulterado` é
-  descartado e gera evento de segurança.
+  descartado e gera evento de segurança; os testes do `LembrarRotina` cobrem R11 e R12 com relógio falso.
 - [ ] **F1.10** 🤖 Testes de arquitetura (NetArchTest) e teste de integração dos caminhos A e B do roteiro.
   🔎 `make test` verde; relatório de cobertura gerado.
 - [ ] **F1.11** 🤖 README da pasta (Ficha, diagrama de classes em Mermaid, como rodar, comando que cria o banco, link do
