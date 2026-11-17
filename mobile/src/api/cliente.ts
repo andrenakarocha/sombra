@@ -1,31 +1,14 @@
 // Cliente REST do Core (padrão BFF: o app só fala com o Core).
 
 import { API_URL } from '@/config';
-import { useSessao } from '@/sessao/sessao';
+import { responderDemo } from '@/demo/api-demo';
+import { TOKEN_DEMO, useSessao } from '@/sessao/sessao';
+
+import { ErroDaApi, SemConexao } from './erros';
+
+export { ErroDaApi, SemConexao } from './erros';
 
 const TEMPO_LIMITE_MS = 8000;
-
-export class SemConexao extends Error {
-  constructor() {
-    super('Sem conexão com o Sombra');
-  }
-}
-
-// ProblemDetails do Core. O `detail` nunca traz PII (docs/contratos/core-api.md).
-export class ErroDaApi extends Error {
-  constructor(
-    readonly status: number,
-    readonly titulo: string,
-    readonly correlationId: string,
-  ) {
-    super(titulo);
-  }
-
-  // Os 8 primeiros caracteres, para cruzar com o log sem expor nada (docs/observabilidade.md §3).
-  get codigo() {
-    return this.correlationId.slice(0, 8);
-  }
-}
 
 function novoCorrelationId() {
   return Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
@@ -35,6 +18,7 @@ type Opcoes = { metodo?: 'GET' | 'POST' | 'PUT' | 'DELETE'; corpo?: unknown };
 
 export async function requisitar<T>(caminho: string, { metodo = 'GET', corpo }: Opcoes = {}): Promise<T> {
   const { token, encerrar } = useSessao.getState();
+  if (token === TOKEN_DEMO) return responderDemo<T>(metodo, caminho, corpo);
   const correlationId = novoCorrelationId();
   const controle = new AbortController();
   const limite = setTimeout(() => controle.abort(), TEMPO_LIMITE_MS);
