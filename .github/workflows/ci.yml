@@ -26,6 +26,7 @@ jobs:
     outputs:
       contratos: ${{ steps.filtro.outputs.contratos }}
       design: ${{ steps.filtro.outputs.design }}
+      mobile: ${{ steps.filtro.outputs.mobile }}
       simulador: ${{ steps.filtro.outputs.simulador }}
       core: ${{ steps.filtro.outputs.core }}
       ambiente: ${{ steps.filtro.outputs.ambiente }}
@@ -45,6 +46,9 @@ jobs:
               - 'tools/mqtt-assinatura/**'
             design:
               - 'design/**'
+            mobile:
+              - 'mobile/**'
+              - 'design/tokens.json'
             simulador:
               - 'tools/sentinela-sim/**'
               - 'docs/contratos/**'
@@ -99,10 +103,38 @@ jobs:
           python-version: '3.12'
       - name: contraste WCAG dos dois temas
         run: python3 -I design/tokens.py conferir
-      - name: tokens.css em dia com o tokens.json
+      - name: tokens.css e tokens.ts do app em dia com o tokens.json
         run: |
           python3 -I design/tokens.py gerar
-          git diff --exit-code design/tokens.css
+          git diff --exit-code design/tokens.css mobile/src/tema/tokens.ts
+
+  mobile:
+    name: app (mobile)
+    needs: mudancas
+    if: needs.mudancas.outputs.mobile == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - name: dependências (package-lock.json)
+        run: npm ci
+      - name: lint
+        run: npm run lint
+      - name: typecheck
+        run: npm run typecheck
+      - name: testes
+        run: npm test -- --ci
+      - name: expo-doctor
+        run: npx expo-doctor
 
   simulador:
     name: simulador da Sentinela
@@ -232,7 +264,7 @@ jobs:
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [mudancas, contratos, design, simulador, core, ambiente-local, scripts, workflows, segredos]
+    needs: [mudancas, contratos, design, simulador, core, mobile, ambiente-local, scripts, workflows, segredos]
     runs-on: ubuntu-latest
     steps:
       - name: nenhum job falhou nem foi cancelado
