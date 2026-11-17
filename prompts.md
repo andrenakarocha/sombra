@@ -1,30 +1,23 @@
 # Uso de IA no Sombra
 
-A GS permite IA **como copiloto**, para aprender e revisar, e pede que os prompts fiquem registrados aqui e que cada
-integrante saiba explicar cada linha do que entregou.
+A GS permite IA **como copiloto**, para aprender e revisar, e pede que os prompts fiquem registrados aqui. Cada
+integrante sabe explicar o que entregou.
 
-**Ferramenta:** Claude Code (modelo Claude Opus), em sessões no terminal dos integrantes.
+- **Ferramenta:** Claude Code, no terminal de cada integrante.
+- **Como usamos:** a IA propõe e escreve; a gente revisa, testa e aprova cada mudança antes de ela entrar na `main`.
+- **Nossas, não da IA:** a escolha do problema, a entrevista, as fotos, o escopo, a direção de arte e as decisões do
+  [plano](docs/PLANO.md#2-decisões).
 
-**Como usamos:** cada checkpoint do [plano](docs/PLANO.md) começa com um pedido nosso. A IA propõe e escreve, e o
-integrante revisa, testa e aprova antes do commit. Decisões de produto, a entrevista e as fotos são nossas.
+## Planejamento e fundação
 
-## Registro
+1. *"Leia o briefing da GS CitizenTech e os enunciados das oito disciplinas e proponha três CitizenTechs que atravessem
+   todas elas, com uma recomendação."*
+2. *"Monte um plano mestre com fases, checkpoints verificáveis e critérios de aceite para todas as disciplinas, com uma
+   spec por disciplina."*
+3. *"A partir da transcrição da entrevista, liste o que muda no design do Sombra."*
+4. *"Defina os contratos entre as partes (MQTT, REST e tempo real), com vetores de teste para o índice de calor e para a
+   assinatura das mensagens."*
+5. *"Proponha uma direção de arte a partir das fotos do território, com tokens e contraste verificado nos dois temas."*
+6. *"Monte o ambiente local, o simulador da Sentinela, o CI e o download dos dados reais do INMET."*
 
-| Data | Checkpoint | Pedido à IA (resumo) | O que a IA fez | Revisão humana |
-|---|---|---|---|---|
-| 2026-11-17 | Planejamento | "Entra na pasta da segunda GS, analisa o documento e o site oficial e sugere soluções; depois monta um plano com todas as matérias, production ready." | Leu os enunciados (PDF geral, PDF de Cyber, instruções de OS, guia de SOA), propôs três ideias e, depois da escolha do Sombra, escreveu o plano mestre e as specs | André escolheu a ideia, o monorepo e o escopo; definiu a divisão do time; pediu o formato do plano do projeto Kyber |
-| 2026-11-17 | F0.16 | "Coloquei a entrevista e as fotos em docs." | Leu a transcrição e propôs ajustes de design (escalonamento em degraus, Sentinela discreta, check-in diário) | André confirmou a moradia (casa) e o uso das fotos; os ajustes viraram a decisão D13 |
-| 2026-11-17 | F0.2 | "Pode seguir." | Escreveu `tools/doctor.sh`, que confere as ferramentas de cada fase | Rodado na máquina do André, saiu com 0 |
-| 2026-11-17 | F0.4 | "Pode seguir." | Criou a estrutura do monorepo, o README com a Ficha, este arquivo e os arquivos de base | André revisa no primeiro push (F0.5) |
-| 2026-11-17 | F0.5 | "Público agora; PR obrigatório para todos." Depois: "um PR por lote". | Criou o repositório, as labels, os templates e a proteção da `main` pelo `gh`; propôs o fluxo por lote quando o hook mostrou que o push é manual | André escolheu a visibilidade, a proteção e o fluxo de PR |
-| 2026-11-17 | F0.6 | "Pode seguir." | Conferiu a equação do índice de calor na página oficial da NWS, escreveu a implementação de referência, os 20 vetores de teste, o contrato de níveis e o glossário | Contrato e glossário entram no PR do lote para revisão do André |
-| 2026-11-17 | F0.7 | "Pode seguir." | Escreveu o AsyncAPI do MQTT, a assinatura HMAC com vetores, os contratos REST do Core e do Clima, os eventos do SignalR e o `.env.example`; achou e corrigiu um exemplo que contrariava a fórmula do índice de calor | Contratos entram no PR do lote para revisão do André |
-| 2026-11-17 | F0.8 | "Pode seguir." | Escreveu o padrão de observabilidade e logs (campos, correlação, catálogo de eventos, como fazer em cada stack, saúde e auditoria) e ligou cada spec à seção que lhe cabe | Entra no PR do lote para revisão do André |
-| 2026-11-17 | F0.9 | "Pode seguir." | Propôs a direção de arte a partir das fotos e da entrevista: tokens, verificador de contraste e página de amostra, revisados em capturas reais | Aguardando a aprovação do André |
-| 2026-11-17 | F0.9 | "Direção de arte aprovada." | Registrou a aprovação como D16 e tirou a marca de proposta da amostra | André aprovou a amostra no navegador |
-| 2026-11-17 | F0.10 | "Pode seguir." | Escreveu o compose (um banco e um papel por serviço, Mosquitto, placeholders), o Makefile e o gerador de `.env`; achou a porta 5432 ocupada pelo Postgres local e mudou o banco do compose para 55432 no host | `make up` rodado na máquina do André, com tudo saudável |
-| 2026-11-17 | F0.11 | "Pode seguir." | Escreveu o simulador da Sentinela (contrato MQTT, cenários do roteiro, comandos verificados) com 45 testes, incluindo a integração com o broker | Rodado na máquina do André contra o `make up` |
-| 2026-11-17 | F0.12 | "Pode seguir." | Escreveu o CI com filtro por pasta e o agregador `ci-ok`; fixou as actions por SHA depois de ler o `action.yml` de cada uma; trocou a gitleaks-action (licença comercial) pelo binário MIT | Falta ver o CI rodar no PR |
-| 2026-11-17 | F0.13 | "Pode seguir." | Escreveu os seis ADRs a partir das decisões do plano e dos contratos | Entra no PR do lote para revisão do André |
-| 2026-11-17 | F0.14 | "Não precisa de issue. Vou mandar o repo e um handoff: 'sou o João, quero fazer minha parte'." | Escreveu o fluxo de delegação e o prompt do grupo no `AGENTS.md` | André decidiu o formato |
-| 2026-11-17 | F0.15 | "Pode seguir." | Escreveu o script que baixa o INMET e guarda só a A701 com SHA-256, rodou os 16 anos e documentou a proveniência | Dados reais e públicos, conferidos contra o manifesto |
+<!-- Cada parte acrescenta aqui os seus prompts principais quando fecha (PLANO §0, regra 16). -->

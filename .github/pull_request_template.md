@@ -17,7 +17,7 @@
 ## Checklist
 
 - [ ] Um commit por checkpoint (o merge é por rebase, então cada commit chega inteiro na `main`)
-- [ ] `docs/PLANO.md`: checkpoints marcados `[x]` com data e hora, §12 e §13 atualizadas
-- [ ] `prompts.md` com o pedido principal feito à IA
+- [ ] `docs/PLANO.md`: checkpoints marcados `[x]` com a data (e a fase assinada na §12, se fechou)
+- [ ] `prompts.md` com os prompts principais, se uma parte fechou
 - [ ] Nenhum dado pessoal real (código, fixtures, logs, prints)
 - [ ] Logs e `/health` seguindo a §6, se o PR cria ou muda um serviço

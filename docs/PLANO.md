@@ -27,7 +27,6 @@ last-updated: 2026-11-17
 10. [Riscos](#10-riscos)
 11. [Premissas a verificar](#11-premissas-a-verificar)
 12. [Painel de status](#12-painel-de-status)
-13. [Log de execução](#13-log-de-execução)
 
 Specs: [00 Fundação](specs/00-fundacao-contratos.md) · [01 C#](specs/01-csharp-core-api.md) · [02 SOA](specs/02-soa-clima-service.md) ·
 [03 ML](specs/03-ml-previsao-calor.md) · [04 IoT](specs/04-iot-sentinela.md) · [05 Mobile](specs/05-mobile-app.md) ·
@@ -47,8 +46,8 @@ Ao começar qualquer sessão neste projeto:
 1. Leia a §1 (contexto) e a §2 (decisões). As **fechadas** (§2.1) não se re-litigam nem mudam sem pedido explícito do
    André. As **abertas** (§2.2) só fecham no checkpoint indicado.
 2. Vá à **§12 (Painel de status)**: identifique a fase atual e o último checkpoint marcado `[x]`.
-3. **Confie, mas verifique:** rode o 🔎 do último checkpoint marcado. Se falhar, o estado real é anterior: desmarque,
-   registre na §13 e corrija antes de seguir.
+3. **Confie, mas verifique:** rode o 🔎 do último checkpoint marcado. Se falhar, o estado real é anterior: desmarque e
+   corrija antes de seguir.
 4. Execute o **próximo checkpoint `[ ]`** da fase, na ordem. Fases só correm em paralelo onde a §9 permite.
 5. **Um checkpoint = uma unidade de trabalho = um commit atômico** (Conventional Commits em inglês, com o escopo da
    pasta: `feat(core): …`, `test(clima): …`, `chore(infra): …`). Nunca junte checkpoints num commit. Os commits vão
@@ -56,11 +55,11 @@ Ao começar qualquer sessão neste projeto:
    checkpoint. **O `git push` é sempre do André** (hook `block-dangerous-git` da máquina). O agente abre o PR e, depois do CI
    verde e do **"pode mergear" do André no chat**, roda só o comando de merge (hook `guard-autonomous-policy`; o
    mesmo vale para release e publicação). Ninguém faz push direto na `main` (D15).
-6. Ao concluir: marque `[x]` com data e hora (`— 2026-11-17 18:40`), atualize a §12 e acrescente uma linha na §13.
-   Registre no `prompts.md` o pedido principal feito à IA naquele checkpoint (exigência da GS).
+6. Ao concluir: marque `[x]` com a data. Ao fechar o último checkpoint de uma fase, **assine a fase** na §12 (✅ e
+   data). Não há log de execução: o checkpoint marcado e o commit contam a história.
 7. **Passos 🧑 bloqueiam.** Não simule, não pule, não invente credenciais, entrevista, fotos ou dados. Pare, diga
    exatamente o que o André precisa fazer e espere.
-8. Plano diverge da realidade (API mudou, flag não existe, premissa da §11 falsa)? **Pare**, registre na §13, proponha
+8. Plano diverge da realidade (API mudou, flag não existe, premissa da §11 falsa)? **Pare**, proponha
    o ajuste ao André e só então edite o plano.
 9. Uma fase só termina quando **todos** os ✅ dela passam. Marque-a como concluída na §12.
 10. Escopo: só o que está aqui. Ideias novas vão para a §2.3, não para o código.
@@ -74,6 +73,8 @@ Ao começar qualquer sessão neste projeto:
     conferida ou como premissa na §11. Resumo de busca não é fonte.
 15. Todo serviço segue a **§6 (Observabilidade e logs)**. Um checkpoint que cria um serviço só fecha com o log
     estruturado e o `/health` funcionando.
+16. **`prompts.md`** (exigência da GS): ao fechar uma parte, acrescente os prompts principais dela, escritos como
+    prompt, sem copiar a conversa.
 
 ---
 
@@ -315,7 +316,6 @@ Usado em todos os vídeos e no pitch, e automatizado como `make demo` (F9.2):
 - **Saúde:** `/health/live`, `/health/ready` e `/version` (commit e data do build) em todo serviço; o monitor da VM
   consulta todos.
 - **Dispositivo:** log serial com nível e `seq`; eventos de boot e reconexão vão também no MQTT.
-- **Projeto:** este plano tem o **painel de status (§12)** e o **log de execução (§13)**; cada checkpoint atualiza os dois.
 
 Detalhe em [`docs/observabilidade.md`](observabilidade.md) (F0.8), com o checklist de pronto de cada serviço.
 
@@ -409,7 +409,7 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   🔎 cada spec de serviço cita a seção que lhe cabe.
 - [x] **F0.9** 🧑🤖 Direção de arte: `design/tokens.json` + `design/README.md` + uma página de amostra (farol nos 5 níveis,
   cartão de casa, botão gigante, tipografia, claro e escuro). Fecha a DA5 — 2026-11-17 16:40.
-  🔎 André aprova a amostra; aprovação registrada na §13.
+  🔎 André aprova a amostra.
 - [x] **F0.10** 🤖 `compose.yaml` (Postgres com os 2 bancos via init, Mosquitto, placeholders do Core, do Clima e do painel
   com `/health`) + `Makefile` (`env`, `up`, `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`; o `demo` chega
   na F9.2) — 2026-11-17 16:43.
@@ -708,7 +708,7 @@ spec. Um checkpoint por superfície.
 - [ ] **F11.7** 🤖 Cyber: mapa regra × sink, relatório LGPD gerado, antes e depois lado a lado no dashboard.
 - [ ] **F11.8** 🧑🤖 🔑 VM no Azure com o mesmo `provision.sh` e HTTPS (fecha a DA3) (P13).
 - [ ] **F11.9** 🧑🤖 Revisão visual final: screenshots do painel (390/768/1440) e do app (dois tamanhos), revisados.
-  🔎 de cada um: o André aprova; registro na §13.
+  🔎 de cada um: o André aprova.
 
 **✅ Aceite F11:** o André aprovou cada superfície visual.
 
@@ -757,7 +757,7 @@ spec. Um checkpoint por superfície.
   integrantes em cada entrega.
   🔎 sai com 0.
 - [ ] **F14.2** 🧑 🔑 Envio das 8 tarefas no Teams (André, ou quem ele indicar).
-  🔎 print de cada envio registrado na §13.
+  🔎 print de cada envio em `docs/evidencias/entrega/`.
 
 **✅ Aceite F14:** as 8 tarefas enviadas até 19/11, 23h55.
 
@@ -815,7 +815,7 @@ spec. Um checkpoint por superfície.
 | P14 | O pipeline do HENRY (HyperFrames, FFmpeg, Chrome headless, voz Gemini TTS) roda de novo, com cota de TTS | F13.1 | 🟡 rodou em out/2026 no Challenge |
 
 Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior, falta o teste real · ✅ confirmada ·
-⚠️ falsa (ver §13 e o ajuste feito no plano).
+⚠️ falsa (com o ajuste feito no plano).
 
 ---
 
@@ -823,7 +823,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (2026-11-17):** planejamento fechado (Sombra, monorepo, escopo máximo, D1–D16) e entrevista incorporada (D13, D14). F0.1–F0.9 e F0.16 na `main` (PRs #1 e #2), com a direção de arte aprovada. F0.10 e F0.11 feitas (`make up` verde; simulador da Sentinela com 45 testes). F0.12 implementada (falta o 🔎 no PR). F0.13 feita (ADRs). F0.14 e F0.15 feitas (handoff no `AGENTS.md`; 16 anos da A701 baixados e conferidos). A F0 fecha quando o CI rodar verde no PR do lote `f0-fundacao-3` (🔎 da F0.12).
+**Agora:** F0 quase fechada; falta o 🔎 da F0.12 (CI verde no PR do lote `f0-fundacao-3`). Depois vem a **F1** (Core em C#).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -845,38 +845,3 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 Legenda: ⬜ não iniciada · 🟨 em andamento · ✅ concluída · ⛔ bloqueada
 
----
-
-## 13. Log de execução
-
-Uma linha por checkpoint concluído, divergência ou decisão do André. Mais recente embaixo.
-
-| Data | Quem | Registro |
-|---|---|---|
-| 2026-11-17 | 🧑🤖 | Sessão de planejamento. Lidos o PDF da GS (40 slides), o PDF do prof. de Cyber, as instruções de OS, o guia de SOA com a autoavaliação, a GS 1, o CP06 de C# (script de qualidade do professor) e o pipeline do HENRY. Três ideias propostas; André escolheu o **Sombra**, o **monorepo** e o **escopo máximo** ("não se preocupa com prazo") |
-| 2026-11-17 | 🧑 | Decisões do André: LLM Gemini (D7), VM local com o Azure como extra (D8), padrão de QA (D9). Divisão do time: **o André executa o máximo**, fica com o mais difícil e com todas as contas (Azure, Wokwi, VM…) e delega o que quiser (D10) |
-| 2026-11-17 | 🤖 | F0.1 — plano mestre reestruturado no formato do Kyber (protocolo, checkpoints com 🔎, aceite por fase, premissas, painel e log). Specs por disciplina em `specs/`. O rascunho anterior (`PLANO-MESTRE.md` + subplanos) foi substituído |
-| 2026-11-17 | 🧑 | F0.16 — entrevista feita por um integrante. Transcrição com "Dona Cida" e a filha, consentimento verbal da Dona Cida para usar o primeiro nome, nenhum nome de remédio. 4 fotos (`fachada-casa`, `rua`, `sala`, `ubs`). Arquivos em `year3/second-gs/docs/`; vão para o repo na F0.4 |
-| 2026-11-17 | 🤖 | ⚠️ F0.16 em aberto por dois pontos. (1) **Moradia:** a transcrição diz "moro num apartamento", e as fotos mostram uma casa térrea; uma das duas versões precisa mudar. (2) **Origem das fotos:** as 4 são PNG sem EXIF, todas com exatamente 1448×1086 e o mesmo acabamento HDR, o que é atípico para fotos de celular. Pode ser edição ou exportação por algum app. Se não forem fotos reais do território, não podem aparecer como tal (etapa Observar da GS). Na `rua.png`, se for real, a placa do carro precisa de desfoque. Falta a confirmação do André |
-| 2026-11-17 | 🤖 | Proposta de ajustes de design vinda da entrevista, aguardando o André: (a) escalonamento em degraus (lembrete à pessoa → lembrete leve à filha → alerta só em perigo ou pedido de ajuda); (b) vizinha como "quem está perto", com a ação "ir até lá"; (c) Sentinela sem piscar nem apitar sem parar; (d) check-in diário opcional, além do check-in no calor; (e) lembrete de água no horário de pico (15h–16h) e atenção ao calor da noite; (f) Sentinela e app explicam o que acontece se ela esquecer de apertar; (g) novo indicador de alarmes desnecessários para a família; (h) a persona do sistema continua fictícia, "inspirada na Dona Cida"; a filha não autorizou o próprio nome e aparece só como "a filha" |
-| 2026-11-17 | 🧑 | André: é **casa** (erro de transcrição, corrigido em `docs/entrevista.md`). As fotos foram padronizadas pelo time e ficam fora das entregas, no máximo no pitch (D14). F0.16 concluída |
-| 2026-11-17 | 🤖 | Ajustes (a)–(h) aplicados como D13, sem veto do André: specs 00, 01, 04, 05, 06, 09 e 10, mais §1.4, §3.4, §7, F0.11, F10.2, F11.4, F12.2 e F13.4. DA2 passa a incluir a cidade (se não for a capital, a estação INMET da D6 muda) e fecha antes da F0.15 |
-| 2026-11-17 | 🧑 | André: a Dona Cida mora em **São Paulo** (capital); a A701 continua valendo (D6). Bairro fica "a preencher" até a F12.1 (DA2) |
-| 2026-11-17 | 🤖 | F0.1 — `git init` do repositório em `year3/second-gs/sombra/` (branch `main`); plano e specs movidos para `docs/`. Os enunciados e a entrevista bruta ficam fora do repositório |
-| 2026-11-17 | 🤖 | F0.2 — `tools/doctor.sh` (só lê o ambiente). Na máquina do André sai com 0: git 2.56, Docker 29.9 + Compose 5.6, .NET SDK 10.0.113, JDK 21.0.13, Node 25.2, uv 0.10.4, gh 2.102 (logado como `andrenakarocha`), jq, shellcheck. Opcional faltando: Vagrant (P11). Sem pwsh local: o script de qualidade do professor roda na imagem do SDK, como no CP06 |
-| 2026-11-17 | 🤖 | F0.4 — scaffold do monorepo: README com a Ficha v0 e a tabela das partes, `AGENTS.md` (aponta para a §0) + `CLAUDE.md` que o importa, `prompts.md` com o registro desde o planejamento, LICENSE MIT com os três integrantes, `.gitignore`, `.editorconfig`, `.env.example`, um README por componente apontando para a fase e a spec, e pastas de `docs/`. Feita antes da F0.3 porque a F0.3 precisa do `.gitignore` para o `.env` local. Nenhum link relativo quebrado (conferido por script) |
-| 2026-11-17 | 🧑🤖 | F0.3 — `gh` logado como `andrenakarocha` (escopos `repo` e `workflow`). `.env` local criado a partir do `.env.example`, em modo 600, com senha aleatória do Postgres e a chave Gemini que já existia no projeto do HENRY (D7; o valor não foi impresso). `git check-ignore` confirma que o `.env` fica fora do Git. A validade e a cota da chave são a P5 (F2.6) |
-| 2026-11-17 | 🧑🤖 | F0.5 — André escolheu **público agora** e **PR obrigatório para todos**. Criado `andrenakarocha/sombra` com os 5 primeiros commits. Branch apagada no merge, wiki desligada, tópicos `citizentech`, `fiap`, `global-solution`. `CODEOWNERS` (`* @andrenakarocha`), templates de PR e de issue. 13 labels: as 8 disciplinas, painel, pitch, fundacao, integracao e `delegavel`. Proteção da `main`: PR com 0 aprovações, `enforce_admins`, histórico linear, sem force push nem deleção, conversas resolvidas. 🔎 anônimo: HTTP 200 e `visibility: public` |
-| 2026-11-17 | 🤖 | ⚠️ **Divergência na F0.5.** O hook `block-dangerous-git` da máquina barrou o `git push` do primeiro PR: **o push é sempre manual, do André**. O push inicial já tinha saído por dentro do `gh repo create --push`, que o hook não pega; o agente avisou o André e não usa mais o `gh` para enviar código. Com push manual e o `PLANO.md` mudando em todo checkpoint, um PR por checkpoint pediria um push do André a cada passo, e empilhar branches com squash gera conflito. Ajuste aprovado pelo André: **um PR por lote com rebase merge** (D15). Squash desligado e rebase ligado no repositório; template de PR ajustado. Observação: o hook reconhece o texto do comando em qualquer lugar, então scripts que escrevem esse texto em documentos vão por arquivo |
-| 2026-11-17 | 🤖 | F0.6 — `docs/glossario.md` (casa e pessoas, dispositivo e alertas, clima, privacidade; inclui os termos da D13 e a distinção Leitura × Observação, que marca a fronteira entre Core e Clima). Contrato `docs/contratos/niveis-de-risco.md`: equação oficial da NWS/WPC (lida com curl; o WebFetch deu 403), leitura adotada para a ambiguidade abaixo de 80 °F, os cinco níveis com os limiares da NWS convertidos com precisão (26,67 / 32,22 / 39,44 / 51,67 °C, no lugar dos 27 / 32 / 39 / 51 arredondados da spec 00), o comportamento por nível da D13 e a regra da noite. Referência em `tools/indice-de-calor/vetores.py` (stdlib) e 20 vetores em `indice-de-calor.vetores.json`. 🔎 `vetores.py` sai com 0. Specs 00, 01 (R3 e R6: o "estou bem" é pedido a partir de `CAUTELA_EXTREMA`) e 03 (limiares do alvo) alinhadas |
-| 2026-11-17 | 🤖 | F0.7 — contratos em `docs/contratos/`: `mqtt.asyncapi.yaml` (AsyncAPI 3.1; telemetria, evento, comando e status com LWT; QoS por operação; servidores local e público), assinatura HMAC sobre **string canônica por tipo com o `deviceId` dentro** (sem canonicalizar JSON entre C++, C# e Python; impede usar a mensagem em outra Sentinela), arredondamento de uma casa antes de assinar, anti-replay por `seq` e janela de 300 s. Vetores de assinatura com segredo só de teste (`tools/mqtt-assinatura/vetores.py`, 6 casos + um adulterado), e os exemplos do AsyncAPI usam assinaturas reais. `core-api.md` (convenções, papéis, ProblemDetails com `regra`, paginação, máscara de PII, 25 rotas, exemplos), `clima-service.md`, `signalr.md` (grupos, 8 eventos sem PII, reconexão) e `README.md` (índice, portas, regras de variáveis). `.env.example` completo. 🔎 `@asyncapi/cli` 6.3.1: válido, sem apontamentos; a telemetria anônima da CLI foi desligada. **Correção:** o exemplo de telemetria (33,4 °C e 61% → 38,2 °C, `CAUTELA_EXTREMA`) contrariava o próprio contrato (dá 40,9 °C, `PERIGO`); trocado por 33,4 °C e 40% → 34,4 °C, `CAUTELA_EXTREMA`, nos cinco lugares em que aparecia |
-| 2026-11-17 | 🧑🤖 | Lote F0.5–F0.7 enviado pelo André; **PR #1** aberto pelo agente. O hook `guard-autonomous-policy` barrou o merge: merge, release e publicação exigem aprovação humana explícita, valendo para um comando só. Decisão do André: **ele aprova cada merge no chat** e o agente roda só o merge por rebase, com a variável de aprovação do hook. PR #1 mergeado às 19:26 UTC (aprovado no chat); `main` linear com um commit por checkpoint. O próximo lote segue no branch `f0-fundacao-2`. A F8.3 (`gh release`) também vai pedir esse ok |
-| 2026-11-17 | 🤖 | F0.8 — `docs/observabilidade.md`: os 8 campos obrigatórios, níveis com exemplos, o que nunca vai para o log, correlação ponta a ponta (HTTP `X-Correlation-Id`; MQTT `{deviceId}:{seq}`; propagação para Clima, SignalR, outbox e IA; código curto do erro na tela), catálogo de eventos por serviço, como fazer em cada stack (Serilog + Expressions; formatter próprio do Spring; logging do Python; `jq -cn` no bash; serial legível no ESP32), saúde, versão e trilhas de auditoria, retenção e um checklist de pronto. 🔎 as specs 01, 02, 04, 05, 06, 07 e 08 citam as seções que lhes cabem |
-| 2026-11-17 | 🤖 | F0.9 (proposta) — direção de arte "luz filtrada pela folhagem", tirada das fotos e da entrevista (paredes ocre, telhado de barro, sombra de árvore na calçada). `design/tokens.json` (primitivos e semânticos dos temas claro e escuro, com aliases), `tokens.py gerar` (CSS) e `tokens.py conferir`: **50 pares de contraste WCAG 2.2 passam nos dois temas**, com o texto principal entre 12,6:1 e 16:1 e os selos de risco ≥ 5:1. `amostra.html`: os cinco níveis com ícone de forma própria, cartão da casa, Modo Idoso, farol de privacidade, paleta e tipografia (Fraunces + Atkinson Hyperlegible Next). Revisada em capturas reais (Chromium headless, 1440 e 390 px, claro e escuro). A revisão corrigiu a textura com cara de camuflagem, a paleta desalinhada, a moldura do celular invisível no escuro e o cartão quebrando no mobile. Falta a aprovação do André |
-| 2026-11-17 | 🧑 | F0.9 — **direção de arte aprovada pelo André** ("pika"), virando a D16. Lote F0.8–F0.9 enviado por ele; **PR #2** mergeado às 19:40 UTC com o "pode mergear" no chat. O próximo lote segue no branch `f0-fundacao-3` |
-| 2026-11-17 | 🤖 | F0.10 — `compose.yaml` (projeto `sombra`, tudo em 127.0.0.1): Postgres 16 com script de init que cria **um papel e um banco por serviço** e revoga o `CONNECT` público; Mosquitto 2; Core, Clima e painel como placeholders nginx que dizem em qual fase serão trocados. `Makefile` com `env`, `up` (espera os healthchecks), `down`, `ps`, `logs`, `db-reset`, `contratos`, `lint`, `test`. `tools/novo-env.py`: gera os segredos que faltam, **nunca sobrescreve** valor real (a chave Gemini foi preservada), grava em 600 e só mostra nomes. `.env.example` sem senha duplicada: as strings de conexão passam a ser montadas pelo compose. **Ajuste:** a 5432 do host já é do PostgreSQL local do André; o banco do compose fica em 55432 no host (`DB_PORTA_LOCAL`) e `db:5432` dentro. 🔎 os 5 serviços `healthy`; `/health/live`, `/actuator/health/liveness` e `/healthz` → 200; o papel `sombra_core` é barrado no `sombra_clima` (`permission denied`); ida e volta no MQTT; `make test` e `make lint` verdes |
-| 2026-11-17 | 🤖 | F0.11 — `tools/sentinela-sim/` (Python 3.12 via uv, `paho-mqtt` 2): outra implementação do contrato, com assinatura HMAC, verificação de comandos (assinatura, outra Sentinela, replay, janela de 300 s), `seq` persistido entre execuções, status `online` e Last Will `offline`, logs JSON da §6. Seis cenários determinísticos (`normal`, `onda-de-calor`, `sem-resposta`, `pedido-de-ajuda`, `esqueceu-checkin-diario`, `payload-adulterado`) e um modo `comando` que publica como o Core. **45 testes**: os 20 vetores do índice de calor e os 6 de assinatura (os mesmos que o ESP32, o Core e o Clima vão rodar), a verificação, os cenários e a integração com o Mosquitto do compose (comando aceito; replay e adulteração recusados; telemetria com assinatura válida). Fumaça pela CLI: `onda-de-calor` sobe ATENCAO → CAUTELA_EXTREMA → PERIGO, um comando chega no meio e é aceito, o "estou bem" é enviado; 24 linhas de log JSON válidas. `make sim`, `make test-sim` e ruff no `make lint`. Catálogo de eventos (§4) e correlação de comandos (`{deviceId}:c{seq}`) atualizados em `docs/observabilidade.md` |
-| 2026-11-17 | 🤖 | F0.12 implementada — `.github/workflows/ci.yml`: job `mudancas` (filtro por pasta) e jobs condicionais (contratos; design, que também confere se o `tokens.css` está em dia; simulador com Mosquitto e uv; ambiente local com `make up`, saúde e isolamento dos bancos; shellcheck; actionlint), `gitleaks` sempre, e `ci-ok` agregando tudo. **Um check obrigatório só**, porque com filtro por pasta um check obrigatório por componente travaria PR que não toca aquela pasta. Actions fixadas por **SHA de commit** (checkout v7.0.1, setup-python v7.1.0, setup-node v7.1.0, setup-uv v10.3.3, paths-filter v4.0.3), com os parâmetros conferidos no `action.yml` de cada SHA (são versões mais novas que o conhecimento do agente). `permissions: contents: read` e `persist-credentials: false`. **Troca:** a `gitleaks-action` v3 está sob licença comercial (EULA); o CI usa o binário do gitleaks (MIT) pela imagem oficial `v8.30.1`. actionlint 1.7.12 e gitleaks rodados localmente: ok, sem vazamentos nos 20 commits. **Escopo:** o `release.yml` foi para a F8.3, quando houver o que publicar |
-| 2026-11-17 | 🤖 | F0.13 — seis ADRs em `docs/adr/` (contexto, decisão, consequências, alternativas) e o índice: 001 linguagem ubíqua, 002 monorepo, 003 dois serviços donos dos seus bancos (com o isolamento por papel verificado no CI), 004 MQTT público assinado e sem PII, 005 LLM sem PII e com fallback, 006 índice de calor replicado com vetores. A §2.1 cita cada um (D2, D4, D7, D11 e as duas decisões técnicas) |
-| 2026-11-17 | 🧑🤖 | F0.14 — **decisão do André: sem issues e sem GitHub Project.** O plano e os checkpoints bastam; a delegação é por handoff ("abre o Claude de vocês e fala: sou o João, quero fazer minha parte"). O `AGENTS.md` ganhou o fluxo para o agente de quem chega e o prompt pronto para o grupo. §9 ajustada. A label `delegavel` criada na F0.5 fica sem uso |
-| 2026-11-17 | 🤖 | F0.15 — `ml/scripts/baixar_dados.py` (stdlib): baixa `{ano}.zip` do portal de dados históricos do INMET, extrai **só** o CSV da A701 por nome (sem confiar no caminho do ZIP), guarda o CSV sem alterar (latin-1, `;`) e registra URL, nome original, SHA-256 do ZIP e do CSV, metadados e horas faltando em `brutos/manifesto.json`; `--conferir` revalida. ZIPs (1,5 GB) no cache fora do Git; CSVs versionados (13 MB). 🔎 16 anos, 8.760/8.784 horas cada, as 7 colunas do modelo presentes em todos, 893 horas sem temperatura em 140.256 (0,64%); `--conferir` ok nos 16. P2 confirmada. `ml/dados/README.md` com fonte, link, período, formato, `-9999`, colunas e a tabela por ano |
