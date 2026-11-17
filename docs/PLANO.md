@@ -51,7 +51,10 @@ Ao começar qualquer sessão neste projeto:
    registre na §13 e corrija antes de seguir.
 4. Execute o **próximo checkpoint `[ ]`** da fase, na ordem. Fases só correm em paralelo onde a §9 permite.
 5. **Um checkpoint = uma unidade de trabalho = um commit atômico** (Conventional Commits em inglês, com o escopo da
-   pasta: `feat(core): …`, `test(clima): …`, `chore(infra): …`). Nunca junte checkpoints num commit.
+   pasta: `feat(core): …`, `test(clima): …`, `chore(infra): …`). Nunca junte checkpoints num commit. Os commits vão
+   em lote num branch (`fN-assunto`) e entram na `main` por **PR com rebase merge**, que preserva um commit por
+   checkpoint. **O `git push` é sempre do André** (hook `block-dangerous-git` da máquina); o agente abre o PR e faz o
+   merge depois do CI verde. Ninguém faz push direto na `main` (D15).
 6. Ao concluir: marque `[x]` com data e hora (`— 2026-11-17 18:40`), atualize a §12 e acrescente uma linha na §13.
    Registre no `prompts.md` o pedido principal feito à IA naquele checkpoint (exigência da GS).
 7. **Passos 🧑 bloqueiam.** Não simule, não pule, não invente credenciais, entrevista, fotos ou dados. Pare, diga
@@ -115,7 +118,7 @@ pioram a desidratação e quase nunca percebe que a casa virou um forno. A famí
 | **Problema, em uma frase** | *"Em ondas de calor, idosos que moram sozinhos em São Paulo não percebem o perigo dentro de casa, e a família só fica sabendo quando já é tarde."* |
 | **Como funciona** | A Sentinela mede o calor da casa e pede um "estou bem"; o ML prevê o risco das próximas 24 h; sem resposta, o Sombra avisa a rede de cuidado pelo app; um motor de privacidade protege os dados de saúde |
 | **O que cada parte faz** | §4 |
-| **Link do repositório** | `github.com/<owner>/sombra` (DA1) |
+| **Link do repositório** | [github.com/andrenakarocha/sombra](https://github.com/andrenakarocha/sombra) |
 | **Indicador de impacto** | **Tempo mediano entre o alerta e o "estou bem"** (meta < 15 min) · % de alertas resolvidos sem chegar ao último contato · **% dos dias perigosos previstos com 24 h de antecedência** (recall no teste) · **alarmes desnecessários para a família por semana** (meta: perto de zero; pedido da filha na entrevista) |
 | **ODS** | **3** (3.d) · **10** (10.2) · **11** (11.5) · **13** (13.1) |
 
@@ -158,13 +161,13 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | D11 | Linguagem ubíqua do domínio em **português** (Domicílio, Sentinela, Alerta de calor) + sufixos técnicos em inglês (`Repository`, `Controller`), no padrão do guia de SOA (ADR-001) | plano, aceito |
 | D12 | Tipografia **Atkinson Hyperlegible** e farol acessível (cor + ícone + texto) em todas as superfícies | plano, aceito |
 | D13 | **Ajustes da entrevista** (Dona Cida e a filha): escalonamento em degraus (lembrete à pessoa → lembrete leve à família → "quem está perto" → alerta só em perigo ou pedido de ajuda); Sentinela discreta (sem piscar nem apitar sem parar); check-in diário opcional; lembrete de água no pico da tarde; lembretes nunca entre 22h e 7h; "o que acontece se eu esquecer" sempre explicado | entrevista, 2026-11-17 |
+| D15 | **Repositório público `andrenakarocha/sombra`** com a `main` protegida para todos, inclusive o admin: PR obrigatório (0 aprovações), histórico linear, sem force push. **Um PR por lote**, com **rebase merge** (um commit por checkpoint na `main`). **O push é manual, do André** (hook da máquina); o agente abre o PR e faz o merge depois do CI. Os checks do CI viram obrigatórios na F0.12 | André, 2026-11-17 (fecha a DA1) |
 | D14 | **Fotos do território fora das entregas** (padronizadas pelo time); uso possível só no pitch, com a placa do carro desfocada. A transcrição vai para o repositório com "a filha" no lugar do nome dela | André, 2026-11-17 |
 
 ### 2.2 Decisões abertas
 
 | # | Decisão | Padrão até lá | Fecha em |
 |---|---|---|---|
-| DA1 | Dono do repositório no GitHub (conta pessoal do André ou organização) | conta pessoal do André | F0.5 |
 | DA2 | Bairro da Ficha · persona fictícia do sistema | cidade **São Paulo** confirmada (a A701 continua valendo); bairro "a preencher"; persona "Dona Lurdes, 78 anos", inspirada na Dona Cida | F12.1 (não bloqueia nada) |
 | DA3 | Subir a VM pública no Azure | sim, se a F8 fechar com folga | F11.8 |
 | DA4 | Voz do pitch: TTS (Gemini, como no HENRY) ou voz de alguém do time | TTS | F13.3 |
@@ -287,7 +290,7 @@ Usado em todos os vídeos e no pitch, e automatizado como `make demo` (F9.2):
 - **Simplicidade:** nada fora do plano, nenhuma abstração especulativa, nenhum tratamento de erro para cenário
   impossível.
 - **Segredos:** `.env` nunca no Git; `.env.example` sempre; gitleaks no CI.
-- **Commits:** Conventional Commits em inglês, um por checkpoint. Branch curta por checkpoint, PR com CI verde, squash.
+- **Commits:** Conventional Commits em inglês, um por checkpoint. Branch por lote, PR com CI verde, rebase merge (D15).
 - **Cada pasta tem README** com: o que é, como rodar, como testar, variáveis, evidências e integrantes.
 
 ---
@@ -389,8 +392,8 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
     `.gitignore`, `.editorconfig`, `.env.example`;
 
   🔎 `tree -L 2` bate com a §3.3 (o `compose.yaml` e o `Makefile` chegam na F0.10); `git log` tem o commit.
-- [ ] **F0.5** 🧑🤖 🔑 GitHub: repositório público `sombra`, push, `main` protegida (PR + CI), `CODEOWNERS`, labels por
-  disciplina, templates de PR e issue. Fecha a DA1.
+- [x] **F0.5** 🧑🤖 🔑 GitHub: repositório público `sombra`, push, `main` protegida (PR + CI), `CODEOWNERS`, labels por
+  disciplina, templates de PR e issue. Fecha a DA1 — 2026-11-17 16:15.
   🔎 o link abre numa aba anônima.
 - [ ] **F0.6** 🤖 Linguagem ubíqua (`docs/glossario.md`), tabela de níveis de risco (`docs/contratos/niveis-de-risco.md`)
   e vetores de teste do índice de calor (`docs/contratos/indice-de-calor.vetores.json`, ≥ 15 pares T/UR → índice,
@@ -412,8 +415,8 @@ repositório** e podem entrar só no pitch (D14). A entrevista também fecha a F
   `payload-adulterado`; testes.
   🔎 `pytest` verde; contra o Mosquitto do compose, publica e recebe um comando de teste.
 - [ ] **F0.12** 🤖 CI: um workflow por componente com `paths:`, mais gitleaks, shellcheck e actionlint; `release.yml`
-  esqueleto (artefatos + `SHA256SUMS` em tag).
-  🔎 CI verde no push.
+  esqueleto (artefatos + `SHA256SUMS` em tag). Os jobs viram checks obrigatórios da `main` (D15).
+  🔎 CI verde no PR; a proteção da `main` lista os checks.
 - [ ] **F0.13** 🤖 ADRs 001–006 (`docs/adr/`): linguagem ubíqua · monorepo · dois serviços donos dos seus bancos · MQTT
   público com HMAC e sem PII · LLM com fallback · índice de calor replicado de propósito com vetores compartilhados.
   🔎 os ADRs existem e a §2.1 os cita.
@@ -812,11 +815,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Agora (2026-11-17):** plano mestre escrito (F0.1) a partir da sessão de planejamento: Sombra escolhido, monorepo,
 escopo máximo, decisões D1–D12 fechadas. A entrevista chegou (F0.16 feita) e virou a D13 (escalonamento em
-degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). F0.3 fechada. Próximo: **F0.5** (repositório público no GitHub, com confirmação do André).
+degraus, Sentinela discreta) e a D14 (fotos fora das entregas). Cidade confirmada: São Paulo. F0.2 e F0.4 feitas (doctor verde, scaffold do monorepo). Repositório público no ar (F0.5); o resto da F0 segue no branch `f0-fundacao`, que o André envia quando quiser. Próximo: **F0.6** (glossário, níveis de risco e vetores do índice de calor).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
-| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.4 e F0.16 feitas |
+| F0 Fundação | 🟨 em andamento | 2026-11-17 | | F0.1–F0.5 e F0.16 feitas; lote no branch `f0-fundacao` |
 | F1 Core (C#) | ⬜ não iniciada | | | |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
@@ -855,3 +858,5 @@ Uma linha por checkpoint concluído, divergência ou decisão do André. Mais re
 | 2026-11-17 | 🤖 | F0.2 — `tools/doctor.sh` (só lê o ambiente). Na máquina do André sai com 0: git 2.56, Docker 29.9 + Compose 5.6, .NET SDK 10.0.113, JDK 21.0.13, Node 25.2, uv 0.10.4, gh 2.102 (logado como `andrenakarocha`), jq, shellcheck. Opcional faltando: Vagrant (P11). Sem pwsh local: o script de qualidade do professor roda na imagem do SDK, como no CP06 |
 | 2026-11-17 | 🤖 | F0.4 — scaffold do monorepo: README com a Ficha v0 e a tabela das partes, `AGENTS.md` (aponta para a §0) + `CLAUDE.md` que o importa, `prompts.md` com o registro desde o planejamento, LICENSE MIT com os três integrantes, `.gitignore`, `.editorconfig`, `.env.example`, um README por componente apontando para a fase e a spec, e pastas de `docs/`. Feita antes da F0.3 porque a F0.3 precisa do `.gitignore` para o `.env` local. Nenhum link relativo quebrado (conferido por script) |
 | 2026-11-17 | 🧑🤖 | F0.3 — `gh` logado como `andrenakarocha` (escopos `repo` e `workflow`). `.env` local criado a partir do `.env.example`, em modo 600, com senha aleatória do Postgres e a chave Gemini que já existia no projeto do HENRY (D7; o valor não foi impresso). `git check-ignore` confirma que o `.env` fica fora do Git. A validade e a cota da chave são a P5 (F2.6) |
+| 2026-11-17 | 🧑🤖 | F0.5 — André escolheu **público agora** e **PR obrigatório para todos**. Criado `andrenakarocha/sombra` com os 5 primeiros commits. Branch apagada no merge, wiki desligada, tópicos `citizentech`, `fiap`, `global-solution`. `CODEOWNERS` (`* @andrenakarocha`), templates de PR e de issue. 13 labels: as 8 disciplinas, painel, pitch, fundacao, integracao e `delegavel`. Proteção da `main`: PR com 0 aprovações, `enforce_admins`, histórico linear, sem force push nem deleção, conversas resolvidas. 🔎 anônimo: HTTP 200 e `visibility: public` |
+| 2026-11-17 | 🤖 | ⚠️ **Divergência na F0.5.** O hook `block-dangerous-git` da máquina barrou o `git push` do primeiro PR: **o push é sempre manual, do André**. O push inicial já tinha saído por dentro do `gh repo create --push`, que o hook não pega; o agente avisou o André e não usa mais o `gh` para enviar código. Com push manual e o `PLANO.md` mudando em todo checkpoint, um PR por checkpoint pediria um push do André a cada passo, e empilhar branches com squash gera conflito. Ajuste aprovado pelo André: **um PR por lote com rebase merge** (D15). Squash desligado e rebase ligado no repositório; template de PR ajustado. Observação: o hook reconhece o texto do comando em qualquer lugar, então scripts que escrevem esse texto em documentos vão por arquivo |
