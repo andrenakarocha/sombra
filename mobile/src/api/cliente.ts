@@ -4,9 +4,9 @@ import { API_URL } from '@/config';
 import { responderDemo } from '@/demo/api-demo';
 import { TOKEN_DEMO, useSessao } from '@/sessao/sessao';
 
-import { ErroDaApi, SemConexao } from './erros';
+import { ErroDaApi, SemConexao } from '@/application/erros';
 
-export { ErroDaApi, SemConexao } from './erros';
+export { ErroDaApi, SemConexao } from '@/application/erros';
 
 const TEMPO_LIMITE_MS = 8000;
 

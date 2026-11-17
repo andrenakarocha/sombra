@@ -657,9 +657,11 @@ Go; o APK via EAS é um extra.
 - [x] **F6.12** 🤖 Local-first: porta `SqlDatabase` (`expo-sqlite` no aparelho, `sql.js` no Jest), migrações
   versionadas e repositórios; o SQLite vira a fonte da verdade das telas (a virada das telas é na F6.11).
   🔎 repositórios testados com SQL real no Jest — 2026-11-17 (inclui a migração 3 → 4 sem perder check-in da fila).
-- [ ] **F6.13** 🤖 Outbox única + motor de sincronização: toda escrita (check-in, reconhecer, morador) com
-  `operationId` idempotente, aplicação otimista, backoff exponencial com jitter e dead-letter.
-  🔎 testes: offline → fila → volta a rede → enviado uma vez só; erro definitivo → dead-letter.
+- [x] **F6.13** 🤖 Outbox única + motor de sincronização: toda escrita que pode esperar a rede (check-in e
+  reconhecer alerta) com `operationId` idempotente (vai como `Idempotency-Key`), backoff exponencial com jitter e
+  dead-letter. O cadastro de morador fica **fora** de propósito: na fila, CPF e CNS inteiros ficariam gravados no
+  aparelho; ele exige conexão. A aplicação otimista entra com a virada das telas (F6.11).
+  🔎 testes: offline → fila → volta a rede → enviado uma vez só; erro definitivo → dead-letter — 2026-11-17.
 - [ ] **F6.14** 🤖 Central de sincronização (pendentes, dead-letter, reenviar, forçar offline) + sincronização em
   segundo plano (`expo-background-task`, quando o sistema permitir).
   🔎 forçar offline na tela → check-in fica pendente → desligar → enviado.
