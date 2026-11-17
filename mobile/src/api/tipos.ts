@@ -74,3 +74,37 @@ export type SituacaoDoCheckIn = 'ESTOU_BEM' | 'PRECISO_DE_AJUDA';
 // O contrato tem { origem, situacao }; o app manda também o momento em que a pessoa apertou (rascunho), para um
 // check-in que esperou na fila offline não chegar com o horário errado.
 export type CheckIn = { origem: 'APP' | 'CUIDADOR'; situacao: SituacaoDoCheckIn; momento: string };
+
+// docs/contratos/clima-service.md (o Core repassa). Coordenadas: rascunho, para o "abrir rota".
+export type PontoDeResfriamento = {
+  id: string;
+  nome: string;
+  tipo: string;
+  distanciaKm: number;
+  horario: { abre: string; fecha: string };
+  acessivel: boolean;
+  fonte: string;
+  lat?: number;
+  lon?: number;
+};
+
+export type FarolDePrivacidade = 'VERDE' | 'AMARELO' | 'VERMELHO';
+
+// rascunho: GET /domicilios/{id}/privacidade (spec 07: o farol da casa e a mensagem traduzida para o cidadão)
+export type PrivacidadeDaCasa = {
+  farol: FarolDePrivacidade;
+  mensagens: { momento: string; mensagemCidadao: string; fonte: 'IA' | 'template' }[];
+};
+
+export type FatorDeRisco = 'IDADE_AVANCADA' | 'CARDIOPATIA' | 'USO_DE_DIURETICO';
+
+// O que o app manda ao cadastrar ou editar um morador (os dados vão inteiros; a resposta volta mascarada).
+export type NovoMorador = {
+  nome: string;
+  idade: number;
+  cpf: string;
+  cartaoSus: string;
+  telefone: string;
+  perfilDeSaude: string;
+  fatoresDeRisco: FatorDeRisco[];
+};
