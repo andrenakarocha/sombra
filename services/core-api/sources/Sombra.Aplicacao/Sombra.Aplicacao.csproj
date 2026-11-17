@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sombra.Dominio\Sombra.Dominio.csproj" />
+    <ProjectReference Include="..\Sombra.Privacidade\Sombra.Privacidade.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

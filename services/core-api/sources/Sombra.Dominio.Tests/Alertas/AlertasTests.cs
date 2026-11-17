@@ -163,6 +163,24 @@ public sealed class AlertasTests
         Assert.AreEqual(EstadoDoAlerta.Resolvido, alerta.Estado);
     }
 
+    /// <summary>Regras R4 e R7: pedir ajuda num alerta de Sentinela leva o mesmo alerta ao degrau 3, uma vez só.</summary>
+    [TestMethod]
+    public void PedidoDeAjudaNoAlertaDeSentinelaVaiAoDegrauTres()
+    {
+        AlertaDeSentinela alerta = AlertaDeSentinela.Abrir(_casa, Fabricas.Leitura(33, 45, _abertura));
+
+        alerta.PedirAjuda(_abertura.AddMinutes(2));
+        alerta.PedirAjuda(_abertura.AddMinutes(3));
+        alerta.Escalonar(_abertura.AddHours(1), Rede());
+
+        Assert.AreEqual(DegrauDeEscalonamento.AlertaParaARede, alerta.Degrau);
+        Assert.AreEqual(EstadoDoAlerta.Escalonado, alerta.Estado);
+        Assert.AreEqual(1, alerta.EventosDeDominio.OfType<AlertaEscalonado>().Count());
+
+        alerta.ConfirmarEstouBem(_abertura.AddMinutes(5));
+        Assert.AreEqual("R5", Assert.ThrowsExactly<RegraVioladaException>(() => alerta.PedirAjuda(_abertura.AddMinutes(6))).Regra);
+    }
+
     /// <summary>As mensagens cabem no OLED (até 80 caracteres) e não têm dado pessoal.</summary>
     [TestMethod]
     public void MensagensCabemNoOled()

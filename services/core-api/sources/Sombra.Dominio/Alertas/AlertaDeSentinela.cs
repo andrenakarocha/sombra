@@ -84,6 +84,22 @@ public sealed class AlertaDeSentinela : AlertaDeCalor
         Registrar(new AlertaAgravado(Id, DomicilioId, Nivel, leitura.Momento));
     }
 
+    /// <summary>
+    /// A pessoa pediu ajuda durante o alerta (botão vermelho ou app). Regras R4, R7 e R8: o mesmo alerta vai direto ao
+    /// degrau 3, a rede toda, em qualquer nível, sem abrir um segundo alerta.
+    /// </summary>
+    /// <param name="momento">Quando a pessoa pediu ajuda.</param>
+    /// <exception cref="RegraVioladaException">Em alerta encerrado (R5).</exception>
+    public void PedirAjuda(DateTimeOffset momento)
+    {
+        GarantirAberto();
+        if (Degrau < DegrauDeEscalonamento.AlertaParaARede)
+        {
+            _ultimoDegrauEm = momento.ToUniversalTime();
+            SubirPara(DegrauDeEscalonamento.AlertaParaARede, momento);
+        }
+    }
+
     /// <inheritdoc/>
     public override void Escalonar(DateTimeOffset agora, RedeDeCuidado rede)
     {

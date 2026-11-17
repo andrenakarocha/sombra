@@ -50,6 +50,9 @@ public sealed partial class Domicilio
     /// <summary>Gets a rede de cuidado.</summary>
     public RedeDeCuidado RedeDeCuidado { get; } = new();
 
+    /// <summary>Gets a rotina combinada com a pessoa: check-in diário e lembrete de água (R11, R12).</summary>
+    public Rotina Rotina { get; private set; } = Rotina.Padrao;
+
     /// <summary>Gets a value indicating whether a casa está sendo monitorada (regra R8).</summary>
     public bool Monitorado { get; private set; }
 
@@ -123,6 +126,10 @@ public sealed partial class Domicilio
 
         RedeDeCuidado.Definir(novos);
     }
+
+    /// <summary>Substitui a rotina combinada com a pessoa.</summary>
+    /// <param name="rotina">A nova rotina (as regras dela já foram conferidas na criação).</param>
+    public void DefinirRotina(Rotina rotina) => Rotina = rotina ?? throw new ArgumentNullException(nameof(rotina));
 
     /// <summary>Vincula a Sentinela da casa.</summary>
     /// <param name="deviceId">O identificador da Sentinela.</param>
