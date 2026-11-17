@@ -1,6 +1,6 @@
 # Spec 00 — Fundação e contratos
 
-> **Fase:** F0 · **Execução:** André (D10) · **Checkpoints:** `PLANO.md` §8.1
+> **Fase:** F0 · **Execução:** operador (D10) · **Checkpoints:** `PLANO.md` §8.1
 > Detalhe da fundação: contratos, níveis de risco, design, simulador e roteiro da entrevista.
 
 ## Objetivo

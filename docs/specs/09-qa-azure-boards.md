@@ -1,6 +1,6 @@
 # Spec 09 — Testing, Compliance & QA · Azure Boards
 
-> **Fase:** F10 (🤝 F10.2–F10.3) · **Pasta:** `qa/` · **Checkpoints:** `PLANO.md` §8.11 · 🔑 Azure do André
+> **Fase:** F10 (🤝 F10.2–F10.3) · **Pasta:** `qa/` · **Checkpoints:** `PLANO.md` §8.11 · 🔑 conta do Azure DevOps
 > **Entrega:** **PDF** com o **link do projeto no Azure** + prints de todas as telas de Features e de Test Cases · **professor como Admin** no projeto · **link do pitch (≤ 4 min)** nesta mesma tarefa
 > **Avaliação:** Features **50%** · Test Cases **50%**
 

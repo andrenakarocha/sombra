@@ -1,6 +1,6 @@
 # Direção de arte
 
-> **Status:** aprovada pelo André em 2026-11-17 (decisão D16). Abra a [`amostra.html`](amostra.html) no navegador
+> **Status:** aprovada pela equipe em 2026-11-17 (decisão D16). Abra a [`amostra.html`](amostra.html) no navegador
 > (`?tema=claro` ou `?tema=escuro` força o tema).
 
 ## Conceito: luz filtrada pela folhagem

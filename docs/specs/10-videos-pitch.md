@@ -1,6 +1,6 @@
 # Spec 10 — Vídeos das disciplinas + Pitch (prêmio melhor GS)
 
-> **Fase:** F13 🔑 (YouTube do André) · **Pasta:** `pitch/` + `pitch/tecnicos/` · **Checkpoints:** `PLANO.md` §8.14
+> **Fase:** F13 🔑 (conta do YouTube) · **Pasta:** `pitch/` + `pitch/tecnicos/` · **Checkpoints:** `PLANO.md` §8.14
 > **Base:** pipeline do HENRY em `~/University/year3/challenge/sprint4-video-pitch/` (HyperFrames + GSAP, `build.sh`, sync de tempos, voz Gemini TTS, mix, Playwright para gravar telas)
 
 ## Os seis vídeos
