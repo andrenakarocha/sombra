@@ -1,0 +1,8 @@
+# Placeholder honesto: responde 200 em qualquer rota até o serviço real chegar na sua fase.
+server {
+    listen ${PORTA};
+    default_type application/json;
+    location / {
+        return 200 '{"status":"placeholder","servico":"${SERVICO}","substituidoNa":"${FASE}"}\n';
+    }
+}
