@@ -5,14 +5,6 @@ import { MIGRACOES, migrar } from '@/banco/banco';
 import { CASAS } from '@/demo/fixtures';
 import { useSessao } from '@/sessao/sessao';
 
-jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn() }));
-jest.mock('expo-network', () => ({ addNetworkStateListener: () => ({ remove: () => {} }) }));
-jest.mock('expo-secure-store', () => ({
-  getItemAsync: jest.fn(async () => null),
-  setItemAsync: jest.fn(async () => {}),
-  deleteItemAsync: jest.fn(async () => {}),
-}));
-
 const resposta = (status: number, corpo: unknown) =>
   ({ ok: status < 400, status, headers: new Headers(), json: async () => corpo }) as Response;
 

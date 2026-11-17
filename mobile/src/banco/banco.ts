@@ -9,6 +9,14 @@ export const MIGRACOES: string[] = [
      dados TEXT NOT NULL,
      atualizado_em TEXT NOT NULL
    );`,
+  // 2 · cache dos alertas
+  `CREATE TABLE alertas (
+     id TEXT PRIMARY KEY NOT NULL,
+     domicilio_id TEXT NOT NULL,
+     dados TEXT NOT NULL,
+     atualizado_em TEXT NOT NULL
+   );
+   CREATE INDEX alertas_domicilio ON alertas (domicilio_id);`,
 ];
 
 type BancoMigravel = Pick<SQLite.SQLiteDatabase, 'getFirstAsync' | 'execAsync' | 'withTransactionAsync'>;
