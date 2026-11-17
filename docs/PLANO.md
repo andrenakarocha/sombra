@@ -619,10 +619,14 @@ provando o antes e o depois.
 - [x] **F6.1** 🤖 Scaffold Expo SDK 58 + Expo Router + TS estrito + tema dos tokens + `Farol`, `CartaoCasa`,
   `BotaoGigante` + lint, typecheck e Jest — 2026-11-17 17:56.
   🔎 `npx expo-doctor` ok; o app abre no Expo Go.
-- [x] **F6.2** 🤖 Cliente da API (TanStack Query), login (secure-store) e SQLite com migrações para cache — 2026-11-17 18:02.
+- [ ] **F6.2** 🤖 Cliente da API (TanStack Query), login (secure-store) e SQLite com migrações para cache.
   🔎 abre offline com os últimos dados.
+  ⏸ 2026-11-17: coberto em Jest (API fora do ar → dados do SQLite) e com as migrações num SQLite real; o 🔎 no
+  aparelho espera a API do Core (F1.7).
 - [ ] **F6.3** 🤖 Início, Casa (gráfico de 24 h), Alertas (com reconhecer) e SignalR.
   🔎 o simulador deixa o card vermelho sem recarregar (P10).
+  ⏸ 2026-11-17: coberto em Jest (evento `LeituraRegistrada` → card em `PERIGO` sem recarregar); o 🔎 no aparelho
+  espera o hub do Core (F1.7).
 - [ ] **F6.4** 🤖 Modo Idoso (gigante, voz, háptico) + fila offline de check-in.
   🔎 check-in feito em modo avião sincroniza ao voltar a rede.
 - [ ] **F6.5** 🤖 Perto de mim, Privacidade (farol) e cadastro de morador com máscaras.
