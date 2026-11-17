@@ -48,7 +48,7 @@ public sealed class EscalonamentoTests
         ];
         CollectionAssert.AreEqual(esperados, cenario.Notificador.Avisos.Select(a => a.Destinatario).ToArray());
         Assert.AreEqual("Ana", cenario.Notificador.Avisos[1].Contatos.Single().Nome);
-        Assert.AreEqual("Cida (vizinha)", cenario.Notificador.Avisos[3].Contatos.Single().Nome);
+        Assert.AreEqual("Rosa (vizinha)", cenario.Notificador.Avisos[3].Contatos.Single().Nome);
         Assert.HasCount(2, cenario.Notificador.Avisos[5].Contatos);
         Assert.AreEqual("Sua família foi avisada. Aperte o botão verde se você está bem.", cenario.Notificador.Avisos[2].Mensagem);
     }
