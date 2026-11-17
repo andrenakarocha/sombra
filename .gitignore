@@ -1,0 +1,51 @@
+# Segredos (o .env.example é versionado)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# .NET
+bin/
+obj/
+artifacts/
+TestResults/
+*.user
+
+# Java
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Node, Expo e web
+node_modules/
+dist/
+.expo/
+web-build/
+coverage/
+playwright-report/
+test-results/
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Dados: os ZIPs do INMET ficam fora; os CSVs filtrados da A701 são versionados (F0.15)
+ml/dados/**/*.zip
+
+# Infra
+.vagrant/
+*.log
+
+# Vídeo (renders e intermediários são grandes)
+pitch/build/
+pitch/renders/
