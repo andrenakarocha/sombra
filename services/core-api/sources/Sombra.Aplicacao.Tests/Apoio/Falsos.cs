@@ -162,3 +162,17 @@ internal sealed class ClimaFalso : IClimaGateway
         return Task.FromResult(Riscos.GetValueOrDefault(regiaoClimatica));
     }
 }
+
+/// <summary>Confere o código do QR com uma chave só de teste (a mesma dos vetores do contrato).</summary>
+internal sealed class CodigosDeVinculoDeTeste : ICodigosDeVinculo
+{
+    private static readonly byte[] _chave = [.. Enumerable.Range(32, 32).Select(b => (byte)b)];
+
+    /// <summary>O código que a Sentinela mostraria no QR.</summary>
+    /// <param name="deviceId">A Sentinela.</param>
+    /// <returns>O código.</returns>
+    internal static string Para(string deviceId) => CodigoDeVinculo.Derivar(deviceId, _chave);
+
+    /// <inheritdoc/>
+    public bool Confere(string deviceId, string codigo) => CodigoDeVinculo.Confere(deviceId, codigo, _chave);
+}

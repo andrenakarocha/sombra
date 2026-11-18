@@ -1,0 +1,27 @@
+{
+  "descricao": "Código de vínculo da Sentinela (QR do app). Chave só de teste; nunca use numa Sentinela real.",
+  "alfabeto": "ABCDEFGHJKLMNPQRSTUVWXYZ23456789",
+  "chaveHex": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+  "vetores": [
+    {
+      "deviceId": "snt-7f3a9c",
+      "codigo": "3NGMZ2"
+    },
+    {
+      "deviceId": "snt-2b81d4",
+      "codigo": "ZWJFWB"
+    },
+    {
+      "deviceId": "snt-abc123",
+      "codigo": "ZLXXK5"
+    },
+    {
+      "deviceId": "snt-000000",
+      "codigo": "E9BCCC"
+    },
+    {
+      "deviceId": "snt-ffffff",
+      "codigo": "ARUH4E"
+    }
+  ]
+}

@@ -1453,7 +1453,7 @@
           "Moradores"
         ],
         "summary": "Cadastra um morador.",
-        "description": "Regra R1: CPF e Cart\u00E3o SUS v\u00E1lidos pelo d\u00EDgito verificador, sem CPF repetido na casa. No m\u00E1ximo quatro moradores.",
+        "description": "Como o app manda (D17): a idade (o Core guarda a data aproximada), o telefone e um perfil de sa\u00FAde em texto livre, que\nnunca volta na resposta. Regra R1: CPF e Cart\u00E3o SUS obrigat\u00F3rios e v\u00E1lidos pelo d\u00EDgito verificador, sem CPF repetido\nna casa. No m\u00E1ximo quatro moradores.",
         "parameters": [
           {
             "name": "id",
@@ -1627,8 +1627,8 @@
         "tags": [
           "Moradores"
         ],
-        "summary": "Atualiza os fatores de risco declarados.",
-        "description": "Regra R3: os fatores reduzem os limites t\u00E9rmicos da casa. A idade avan\u00E7ada vem da data de nascimento.",
+        "summary": "Edita um morador.",
+        "description": "Como o app manda (D17): nome, idade e fatores sempre; CPF, Cart\u00E3o SUS, telefone e perfil de sa\u00FAde s\u00F3 quando v\u00EAm\npreenchidos (vazio mant\u00E9m o que j\u00E1 existe). Regra R3: os fatores reduzem os limites t\u00E9rmicos da casa; R1: o CPF n\u00E3o\nse repete na casa.",
         "parameters": [
           {
             "name": "id",
@@ -1658,17 +1658,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilDoMoradorDto"
+                "$ref": "#/components/schemas/AtualizacaoDeMoradorDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilDoMoradorDto"
+                "$ref": "#/components/schemas/AtualizacaoDeMoradorDto"
               }
             },
             "application/*\u002Bjson": {
               "schema": {
-                "$ref": "#/components/schemas/PerfilDoMoradorDto"
+                "$ref": "#/components/schemas/AtualizacaoDeMoradorDto"
               }
             }
           },
@@ -1978,7 +1978,7 @@
           "Sentinelas e leituras"
         ],
         "summary": "Vincula a Sentinela da casa.",
-        "description": "Uma Sentinela por casa, e uma casa por Sentinela (409 se ela j\u00E1 for de outra casa). A resposta traz, uma \u00FAnica vez, o\nsegredo HMAC que assina as mensagens da Sentinela (contrato MQTT): grave-o no firmware.",
+        "description": "O app l\u00EA o QR da Sentinela (\u0060sombra://sentinela/vincular?v=1\u0026amp;d=\u2026\u0026amp;c=\u2026\u0060) e manda o identificador e o c\u00F3digo\nde v\u00EDnculo, que s\u00F3 confere com a Sentinela na m\u00E3o (422 com regra \u0060VINCULO\u0060 quando n\u00E3o confere). Uma Sentinela por\ncasa, e uma casa por Sentinela (409 se ela j\u00E1 for de outra casa). A resposta traz, uma \u00FAnica vez, o segredo HMAC que\nassina as mensagens da Sentinela (contrato MQTT).",
         "parameters": [
           {
             "name": "id",
@@ -2656,6 +2656,78 @@
         },
         "description": "A corre\u00E7\u00E3o do cadastro da casa: apelido e endere\u00E7o (a regi\u00E3o clim\u00E1tica n\u00E3o muda)."
       },
+      "AtualizacaoDeMoradorDto": {
+        "required": [
+          "nome",
+          "idade",
+          "fatoresDeRisco"
+        ],
+        "type": "object",
+        "properties": {
+          "nome": {
+            "maxLength": 80,
+            "minLength": 0,
+            "type": "string",
+            "description": "Gets o nome."
+          },
+          "idade": {
+            "maximum": 130,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Gets a idade em anos completos.",
+            "format": "int32"
+          },
+          "fatoresDeRisco": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Gets os fatores de risco declarados (lista vazia quando n\u00E3o h\u00E1)."
+          },
+          "cpf": {
+            "maxLength": 14,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets o CPF novo, quando muda."
+          },
+          "cartaoSus": {
+            "maxLength": 18,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets o Cart\u00E3o SUS novo, quando muda."
+          },
+          "telefone": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets o telefone novo, quando muda."
+          },
+          "perfilDeSaude": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets o que a fam\u00EDlia escreveu sobre a sa\u00FAde, quando muda."
+          }
+        },
+        "description": "A edi\u00E7\u00E3o de um morador, como o app manda (D17): nome, idade e fatores sempre; CPF, Cart\u00E3o SUS, telefone e sa\u00FAde s\u00F3\nquando a fam\u00EDlia digitou de novo (vazio quer dizer \u0022manter\u0022)."
+      },
       "AvancoDoRelogioDto": {
         "required": [
           "minutos"
@@ -2679,6 +2751,28 @@
           }
         },
         "description": "Quanto adiantar o rel\u00F3gio do Core na demonstra\u00E7\u00E3o."
+      },
+      "CheckInDiarioDto": {
+        "required": [
+          "ativo",
+          "horario"
+        ],
+        "type": "object",
+        "properties": {
+          "ativo": {
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "Gets se o check-in di\u00E1rio fica ligado."
+          },
+          "horario": {
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+            "type": "string",
+            "description": "Gets o hor\u00E1rio local, \u0060HH:mm\u0060."
+          }
+        },
+        "description": "O check-in di\u00E1rio, como o app manda: ligado ou n\u00E3o, e o hor\u00E1rio guardado nos dois casos."
       },
       "CheckInDiarioResposta": {
         "required": [
@@ -3017,6 +3111,22 @@
         },
         "description": "Uma leitura da Sentinela, com o \u00EDndice de calor calculado pelo Core."
       },
+      "LembreteDeAguaDto": {
+        "required": [
+          "ativo"
+        ],
+        "type": "object",
+        "properties": {
+          "ativo": {
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "Gets se o lembrete fica ligado."
+          }
+        },
+        "description": "O lembrete de \u00E1gua no pico da tarde (R11)."
+      },
       "LembreteDeAguaResposta": {
         "required": [
           "ativo"
@@ -3130,20 +3240,23 @@
       },
       "NovaSentinelaDto": {
         "required": [
-          "deviceId"
+          "deviceId",
+          "codigoDeVinculo"
         ],
         "type": "object",
         "properties": {
           "deviceId": {
-            "examples": [
-              "snt-7f3a9c"
-            ],
             "pattern": "^snt-[0-9a-f]{6}$",
             "type": "string",
-            "description": "O identificador p\u00FAblico da Sentinela (ex.: \u0060snt-7f3a9c\u0060)."
+            "description": "Gets o identificador p\u00FAblico da Sentinela."
+          },
+          "codigoDeVinculo": {
+            "pattern": "^[A-HJ-NP-Za-hj-np-z2-9]{6}$",
+            "type": "string",
+            "description": "Gets o c\u00F3digo de v\u00EDnculo que a Sentinela mostra no QR."
           }
         },
-        "description": "O v\u00EDnculo de uma Sentinela com a casa."
+        "description": "A Sentinela lida no QR (ou digitada): o identificador e o c\u00F3digo de v\u00EDnculo que ela mostra."
       },
       "NovoCheckInDto": {
         "required": [
@@ -3274,67 +3387,70 @@
       "NovoMoradorDto": {
         "required": [
           "nome",
-          "dataDeNascimento",
+          "idade",
           "cpf",
+          "cartaoSus",
           "fatoresDeRisco"
         ],
         "type": "object",
         "properties": {
           "nome": {
-            "examples": [
-              "Lurdes A."
-            ],
             "maxLength": 80,
             "minLength": 0,
             "type": "string",
-            "description": "O nome."
+            "description": "Gets o nome."
           },
-          "dataDeNascimento": {
-            "examples": [
-              "1948-04-02"
-            ],
+          "idade": {
+            "maximum": 130,
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
               "null",
+              "integer",
               "string"
             ],
-            "description": "A data de nascimento.",
-            "format": "date"
+            "description": "Gets a idade em anos completos.",
+            "format": "int32"
           },
           "cpf": {
-            "examples": [
-              "348.757.636-89"
-            ],
             "maxLength": 14,
             "minLength": 0,
             "type": "string",
-            "description": "O CPF, com ou sem pontua\u00E7\u00E3o."
+            "description": "Gets o CPF (regra R1)."
           },
           "cartaoSus": {
-            "examples": [
-              703093750001765
-            ],
             "maxLength": 18,
+            "minLength": 0,
+            "type": "string",
+            "description": "Gets o Cart\u00E3o SUS (regra R1)."
+          },
+          "telefone": {
+            "maxLength": 20,
             "minLength": 0,
             "type": [
               "null",
               "string"
             ],
-            "description": "O Cart\u00E3o SUS, quando houver."
+            "description": "Gets o telefone da pessoa, quando houver."
+          },
+          "perfilDeSaude": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets o que a fam\u00EDlia escreveu sobre a sa\u00FAde (opcional; nunca sai da API)."
           },
           "fatoresDeRisco": {
-            "examples": [
-              [
-                "USO_DE_DIURETICO"
-              ]
-            ],
             "type": "array",
             "items": {
               "type": "string"
             },
-            "description": "Os c\u00F3digos dos fatores de risco declarados (ex.: \u0060CARDIOPATIA\u0060); lista vazia quando n\u00E3o h\u00E1."
+            "description": "Gets os fatores de risco declarados (lista vazia quando n\u00E3o h\u00E1)."
           }
         },
-        "description": "O corpo do cadastro de um morador. CPF e Cart\u00E3o SUS s\u00E3o conferidos pelo d\u00EDgito verificador no dom\u00EDnio (R1)."
+        "description": "Um morador novo, como o app manda (D17). O Core guarda a data de nascimento aproximada pela idade; o Cart\u00E3o SUS \u00E9\nobrigat\u00F3rio porque a leitura do app sempre espera um."
       },
       "OrigemDoCheckIn": {
         "enum": [
@@ -3598,27 +3714,6 @@
         ],
         "description": "O papel de um contato no escalonamento em degraus (D13)."
       },
-      "PerfilDoMoradorDto": {
-        "required": [
-          "fatoresDeRisco"
-        ],
-        "type": "object",
-        "properties": {
-          "fatoresDeRisco": {
-            "examples": [
-              [
-                "CARDIOPATIA"
-              ]
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Os c\u00F3digos dos fatores (lista vazia quando n\u00E3o h\u00E1)."
-          }
-        },
-        "description": "Os fatores de risco declarados de um morador (a idade avan\u00E7ada vem da data de nascimento)."
-      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -3712,33 +3807,35 @@
       },
       "RotinaDto": {
         "required": [
-          "lembreteDeAguaAtivo"
+          "checkInDiario",
+          "lembreteDeAgua"
         ],
         "type": "object",
         "properties": {
-          "horarioDoCheckInDiario": {
-            "examples": [
-              "09:00:00"
-            ],
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "O hor\u00E1rio local do check-in di\u00E1rio, ou nulo para n\u00E3o ter.",
-            "format": "time"
+          "checkInDiario": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Gets o check-in di\u00E1rio.",
+                "$ref": "#/components/schemas/CheckInDiarioDto"
+              }
+            ]
           },
-          "lembreteDeAguaAtivo": {
-            "examples": [
-              true
-            ],
-            "type": [
-              "null",
-              "boolean"
-            ],
-            "description": "Se o lembrete de \u00E1gua fica ligado."
+          "lembreteDeAgua": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Gets o lembrete de \u00E1gua.",
+                "$ref": "#/components/schemas/LembreteDeAguaDto"
+              }
+            ]
           }
         },
-        "description": "A rotina combinada com a pessoa (R11, R12)."
+        "description": "A rotina combinada com a pessoa, no formato do app (D17)."
       },
       "RotinaResposta": {
         "required": [
@@ -3801,7 +3898,7 @@
         "required": [
           "deviceId",
           "online",
-          "segredoHex"
+          "segredo"
         ],
         "type": "object",
         "properties": {
@@ -3813,9 +3910,9 @@
             "type": "boolean",
             "description": "Se j\u00E1 est\u00E1 falando com o Core."
           },
-          "segredoHex": {
+          "segredo": {
             "type": "string",
-            "description": "Os 32 bytes do segredo, em hexadecimal."
+            "description": "Os 32 bytes do segredo, em hexadecimal min\u00FAsculo (o app guarda no SecureStore)."
           }
         },
         "description": "A Sentinela rec\u00E9m-vinculada, com o segredo HMAC que assina as mensagens (contrato MQTT). O segredo aparece s\u00F3 nesta\nresposta: grave-o na Sentinela."

@@ -21,17 +21,27 @@ public sealed record Rotina
     private static readonly TimeOnly _inicioDoPico = new(15, 0);
     private static readonly TimeOnly _fimDoPico = new(16, 0);
 
-    private Rotina(TimeOnly? horarioDoCheckInDiario, bool lembreteDeAguaAtivo)
+    private Rotina(TimeOnly horarioEscolhido, bool checkInDiarioAtivo, bool lembreteDeAguaAtivo)
     {
-        HorarioDoCheckInDiario = horarioDoCheckInDiario;
+        HorarioEscolhido = horarioEscolhido;
+        CheckInDiarioAtivo = checkInDiarioAtivo;
         LembreteDeAguaAtivo = lembreteDeAguaAtivo;
     }
 
+    /// <summary>Gets o horário que aparece quando o check-in diário nunca foi combinado.</summary>
+    public static TimeOnly HorarioSugerido { get; } = new(9, 0);
+
     /// <summary>Gets a rotina inicial: sem check-in diário e com lembrete de água.</summary>
-    public static Rotina Padrao { get; } = new(null, true);
+    public static Rotina Padrao { get; } = new(HorarioSugerido, false, true);
+
+    /// <summary>Gets o horário combinado do check-in diário; fica guardado mesmo com o check-in desligado (D17).</summary>
+    public TimeOnly HorarioEscolhido { get; }
+
+    /// <summary>Gets a value indicating whether o check-in diário está ligado.</summary>
+    public bool CheckInDiarioAtivo { get; }
 
     /// <summary>Gets o horário local do check-in diário, quando a pessoa quer um.</summary>
-    public TimeOnly? HorarioDoCheckInDiario { get; }
+    public TimeOnly? HorarioDoCheckInDiario => CheckInDiarioAtivo ? HorarioEscolhido : null;
 
     /// <summary>Gets a value indicating whether o lembrete de água está ligado.</summary>
     public bool LembreteDeAguaAtivo { get; }
@@ -42,13 +52,22 @@ public sealed record Rotina
     /// <returns>A rotina.</returns>
     /// <exception cref="RegraVioladaException">Com check-in diário marcado para a noite (R12).</exception>
     public static Rotina Criar(TimeOnly? horarioDoCheckInDiario, bool lembreteDeAguaAtivo)
+        => Criar(horarioDoCheckInDiario is not null, horarioDoCheckInDiario ?? HorarioSugerido, lembreteDeAguaAtivo);
+
+    /// <summary>Combina a rotina como o app manda: o check-in diário ligado ou não, com o horário guardado nos dois casos.</summary>
+    /// <param name="checkInDiarioAtivo">Se o check-in diário está ligado.</param>
+    /// <param name="horario">O horário local do check-in diário.</param>
+    /// <param name="lembreteDeAguaAtivo">Se o lembrete de água fica ligado.</param>
+    /// <returns>A rotina.</returns>
+    /// <exception cref="RegraVioladaException">Check-in diário ligado entre 22h e 7h (R12).</exception>
+    public static Rotina Criar(bool checkInDiarioAtivo, TimeOnly horario, bool lembreteDeAguaAtivo)
     {
-        if (horarioDoCheckInDiario is { } horario && EhNoite(horario))
+        if (checkInDiarioAtivo && EhNoite(horario))
         {
             throw new RegraVioladaException("R12", "O check-in diário não pode ser entre 22h e 7h.");
         }
 
-        return new Rotina(horarioDoCheckInDiario, lembreteDeAguaAtivo);
+        return new Rotina(horario, checkInDiarioAtivo, lembreteDeAguaAtivo);
     }
 
     /// <summary>Regra R12: entre 22h e 7h não há lembretes.</summary>

@@ -23,7 +23,7 @@ public sealed record PerfilDeSaude
     /// <param name="fatores">Os fatores informados no cadastro.</param>
     /// <returns>O perfil.</returns>
     public static PerfilDeSaude Com(IEnumerable<FatorDeRisco> fatores)
-        => new(fatores.Where(f => f is not IdadeAvancada).Distinct().ToArray());
+        => new(fatores.Distinct().ToArray());
 
     /// <summary>Nunca descreve a saúde da pessoa.</summary>
     /// <returns>O texto fixo <c>[DADO DE SAÚDE PROTEGIDO]</c>.</returns>

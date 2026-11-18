@@ -196,9 +196,13 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         {
                             b1.IsRequired();
 
-                            b1.Property<TimeOnly?>("HorarioDoCheckInDiario")
+                            b1.Property<bool>("CheckInDiarioAtivo")
+                                .HasColumnType("boolean")
+                                .HasColumnName("rotina_check_in_diario_ativo");
+
+                            b1.Property<TimeOnly>("HorarioEscolhido")
                                 .HasColumnType("time without time zone")
-                                .HasColumnName("rotina_horario_do_check_in_diario");
+                                .HasColumnName("rotina_horario_escolhido");
 
                             b1.Property<bool>("LembreteDeAguaAtivo")
                                 .HasColumnType("boolean")
@@ -241,6 +245,11 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)")
                         .HasColumnName("nome");
+
+                    b.Property<string>("ObservacoesDeSaude")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("observacoes_de_saude");
 
                     b.Property<string>("PerfilDeSaude")
                         .IsRequired()

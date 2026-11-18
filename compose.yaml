@@ -50,6 +50,7 @@ services:
       Demo__Senha: ${Demo__Senha:-}
       Demo__SentinelaDeviceId: ${SENTINELA_DEVICE_ID:-snt-7f3a9c}
       Demo__SentinelaSegredoHex: ${SENTINELA_SEGREDO_HEX:-}
+      Sentinela__ChaveDeVinculo: ${SENTINELA_CHAVE_DE_VINCULO:?rode make env}
       Ops__TokenDoMonitor: ${Ops__TokenDoMonitor:-}
       Mqtt__Host: mqtt
       Mqtt__Porta: "1883"

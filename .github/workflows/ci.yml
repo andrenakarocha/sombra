@@ -44,6 +44,7 @@ jobs:
               - 'docs/contratos/**'
               - 'tools/indice-de-calor/**'
               - 'tools/mqtt-assinatura/**'
+              - 'tools/vinculo/**'
             design:
               - 'design/**'
             mobile:
@@ -88,6 +89,8 @@ jobs:
         run: python3 -I tools/indice-de-calor/vetores.py
       - name: vetores de assinatura MQTT
         run: python3 -I tools/mqtt-assinatura/vetores.py
+      - name: vetores do código de vínculo da Sentinela
+        run: python3 -I tools/vinculo/codigo.py --conferir
       - name: AsyncAPI
         run: npx -y @asyncapi/cli@6.3.1 validate docs/contratos/mqtt.asyncapi.yaml
 

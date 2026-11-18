@@ -16,6 +16,7 @@ using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Respostas;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Casas;
+using Sombra.Dominio.Sentinelas;
 using Sombra.Dominio.Tests.Apoio;
 
 namespace Sombra.Api.IntegrationTests;
@@ -118,12 +119,13 @@ public sealed class ApiTests
         using HttpClient admin = await Api.ClienteDeAsync(Demo.Admin);
         List<ContatoResposta> vistaPeloAdmin = await (await admin.GetAsync(new Uri($"{casaUrl}/rede-de-cuidado", UriKind.Relative))).CorpoAsync<List<ContatoResposta>>(HttpStatusCode.OK);
         Assert.AreEqual("(11) *****-4321", vistaPeloAdmin.Single().Telefone);
-        Assert.AreEqual("R12", await RegraAsync(await ana.EnviarAsync(HttpMethod.Put, $"{casaUrl}/rotina", new RotinaDto { HorarioDoCheckInDiario = new TimeOnly(23, 0), LembreteDeAguaAtivo = true })));
+        Assert.AreEqual("R12", await RegraAsync(await ana.EnviarAsync(HttpMethod.Put, $"{casaUrl}/rotina", new RotinaDto { CheckInDiario = new CheckInDiarioDto { Ativo = true, Horario = "23:00" }, LembreteDeAgua = new LembreteDeAguaDto { Ativo = true } })));
 
-        await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", new NovaSentinelaDto { DeviceId = "snt-7f3a9c" })).ProblemaAsync(HttpStatusCode.Conflict);
-        SentinelaVinculadaResposta vinculada = await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", new NovaSentinelaDto { DeviceId = "snt-abc123" }))
+        await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", Sentinela("snt-7f3a9c"))).ProblemaAsync(HttpStatusCode.Conflict);
+        Assert.AreEqual("VINCULO", await RegraAsync(await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", Sentinela("snt-abc123") with { CodigoDeVinculo = "AAAAAA" })));
+        SentinelaVinculadaResposta vinculada = await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", Sentinela("snt-abc123")))
             .CorpoAsync<SentinelaVinculadaResposta>(HttpStatusCode.Created);
-        Assert.MatchesRegex("^[0-9a-f]{64}$", vinculada.SegredoHex);
+        Assert.MatchesRegex("^[0-9a-f]{64}$", vinculada.Segredo);
         DomicilioResposta monitorada = await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/monitoramento")).CorpoAsync<DomicilioResposta>(HttpStatusCode.OK);
         Assert.IsTrue(monitorada.Monitorado);
         Assert.AreEqual("R8", await RegraAsync(await ana.EnviarAsync(HttpMethod.Delete, $"{casaUrl}/moradores/{morador.Id}")));
@@ -257,10 +259,15 @@ public sealed class ApiTests
     private static NovoMoradorDto Morador(string cpf) => new()
     {
         Nome = "Teresa T.",
-        DataDeNascimento = new DateOnly(1940, 2, 3),
+        Idade = 86,
         Cpf = cpf,
+        CartaoSus = DocumentosSinteticos.CartaoSus(77),
+        Telefone = "(11) 92345-6789",
         FatoresDeRisco = ["CARDIOPATIA"],
     };
+
+    private static NovaSentinelaDto Sentinela(string deviceId)
+        => new() { DeviceId = deviceId, CodigoDeVinculo = CodigoDeVinculo.Derivar(deviceId, FabricaDaApi.ChaveDeVinculo) };
 
     private static async Task<string> RegraAsync(HttpResponseMessage resposta)
         => (await resposta.ProblemaAsync(HttpStatusCode.UnprocessableEntity)).GetProperty("regra").GetString() ?? string.Empty;

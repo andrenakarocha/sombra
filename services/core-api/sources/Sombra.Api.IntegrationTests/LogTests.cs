@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -33,7 +32,7 @@ public sealed partial class LogTests
         using HttpClient ana = await api.ClienteDeAsync(Demo.Ana);
         string cpf = DocumentosSinteticos.Cpf(91);
         string cns = DocumentosSinteticos.CartaoSus(91);
-        NovoMoradorDto morador = new() { Nome = "Zuleica Quintana", DataDeNascimento = new DateOnly(1939, 7, 1), Cpf = cpf, CartaoSus = cns, FatoresDeRisco = ["CARDIOPATIA"] };
+        NovoMoradorDto morador = new() { Nome = "Zuleica Quintana", Idade = 87, Cpf = cpf, CartaoSus = cns, FatoresDeRisco = ["CARDIOPATIA"] };
 
         HttpResponseMessage criado = await EnviarAsync(ana, $"/api/v1/domicilios/{Demo.Lurdes}/moradores", morador, "teste-f18:1");
         HttpResponseMessage recusado = await EnviarAsync(ana, $"/api/v1/domicilios/{Demo.Lurdes}/moradores", morador with { Cpf = "123.456.789-00" }, "teste-f18:2");

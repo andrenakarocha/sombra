@@ -46,8 +46,10 @@ public sealed class SentinelasController : ControllerBase
 
     /// <summary>Vincula a Sentinela da casa.</summary>
     /// <remarks>
-    /// Uma Sentinela por casa, e uma casa por Sentinela (409 se ela já for de outra casa). A resposta traz, uma única vez, o
-    /// segredo HMAC que assina as mensagens da Sentinela (contrato MQTT): grave-o no firmware.
+    /// O app lê o QR da Sentinela (<c>sombra://sentinela/vincular?v=1&amp;d=…&amp;c=…</c>) e manda o identificador e o código
+    /// de vínculo, que só confere com a Sentinela na mão (422 com regra <c>VINCULO</c> quando não confere). Uma Sentinela por
+    /// casa, e uma casa por Sentinela (409 se ela já for de outra casa). A resposta traz, uma única vez, o segredo HMAC que
+    /// assina as mensagens da Sentinela (contrato MQTT).
     /// </remarks>
     /// <param name="id" example="0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10">A casa.</param>
     /// <param name="dto">O identificador da Sentinela.</param>

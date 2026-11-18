@@ -116,6 +116,22 @@ public sealed partial class Domicilio
         _moradores.Add(morador);
     }
 
+    /// <summary>Troca o CPF de um morador sem repetir o de outro morador da casa (regra R1).</summary>
+    /// <param name="moradorId">O morador.</param>
+    /// <param name="cpf">O novo CPF.</param>
+    /// <exception cref="RegraVioladaException">Quando outro morador da casa já tem esse CPF (R1).</exception>
+    public void TrocarCpfDoMorador(Guid moradorId, Cpf cpf)
+    {
+        ArgumentNullException.ThrowIfNull(cpf);
+        Morador morador = _moradores.Single(m => m.Id == moradorId);
+        if (_moradores.Any(m => m.Id != moradorId && m.Cpf == cpf))
+        {
+            throw new RegraVioladaException("R1", "Esse CPF já está cadastrado nesta casa.");
+        }
+
+        morador.TrocarCpf(cpf);
+    }
+
     /// <summary>Remove um morador.</summary>
     /// <param name="moradorId">O identificador do morador.</param>
     /// <returns><c>true</c> quando o morador existia.</returns>

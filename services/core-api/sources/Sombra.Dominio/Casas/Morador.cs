@@ -25,22 +25,28 @@ public sealed class Morador
     public Guid Id { get; }
 
     /// <summary>Gets o nome.</summary>
-    public string Nome { get; }
+    public string Nome { get; private set; }
 
     /// <summary>Gets a data de nascimento.</summary>
-    public DateOnly DataDeNascimento { get; }
+    public DateOnly DataDeNascimento { get; private set; }
 
     /// <summary>Gets o CPF (regra R1).</summary>
-    public Cpf Cpf { get; }
+    public Cpf Cpf { get; private set; }
 
     /// <summary>Gets o Cartão SUS, quando informado (regra R1).</summary>
-    public CartaoSus? CartaoSus { get; }
+    public CartaoSus? CartaoSus { get; private set; }
 
     /// <summary>Gets os fatores de risco declarados.</summary>
     public PerfilDeSaude PerfilDeSaude { get; private set; }
 
     /// <summary>Gets o telefone da pessoa, para a família ligar, quando houver.</summary>
     public Telefone? Telefone { get; private set; }
+
+    /// <summary>
+    /// Gets o que a família escreveu sobre a saúde da pessoa (dado sensível, LGPD art. 11). Nunca sai da API: a resposta
+    /// mostra sempre <c>[DADO DE SAÚDE PROTEGIDO]</c>.
+    /// </summary>
+    public string? ObservacoesDeSaude { get; private set; }
 
     /// <summary>Cadastra um morador.</summary>
     /// <param name="nome">O nome.</param>
@@ -55,16 +61,7 @@ public sealed class Morador
     {
         ArgumentNullException.ThrowIfNull(cpf);
         ArgumentNullException.ThrowIfNull(perfil);
-        if (string.IsNullOrWhiteSpace(nome))
-        {
-            throw new RegraVioladaException("CADASTRO", "O nome do morador é obrigatório.");
-        }
-
-        if (dataDeNascimento > hoje)
-        {
-            throw new RegraVioladaException("CADASTRO", "A data de nascimento não pode estar no futuro.");
-        }
-
+        Validar(nome, dataDeNascimento, hoje);
         return new Morador(Guid.CreateVersion7(), nome.Trim(), dataDeNascimento, cpf, cartaoSus, perfil);
     }
 
@@ -81,7 +78,7 @@ public sealed class Morador
     /// <param name="hoje">A data de referência.</param>
     /// <returns>Os fatores.</returns>
     public IReadOnlyCollection<FatorDeRisco> FatoresDeRisco(DateOnly hoje)
-        => Idade(hoje) >= IdadeAvancada.IdadeMinima ? [.. PerfilDeSaude.Fatores, new IdadeAvancada()] : [.. PerfilDeSaude.Fatores];
+        => Idade(hoje) >= IdadeAvancada.IdadeMinima ? [.. PerfilDeSaude.Fatores.Append(new IdadeAvancada()).Distinct()] : [.. PerfilDeSaude.Fatores];
 
     /// <summary>Os limites térmicos pessoais (regra R3): o padrão reduzido pelos fatores, até o máximo.</summary>
     /// <param name="hoje">A data de referência.</param>
@@ -97,7 +94,45 @@ public sealed class Morador
     /// <param name="telefone">O novo telefone.</param>
     public void DefinirTelefone(Telefone? telefone) => Telefone = telefone;
 
+    /// <summary>Corrige o nome e a data de nascimento.</summary>
+    /// <param name="nome">O nome.</param>
+    /// <param name="dataDeNascimento">A data de nascimento.</param>
+    /// <param name="hoje">A data de referência.</param>
+    /// <exception cref="RegraVioladaException">Sem nome ou com nascimento no futuro.</exception>
+    public void CorrigirCadastro(string nome, DateOnly dataDeNascimento, DateOnly hoje)
+    {
+        Validar(nome, dataDeNascimento, hoje);
+        Nome = nome.Trim();
+        DataDeNascimento = dataDeNascimento;
+    }
+
+    /// <summary>Troca o Cartão SUS.</summary>
+    /// <param name="cartaoSus">O novo cartão.</param>
+    public void TrocarCartaoSus(CartaoSus cartaoSus) => CartaoSus = cartaoSus ?? throw new ArgumentNullException(nameof(cartaoSus));
+
+    /// <summary>Troca o que a família escreveu sobre a saúde da pessoa; vazio apaga.</summary>
+    /// <param name="observacoes">O texto livre.</param>
+    public void DefinirObservacoesDeSaude(string? observacoes)
+        => ObservacoesDeSaude = string.IsNullOrWhiteSpace(observacoes) ? null : observacoes.Trim();
+
+    /// <summary>Troca o CPF. Quem chama é a casa, que garante a regra R1 (sem CPF repetido).</summary>
+    /// <param name="cpf">O novo CPF.</param>
+    internal void TrocarCpf(Cpf cpf) => Cpf = cpf;
+
     /// <summary>Nunca revela quem é a pessoa.</summary>
     /// <returns>O identificador, sem dado pessoal.</returns>
     public override string ToString() => $"Morador {Id}";
+
+    private static void Validar(string nome, DateOnly dataDeNascimento, DateOnly hoje)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+        {
+            throw new RegraVioladaException("CADASTRO", "O nome do morador é obrigatório.");
+        }
+
+        if (dataDeNascimento > hoje)
+        {
+            throw new RegraVioladaException("CADASTRO", "A data de nascimento não pode estar no futuro.");
+        }
+    }
 }

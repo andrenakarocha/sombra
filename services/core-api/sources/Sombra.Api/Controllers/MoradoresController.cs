@@ -37,7 +37,11 @@ public sealed class MoradoresController : ControllerBase
         => Ok(await _cadastro.ListarMoradoresAsync(id, User.IsInRole(Papeis.Cuidador), cancellationToken));
 
     /// <summary>Cadastra um morador.</summary>
-    /// <remarks>Regra R1: CPF e Cartão SUS válidos pelo dígito verificador, sem CPF repetido na casa. No máximo quatro moradores.</remarks>
+    /// <remarks>
+    /// Como o app manda (D17): a idade (o Core guarda a data aproximada), o telefone e um perfil de saúde em texto livre, que
+    /// nunca volta na resposta. Regra R1: CPF e Cartão SUS obrigatórios e válidos pelo dígito verificador, sem CPF repetido
+    /// na casa. No máximo quatro moradores.
+    /// </remarks>
     /// <param name="id" example="0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10">A casa.</param>
     /// <param name="dto">Os dados do morador.</param>
     /// <param name="cancellationToken">Cancela a requisição.</param>
@@ -64,11 +68,15 @@ public sealed class MoradoresController : ControllerBase
     public async Task<ActionResult<MoradorResposta>> Obter(Guid id, Guid moradorId, CancellationToken cancellationToken)
         => await _cadastro.ObterMoradorAsync(id, moradorId, User.IsInRole(Papeis.Cuidador), cancellationToken);
 
-    /// <summary>Atualiza os fatores de risco declarados.</summary>
-    /// <remarks>Regra R3: os fatores reduzem os limites térmicos da casa. A idade avançada vem da data de nascimento.</remarks>
+    /// <summary>Edita um morador.</summary>
+    /// <remarks>
+    /// Como o app manda (D17): nome, idade e fatores sempre; CPF, Cartão SUS, telefone e perfil de saúde só quando vêm
+    /// preenchidos (vazio mantém o que já existe). Regra R3: os fatores reduzem os limites térmicos da casa; R1: o CPF não
+    /// se repete na casa.
+    /// </remarks>
     /// <param name="id" example="0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10">A casa.</param>
     /// <param name="moradorId" example="c1a8e2f4-7b3d-4e9a-8f2c-6d5b4a3e2f10">O morador.</param>
-    /// <param name="dto">Os fatores.</param>
+    /// <param name="dto">O que mudou.</param>
     /// <param name="cancellationToken">Cancela a requisição.</param>
     /// <returns>O morador.</returns>
     [HttpPut("{moradorId:guid}")]
@@ -76,8 +84,8 @@ public sealed class MoradoresController : ControllerBase
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity, "application/problem+json")]
-    public async Task<ActionResult<MoradorResposta>> AtualizarPerfil(Guid id, Guid moradorId, PerfilDoMoradorDto dto, CancellationToken cancellationToken)
-        => await _cadastro.AtualizarPerfilDoMoradorAsync(id, moradorId, dto, User.IsInRole(Papeis.Cuidador), cancellationToken);
+    public async Task<ActionResult<MoradorResposta>> Atualizar(Guid id, Guid moradorId, AtualizacaoDeMoradorDto dto, CancellationToken cancellationToken)
+        => await _cadastro.AtualizarMoradorAsync(id, moradorId, dto, User.IsInRole(Papeis.Cuidador), cancellationToken);
 
     /// <summary>Remove um morador.</summary>
     /// <remarks>Regra R8: o último morador de uma casa monitorada só sai depois de desligar o monitoramento.</remarks>

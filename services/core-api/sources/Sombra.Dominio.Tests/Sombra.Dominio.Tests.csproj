@@ -20,6 +20,7 @@
   <!-- Os mesmos vetores que a Sentinela, o Clima, o ML e o simulador rodam (ADR-006). -->
   <ItemGroup>
     <None Include="..\..\..\..\docs\contratos\indice-de-calor.vetores.json" Link="Contratos\indice-de-calor.vetores.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\..\docs\contratos\vinculo-da-sentinela.vetores.json" Link="Contratos\vinculo-da-sentinela.vetores.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

@@ -93,18 +93,14 @@ public sealed record LembreteDeAguaResposta(bool Ativo);
 /// <param name="LembreteDeAgua">O lembrete de água.</param>
 public sealed record RotinaResposta(CheckInDiarioResposta CheckInDiario, LembreteDeAguaResposta LembreteDeAgua)
 {
-    /// <summary>O horário mostrado quando o check-in diário nunca foi ligado.</summary>
-    public static readonly TimeOnly HorarioSugerido = new(9, 0);
-
     /// <summary>Monta a resposta a partir da rotina.</summary>
     /// <param name="rotina">A rotina.</param>
     /// <returns>A resposta.</returns>
     public static RotinaResposta De(Rotina rotina)
     {
         ArgumentNullException.ThrowIfNull(rotina);
-        TimeOnly? horario = rotina.HorarioDoCheckInDiario;
         return new(
-            new CheckInDiarioResposta(horario is not null, (horario ?? HorarioSugerido).ToString("HH:mm", CultureInfo.InvariantCulture)),
+            new CheckInDiarioResposta(rotina.CheckInDiarioAtivo, rotina.HorarioEscolhido.ToString("HH:mm", CultureInfo.InvariantCulture)),
             new LembreteDeAguaResposta(rotina.LembreteDeAguaAtivo));
     }
 }

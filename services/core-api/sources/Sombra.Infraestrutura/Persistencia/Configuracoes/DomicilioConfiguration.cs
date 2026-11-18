@@ -30,8 +30,10 @@ internal sealed class DomicilioConfiguration : IEntityTypeConfiguration<Domicili
 
         builder.ComplexProperty(d => d.Rotina, rotina =>
         {
-            rotina.Property(r => r.HorarioDoCheckInDiario);
+            rotina.Property(r => r.HorarioEscolhido);
+            rotina.Property(r => r.CheckInDiarioAtivo);
             rotina.Property(r => r.LembreteDeAguaAtivo);
+            rotina.Ignore(r => r.HorarioDoCheckInDiario);
         });
 
         builder.Property(d => d.RedeDeCuidado)
@@ -61,6 +63,7 @@ internal sealed class MoradorConfiguration : IEntityTypeConfiguration<Morador>
         builder.Property(m => m.CartaoSus).HasConversion(Conversores.CartaoSusEmTexto).HasMaxLength(15);
         builder.Property(m => m.PerfilDeSaude).HasConversion(Conversores.PerfilEmCodigos).HasMaxLength(200);
         builder.Property(m => m.Telefone).HasConversion(Conversores.TelefoneEmTexto).HasMaxLength(11);
+        builder.Property(m => m.ObservacoesDeSaude).HasMaxLength(500);
         builder.HasIndex("DomicilioId", nameof(Morador.Cpf)).IsUnique();
     }
 }

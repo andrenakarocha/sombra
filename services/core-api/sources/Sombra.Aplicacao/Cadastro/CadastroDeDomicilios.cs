@@ -10,6 +10,7 @@ using Sombra.Aplicacao.Portas;
 using Sombra.Aplicacao.Respostas;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Casas;
+using Sombra.Dominio.Comum;
 using Sombra.Dominio.Pessoas;
 using Sombra.Dominio.Saude;
 using Sombra.Dominio.Sentinelas;
@@ -28,6 +29,7 @@ public sealed class CadastroDeDomicilios
     private readonly ICheckInRepository _checkIns;
     private readonly IRelogio _relogio;
     private readonly IUnitOfWork _unidadeDeTrabalho;
+    private readonly ICodigosDeVinculo _codigosDeVinculo;
 
     /// <summary>Initializes a new instance of the <see cref="CadastroDeDomicilios"/> class.</summary>
     /// <param name="domicilios">As casas.</param>
@@ -36,7 +38,8 @@ public sealed class CadastroDeDomicilios
     /// <param name="checkIns">Os check-ins.</param>
     /// <param name="relogio">O relógio.</param>
     /// <param name="unidadeDeTrabalho">A transação.</param>
-    public CadastroDeDomicilios(IDomicilioRepository domicilios, IAlertaRepository alertas, ILeituraRepository leituras, ICheckInRepository checkIns, IRelogio relogio, IUnitOfWork unidadeDeTrabalho)
+    /// <param name="codigosDeVinculo">Confere o código do QR da Sentinela.</param>
+    public CadastroDeDomicilios(IDomicilioRepository domicilios, IAlertaRepository alertas, ILeituraRepository leituras, ICheckInRepository checkIns, IRelogio relogio, IUnitOfWork unidadeDeTrabalho, ICodigosDeVinculo codigosDeVinculo)
     {
         _domicilios = domicilios ?? throw new ArgumentNullException(nameof(domicilios));
         _alertas = alertas ?? throw new ArgumentNullException(nameof(alertas));
@@ -44,6 +47,7 @@ public sealed class CadastroDeDomicilios
         _checkIns = checkIns ?? throw new ArgumentNullException(nameof(checkIns));
         _relogio = relogio ?? throw new ArgumentNullException(nameof(relogio));
         _unidadeDeTrabalho = unidadeDeTrabalho ?? throw new ArgumentNullException(nameof(unidadeDeTrabalho));
+        _codigosDeVinculo = codigosDeVinculo ?? throw new ArgumentNullException(nameof(codigosDeVinculo));
     }
 
     private DateOnly Hoje => DateOnly.FromDateTime(_relogio.Agora.UtcDateTime);
@@ -126,11 +130,13 @@ public sealed class CadastroDeDomicilios
         DateOnly hoje = Hoje;
         Morador morador = Morador.Cadastrar(
             dto.Nome,
-            dto.DataDeNascimento.GetValueOrDefault(),
+            NascimentoPelaIdade(dto.Idade.GetValueOrDefault(), hoje),
             Cpf.Criar(dto.Cpf),
-            string.IsNullOrWhiteSpace(dto.CartaoSus) ? null : CartaoSus.Criar(dto.CartaoSus),
+            CartaoSus.Criar(dto.CartaoSus),
             PerfilDeSaude.Com(dto.FatoresDeRisco.Select(FatorDeRisco.DoCodigo)),
             hoje);
+        morador.DefinirTelefone(string.IsNullOrWhiteSpace(dto.Telefone) ? null : Telefone.Criar(dto.Telefone));
+        morador.DefinirObservacoesDeSaude(dto.PerfilDeSaude);
         casa.AdicionarMorador(morador);
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
         return MoradorResposta.De(morador, hoje, revelarContatos);
@@ -145,20 +151,47 @@ public sealed class CadastroDeDomicilios
     public async Task<MoradorResposta> ObterMoradorAsync(Guid id, Guid moradorId, bool revelarContatos, CancellationToken cancellationToken)
         => MoradorResposta.De(MoradorDa(await CasaAsync(id, cancellationToken), moradorId), Hoje, revelarContatos);
 
-    /// <summary>Atualiza os fatores de risco declarados de um morador (R3: mudam os limites térmicos da casa).</summary>
+    /// <summary>
+    /// Edita um morador como o app manda (D17): nome, idade e fatores sempre; CPF, Cartão SUS, telefone e saúde só quando
+    /// vêm preenchidos. Os fatores mudam os limites térmicos da casa (R3); o CPF segue sem repetir na casa (R1).
+    /// </summary>
     /// <param name="id">A casa.</param>
     /// <param name="moradorId">O morador.</param>
-    /// <param name="dto">Os fatores.</param>
+    /// <param name="dto">O que mudou.</param>
     /// <param name="revelarContatos">Se quem pede é o Cuidador da casa (telefones inteiros, para ligar).</param>
-    /// <param name="cancellationToken">Cancela o caso de uso.</param>
-    /// <returns>O morador.</returns>
-    public async Task<MoradorResposta> AtualizarPerfilDoMoradorAsync(Guid id, Guid moradorId, PerfilDoMoradorDto dto, bool revelarContatos, CancellationToken cancellationToken)
+    /// <param name="cancellationToken">Cancela a gravação.</param>
+    /// <returns>O morador, com a PII mascarada.</returns>
+    public async Task<MoradorResposta> AtualizarMoradorAsync(Guid id, Guid moradorId, AtualizacaoDeMoradorDto dto, bool revelarContatos, CancellationToken cancellationToken)
     {
         Validacao.Garantir(dto);
-        Morador morador = MoradorDa(await CasaAsync(id, cancellationToken), moradorId);
+        Domicilio casa = await CasaAsync(id, cancellationToken);
+        Morador morador = MoradorDa(casa, moradorId);
+        DateOnly hoje = Hoje;
+        DateOnly nascimento = morador.Idade(hoje) == dto.Idade ? morador.DataDeNascimento : NascimentoPelaIdade(dto.Idade.GetValueOrDefault(), hoje);
+        morador.CorrigirCadastro(dto.Nome, nascimento, hoje);
         morador.AtualizarPerfil(PerfilDeSaude.Com(dto.FatoresDeRisco.Select(FatorDeRisco.DoCodigo)));
+        if (!string.IsNullOrWhiteSpace(dto.Cpf))
+        {
+            casa.TrocarCpfDoMorador(morador.Id, Cpf.Criar(dto.Cpf));
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.CartaoSus))
+        {
+            morador.TrocarCartaoSus(CartaoSus.Criar(dto.CartaoSus));
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.Telefone))
+        {
+            morador.DefinirTelefone(Telefone.Criar(dto.Telefone));
+        }
+
+        if (!string.IsNullOrWhiteSpace(dto.PerfilDeSaude))
+        {
+            morador.DefinirObservacoesDeSaude(dto.PerfilDeSaude);
+        }
+
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
-        return MoradorResposta.De(morador, Hoje, revelarContatos);
+        return MoradorResposta.De(morador, hoje, revelarContatos);
     }
 
     /// <summary>Remove um morador (R8: não remove o último de uma casa monitorada).</summary>
@@ -220,8 +253,13 @@ public sealed class CadastroDeDomicilios
     public async Task<RotinaResposta> DefinirRotinaAsync(Guid id, RotinaDto dto, CancellationToken cancellationToken)
     {
         Validacao.Garantir(dto);
+        Validacao.Garantir(dto.CheckInDiario!, "checkInDiario");
+        Validacao.Garantir(dto.LembreteDeAgua!, "lembreteDeAgua");
         Domicilio casa = await CasaAsync(id, cancellationToken);
-        casa.DefinirRotina(Rotina.Criar(dto.HorarioDoCheckInDiario, dto.LembreteDeAguaAtivo.GetValueOrDefault()));
+        casa.DefinirRotina(Rotina.Criar(
+            dto.CheckInDiario!.Ativo.GetValueOrDefault(),
+            TimeOnly.ParseExact(dto.CheckInDiario.Horario, "HH:mm", CultureInfo.InvariantCulture),
+            dto.LembreteDeAgua!.Ativo.GetValueOrDefault()));
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
         return RotinaResposta.De(casa.Rotina);
     }
@@ -235,6 +273,11 @@ public sealed class CadastroDeDomicilios
     public async Task<SentinelaVinculadaResposta> VincularSentinelaAsync(Guid id, NovaSentinelaDto dto, CancellationToken cancellationToken)
     {
         Validacao.Garantir(dto);
+        if (!_codigosDeVinculo.Confere(dto.DeviceId, dto.CodigoDeVinculo))
+        {
+            throw new RegraVioladaException("VINCULO", "O código de vínculo não é o desta Sentinela. Confira o QR.");
+        }
+
         Domicilio casa = await CasaAsync(id, cancellationToken);
         Domicilio? dona = await _domicilios.ObterPorSentinelaAsync(dto.DeviceId, cancellationToken);
         if (dona is not null && dona.Id != casa.Id)
@@ -285,6 +328,10 @@ public sealed class CadastroDeDomicilios
     private static Morador MoradorDa(Domicilio casa, Guid moradorId)
         => casa.Moradores.SingleOrDefault(m => m.Id == moradorId) ?? throw new RecursoNaoEncontradoException("Morador não encontrado.");
 
+    // O app pede a idade, não a data (D17): guarda o aniversário de hoje, que dá exatamente essa idade até o próximo.
+    private static DateOnly NascimentoPelaIdade(int idade, DateOnly hoje) => hoje.AddYears(-idade);
+
     private async Task<Domicilio> CasaAsync(Guid id, CancellationToken cancellationToken)
         => await _domicilios.ObterAsync(id, cancellationToken) ?? throw new RecursoNaoEncontradoException("Domicílio não encontrado.");
+
 }
