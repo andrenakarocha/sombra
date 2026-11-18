@@ -9,7 +9,7 @@ import type { Escritas } from './casos-de-uso/escritas';
 import type { ServicoDeSessao } from './casos-de-uso/sessao';
 import type { ProjetorDeEventos } from './eventos/projetor';
 import type { OutboxRepository } from './ports/outbox';
-import type { CanalDeTempoReal, MonitorDeRede, Notificador } from './ports/servicos';
+import type { CanalDeTempoReal, Localizacao, MonitorDeRede, Notificador } from './ports/servicos';
 import type { MotorDeSincronizacao } from './sincronizacao/motor';
 
 export type Demonstracao = {
@@ -31,6 +31,7 @@ export type Container = {
   tempoReal: CanalDeTempoReal;
   rede: MonitorDeRede;
   notificador: Notificador;
+  localizacao: Localizacao;
   demonstracao: Demonstracao;
   clock: Clock;
 };
