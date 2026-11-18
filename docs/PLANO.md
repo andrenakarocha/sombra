@@ -748,6 +748,9 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do operador.
 - [ ] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
   🔎 todos os critérios da rubrica de Mobile com evidência.
+  ⏸ 2026-11-18: README com a Ficha, a rubrica com onde está e a evidência de cada critério, a arquitetura, as 13 telas,
+  o checklist de acessibilidade com a situação honesta de cada item, como rodar com e sem o Core, as variáveis, a
+  qualidade e as limitações; faltam os prints das telas, tirados pelo operador no celular.
 
 **✅ Aceite F6:** os 6 critérios com evidência · app roda com e sem backend.
 
