@@ -1,10 +1,12 @@
 // Composition root: o único lugar que conhece todas as implementações. Testes trocam as portas por fakes.
 
 import { Barramento } from '@/application/barramento';
+import { ServicoDeBloqueio } from '@/application/casos-de-uso/bloqueio';
 import { CasaESentinela } from '@/application/casos-de-uso/casa-e-sentinela';
 import { CentralDeSincronizacao } from '@/application/casos-de-uso/central-de-sincronizacao';
 import { Consultas } from '@/application/casos-de-uso/consultas';
 import { Escritas } from '@/application/casos-de-uso/escritas';
+import { PrivacidadeLocal } from '@/application/casos-de-uso/privacidade-local';
 import { ServicoDeSessao } from '@/application/casos-de-uso/sessao';
 import type { Container } from '@/application/container';
 import { PARADA, reproducaoStore } from '@/application/estado/reproducao';
@@ -14,6 +16,7 @@ import type { CoreGateway } from '@/application/ports/core-gateway';
 import type { GeradorDeId } from '@/application/ports/outbox';
 import type {
   AgendadorDeLembretes,
+  Biometria,
   CanalDeTempoReal,
   CofreDeSegredos,
   CofreDeSessao,
@@ -85,6 +88,7 @@ export type Adaptadores = {
   localizacao?: Localizacao;
   segredos?: CofreDeSegredos;
   agendador?: AgendadorDeLembretes;
+  biometria?: Biometria;
   clock?: Clock;
   sorteio?: () => number;
   demo?: CoreDemoGateway;
@@ -111,6 +115,13 @@ export async function montarContainer(a: Adaptadores): Promise<Container & { dem
     reproducaoStore.setState(PARADA);
   };
 
+  const sessao = new ServicoDeSessao({
+    gateway,
+    cofre: a.cofre,
+    preferencias: repos.preferencias,
+    apagarDadosLocais: () => apagarDadosLocais(a.db, { inclusivePreferencias: false }),
+  });
+
   return {
     consultas: new Consultas({ ...repos, gateway, unidade, clock }),
     escritas: new Escritas({ ...repos, gateway, motor, unidade, ids: a.ids, clock, barramento }),
@@ -122,11 +133,20 @@ export async function montarContainer(a: Adaptadores): Promise<Container & { dem
       barramento,
       clock,
     }),
-    sessao: new ServicoDeSessao({
-      gateway,
-      cofre: a.cofre,
+    sessao,
+    bloqueio: new ServicoDeBloqueio({
       preferencias: repos.preferencias,
-      apagarDadosLocais: () => apagarDadosLocais(a.db, { inclusivePreferencias: false }),
+      biometria: a.biometria ?? { disponivel: async () => false, autenticar: async () => false },
+      clock,
+    }),
+    privacidadeLocal: new PrivacidadeLocal({
+      ...repos,
+      clock,
+      // Apagar tudo: sai da conta e leva junto as preferências (o que sobrar é só o app instalado).
+      apagarTudo: async () => {
+        await sessao.sair();
+        await apagarDadosLocais(a.db, { inclusivePreferencias: true });
+      },
     }),
     eventos,
     sincronizacao: { motor, outbox: repos.outbox },

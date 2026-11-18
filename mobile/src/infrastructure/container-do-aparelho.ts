@@ -4,6 +4,7 @@ import { abrirBancoDoAparelho } from './database/expo-sqlite-database';
 import { montarContainer } from './container';
 import { ClienteHttp } from './http/cliente-http';
 import { CoreHttpGateway } from './http/core-http-gateway';
+import { biometriaExpo } from './native/biometria-expo';
 import { localizacaoExpo } from './native/localizacao-expo';
 import { definirTarefa, workerExpo } from './native/segundo-plano';
 import {
@@ -44,6 +45,7 @@ async function montar() {
     localizacao: localizacaoExpo,
     segredos: segredosSecureStore,
     agendador: agendadorExpo,
+    biometria: biometriaExpo,
   });
   aoSessaoVencida = () => container.sessao.sessaoVencida();
   return container;
