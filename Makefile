@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-mobile sim vinculo
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile sim vinculo
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -50,10 +50,13 @@ lint: ## shellcheck nos scripts, ruff no Python e ESLint + tsc no app
 semgrep: ## Taint estático do Core: o canário dispara e o código de produção sai limpo (SARIF em security/semgrep/)
 	@security/semgrep/rodar.sh
 
-test: contratos test-sim test-core test-mobile ## Roda todos os testes (cada componente acrescenta os seus)
+test: contratos test-sim test-core test-clima test-mobile ## Roda todos os testes (cada componente acrescenta os seus)
 
 test-core: ## Build e testes do Core (C#), na imagem do SDK
 	@$(MAKE) -s -C services/core-api test
+
+test-clima: ## Build, testes de domínio, API (Testcontainers) e arquitetura do Clima (Java)
+	@cd services/clima-service && ./mvnw -q -B verify
 
 test-sim: ## Testes do simulador da Sentinela (a integração usa o Mosquitto do make up)
 	@cd tools/sentinela-sim && uv run -q pytest -q

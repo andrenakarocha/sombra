@@ -1,5 +1,5 @@
 # Sombra · ambiente local (make up). Tudo só em 127.0.0.1.
-# Core, Clima e painel ainda são placeholders: cada um é trocado pelo serviço real na sua fase (F1.8, F3.1, F7.1).
+# O painel ainda é placeholder: ele é trocado pelo serviço real na F7.1.
 name: sombra
 
 services:
@@ -72,14 +72,18 @@ services:
       retries: 20
 
   clima:
-    # placeholder até a F3.1
-    image: nginx:1-alpine
+    # o Clima Service (Spring Boot): o Flyway migra o banco dele ao subir
+    build:
+      context: services/clima-service
+      args:
+        COMMIT: ${SOMBRA_COMMIT:-dev}
+        CONSTRUIDO_EM: ${SOMBRA_CONSTRUIDO_EM:-}
+    image: sombra-clima-service:local
     environment:
-      SERVICO: clima-service
-      PORTA: "8081"
-      FASE: F3.1
-    volumes:
-      - ./infra/compose/placeholder:/etc/nginx/templates:ro
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sombra_clima
+      SPRING_DATASOURCE_USERNAME: sombra_clima
+      SPRING_DATASOURCE_PASSWORD: ${CLIMA_DB_PASSWORD:?rode make env}
     ports:
       - "127.0.0.1:8081:8081"
     depends_on:
