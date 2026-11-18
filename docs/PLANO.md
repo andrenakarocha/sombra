@@ -166,6 +166,7 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | D15 | **Repositório público `andrenakarocha/sombra`** com a `main` protegida para todos, inclusive o admin: PR obrigatório (0 aprovações), histórico linear, sem force push. **Um PR por lote**, com **rebase merge** (um commit por checkpoint na `main`). **Quem revisa e faz o merge é o dono do repositório.** Em máquinas com os hooks de segurança, o push é manual do operador e o agente só roda merge, release ou publicação com o ok explícito dele. Os checks do CI viram obrigatórios na F0.12 | equipe, 2026-11-17 (fecha a DA1) |
 | D16 | **Direção de arte "luz filtrada pela folhagem"** (`design/`): tokens com temas claro e escuro, contraste conferido por script (≥ 7:1 no texto principal), Fraunces + Atkinson Hyperlegible Next, risco com cor + forma + texto | equipe, 2026-11-17 (fecha a DA5) |
 | D14 | **Fotos do território fora das entregas** (padronizadas pelo time); uso possível só no pitch, com a placa do carro desfocada. A transcrição vai para o repositório com "a filha" no lugar do nome dela | equipe, 2026-11-17 |
+| D17 | **O app é a referência da API do Cuidador:** onde os schemas Zod do `mobile/` e o Core divergem, o Core se adapta ao app, inclusive na R3 (F6.21–F6.26) | dono do repositório, 2026-11-18 |
 
 As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11), 002 (D2), 003 (D4), 004 (MQTT assinado e sem PII), 005 (D7) e 006 (índice de calor replicado com vetores).
 
@@ -176,6 +177,7 @@ As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11),
 | DA2 | Bairro da Ficha · persona fictícia do sistema | cidade **São Paulo** confirmada (a A701 continua valendo); bairro "a preencher"; persona "Dona Lurdes, 78 anos", inspirada na Dona Cida | F12.1 (não bloqueia nada) |
 | DA3 | Subir a VM pública no Azure | sim, se a F8 fechar com folga | F11.8 |
 | DA4 | Voz do pitch: TTS (Gemini, como no HENRY) ou voz de alguém do time | TTS | F13.3 |
+| DA6 | Alvo do preventivo e do ML com o replay real, que não chega a `PERIGO` (pico de 35,47 °C, `CAUTELA_EXTREMA`; achado da F6.15). Hoje o `AlertaPreventivo` exige previsão de `PERIGO` (R5), então o replay não abriria nenhum | regras atuais (R5 e o alvo da F4.2 em aberto) | F4.2 |
 
 ### 2.3 Fora do escopo (ideias para depois)
 
@@ -704,6 +706,33 @@ Go; o APK via EAS é um extra.
   propósito: os adaptadores nativos (`infrastructure/native`, expo-sqlite, container do aparelho), que só rodam no
   celular. Falta o CI no PR. Sem APK nesta entrega (decisão do operador, 2026-11-18): o app é avaliado pelo Expo Go,
   e o job `apk` fica pulado enquanto `EXPO_TOKEN` e `EAS_PROJECT_ID` não existirem nos secrets.
+**O Core no contrato do app (D17).** O app nasceu antes da API v1 e, contra o Core real (2026-11-18), 5 das 7 leituras
+falhavam nos schemas Zod e o cadastro de morador e a rotina davam 400. O Core se adapta ao app, sem mudar o `mobile/`.
+Roda antes de qualquer outra fase; os commits são `feat(core)`.
+
+- [ ] **F6.21** 🤖 Leituras: a lista de casas devolve o formato do detalhe; o alerta leva `apelidoDaCasa` e a linha do
+  tempo (persistida, migração nova); os estados saem como o app os conhece (`INFORMATIVO` e `AGUARDANDO_CHECK_IN` →
+  `AGUARDANDO_CHECKIN`, `EXPIRADO` → `RESOLVIDO`) e o prazo do preventivo é a validade de 24 h; rede como lista com
+  `id`; morador com `telefone`; rotina como `checkInDiario` e `lembreteDeAgua`.
+  🔎 as respostas reais do Core passam nos schemas de `mobile/src/infrastructure/http/schemas.ts`.
+- [ ] **F6.22** 🤖 Escritas: morador por `idade` (o Core guarda a data aproximada), com `telefone` e `perfilDeSaude`
+  (sempre mascarados na saída), edição completa e `IDADE_AVANCADA` declarável; Cartão SUS obrigatório no cadastro,
+  porque a leitura do app sempre espera um; rotina no formato do app; vínculo da Sentinela com o `codigoDeVinculo` do
+  QR (6 caracteres derivados do `deviceId` por uma chave de vínculo) e resposta com `segredo`.
+  🔎 cadastro, edição, rotina e vínculo no formato do app voltam 2xx e passam nos schemas.
+- [ ] **F6.23** 🤖 Fila offline de verdade: o check-in aceita o `momento` do toque (nunca no futuro, até 24 h atrás) e
+  o `Idempotency-Key` vale no check-in e no reconhecer (a mesma chave devolve a mesma resposta, sem repetir o efeito).
+  🔎 check-in feito offline resolve o alerta com o horário do toque; reenviar com a mesma chave não duplica nem vira 422.
+- [ ] **F6.24** 🤖 R3 do app no Core: cardiopatia −2,5 °C, sem teto, nenhum limiar abaixo do início de `ATENCAO`;
+  vetores em `docs/contratos/risco-personalizado.vetores.json`, conferidos pelo Core e pelo app.
+  🔎 os dois lados passam nos mesmos vetores; spec 01 atualizada.
+- [ ] **F6.25** 🤖 As rotas que o app já usa: `GET /domicilios/{id}/privacidade` (farol pelos eventos de segurança da
+  casa, mensagens por template; a F2.5 troca o cálculo por dentro) e `GET /domicilios/{id}/pontos-de-resfriamento`
+  (lista versionada, rotulada como exemplo; a F3.9 passa a buscar no Clima).
+  🔎 as duas respostas passam nos schemas do app, e o formato não muda na F2.5 nem na F3.9.
+- [ ] **F6.26** 🤖 Contrato vivo: um teste de integração do Core grava amostras reais em `docs/contratos/amostras/` e o
+  Jest do app passa cada uma pelos schemas Zod; README do Core e `core-api.md` em dia.
+  🔎 mudar um campo no Core sem mudar o app deixa o CI vermelho.
 - [ ] **F6.7** 🧑🤖 Acessibilidade (checklist da spec) + testes Jest.
   🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do operador.
 - [ ] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
@@ -923,7 +952,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** **F1 concluída** (Core em C#: 140 testes, roteiro de ponta a ponta com o simulador, quality 100/100, README com a rubrica e as evidências). Próximo: **F2** (privacidade no backend), no mesmo Core. Em paralelo: ML (F4) e app (F6).
+**Agora:** **F1 concluída** (Core em C#: 140 testes, roteiro de ponta a ponta com o simulador, quality 100/100, README com a rubrica e as evidências). Próximo: **F6.21–F6.26** (o Core no contrato do app, D17) e os 🔎 do app no celular; só depois a F2. Em paralelo: ML (F4).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -933,7 +962,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
-| F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | 🤝 branch `f6-mobile-joao` |
+| F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16 e F6.19 feitas (284 testes, modo demonstração); F6.21–F6.26 põem o Core no contrato do app (D17) |
 | F7 Painel | ⬜ não iniciada | | | |
 | F8 Infra (OS) | ⬜ não iniciada | | | |
 | F9 Integração | ⬜ não iniciada | | | |
