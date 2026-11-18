@@ -1,12 +1,14 @@
 import { router } from 'expo-router';
 import { useStore } from 'zustand';
-import { ScrollView, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, Switch, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useCasas } from '@/presentation/hooks/consultas';
 import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao';
 import { Botao } from '@/presentation/componentes/Botao';
 import { Texto } from '@/presentation/componentes/Texto';
+import { bloqueioStore } from '@/application/estado/bloqueio';
 import { reproducaoStore } from '@/application/estado/reproducao';
 import { useEmDemonstracao } from '@/presentation/hooks/estado';
 import { useContainer } from '@/presentation/providers/container';
@@ -15,7 +17,9 @@ import { espaco, useTema } from '@/presentation/tema';
 export default function Ajustes() {
   const tema = useTema();
   const casas = useCasas().data?.dados ?? [];
-  const { sessao, demonstracao } = useContainer();
+  const { sessao, demonstracao, bloqueio } = useContainer();
+  const bloqueioAtivo = useStore(bloqueioStore, (b) => b.ativo);
+  const [avisoDoBloqueio, setAvisoDoBloqueio] = useState<string | null>(null);
   const demo = useEmDemonstracao();
   const replayAtivo = useStore(reproducaoStore, (r) => r.ativo);
 
@@ -66,6 +70,26 @@ export default function Ajustes() {
             <Botao rotulo="Recomeçar o exemplo" variante="secundario" aoTocar={() => demonstracao.recomecar()} />
           </View>
         )}
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: espaco[3] }}>
+          <View style={{ flex: 1 }}>
+            <Texto forte>Pedir digital ou rosto para abrir</Texto>
+            <Texto variante="pequeno" suave>
+              Protege CPF, saúde e telefones da rede neste celular. O Modo Idoso nunca pede.
+            </Texto>
+          </View>
+          <Switch
+            accessibilityLabel="Pedir digital ou rosto para abrir"
+            value={bloqueioAtivo}
+            onValueChange={async (v) => {
+              setAvisoDoBloqueio(null);
+              if (!v) return bloqueio.desativar();
+              const r = await bloqueio.ativar();
+              if (!r.ok) setAvisoDoBloqueio(r.erro.mensagem);
+            }}
+          />
+        </View>
+        {avisoDoBloqueio && <Texto accessibilityRole="alert">{avisoDoBloqueio}</Texto>}
 
         <Botao
           rotulo="Central de sincronização"

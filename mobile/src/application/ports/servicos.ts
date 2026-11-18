@@ -76,3 +76,9 @@ export interface CofreDeSegredos {
 export interface AgendadorDeLembretes {
   programar(lembretes: Lembrete[], hoje: Date): Promise<number>;
 }
+
+export interface Biometria {
+  // Tem leitor e a pessoa cadastrou digital ou rosto no aparelho.
+  disponivel(): Promise<boolean>;
+  autenticar(motivo: string): Promise<boolean>;
+}
