@@ -62,13 +62,6 @@ export function useSalvarMorador(domicilioId: string, moradorId?: string) {
 }
 
 export function useSincronizacao() {
-  const { sincronizacao } = useContainer();
-  return useQuery({
-    queryKey: chaves.sincronizacao,
-    queryFn: async () => ({
-      operacoes: await sincronizacao.outbox.listar(),
-      contagem: await sincronizacao.outbox.contar(),
-      offlineForcado: sincronizacao.motor.offlineForcado,
-    }),
-  });
+  const { central } = useContainer();
+  return useQuery({ queryKey: chaves.sincronizacao, queryFn: () => central.resumo() });
 }

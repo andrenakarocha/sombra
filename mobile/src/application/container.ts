@@ -3,6 +3,7 @@
 import type { Clock } from '@/domain/compartilhado/clock';
 
 import type { Barramento } from './barramento';
+import type { CentralDeSincronizacao } from './casos-de-uso/central-de-sincronizacao';
 import type { Consultas } from './casos-de-uso/consultas';
 import type { Escritas } from './casos-de-uso/escritas';
 import type { ServicoDeSessao } from './casos-de-uso/sessao';
@@ -22,6 +23,7 @@ export type Container = {
   sessao: ServicoDeSessao;
   eventos: ProjetorDeEventos;
   sincronizacao: { motor: MotorDeSincronizacao; outbox: OutboxRepository };
+  central: CentralDeSincronizacao;
   barramento: Barramento;
   tempoReal: CanalDeTempoReal;
   rede: MonitorDeRede;

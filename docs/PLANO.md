@@ -666,9 +666,10 @@ Go; o APK via EAS é um extra.
   dead-letter. O cadastro de morador fica **fora** de propósito: na fila, CPF e CNS inteiros ficariam gravados no
   aparelho; ele exige conexão. A aplicação otimista entra com a virada das telas (F6.11).
   🔎 testes: offline → fila → volta a rede → enviado uma vez só; erro definitivo → dead-letter — 2026-11-17.
-- [ ] **F6.14** 🤖 Central de sincronização (pendentes, dead-letter, reenviar, forçar offline) + sincronização em
+- [x] **F6.14** 🤖 Central de sincronização (pendentes, dead-letter, reenviar, forçar offline) + sincronização em
   segundo plano (`expo-background-task`, quando o sistema permitir).
-  🔎 forçar offline na tela → check-in fica pendente → desligar → enviado.
+  🔎 forçar offline na tela → check-in fica pendente → desligar → enviado — 2026-11-17 (Jest). O worker só roda no
+  APK: no Expo Go do Android o TaskManager não existe, e a Central mostra "não disponível" em vez de fingir.
 - [ ] **F6.15** 🤖 Replay da onda de calor **real** de nov/2023: script extrai as horas da A701 dos CSVs versionados
   (`ml/dados/brutos`) para um JSON com proveniência (SHA-256); o modo demonstração toca hora a hora com o índice de
   calor calculado no aparelho.
