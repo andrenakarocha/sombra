@@ -5,6 +5,8 @@ using System.Linq;
 using Sombra.Dominio.Casas;
 using Sombra.Dominio.Pessoas;
 using Sombra.Privacidade;
+using Sombra.Privacidade.Regras;
+using Sombra.Privacidade.Taint;
 
 namespace Sombra.Aplicacao.Respostas;
 
@@ -75,7 +77,9 @@ public static class TelefoneNaResposta
     public static string De(Telefone telefone, bool revelar)
     {
         ArgumentNullException.ThrowIfNull(telefone);
-        return revelar ? telefone.Formatado : MascaradorDePii.MascararTelefone(telefone.Valor);
+        return revelar
+            ? new Sensivel<string>(telefone.Formatado, CategoriaDePii.Contato).Revelar("o cuidador da casa liga para a pessoa")
+            : MascaradorDePii.MascararTelefone(telefone.Valor);
     }
 }
 

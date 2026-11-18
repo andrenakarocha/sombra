@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sombra.Api.Autenticacao;
+using Sombra.Api.Privacidade;
 using Sombra.Aplicacao.Cadastro;
 using Sombra.Aplicacao.Comum;
 using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Respostas;
+using Sombra.Privacidade.Regras;
 
 namespace Sombra.Api.Controllers;
 
 /// <summary>Os moradores de uma casa, sempre com CPF, Cartão SUS e saúde mascarados.</summary>
 [ApiController]
 [Route("api/v1/domicilios/{id:guid}/moradores")]
+[DadosPessoais(CategoriaDePii.Saude, CategoriaDePii.Identificacao)]
+[PermitePii(CategoriaDePii.Contato, Papeis.Cuidador)]
 [Authorize(Roles = Acesso.CuidadorOuAdmin, Policy = CasaDoCuidador.Politica)]
 [Tags("Moradores")]
 public sealed class MoradoresController : ControllerBase

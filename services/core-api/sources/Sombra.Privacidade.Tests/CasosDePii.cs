@@ -94,7 +94,12 @@ internal static class CasosDePii
         new("UUID de correlação", Negativo, null, "correlationId 3f2504e0-4f89-41d3-9a0c-0305e82c3301", []),
         new("Identificador longo sem dígitos", Negativo, null, "ProcessadorDeNotificacoesDeAlertaDoSombra", []),
         new("Hash curto de commit", Negativo, null, "versão 7ac3d9b", []),
-        new("Assinatura HMAC no campo sig não é segredo", Dificil, "sig", Hex(SegredoSintetico(13, 32)), []),
+        new("Assinatura em base64 no campo sig não é segredo", Dificil, "sig", Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(SegredoSintetico(13, 32))), []),
+        new("Identificador hex (GUID sem hífens) não é segredo", Negativo, null, "contato 0b6f3c1e6c1d4c559a512f3d1b9e7a10-1", []),
+        new("Hash SHA-256 em hex não é segredo", Negativo, null, Hex(SegredoSintetico(17, 32)), []),
+        new("CPF válido colado em letras, dentro de um hex", Negativo, null, $"segredo a{_cpf}f0c9", []),
+        new("Celular colado em letras, dentro de um token", Negativo, null, "x9f21987654321ab", []),
+        new("Tópico MQTT com prefixo de teste", Negativo, null, "sombra-teste/3f2504e04f8941d39a0c0305e82c3301/snt-7f3a9c/comando", []),
         new("CPF escondido no campo sig continua sendo CPF", Dificil, "sig", _cpf, ["cpf"]),
 
         // Combinações e texto comum

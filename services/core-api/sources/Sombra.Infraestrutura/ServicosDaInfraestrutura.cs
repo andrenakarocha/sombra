@@ -10,7 +10,9 @@ using Sombra.Infraestrutura.Persistencia;
 using Sombra.Infraestrutura.Persistencia.Repositorios;
 using Sombra.Infraestrutura.Seguranca;
 using Sombra.Infraestrutura.Workers;
+using Sombra.Privacidade.Deteccao;
 using Sombra.Privacidade.Repouso;
+using Sombra.Privacidade.Sinks;
 
 namespace Sombra.Infraestrutura;
 
@@ -27,6 +29,11 @@ public static class ServicosDaInfraestrutura
         ArgumentException.ThrowIfNullOrWhiteSpace(conexao);
         ArgumentNullException.ThrowIfNull(cifra);
         servicos.AddSingleton(cifra);
+        servicos.AddSingleton(MotorDePii.Padrao);
+        servicos.AddSingleton<GuardaDeSaida>();
+        servicos.AddSingleton<FilaDeVazamentos>();
+        servicos.AddSingleton<IObservadorDeVazamentos>(provedor => provedor.GetRequiredService<FilaDeVazamentos>());
+        servicos.AddTransient<GuardaDeSaidaHttp>();
         servicos.AddDbContext<SombraDbContext>(opcoes => SombraDbContext.Configurar(opcoes, conexao));
         servicos.AddScoped<IUnitOfWork>(provedor => provedor.GetRequiredService<SombraDbContext>());
         servicos.AddScoped<IDomicilioRepository, DomicilioRepository>();
@@ -59,6 +66,7 @@ public static class ServicosDaInfraestrutura
     public static IServiceCollection AdicionarMensageria(this IServiceCollection servicos)
     {
         servicos.AddSingleton<ConexaoMqtt>();
+        servicos.AddHostedService<VazamentosWorker>();
         servicos.AddScoped<ProcessadorDaSentinela>();
         servicos.AddScoped<ICanalDeNotificacao, CanalSentinela>();
         servicos.AddScoped<ICanalDeNotificacao, CanalApp>();

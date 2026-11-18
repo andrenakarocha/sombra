@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sombra.Api.Autenticacao;
+using Sombra.Api.Privacidade;
 using Sombra.Aplicacao.Cadastro;
 using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Portas;
 using Sombra.Aplicacao.Respostas;
+using Sombra.Privacidade.Regras;
 
 namespace Sombra.Api.Controllers;
 
@@ -57,6 +59,7 @@ public sealed class SentinelasController : ControllerBase
     /// <returns>A Sentinela vinculada, com o segredo.</returns>
     [HttpPost("sentinelas")]
     [Authorize(Roles = Acesso.CuidadorOuAdmin)]
+    [PermitePii(CategoriaDePii.Credencial)]
     [ProducesResponseType<SentinelaVinculadaResposta>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]

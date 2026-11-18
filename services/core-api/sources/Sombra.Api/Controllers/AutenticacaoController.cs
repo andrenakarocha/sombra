@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.RateLimiting;
 using Sombra.Api.Autenticacao;
 using Sombra.Api.Composicao;
 using Sombra.Api.Erros;
+using Sombra.Api.Privacidade;
 using Sombra.Aplicacao.Dtos;
 using Sombra.Infraestrutura.Autenticacao;
+using Sombra.Privacidade.Regras;
 
 namespace Sombra.Api.Controllers;
 
@@ -37,6 +39,7 @@ public sealed class AutenticacaoController : ControllerBase
     /// <param name="cancellationToken">Cancela a requisição.</param>
     /// <returns>O token, o papel e quando vence.</returns>
     [HttpPost("login")]
+    [PermitePii(CategoriaDePii.Credencial)]
     [AllowAnonymous]
     [EnableRateLimiting(ComposicaoDoCore.LimiteDoLogin)]
     [ProducesResponseType<TokenResposta>(StatusCodes.Status200OK)]

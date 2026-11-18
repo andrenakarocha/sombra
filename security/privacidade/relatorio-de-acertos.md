@@ -3,7 +3,7 @@
 > Gerado por `make pii-relatorio` (teste `RelatorioDeAcertos` em `Sombra.Privacidade.Tests`). Regras: `pii-regras.json`.
 > Os casos usam só dados sintéticos e o relatório não reproduz nenhum texto analisado.
 
-**58 de 58 casos corretos** · falsos negativos: **0** · falsos positivos: **0**
+**63 de 63 casos corretos** · falsos negativos: **0** · falsos positivos: **0**
 
 ## Por regra
 
@@ -24,7 +24,7 @@
 |---|---:|---:|
 | Positivo | 29 | 29 |
 | Difícil | 12 | 12 |
-| Negativo | 17 | 17 |
+| Negativo | 22 | 22 |
 
 ## Casos
 
@@ -80,11 +80,16 @@
 | 48 | Negativo | UUID de correlação | texto livre | nenhum | nenhum | ✅ |
 | 49 | Negativo | Identificador longo sem dígitos | texto livre | nenhum | nenhum | ✅ |
 | 50 | Negativo | Hash curto de commit | texto livre | nenhum | nenhum | ✅ |
-| 51 | Difícil | Assinatura HMAC no campo sig não é segredo | `sig` | nenhum | nenhum | ✅ |
-| 52 | Difícil | CPF escondido no campo sig continua sendo CPF | `sig` | `cpf` | `cpf` | ✅ |
-| 53 | Positivo | Vários dados no mesmo texto livre | texto livre | `telefone`, `email`, `cpf` | `cpf`, `email`, `telefone` | ✅ |
-| 54 | Difícil | JSON serializado dentro de um campo | texto livre | `cpf` | `cpf` | ✅ |
-| 55 | Negativo | Coordenadas | texto livre | nenhum | nenhum | ✅ |
-| 56 | Negativo | Mensagem de alerta comum | texto livre | nenhum | nenhum | ✅ |
-| 57 | Negativo | Identificador da Sentinela | texto livre | nenhum | nenhum | ✅ |
-| 58 | Negativo | Campo vazio com chave sensível | `cpf` | nenhum | nenhum | ✅ |
+| 51 | Difícil | Assinatura em base64 no campo sig não é segredo | `sig` | nenhum | nenhum | ✅ |
+| 52 | Negativo | Identificador hex (GUID sem hífens) não é segredo | texto livre | nenhum | nenhum | ✅ |
+| 53 | Negativo | Hash SHA-256 em hex não é segredo | texto livre | nenhum | nenhum | ✅ |
+| 54 | Negativo | CPF válido colado em letras, dentro de um hex | texto livre | nenhum | nenhum | ✅ |
+| 55 | Negativo | Celular colado em letras, dentro de um token | texto livre | nenhum | nenhum | ✅ |
+| 56 | Negativo | Tópico MQTT com prefixo de teste | texto livre | nenhum | nenhum | ✅ |
+| 57 | Difícil | CPF escondido no campo sig continua sendo CPF | `sig` | `cpf` | `cpf` | ✅ |
+| 58 | Positivo | Vários dados no mesmo texto livre | texto livre | `telefone`, `email`, `cpf` | `cpf`, `email`, `telefone` | ✅ |
+| 59 | Difícil | JSON serializado dentro de um campo | texto livre | `cpf` | `cpf` | ✅ |
+| 60 | Negativo | Coordenadas | texto livre | nenhum | nenhum | ✅ |
+| 61 | Negativo | Mensagem de alerta comum | texto livre | nenhum | nenhum | ✅ |
+| 62 | Negativo | Identificador da Sentinela | texto livre | nenhum | nenhum | ✅ |
+| 63 | Negativo | Campo vazio com chave sensível | `cpf` | nenhum | nenhum | ✅ |

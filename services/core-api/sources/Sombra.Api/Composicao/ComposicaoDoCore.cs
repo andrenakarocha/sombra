@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -19,6 +20,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Sombra.Api.Autenticacao;
+using Sombra.Api.Controllers;
 using Sombra.Api.Erros;
 using Sombra.Api.Privacidade;
 using Sombra.Api.TempoReal;
@@ -30,7 +32,9 @@ using Sombra.Infraestrutura;
 using Sombra.Infraestrutura.Autenticacao;
 using Sombra.Infraestrutura.Mqtt;
 using Sombra.Infraestrutura.Persistencia;
+using Sombra.Infraestrutura.Seguranca;
 using Sombra.Privacidade.Deteccao;
+using Sombra.Privacidade.Regras;
 using Sombra.Privacidade.Repouso;
 using Sombra.Privacidade.Taint;
 
@@ -141,7 +145,14 @@ public static class ComposicaoDoCore
     {
         ArgumentNullException.ThrowIfNull(app);
         RegistrarCicloDeVida(app);
+        app.Use(static async (http, proximo) =>
+        {
+            // O taint da requisição fica visível para os guardas que não vivem no escopo dela (o sink de log).
+            ContextoDeTaint.Atual = http.RequestServices.GetRequiredService<ContextoDeTaint>();
+            await proximo(http);
+        });
         app.UseMiddleware<RastroDaRequisicao>();
+        app.UseMiddleware<TaintResponseGuardMiddleware>();
         app.UseExceptionHandler(new ExceptionHandlerOptions { SuppressDiagnosticsCallback = _ => true });
         app.UseStatusCodePages();
         app.UseAuthentication();
@@ -150,8 +161,10 @@ public static class ComposicaoDoCore
         app.UseMiddleware<PiiScanningMiddleware>();
         app.MapControllers();
         app.MapHub<HubDoSombra>(HubDoSombra.Rota);
-        app.MapOpenApi().DisableRateLimiting();
-        app.MapScalarApiReference(opcoes => opcoes.WithTitle("Sombra · Core API")).DisableRateLimiting();
+        // O contrato mostra exemplos sintéticos de toda família de PII (CPF, telefone...), gerados do código.
+        object[] exemplosSinteticos = [.. Enum.GetValues<CategoriaDePii>().Select(c => new PermitePiiAttribute(c))];
+        app.MapOpenApi().DisableRateLimiting().WithMetadata(exemplosSinteticos);
+        app.MapScalarApiReference(opcoes => opcoes.WithTitle("Sombra · Core API")).DisableRateLimiting().WithMetadata(exemplosSinteticos);
     }
 
     private static void RegistrarCicloDeVida(WebApplication app)
@@ -221,9 +234,10 @@ public static class ComposicaoDoCore
     private static void AdicionarPrivacidade(IServiceCollection servicos, IConfiguration configuracao)
     {
         PoliticaDeCampoLivre politica = configuracao.GetValue("Privacidade:CampoLivre", PoliticaDeCampoLivre.Mascarar);
-        servicos.AddSingleton(MotorDePii.Padrao);
         servicos.AddSingleton(sp => new VarredorDePii(sp.GetRequiredService<MotorDePii>(), politica));
         servicos.AddScoped<ContextoDeTaint>();
+        servicos.AddHttpClient(AuditoriaController.ClienteLlm, cliente => cliente.BaseAddress = new Uri("http://llm.auditoria.invalid"))
+            .AddHttpMessageHandler<GuardaDeSaidaHttp>();
     }
 
     private static void AdicionarLimites(IServiceCollection servicos, IConfiguration configuracao)
