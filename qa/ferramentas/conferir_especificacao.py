@@ -5,7 +5,7 @@
 """Confere `qa/especificacao/` antes de subir para o Azure (F10.2 e F10.3).
 
 Regras da spec 09 e do plano (§8.11):
-- 12 Features (F01–F12), cada uma com Como/Quero/Para e critérios Dado/Quando/Então;
+- 12 Features (F01–F12), cada uma com Como/Quero/Para, MoSCoW e critérios Dado/Quando/Então;
 - 40 a 50 Test Cases, cada um com objetivo, preparação, entradas, passos e resultado esperado (D9);
 - toda Feature com pelo menos 1 caso negativo, e todo critério de aceite coberto por algum caso;
 - todo teste automatizado citado existe de verdade no repositório (a rastreabilidade não aponta para o vazio).
@@ -33,6 +33,7 @@ TECNICAS = {
     "transicao-de-estados",
 }
 EXECUCOES = {"automatizado", "manual"}
+MOSCOW = {"must", "should", "could", "wont"}
 SUITES = {"mstest", "jest", "pytest"}
 FEATURES_ESPERADAS = [f"F{n:02d}" for n in range(1, 13)]
 MINIMO_DE_CASOS, MAXIMO_DE_CASOS = 40, 50
@@ -77,6 +78,8 @@ def conferir(features_doc: dict, casos_doc: dict) -> list[str]:
                 problemas.append(f"{f.get('id')}: falta {campo}")
         if f.get("prioridade") not in (1, 2, 3, 4):
             problemas.append(f"{f.get('id')}: prioridade fora de 1–4")
+        if f.get("moscow") not in MOSCOW:
+            problemas.append(f"{f.get('id')}: moscow deve ser {sorted(MOSCOW)}")
         if not 0 <= int(f.get("valor_de_negocio") or -1) <= 100:
             problemas.append(f"{f.get('id')}: valor_de_negocio fora de 0–100")
         if not f.get("criterios_de_aceite"):

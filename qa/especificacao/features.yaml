@@ -5,6 +5,7 @@
 #
 # Campos:
 #   prioridade        1 (mais alta) a 4, a escala do Azure (Microsoft.VSTS.Common.Priority)
+#   moscow            must | should | could | wont; vira a tag `priority:<valor>`, no padrão do backlog da aula
 #   valor_de_negocio  0 a 100 (Microsoft.VSTS.Common.BusinessValue)
 #   tags              disciplinas que a Feature atravessa (System.Tags)
 #   regras            regras de negócio da spec 01 (R1–R14) e decisões do plano (D13) que a Feature cobre
@@ -36,6 +37,7 @@ features:
     quero: saber, ao vivo, o índice de calor dentro da casa dela e o nível de risco
     para: agir antes de o calor virar um problema de saúde
     prioridade: 1
+    moscow: must
     valor_de_negocio: 95
     tags: [iot, csharp, mobile]
     regras: [R2, R9, R10]
@@ -64,6 +66,7 @@ features:
     quero: ser avisado na véspera quando o modelo prevê calor perigoso
     para: preparar a casa e combinar quem vai passar lá
     prioridade: 2
+    moscow: should
     valor_de_negocio: 80
     tags: [ml, soa, csharp]
     regras: [R6, D13]
@@ -88,6 +91,7 @@ features:
     quero: confirmar com um botão que estou bem quando o calor fica forte
     para: tranquilizar minha família sem precisar ligar para ninguém
     prioridade: 1
+    moscow: must
     valor_de_negocio: 100
     tags: [iot, csharp, mobile]
     regras: [R4, R5, R6, R13]
@@ -116,6 +120,7 @@ features:
     quero: ser chamado só quando precisa, e na ordem certa
     para: não receber alarme à toa e, mesmo assim, ninguém ficar sozinho no perigo
     prioridade: 1
+    moscow: must
     valor_de_negocio: 95
     tags: [csharp, mobile]
     regras: [R5, R8, D13]
@@ -144,6 +149,7 @@ features:
     quero: pedir ajuda com um toque longo, a qualquer hora
     para: chamar toda a minha rede de uma vez quando não estou bem
     prioridade: 1
+    moscow: must
     valor_de_negocio: 95
     tags: [iot, csharp, mobile]
     regras: [R4, R7, R8, R12]
@@ -168,6 +174,7 @@ features:
     quero: cadastrar a minha mãe, os fatores de risco dela e a rede de cuidado
     para: que o alerta use o limite certo para ela e chame as pessoas certas
     prioridade: 2
+    moscow: should
     valor_de_negocio: 75
     tags: [csharp, mobile, cyber]
     regras: [R1, R3, R8]
@@ -196,6 +203,7 @@ features:
     quero: ver os lugares frescos mais perto e para que lado ir
     para: levar a minha mãe a um lugar seguro no pico do calor
     prioridade: 3
+    moscow: could
     valor_de_negocio: 60
     tags: [soa, mobile, csharp]
     regras: []
@@ -220,6 +228,7 @@ features:
     quero: uma tela só, com botões grandes, voz e vibração
     para: responder ao alerta sem me perder no app
     prioridade: 2
+    moscow: should
     valor_de_negocio: 80
     tags: [mobile]
     regras: [R14, D12]
@@ -248,6 +257,7 @@ features:
     quero: que meu CPF, meu Cartão SUS e minha saúde nunca apareçam inteiros
     para: confiar no sistema com dados sensíveis (LGPD, art. 11)
     prioridade: 1
+    moscow: must
     valor_de_negocio: 90
     tags: [cyber, csharp, mobile]
     regras: [R1]
@@ -280,6 +290,7 @@ features:
     quero: ver um farol simples de quanto os dados da casa estão em risco
     para: entender, sem jargão, se houve tentativa de vazamento ou de fraude
     prioridade: 3
+    moscow: could
     valor_de_negocio: 65
     tags: [cyber, web, mobile]
     regras: [D12]
@@ -304,6 +315,7 @@ features:
     quero: ver o resumo das casas e os alertas da própria infraestrutura
     para: agir rápido quando uma casa ou o servidor precisa de atenção
     prioridade: 2
+    moscow: should
     valor_de_negocio: 70
     tags: [os, web, csharp]
     regras: []
@@ -328,6 +340,7 @@ features:
     quero: um check-in por dia e lembretes de água nos dias quentes
     para: manter uma rotina de cuidado sem incomodar à noite
     prioridade: 3
+    moscow: could
     valor_de_negocio: 60
     tags: [csharp, mobile, iot]
     regras: [R11, R12, R8]
