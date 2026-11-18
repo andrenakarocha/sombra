@@ -43,6 +43,7 @@ export function useVidaDoApp(container: Container, queryClient: QueryClient) {
     tokenAnterior.current = token;
     if (!token) return;
     container.notificador.configurar().catch(() => {});
+    container.central.iniciar().catch(() => {});
     container.sincronizacao.motor.drenar();
     return container.tempoReal.conectar(
       token,

@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -54,6 +55,13 @@ export default function Ajustes() {
             <Botao rotulo="Recomeçar o exemplo" variante="secundario" aoTocar={() => demonstracao.recomecar()} />
           </View>
         )}
+
+        <Botao
+          rotulo="Central de sincronização"
+          variante="secundario"
+          dica="O que está esperando a internet e o que o Sombra não aceitou"
+          aoTocar={() => router.push('/sincronizacao')}
+        />
 
         <Botao
           rotulo={demo ? 'Sair da demonstração' : 'Sair da conta'}
