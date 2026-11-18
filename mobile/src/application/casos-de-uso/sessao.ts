@@ -1,13 +1,14 @@
 // Entrar, sair e a demonstração. Sair apaga os dados de casa do aparelho; a sessão vencida (401) só tira o token,
 // para os check-ins que estão na fila saírem quando a pessoa entrar de novo.
 
-import { preferenciasStore } from '../estado/preferencias';
+import { ehEscalaDoTexto, preferenciasStore, type EscalaDoTexto } from '../estado/preferencias';
 import { sessaoStore, TOKEN_DEMO } from '../estado/sessao';
 import type { CoreGateway } from '../ports/core-gateway';
 import type { PreferenciaRepository } from '../ports/repositorios';
 import type { CofreDeSessao } from '../ports/servicos';
 
 const MODO_IDOSO = 'modoIdosoCasaId';
+const ESCALA_DO_TEXTO = 'escalaDoTexto';
 
 export type DepsDaSessao = {
   gateway: CoreGateway;
@@ -20,8 +21,12 @@ export class ServicoDeSessao {
   constructor(private readonly d: DepsDaSessao) {}
 
   async carregar() {
-    const [token, modoIdosoCasaId] = await Promise.all([this.d.cofre.ler(), this.d.preferencias.ler(MODO_IDOSO)]);
-    preferenciasStore.setState({ modoIdosoCasaId, carregada: true });
+    const [token, modoIdosoCasaId, escala] = await Promise.all([
+      this.d.cofre.ler(),
+      this.d.preferencias.ler(MODO_IDOSO),
+      this.d.preferencias.ler(ESCALA_DO_TEXTO),
+    ]);
+    preferenciasStore.setState({ modoIdosoCasaId, escalaDoTexto: ehEscalaDoTexto(escala) ? escala : 'NORMAL', carregada: true });
     sessaoStore.setState({ token, carregada: true });
   }
 
@@ -51,5 +56,11 @@ export class ServicoDeSessao {
   async definirModoIdoso(casaId: string | null) {
     await this.d.preferencias.gravar(MODO_IDOSO, casaId);
     preferenciasStore.setState({ modoIdosoCasaId: casaId });
+  }
+
+  // É do aparelho, não da conta: sair mantém o tamanho escolhido.
+  async definirEscalaDoTexto(escala: EscalaDoTexto) {
+    await this.d.preferencias.gravar(ESCALA_DO_TEXTO, escala);
+    preferenciasStore.setState({ escalaDoTexto: escala });
   }
 }

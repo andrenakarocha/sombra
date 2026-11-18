@@ -6,7 +6,7 @@ import { Texto } from './Texto';
 
 type Props = {
   rotulo: string;
-  dica?: string;
+  dica: string;
   variante?: 'primario' | 'secundario';
   aoTocar: () => void;
 };

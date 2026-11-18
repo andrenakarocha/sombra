@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useStore } from 'zustand';
 import { useState } from 'react';
-import { ScrollView, Switch, View } from 'react-native';
+import { Pressable, ScrollView, Switch, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useCasas } from '@/presentation/hooks/consultas';
@@ -9,10 +9,17 @@ import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao'
 import { Botao } from '@/presentation/componentes/Botao';
 import { Texto } from '@/presentation/componentes/Texto';
 import { bloqueioStore } from '@/application/estado/bloqueio';
+import type { EscalaDoTexto } from '@/application/estado/preferencias';
 import { reproducaoStore } from '@/application/estado/reproducao';
-import { useEmDemonstracao } from '@/presentation/hooks/estado';
+import { useEmDemonstracao, usePreferencias } from '@/presentation/hooks/estado';
 import { useContainer } from '@/presentation/providers/container';
-import { espaco, useTema } from '@/presentation/tema';
+import { espaco, raio, toque, useTema } from '@/presentation/tema';
+
+const OPCOES_DE_TEXTO: { escala: EscalaDoTexto; rotulo: string }[] = [
+  { escala: 'NORMAL', rotulo: 'Normal' },
+  { escala: 'GRANDE', rotulo: 'Grande' },
+  { escala: 'MAIOR', rotulo: 'Maior' },
+];
 
 export default function Ajustes() {
   const tema = useTema();
@@ -22,6 +29,7 @@ export default function Ajustes() {
   const [avisoDoBloqueio, setAvisoDoBloqueio] = useState<string | null>(null);
   const demo = useEmDemonstracao();
   const replayAtivo = useStore(reproducaoStore, (r) => r.ativo);
+  const escalaDoTexto = usePreferencias((p) => p.escalaDoTexto);
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tema.fundo }}>
@@ -60,16 +68,52 @@ export default function Ajustes() {
             </Texto>
             <Botao
               rotulo={replayAtivo ? 'Parar a onda de calor real' : 'Reproduzir a onda de calor real (INMET, nov/2023)'}
+              dica={replayAtivo ? 'Para o replay e volta ao exemplo' : 'Toca as 96 horas reais, uma hora a cada 1,5 segundo'}
               aoTocar={() => (replayAtivo ? demonstracao.pararReproducao() : demonstracao.reproduzirOndaReal())}
             />
             <Texto suave>
               Simulação (número inventado): a casa da Dona Lurdes vai a Perigo agora e, sem resposta em 8 segundos, chega
               o lembrete leve.
             </Texto>
-            <Botao rotulo="Simular onda de calor" variante="secundario" aoTocar={() => demonstracao.simularOndaDeCalor()} />
-            <Botao rotulo="Recomeçar o exemplo" variante="secundario" aoTocar={() => demonstracao.recomecar()} />
+            <Botao rotulo="Simular onda de calor" variante="secundario" dica="Leva a casa da Dona Lurdes a Perigo com um número inventado" aoTocar={() => demonstracao.simularOndaDeCalor()} />
+            <Botao rotulo="Recomeçar o exemplo" variante="secundario" dica="Volta os dados de exemplo ao começo" aoTocar={() => demonstracao.recomecar()} />
           </View>
         )}
+
+        <View style={{ gap: espaco[3] }}>
+          <Texto variante="subtitulo" accessibilityRole="header">
+            Tamanho do texto
+          </Texto>
+          <Texto suave>Vale para todo o app, neste celular, e soma com o tamanho de fonte do sistema.</Texto>
+          <View accessibilityRole="radiogroup" accessibilityLabel="Tamanho do texto" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: espaco[2] }}>
+            {OPCOES_DE_TEXTO.map(({ escala, rotulo }) => {
+              const escolhida = escalaDoTexto === escala;
+              return (
+                <Pressable
+                  key={escala}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked: escolhida }}
+                  accessibilityLabel={`Texto ${rotulo.toLowerCase()}`}
+                  accessibilityHint="Muda o tamanho das letras em todo o app"
+                  onPress={() => sessao.definirEscalaDoTexto(escala)}
+                  style={{
+                    minHeight: toque.minimo,
+                    paddingHorizontal: espaco[4],
+                    justifyContent: 'center',
+                    borderRadius: raio.pilula,
+                    borderWidth: 2,
+                    borderColor: tema.marca,
+                    backgroundColor: escolhida ? tema.marca : 'transparent',
+                  }}
+                >
+                  <Texto forte style={{ color: escolhida ? tema.textoSobreMarca : tema.marca }}>
+                    {rotulo}
+                  </Texto>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: espaco[3] }}>
           <View style={{ flex: 1 }}>
@@ -80,6 +124,7 @@ export default function Ajustes() {
           </View>
           <Switch
             accessibilityLabel="Pedir digital ou rosto para abrir"
+            accessibilityHint="Liga ou desliga a digital para abrir a área da família"
             value={bloqueioAtivo}
             onValueChange={async (v) => {
               setAvisoDoBloqueio(null);

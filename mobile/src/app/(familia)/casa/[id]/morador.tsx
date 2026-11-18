@@ -111,11 +111,12 @@ export default function MoradorDaCasa() {
         {erro && <Texto accessibilityRole="alert">{erro}</Texto>}
         {salvar.isError && <Texto accessibilityRole="alert">{mensagemDeErro(salvar.error)}</Texto>}
         {salvar.data?.ok && <Texto accessibilityRole="alert">Salvo. Os documentos aparecem mascarados.</Texto>}
-        <Botao rotulo={salvar.isPending ? 'Salvando…' : 'Salvar'} aoTocar={aoSalvar} />
+        <Botao rotulo={salvar.isPending ? 'Salvando…' : 'Salvar'} dica="Envia o cadastro ao Sombra; os documentos ficam mascarados" aoTocar={aoSalvar} />
         {editando && (
           <Botao
             rotulo="Cancelar edição"
             variante="secundario"
+            dica="Volta ao cadastro sem salvar"
             aoTocar={() => {
               setEditando(null);
               setForm(VAZIO);
@@ -150,6 +151,7 @@ function Marcador({ rotulo, marcado, aoTocar }: { rotulo: string; marcado: boole
       accessibilityRole="checkbox"
       accessibilityState={{ checked: marcado }}
       accessibilityLabel={rotulo}
+      accessibilityHint={marcado ? 'Toque para desmarcar' : 'Toque para marcar'}
       onPress={aoTocar}
       style={{ minHeight: toque.minimo, flexDirection: 'row', alignItems: 'center', gap: espaco[3] }}
     >

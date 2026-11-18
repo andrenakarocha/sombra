@@ -40,7 +40,7 @@ export function TelaDeBloqueio() {
           Sombra
         </Texto>
         <Texto>Os dados das casas estão protegidos. Use a digital ou o rosto para abrir.</Texto>
-        <Botao rotulo="Desbloquear" aoTocar={() => void bloqueio.desbloquear()} />
+        <Botao rotulo="Desbloquear" dica="Pede a digital ou o rosto" aoTocar={() => void bloqueio.desbloquear()} />
       </View>
     </SafeAreaView>
   );

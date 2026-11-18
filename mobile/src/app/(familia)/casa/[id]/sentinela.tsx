@@ -81,7 +81,7 @@ export default function VincularSentinela() {
 
       <Campo rotulo="Número da Sentinela" value={deviceId} onChangeText={setDeviceId} autoCapitalize="none" placeholder="snt-7f3a9c" />
       <Campo rotulo="Código de vínculo" value={codigo} onChangeText={setCodigo} autoCapitalize="characters" placeholder="K7P2QX" />
-      <Botao rotulo="Vincular com o número digitado" variante="secundario" aoTocar={aoDigitar} />
+      <Botao rotulo="Vincular com o número digitado" variante="secundario" dica="Usa o número e o código escritos na Sentinela" aoTocar={aoDigitar} />
 
       {mensagem && <Texto accessibilityRole="alert">{mensagem}</Texto>}
       {segredo && (
