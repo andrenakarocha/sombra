@@ -297,8 +297,12 @@ features:
     criterios_de_aceite:
       - id: F10-CA1
         dado: os eventos de segurança da casa nos últimos 7 dias
-        quando: o farol é calculado
-        entao: nenhum evento é verde, 1 ou 2 é amarelo e 3 ou mais é vermelho; evento mais antigo não conta
+        quando: o farol é calculado (Risco Cidadão, spec 07 §4)
+        entao: >-
+          a pontuação, que pesa a família do dado, a severidade e o desfecho (vazado vale três bloqueios) e decai com
+          meia-vida de 72 h, é verde abaixo de 30, amarelo de 30 a 70 e vermelho a partir de 70: um bloqueio de saúde
+          recente acende o amarelo, três acendem o vermelho e um vazamento acende o vermelho sozinho; evento com mais de
+          7 dias não conta
       - id: F10-CA2
         dado: o farol de privacidade no app
         quando: ele aparece

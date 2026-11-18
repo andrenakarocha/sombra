@@ -1027,16 +1027,21 @@ casos:
     objetivo: Verificar que PII em campo livre é pega pelo conteúdo, não só pelo nome do campo (spec 07, A1).
     preparacao:
       - Core com o PiiScanningMiddleware (F2).
-    entradas: { observacoes: "texto livre com um CPF sintético no meio" }
+    entradas: { perfilDeSaude: "texto livre de saúde com um CPF sintético no meio" }
     passos:
-      - acao: Enviar o cadastro com o CPF em "observações".
-        esperado: O CPF é mascarado antes de gravar.
-      - acao: Consultar o cadastro e o log.
-        esperado: Só a forma mascarada aparece; um evento PiiDetectada sem o valor.
-    resultado_esperado: Mascarado na consulta e no log.
-    execucao: manual
-    automatizado: []
-    observacao: Automatiza na F2 (Privacidade). Até lá, o caso roda à mão contra a API.
+      - acao: Enviar o cadastro do morador com o CPF no perfil de saúde (o campo livre de observações).
+        esperado: O CPF é mascarado antes de gravar; o dado de saúde esperado fica como veio.
+      - acao: Conferir o banco e o log.
+        esperado: Só a forma mascarada no banco, nenhuma linha de log com o CPF e um evento privacidade.pii_detectada sem o valor.
+    resultado_esperado: Mascarado no banco e ausente do log.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/PrivacidadeTests.cs
+        teste: 'PrivacidadeTests.A1CpfNoTextoLivreEhMascaradoAntesDeGravarELogar'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Privacidade.Tests/VarredorDePiiTests.cs
+        teste: 'VarredorDePiiTests.MascaraSoODadoForaDoLugar'
 
   - id: TC40
     feature: F09
@@ -1092,26 +1097,37 @@ casos:
   - id: TC42
     feature: F10
     criterio: F10-CA1
-    titulo: Farol de privacidade nas fronteiras de 0, 1–2 e 3 eventos
+    titulo: Farol do Risco Cidadão nas fronteiras de 30 e 70 e na janela de 7 dias
     tipo: positivo
     tecnica: valor-limite
-    objetivo: Verificar as faixas do farol e a janela de 7 dias.
+    objetivo: Verificar as faixas do farol, a calibragem por família e desfecho e a janela de 7 dias.
     preparacao:
       - Eventos de segurança gravados em momentos controlados.
-    entradas: { eventos_na_semana: [0, 2, 3, 6], evento_antigo: 8 dias atrás }
+    entradas: { pontuacao: [29.9, 30, 69.9, 70], bloqueios_de_saude: [1, 2, 3], vazamentos_de_saude: 1, evento_antigo: 8 dias atrás }
     passos:
       - acao: Só um evento de 8 dias atrás.
         esperado: Verde, sem mensagens.
-      - acao: Dois eventos nas últimas horas.
+      - acao: Um ou dois bloqueios de saúde nas últimas horas.
         esperado: Amarelo, com a mensagem do mais recente primeiro.
-      - acao: Seis eventos na semana.
+      - acao: Três bloqueios de saúde, ou um só vazamento de saúde.
         esperado: Vermelho.
-    resultado_esperado: 0 → verde, 1–2 → amarelo, ≥ 3 → vermelho, só na janela de 7 dias.
+      - acao: Pontuações 29,9, 30, 69,9 e 70.
+        esperado: Verde, amarelo, amarelo e vermelho.
+    resultado_esperado: Verde < 30 ≤ amarelo < 70 ≤ vermelho, com decaimento e só na janela de 7 dias.
     execucao: automatizado
     automatizado:
       - suite: mstest
         arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Arredores/ArredoresTests.cs
-        teste: 'ArredoresTests.FarolContaOsEventosDaSemana'
+        teste: 'ArredoresTests.FarolEhORiscoCidadaoDosEventosDaCasa'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Privacidade.Tests/RiscoCidadaoTests.cs
+        teste: 'RiscoCidadaoTests.CalibragemDasCores'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Privacidade.Tests/RiscoCidadaoTests.cs
+        teste: 'RiscoCidadaoTests.LimitesDasCores'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Privacidade.Tests/RiscoCidadaoTests.cs
+        teste: 'RiscoCidadaoTests.DecaiPelaMeiaVidaESaiDaJanela'
 
   - id: TC43
     feature: F10
