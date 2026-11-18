@@ -1,0 +1,346 @@
+# Features do Sombra (F10.2) · fonte da verdade do Azure Boards (spec 09, D9).
+#
+# Cada Feature vira um work item "Feature" sob o Epic, com a história em "Como / quero / para" e os critérios de
+# aceite em "Dado / Quando / Então". O `sincronizar_azure.py` (F10.4) lê este arquivo; o `id` é a chave estável.
+#
+# Campos:
+#   prioridade        1 (mais alta) a 4, a escala do Azure (Microsoft.VSTS.Common.Priority)
+#   valor_de_negocio  0 a 100 (Microsoft.VSTS.Common.BusinessValue)
+#   tags              disciplinas que a Feature atravessa (System.Tags)
+#   regras            regras de negócio da spec 01 (R1–R14) e decisões do plano (D13) que a Feature cobre
+#
+# Nenhum dado pessoal real: as pessoas são as personas fictícias do roteiro (§3.4 do plano).
+
+versao: 1
+
+epico:
+  titulo: Sombra · cuidado contra o calor extremo para pessoas idosas
+  descricao: >-
+    A Sentinela mede o calor dentro da casa de uma pessoa idosa que mora sozinha, pede um "estou bem" quando o
+    calor fica perigoso e, sem resposta, avisa a rede de cuidado em degraus, sem alarme à toa. A previsão do Clima
+    antecipa o perigo e o app leva tudo para a família, com os dados pessoais protegidos.
+  tags: [GS-2026.2, CitizenTech]
+
+personas:
+  idoso: Dona Lurdes, 78 anos, mora sozinha e usa a Sentinela e o Modo Idoso (fictícia)
+  familia: a filha, primeira da rede de cuidado, usa o app (fictícia)
+  vizinho: a vizinha, contato "quem está perto" da rede (fictícia)
+  operador: quem acompanha as casas e a infraestrutura no painel
+  gestao: a gestão pública e o cidadão, que leem o Risco Cidadão
+
+features:
+  - id: F01
+    titulo: Monitoramento térmico da casa pela Sentinela
+    persona: [familia, idoso]
+    como: familiar de uma pessoa idosa que mora sozinha
+    quero: saber, ao vivo, o índice de calor dentro da casa dela e o nível de risco
+    para: agir antes de o calor virar um problema de saúde
+    prioridade: 1
+    valor_de_negocio: 95
+    tags: [iot, csharp, mobile]
+    regras: [R2, R9, R10]
+    criterios_de_aceite:
+      - id: F01-CA1
+        dado: uma Sentinela vinculada a uma casa monitorada
+        quando: ela envia uma leitura de temperatura e umidade
+        entao: o Core calcula o índice de calor pela NWS (Rothfusz) e classifica em um dos cinco níveis do contrato
+      - id: F01-CA2
+        dado: o app aberto na tela de Início
+        quando: chega uma leitura que muda o nível da casa
+        entao: o card muda de cor, ícone e texto ao vivo, sem recarregar
+      - id: F01-CA3
+        dado: uma leitura fora da faixa física (temperatura fora de −10 a 60 °C ou umidade fora de 0 a 100%)
+        quando: ela chega ao Core
+        entao: é recusada pela regra R9 e nada é gravado
+      - id: F01-CA4
+        dado: uma telemetria com assinatura HMAC errada ou com `seq` repetido
+        quando: ela chega pelo MQTT
+        entao: é descartada e vira um evento de segurança (R10)
+
+  - id: F02
+    titulo: Previsão de calor perigoso para as próximas 24 h
+    persona: [familia, operador]
+    como: familiar
+    quero: ser avisado na véspera quando o modelo prevê calor perigoso
+    para: preparar a casa e combinar quem vai passar lá
+    prioridade: 2
+    valor_de_negocio: 80
+    tags: [ml, soa, csharp]
+    regras: [R6, D13]
+    criterios_de_aceite:
+      - id: F02-CA1
+        dado: o Clima prevê nível PERIGO ou acima para a região da casa nas próximas 24 h
+        quando: o Core avalia as previsões
+        entao: abre um alerta PREVENTIVO por casa monitorada, com prazo informativo de 24 h
+      - id: F02-CA2
+        dado: o Clima fora do ar, ou a casa já com um alerta aberto
+        quando: o Core avalia as previsões
+        entao: nenhum alerta novo é aberto e nada quebra
+      - id: F02-CA3
+        dado: um alerta preventivo aberto
+        quando: o prazo de 24 h vence
+        entao: ele expira sem escalonar para a rede
+
+  - id: F03
+    titulo: Alerta de calor com "estou bem"
+    persona: [idoso]
+    como: pessoa idosa que mora sozinha
+    quero: confirmar com um botão que estou bem quando o calor fica forte
+    para: tranquilizar minha família sem precisar ligar para ninguém
+    prioridade: 1
+    valor_de_negocio: 100
+    tags: [iot, csharp, mobile]
+    regras: [R4, R5, R6, R13]
+    criterios_de_aceite:
+      - id: F03-CA1
+        dado: uma casa monitorada
+        quando: o índice de calor chega a CAUTELA_EXTREMA (≥ 32,22 °C)
+        entao: abre um alerta que pede o "estou bem" com prazo de 30 min; em PERIGO (≥ 39,44 °C), de 15 min
+      - id: F03-CA2
+        dado: um alerta aberto aguardando o check-in
+        quando: a pessoa aperta "estou bem" na Sentinela ou no app
+        entao: o alerta fica resolvido e o painel mostra o tempo até o check-in
+      - id: F03-CA3
+        dado: um alerta aberto
+        quando: chega uma leitura mais quente da mesma casa
+        entao: o mesmo alerta é atualizado, sem abrir outro (R4)
+      - id: F03-CA4
+        dado: a pessoa acabou de confirmar "estou bem"
+        quando: chega, dentro de 1 h, uma leitura no mesmo nível ou abaixo
+        entao: nenhum alerta novo é aberto; só um nível mais alto reabre (R13)
+
+  - id: F04
+    titulo: Escalonamento em degraus para a rede de cuidado
+    persona: [familia, vizinho]
+    como: familiar ou vizinha da rede de cuidado
+    quero: ser chamado só quando precisa, e na ordem certa
+    para: não receber alarme à toa e, mesmo assim, ninguém ficar sozinho no perigo
+    prioridade: 1
+    valor_de_negocio: 95
+    tags: [csharp, mobile]
+    regras: [R5, R8, D13]
+    criterios_de_aceite:
+      - id: F04-CA1
+        dado: um alerta em PERIGO sem resposta e uma rede com familiar e vizinha
+        quando: cada prazo vence
+        entao: sobe do degrau 1 (lembrete leve à família) ao 2 (vizinha) e ao 3 (alerta para toda a rede)
+      - id: F04-CA2
+        dado: um alerta em CAUTELA_EXTREMA sem resposta
+        quando: o prazo vence
+        entao: vai só ao degrau 1 e nunca passa dele
+      - id: F04-CA3
+        dado: um alerta escalonando
+        quando: alguém da rede reconhece ("vou ligar") ou resolve ("ela está bem")
+        entao: o escalonamento para
+      - id: F04-CA4
+        dado: o app da família
+        quando: chega um degrau 1 ou 2
+        entao: é um lembrete; só o degrau 3 e o pedido de ajuda viram alarme
+
+  - id: F05
+    titulo: Pedido de ajuda
+    persona: [idoso]
+    como: pessoa idosa
+    quero: pedir ajuda com um toque longo, a qualquer hora
+    para: chamar toda a minha rede de uma vez quando não estou bem
+    prioridade: 1
+    valor_de_negocio: 95
+    tags: [iot, csharp, mobile]
+    regras: [R4, R7, R8, R12]
+    criterios_de_aceite:
+      - id: F05-CA1
+        dado: uma casa monitorada, com ou sem alerta aberto
+        quando: a pessoa pede ajuda
+        entao: toda a rede de cuidado é avisada na hora (degrau 3), em qualquer nível e também de noite
+      - id: F05-CA2
+        dado: um alerta já aberto na casa
+        quando: a pessoa pede ajuda
+        entao: o mesmo alerta vai ao degrau 3, sem abrir outro
+      - id: F05-CA3
+        dado: o Modo Idoso aberto
+        quando: a pessoa encosta rápido em "PRECISO DE AJUDA"
+        entao: nada é enviado; só o toque longo pede ajuda
+
+  - id: F06
+    titulo: Cadastro do morador e da rede de cuidado
+    persona: [familia]
+    como: familiar
+    quero: cadastrar a minha mãe, os fatores de risco dela e a rede de cuidado
+    para: que o alerta use o limite certo para ela e chame as pessoas certas
+    prioridade: 2
+    valor_de_negocio: 75
+    tags: [csharp, mobile, cyber]
+    regras: [R1, R3, R8]
+    criterios_de_aceite:
+      - id: F06-CA1
+        dado: o formulário do morador
+        quando: a família informa CPF e Cartão SUS válidos, com ou sem pontuação
+        entao: o cadastro é aceito e os documentos aparecem sempre mascarados
+      - id: F06-CA2
+        dado: o formulário do morador
+        quando: o CPF tem o dígito verificador errado, ou o Cartão SUS é inválido
+        entao: o cadastro é recusado com 422 e uma mensagem clara em pt-BR (R1)
+      - id: F06-CA3
+        dado: um morador com fatores de risco (≥ 80 anos, cardiopatia, diurético)
+        quando: o índice de calor é avaliado
+        entao: os limites caem pela soma das reduções (−2 / −2,5 / −1,5 °C), nunca abaixo de 26,67 °C (R3)
+      - id: F06-CA4
+        dado: uma casa sem morador ou sem nenhum contato na rede
+        quando: a família tenta ligar o monitoramento
+        entao: é recusado; o monitoramento pede ao menos um morador e um contato
+
+  - id: F07
+    titulo: Pontos de resfriamento perto de casa
+    persona: [familia]
+    como: familiar
+    quero: ver os lugares frescos mais perto e para que lado ir
+    para: levar a minha mãe a um lugar seguro no pico do calor
+    prioridade: 3
+    valor_de_negocio: 60
+    tags: [soa, mobile, csharp]
+    regras: []
+    criterios_de_aceite:
+      - id: F07-CA1
+        dado: o app com permissão de localização
+        quando: a família abre "Perto de mim"
+        entao: os pontos aparecem do mais perto ao mais longe, com distância, rumo e uma seta descrita em palavras
+      - id: F07-CA2
+        dado: o app sem permissão de localização, ou um ponto sem coordenadas
+        quando: a família abre "Perto de mim"
+        entao: o app explica e usa a distância a partir da casa
+      - id: F07-CA3
+        dado: uma casa sem estação de referência na região
+        quando: o Core busca os pontos
+        entao: devolve uma lista vazia, sem erro
+
+  - id: F08
+    titulo: Modo Idoso acessível
+    persona: [idoso]
+    como: pessoa idosa com pouca familiaridade com celular
+    quero: uma tela só, com botões grandes, voz e vibração
+    para: responder ao alerta sem me perder no app
+    prioridade: 2
+    valor_de_negocio: 80
+    tags: [mobile]
+    regras: [R14, D12]
+    criterios_de_aceite:
+      - id: F08-CA1
+        dado: o Modo Idoso ligado no celular dela
+        quando: o app abre
+        entao: mostra só a tela grande com "ESTOU BEM" e "PRECISO DE AJUDA"; segurar "Modo família" volta
+      - id: F08-CA2
+        dado: um alerta aberto no Modo Idoso
+        quando: a tela aparece
+        entao: o app lê a situação em voz alta e diz o que acontece se ela não responder
+      - id: F08-CA3
+        dado: o celular sem internet
+        quando: ela aperta "ESTOU BEM"
+        entao: o toque fica na fila e sai uma vez só quando a rede volta, valendo o horário do toque (R14)
+      - id: F08-CA4
+        dado: a fonte do sistema em 200%
+        quando: o Modo Idoso abre
+        entao: nenhum texto fica cortado e o leitor de tela anuncia cada botão
+
+  - id: F09
+    titulo: Proteção de dados pessoais (PII / LGPD)
+    persona: [familia, idoso, operador]
+    como: pessoa cadastrada no Sombra
+    quero: que meu CPF, meu Cartão SUS e minha saúde nunca apareçam inteiros
+    para: confiar no sistema com dados sensíveis (LGPD, art. 11)
+    prioridade: 1
+    valor_de_negocio: 90
+    tags: [cyber, csharp, mobile]
+    regras: [R1]
+    criterios_de_aceite:
+      - id: F09-CA1
+        dado: um morador cadastrado
+        quando: a família consulta o cadastro no app ou na API
+        entao: CPF, Cartão SUS e telefone aparecem mascarados e só a forma mascarada fica no celular
+      - id: F09-CA2
+        dado: uma requisição com dados pessoais
+        quando: o Core grava o log dela
+        entao: o log é uma linha JSON com correlação e sem nenhum dado pessoal
+      - id: F09-CA3
+        dado: um CPF escrito num campo livre (como "observações")
+        quando: o cadastro é enviado
+        entao: o CPF é mascarado antes de gravar e de logar
+      - id: F09-CA4
+        dado: um cuidador autenticado
+        quando: ele pede uma casa fora da rede dele
+        entao: o Core não mostra a casa
+      - id: F09-CA5
+        dado: o Centro de Privacidade do app
+        quando: a pessoa exporta ou apaga os dados do celular (LGPD, art. 18)
+        entao: o export não traz nenhuma PII inteira e o apagar não deixa casa, fila nem preferência
+
+  - id: F10
+    titulo: Dashboard de Risco Cidadão
+    persona: [gestao, familia]
+    como: cidadão e gestão pública
+    quero: ver um farol simples de quanto os dados da casa estão em risco
+    para: entender, sem jargão, se houve tentativa de vazamento ou de fraude
+    prioridade: 3
+    valor_de_negocio: 65
+    tags: [cyber, web, mobile]
+    regras: [D12]
+    criterios_de_aceite:
+      - id: F10-CA1
+        dado: os eventos de segurança da casa nos últimos 7 dias
+        quando: o farol é calculado
+        entao: nenhum evento é verde, 1 ou 2 é amarelo e 3 ou mais é vermelho; evento mais antigo não conta
+      - id: F10-CA2
+        dado: o farol de privacidade no app
+        quando: ele aparece
+        entao: mostra cor, ícone e texto traduzido para o cidadão, nunca só a cor
+      - id: F10-CA3
+        dado: o Core respondendo com erro
+        quando: o app busca o farol
+        entao: o app explica o erro em pt-BR em vez de mostrar um farol inventado
+
+  - id: F11
+    titulo: Painel operacional e saúde da infraestrutura
+    persona: [operador]
+    como: operador
+    quero: ver o resumo das casas e os alertas da própria infraestrutura
+    para: agir rápido quando uma casa ou o servidor precisa de atenção
+    prioridade: 2
+    valor_de_negocio: 70
+    tags: [os, web, csharp]
+    regras: []
+    criterios_de_aceite:
+      - id: F11-CA1
+        dado: um pico de CPU na VM
+        quando: o monitor publica o alerta de infraestrutura
+        entao: ele chega ao painel ao vivo pelo hub
+      - id: F11-CA2
+        dado: casas em vários níveis
+        quando: o operador abre o painel
+        entao: o resumo agrega casas por nível e alertas abertos direto no banco
+      - id: F11-CA3
+        dado: alguém tentando adivinhar a senha
+        quando: faz login repetidas vezes em sequência
+        entao: o Core limita as tentativas e responde 429
+
+  - id: F12
+    titulo: Check-in diário e lembrete de água
+    persona: [idoso, familia]
+    como: pessoa idosa e a família dela
+    quero: um check-in por dia e lembretes de água nos dias quentes
+    para: manter uma rotina de cuidado sem incomodar à noite
+    prioridade: 3
+    valor_de_negocio: 60
+    tags: [csharp, mobile, iot]
+    regras: [R11, R12, R8]
+    criterios_de_aceite:
+      - id: F12-CA1
+        dado: um dia com nível ATENCAO ou acima
+        quando: chega o pico da tarde (15h–16h)
+        entao: a Sentinela e o celular lembram de beber água, no máximo 2 vezes por dia
+      - id: F12-CA2
+        dado: o check-in diário ligado
+        quando: a pessoa esquece de fazer o check-in num dia sem risco
+        entao: a família recebe só um lembrete leve, nunca um alerta de emergência
+      - id: F12-CA3
+        dado: a tela de rotina
+        quando: a família escolhe um horário entre 22h e 7h para o check-in
+        entao: o app recusa; lembretes nunca acontecem à noite (R12)
