@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
+using Sombra.Api.Composicao;
 using Sombra.Aplicacao.Comum;
 using Sombra.Dominio.Comum;
 
@@ -20,10 +23,16 @@ public sealed class TradutorDeExcecoes : IExceptionHandler
     public const string Tipo = "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/core-api.md#erros";
 
     private readonly IProblemDetailsService _problemas;
+    private readonly ILogger<TradutorDeExcecoes> _log;
 
     /// <summary>Initializes a new instance of the <see cref="TradutorDeExcecoes"/> class.</summary>
     /// <param name="problemas">Quem escreve o ProblemDetails.</param>
-    public TradutorDeExcecoes(IProblemDetailsService problemas) => _problemas = problemas ?? throw new ArgumentNullException(nameof(problemas));
+    /// <param name="log">O log, para as exceções inesperadas.</param>
+    public TradutorDeExcecoes(IProblemDetailsService problemas, ILogger<TradutorDeExcecoes> log)
+    {
+        _problemas = problemas ?? throw new ArgumentNullException(nameof(problemas));
+        _log = log ?? throw new ArgumentNullException(nameof(log));
+    }
 
     /// <summary>Diz se a exceção é esperada (uma resposta 4xx), e não um defeito para o log de erro.</summary>
     /// <param name="excecao">A exceção.</param>
@@ -35,6 +44,12 @@ public sealed class TradutorDeExcecoes : IExceptionHandler
     public ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
+        if (!EhEsperada(exception))
+        {
+            string rota = (httpContext.Features.Get<IExceptionHandlerFeature>()?.Endpoint as RouteEndpoint)?.RoutePattern.RawText ?? "(sem rota)";
+            _log.RequisicaoFalhou(exception, httpContext.Request.Method, rota);
+        }
+
         ProblemDetails problema = exception switch
         {
             ValidacaoException v => new ValidationProblemDetails(v.Erros.ToDictionary(e => e.Key, e => e.Value, StringComparer.Ordinal))

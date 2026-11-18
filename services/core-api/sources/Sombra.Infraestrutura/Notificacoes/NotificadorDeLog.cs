@@ -26,6 +26,6 @@ public sealed partial class NotificadorDeLog : INotificador
         return Task.CompletedTask;
     }
 
-    [LoggerMessage(EventId = 2001, Level = LogLevel.Information, Message = "Aviso para {Destinatario} ({Contatos} contatos) do alerta {AlertaId} da casa {DomicilioId}")]
+    [LoggerMessage(EventId = 2001, EventName = "aviso.registrado", Level = LogLevel.Information, Message = "Aviso para {destinatario} ({contatos} contatos) do alerta {alertaId} da casa {domicilioId}")]
     private static partial void AvisoRegistrado(ILogger logger, Destinatario destinatario, int contatos, Guid alertaId, Guid domicilioId);
 }

@@ -477,8 +477,11 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
   `usuarios` (migração 5, senha em PBKDF2), Cuidador restrito às casas dele, contas da demo pelo `Demo__Senha` do `.env`;
   `docs/contratos/core-api.openapi.json` vira a fonte da verdade (`make openapi`). Ficam para depois: `/ops/alertas` e o
   POST assinado de leituras (F1.9), `/privacidade/*` (F2.5), pontos de resfriamento (F3.9).
-- [ ] **F1.8** 🤖 Logs estruturados (§6): Serilog JSON, middleware de correlação, log de requisição sem corpo, versão no log.
-  🔎 uma requisição gera uma linha JSON com `correlationId` e nenhum dado pessoal.
+- [x] **F1.8** 🤖 Logs estruturados (§6): Serilog JSON, middleware de correlação, log de requisição sem corpo, versão no log.
+  🔎 uma requisição gera uma linha JSON com `correlationId` e nenhum dado pessoal — 2026-11-17 (no contêiner do `make up`
+  e num teste de API: os 8 campos, a rota-modelo, a correlação aceita, devolvida e gerada; nenhum nome, CPF, CNS, senha
+  ou token no log). Os fatos de negócio saem depois de gravados, só por ID, com a mesma correlação da requisição; o Core
+  real substitui o placeholder no compose (Dockerfile Alpine, sem root).
 - [ ] **F1.9** 🤖 Workers e tempo real:
   - `IngestaoMqttWorker`: MQTTnet → HMAC + anti-replay → `Channel<T>` → `RegistrarLeitura`;
   - `EscalonadorDeAlertasWorker`: a cada 15 s; na mesma volta roda o caso de uso `LembrarRotina` (check-in diário
@@ -834,12 +837,12 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** F1 em andamento: API v1 no ar (F1.1–F1.7: 120 testes, 14 num PostgreSQL real; cobertura 92,3%; quality 100/100; Scalar com 28 operações). Próximo: **F1.8** (logs estruturados e correlação). Em paralelo: ML (F4) e app (F6).
+**Agora:** F1 em andamento: API v1 no ar e no `make up`, com logs estruturados (F1.1–F1.8: 121 testes, 15 num PostgreSQL real; cobertura 92,3%; quality 100/100). Próximo: **F1.9** (workers MQTT, escalonador com `LembrarRotina`, monitor de previsão, outbox e SignalR). Em paralelo: ML (F4) e app (F6).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
-| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.7 feitas: domínio, casos de uso, EF Core (5 migrações) e API v1 com JWT e Scalar (quality 100/100, cobertura 92,3%) |
+| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.8 feitas: domínio, casos de uso, EF Core (5 migrações), API v1 com JWT e Scalar, logs JSON com correlação; Core no `make up` |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |

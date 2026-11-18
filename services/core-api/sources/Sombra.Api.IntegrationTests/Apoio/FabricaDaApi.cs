@@ -9,8 +9,11 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Npgsql;
+using Serilog.Core;
 using Sombra.Api.Autenticacao;
 using Sombra.Aplicacao.Dtos;
 using Testcontainers.PostgreSql;
@@ -66,10 +69,16 @@ internal sealed class FabricaDaApi : WebApplicationFactory<Program>
     private readonly string _conexao = AmbienteDaApi.NovaConexao();
     private readonly string _segredoDoJwt = Convert.ToBase64String(RandomNumberGenerator.GetBytes(48));
     private readonly int _loginPorMinuto;
+    private readonly ILogEventSink? _log;
 
     /// <summary>Initializes a new instance of the <see cref="FabricaDaApi"/> class.</summary>
     /// <param name="loginPorMinuto">O limite de logins por minuto.</param>
-    internal FabricaDaApi(int loginPorMinuto = 1000) => _loginPorMinuto = loginPorMinuto;
+    /// <param name="log">Um sink extra para capturar o log, quando o teste confere as linhas.</param>
+    internal FabricaDaApi(int loginPorMinuto = 1000, ILogEventSink? log = null)
+    {
+        _loginPorMinuto = loginPorMinuto;
+        _log = log;
+    }
 
     /// <summary>Gets a senha das contas da demo neste teste.</summary>
     internal string SenhaDaDemo { get; } = Convert.ToBase64String(RandomNumberGenerator.GetBytes(18));
@@ -91,13 +100,17 @@ internal sealed class FabricaDaApi : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        builder.UseEnvironment("Testes");
+        builder.UseEnvironment("Test");
         builder.UseSetting("ConnectionStrings:Core", _conexao);
         builder.UseSetting("Jwt:Segredo", _segredoDoJwt);
         builder.UseSetting("Demo:Senha", SenhaDaDemo);
         builder.UseSetting("Banco:MigrarAoIniciar", "true");
         builder.UseSetting("LimiteDeRequisicoes:LoginPorMinuto", _loginPorMinuto.ToString(CultureInfo.InvariantCulture));
         builder.UseSetting("Versao:Commit", "teste01");
+        if (_log is not null)
+        {
+            builder.ConfigureTestServices(servicos => servicos.AddSingleton(_log));
+        }
     }
 }
 

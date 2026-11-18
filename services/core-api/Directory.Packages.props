@@ -19,6 +19,8 @@
     <PackageVersion Include="MSTest" Version="4.5.3" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.21.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Expressions" Version="5.0.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.17.0" />
   </ItemGroup>
 

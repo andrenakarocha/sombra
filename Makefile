@@ -15,8 +15,8 @@ env: ## Cria ou completa o .env (gera os segredos que faltam; não sobrescreve n
 doctor: ## Confere as ferramentas da máquina
 	@tools/doctor.sh
 
-up: .env ## Sobe o ambiente local e espera tudo ficar saudável
-	@$(COMPOSE) up -d --wait
+up: .env ## Sobe o ambiente local e espera tudo ficar saudável (reconstrói o Core quando o código muda)
+	@SOMBRA_COMMIT=$$(git rev-parse --short HEAD) SOMBRA_CONSTRUIDO_EM=$$(date -u +%Y-%m-%dT%H:%M:%SZ) $(COMPOSE) up -d --build --wait
 	@$(COMPOSE) ps --format 'table {{.Service}}\t{{.Status}}\t{{.Ports}}'
 
 down: ## Para o ambiente (o volume do banco continua)
