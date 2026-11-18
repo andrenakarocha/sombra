@@ -470,6 +470,17 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<bool>("Bloqueado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("bloqueado");
+
+                    b.Property<string>("Categoria")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("categoria");
+
                     b.Property<string>("CorrelationId")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
@@ -481,6 +492,10 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("detalhe");
 
+                    b.Property<Guid?>("DomicilioId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("domicilio_id");
+
                     b.Property<DateTimeOffset>("Momento")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("momento");
@@ -490,6 +505,21 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("origem");
+
+                    b.Property<string>("Regra")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("regra");
+
+                    b.Property<string>("Severidade")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("severidade");
+
+                    b.Property<string>("Sink")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("sink");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
@@ -502,6 +532,9 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
 
                     b.HasIndex("Momento")
                         .HasDatabaseName("ix_eventos_de_seguranca_momento");
+
+                    b.HasIndex("DomicilioId", "Momento")
+                        .HasDatabaseName("ix_eventos_de_seguranca_domicilio_id_momento");
 
                     b.ToTable("eventos_de_seguranca", (string)null);
                 });

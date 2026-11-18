@@ -60,6 +60,13 @@ internal sealed class EventoDeSegurancaConfiguration : IEntityTypeConfiguration<
         builder.Property(e => e.Origem).HasMaxLength(64);
         builder.Property(e => e.CorrelationId).HasMaxLength(64);
         builder.Property(e => e.Detalhe).HasMaxLength(200);
+        builder.Property(e => e.DomicilioId);
+        builder.Property(e => e.Sink).HasConversion<string>().HasMaxLength(20);
+        builder.Property(e => e.Categoria).HasConversion<string>().HasMaxLength(20);
+        builder.Property(e => e.Severidade).HasConversion<string>().HasMaxLength(10);
+        builder.Property(e => e.Regra).HasMaxLength(40);
+        builder.Property(e => e.Bloqueado).HasDefaultValue(true);
         builder.HasIndex(e => e.Momento);
+        builder.HasIndex(e => new { e.DomicilioId, e.Momento });
     }
 }

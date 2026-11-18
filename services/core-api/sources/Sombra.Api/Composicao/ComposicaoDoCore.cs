@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -147,8 +148,16 @@ public static class ComposicaoDoCore
         RegistrarCicloDeVida(app);
         app.Use(static async (http, proximo) =>
         {
-            // O taint da requisição fica visível para os guardas que não vivem no escopo dela (o sink de log).
-            ContextoDeTaint.Atual = http.RequestServices.GetRequiredService<ContextoDeTaint>();
+            // O taint da requisição fica visível para os guardas que não vivem no escopo dela (o sink de log), e a casa
+            // da rota acende o farol dela quando um guarda barra algo.
+            ContextoDeTaint taint = http.RequestServices.GetRequiredService<ContextoDeTaint>();
+            if ((http.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText?.StartsWith("api/v1/domicilios/{id", StringComparison.Ordinal) == true
+                && Guid.TryParse(http.GetRouteValue("id")?.ToString(), out Guid casa))
+            {
+                taint.DomicilioId = casa;
+            }
+
+            ContextoDeTaint.Atual = taint;
             await proximo(http);
         });
         app.UseMiddleware<RastroDaRequisicao>();

@@ -3,7 +3,7 @@
 > **Fonte da verdade desde a F1.7:** [`core-api.openapi.json`](core-api.openapi.json), gerado pelo próprio Core
 > (`make -C services/core-api openapi`). O teste de API falha se a API e esse arquivo divergirem, e o Scalar do Core
 > (`/scalar/v1`) mostra o mesmo documento. Esta página fica como visão geral. A de `/domicilios/{id}/privacidade` e a de pontos de
-> resfriamento já respondem no formato do app (F6.25); as outras de `/privacidade` chegam na F2.5. Em `Development` e `Demo`, `POST /demo/relogio/avancar` (Admin) adianta o
+> resfriamento já respondem no formato do app (F6.25); o farol delas e as de `/privacidade` saem do Risco Cidadão (F2.5). Em `Development` e `Demo`, `POST /demo/relogio/avancar` (Admin) adianta o
 > relógio do Core para o caminho B caber num vídeo.
 
 ## Convenções
@@ -54,9 +54,9 @@
 | POST | `/domicilios/{id}/check-ins` | Cuidador | `{"origem": "APP" \| "CUIDADOR", "situacao": "ESTOU_BEM" \| "PRECISO_DE_AJUDA", "momento"?}`; o `momento` do toque vale (R14) e aceita `Idempotency-Key` |
 | GET | `/domicilios/{id}/pontos-de-resfriamento?raioKm=` | Cuidador, Operador | pontos perto da casa (raio padrão de 3 km), medidos da estação da região; lista de exemplo rotulada até a F3.9 trazer a do Clima |
 | GET | `/painel/resumo` | Operador | números do painel e indicadores de impacto |
-| GET | `/privacidade/risco-cidadao` | Operador | farol global e por categoria |
+| GET | `/privacidade/risco-cidadao` | Operador | farol global (0–100) e por categoria, eventos por sink e as regras que mais dispararam; pesos e decaimento na spec 07 §4 |
 | GET | `/privacidade/eventos?pagina=` | Operador | eventos de segurança, só com metadados |
-| GET | `/domicilios/{id}/privacidade` | Cuidador, Operador | `{ farol, mensagens: [{ momento, mensagemCidadao, fonte }] }` pelos eventos de segurança das Sentinelas da casa; templates até a F2.5 e a F2.6 |
+| GET | `/domicilios/{id}/privacidade` | Cuidador, Operador | `{ farol, mensagens: [{ momento, mensagemCidadao, fonte }] }`: o Risco Cidadão dos eventos da casa (Sentinelas dela e vazamentos barrados em rotas dela); mensagens de template até a F2.6 |
 | POST | `/ops/alertas` | Servico | alerta de infraestrutura vindo do monitor da VM |
 | GET | `/health/live` · `/health/ready` · `/version` | público | saúde e versão (commit e data do build) |
 

@@ -7,11 +7,13 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Sombra.Api.Composicao;
+using Sombra.Privacidade.Sinks;
 using Sombra.Privacidade.Taint;
 
 namespace Sombra.Api.Privacidade;
@@ -26,16 +28,19 @@ internal sealed class PiiScanningMiddleware
 {
     private readonly RequestDelegate _proximo;
     private readonly VarredorDePii _varredor;
+    private readonly IObservadorDeVazamentos _observador;
     private readonly ILogger<PiiScanningMiddleware> _log;
 
     /// <summary>Initializes a new instance of the <see cref="PiiScanningMiddleware"/> class.</summary>
     /// <param name="proximo">O próximo passo do pipeline.</param>
     /// <param name="varredor">O varredor, com a política configurada.</param>
+    /// <param name="observador">Quem registra o dado fora do lugar como evento de segurança.</param>
     /// <param name="log">O log.</param>
-    public PiiScanningMiddleware(RequestDelegate proximo, VarredorDePii varredor, ILogger<PiiScanningMiddleware> log)
+    public PiiScanningMiddleware(RequestDelegate proximo, VarredorDePii varredor, IObservadorDeVazamentos observador, ILogger<PiiScanningMiddleware> log)
     {
         _proximo = proximo;
         _varredor = varredor;
+        _observador = observador;
         _log = log;
     }
 
@@ -62,6 +67,12 @@ internal sealed class PiiScanningMiddleware
         foreach (DeteccaoDePii d in contexto.Deteccoes)
         {
             _log.PiiDetectada(d.Desfecho == DesfechoDaDeteccao.Marcado ? LogLevel.Debug : LogLevel.Warning, d.Categoria, d.Campo, d.Fonte, d.RegraId, d.Origem, d.Desfecho);
+        }
+
+        string rota = (http.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText ?? "(sem rota)";
+        foreach (DeteccaoDePii d in foraDoLugar)
+        {
+            _observador.Registrar(new VazamentoBloqueado(SinkDePii.Entrada, rota, d.RegraId, d.Categoria, d.Severidade, PeloTaint: false, http.TraceIdentifier));
         }
 
         if (foraDoLugar.Any(d => d.Desfecho == DesfechoDaDeteccao.Recusado))

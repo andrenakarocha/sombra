@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Sombra.Privacidade.Regras;
+using Sombra.Privacidade.Risco;
 
 namespace Sombra.Aplicacao.Respostas;
 
@@ -50,16 +53,16 @@ public enum FarolDePrivacidade
 public sealed record MensagemDePrivacidadeResposta(DateTimeOffset Momento, string MensagemCidadao, string Fonte);
 
 /// <summary>
-/// A privacidade da casa, no formato do app (D17). Por enquanto o farol conta os eventos de segurança das Sentinelas da
-/// casa na última semana e as mensagens vêm de templates; a F2.5 troca o cálculo por pesos e decaimento, e a F2.6 traz a
-/// tradução da IA, sem mudar o formato.
+/// A privacidade da casa, no formato do app (D17). O farol é o Risco Cidadão (spec 07 §4: pesos, desfecho e decaimento)
+/// dos eventos de segurança da casa: as mensagens recusadas das Sentinelas dela e os vazamentos que os guardas barraram
+/// em rotas dela. As mensagens vêm de templates; a F2.6 traz a tradução da IA, sem mudar o formato.
 /// </summary>
 /// <param name="Farol">A cor do farol.</param>
 /// <param name="Mensagens">As últimas mensagens, da mais recente para a mais antiga.</param>
 public sealed record PrivacidadeDaCasaResposta(FarolDePrivacidade Farol, IReadOnlyList<MensagemDePrivacidadeResposta> Mensagens)
 {
     /// <summary>A janela que o farol olha.</summary>
-    public static readonly TimeSpan Janela = TimeSpan.FromDays(7);
+    public static readonly TimeSpan Janela = RiscoCidadao.Janela;
 
     /// <summary>Quantas mensagens a tela mostra.</summary>
     public const int MaximoDeMensagens = 5;
@@ -70,27 +73,35 @@ public sealed record PrivacidadeDaCasaResposta(FarolDePrivacidade Farol, IReadOn
         ["MQTT_REPLAY"] = "Alguém tentou repetir uma mensagem antiga da Sentinela, e o Sombra recusou.",
         ["MQTT_FORA_DA_JANELA"] = "Chegou uma mensagem da Sentinela com o horário errado, e o Sombra recusou.",
         ["MQTT_MENSAGEM_INVALIDA"] = "A Sentinela mandou uma mensagem incompleta, e o Sombra ignorou.",
+        ["ACESSO_NEGADO"] = "Alguém tentou ver {0} da casa sem permissão, e o Sombra bloqueou.",
+        ["VAZAMENTO_BLOQUEADO"] = "O Sombra impediu que {0} da casa aparecesse onde não devia. Nada saiu.",
+        ["SAIDA_EXTERNA_BLOQUEADA"] = "O Sombra impediu que {0} da casa fosse enviado para fora do sistema.",
+        ["PII_FORA_DO_LUGAR"] = "Alguém escreveu {0} num campo de texto livre, e o Sombra escondeu antes de guardar.",
     };
 
     /// <summary>Monta a privacidade a partir dos eventos de segurança da casa.</summary>
-    /// <param name="eventos">Os eventos: quando e de que tipo (sem detalhe nenhum).</param>
+    /// <param name="eventos">Os eventos: o tipo e como o farol os vê (sem detalhe nenhum).</param>
     /// <param name="agora">O instante de referência.</param>
     /// <returns>A privacidade da casa.</returns>
-    public static PrivacidadeDaCasaResposta De(IEnumerable<(DateTimeOffset Momento, string Tipo)> eventos, DateTimeOffset agora)
+    public static PrivacidadeDaCasaResposta De(IEnumerable<(string Tipo, EventoDeRisco Risco)> eventos, DateTimeOffset agora)
     {
         ArgumentNullException.ThrowIfNull(eventos);
-        (DateTimeOffset Momento, string Tipo)[] recentes = [.. eventos.Where(e => e.Momento >= agora - Janela).OrderByDescending(e => e.Momento)];
-        FarolDePrivacidade farol = recentes.Length switch
-        {
-            0 => FarolDePrivacidade.Verde,
-            < 3 => FarolDePrivacidade.Amarelo,
-            _ => FarolDePrivacidade.Vermelho,
-        };
+        (string Tipo, EventoDeRisco Risco)[] recentes = [.. eventos.Where(e => e.Risco.Momento >= agora - Janela).OrderByDescending(e => e.Risco.Momento)];
         return new(
-            farol,
-            [.. recentes.Take(MaximoDeMensagens).Select(e => new MensagemDePrivacidadeResposta(
-                e.Momento,
-                _textos.GetValueOrDefault(e.Tipo, "O Sombra barrou algo estranho ligado à casa. Nenhum dado pessoal saiu."),
-                "template"))]);
+            Farois.De(RiscoCidadao.Avaliar(recentes.Select(e => e.Risco), agora).Farol),
+            [.. recentes.Take(MaximoDeMensagens).Select(e => new MensagemDePrivacidadeResposta(e.Risco.Momento, Texto(e.Tipo, e.Risco.Categoria), "template"))]);
     }
+
+    private static string Texto(string tipo, CategoriaDePii categoria)
+        => string.Format(
+            CultureInfo.InvariantCulture,
+            _textos.GetValueOrDefault(tipo, "O Sombra barrou algo estranho ligado à casa. Nenhum dado pessoal saiu."),
+            categoria switch
+            {
+                CategoriaDePii.Saude => "um dado de saúde",
+                CategoriaDePii.Identificacao => "um documento",
+                CategoriaDePii.Contato => "um contato (telefone ou e-mail)",
+                CategoriaDePii.Credencial => "uma senha ou chave de acesso",
+                _ => "o endereço",
+            });
 }

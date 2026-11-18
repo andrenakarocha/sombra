@@ -17,4 +17,7 @@ public enum SinkDePii
 
     /// <summary>A mensagem de uma exceção que iria para a resposta.</summary>
     Excecao,
+
+    /// <summary>A entrada: um campo livre da requisição trazia dado pessoal fora do lugar (mascarado ou recusado).</summary>
+    Entrada,
 }
