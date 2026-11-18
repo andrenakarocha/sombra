@@ -71,6 +71,16 @@ export default function Casa() {
         <ExplicacaoDoRisco nome={morador.nome.split(' ')[0]!} risco={risco} indiceC={c.ultimaLeitura?.indiceDeCalorC ?? null} />
       )}
 
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: espaco[3] }}>
+        <Botao rotulo="Rotina" variante="secundario" dica="Check-in diário e lembrete de água" aoTocar={() => router.push(`/casa/${id}/rotina`)} />
+        <Botao
+          rotulo={c.sentinela ? 'Trocar a Sentinela' : 'Vincular a Sentinela'}
+          variante="secundario"
+          dica="Lê o QR da Sentinela"
+          aoTocar={() => router.push(`/casa/${id}/sentinela`)}
+        />
+      </View>
+
       <Botao
         rotulo="Morador e dados de saúde"
         variante="secundario"

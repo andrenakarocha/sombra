@@ -38,11 +38,17 @@ export default function ModoIdoso() {
   const casaId = usePreferencias((p) => p.modoIdosoCasaId)!;
   const { escritas } = useContainer();
   const casa = usePainelDaCasa(casaId).data?.dados.casa;
+  const { casaESentinela } = useContainer();
   const [resposta, setResposta] = useState<Resposta | null>(null);
 
   const nivel = casa?.nivelAtual ?? 'NORMAL';
   const graus = casa?.ultimaLeitura ? Math.round(casa.ultimaLeitura.temperaturaC) : null;
   const situacao = `${graus !== null ? `Sua casa está com ${graus} graus. ` : ''}${INFO_DO_NIVEL[nivel].frase} ${proximoPasso(casa)}`;
+
+  // Este é o celular da pessoa: os lembretes da rotina (água só em dia de calor) são programados aqui.
+  useEffect(() => {
+    if (casa) casaESentinela.programarLembretes(casaId, casa.nivelAtual).catch(() => {});
+  }, [casaESentinela, casaId, casa?.nivelAtual]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Lê a situação ao abrir e quando o nível muda.
   useEffect(() => {

@@ -5,7 +5,14 @@ import { SemConexao } from '@/application/erros';
 import { preferenciasStore } from '@/application/estado/preferencias';
 import { sessaoStore } from '@/application/estado/sessao';
 import type { CoreGateway } from '@/application/ports/core-gateway';
-import type { CofreDeSessao, Localizacao, MonitorDeRede, Notificacao, Notificador } from '@/application/ports/servicos';
+import type {
+  AgendadorDeLembretes,
+  CofreDeSessao,
+  Localizacao,
+  MonitorDeRede,
+  Notificacao,
+  Notificador,
+} from '@/application/ports/servicos';
 import { FixedClock } from '@/domain/compartilhado/clock';
 import { montarContainer } from '@/infrastructure/container';
 import { CoreDemoGateway } from '@/infrastructure/demo/core-demo-gateway';
@@ -14,7 +21,12 @@ import { SqlJsDatabase } from './sql-js-database';
 
 export const AGORA = '2026-11-18T18:00:00.000Z';
 
-export async function containerDeTeste({ agora = AGORA, logado = true, localizacao }: { agora?: string; logado?: boolean; localizacao?: Localizacao } = {}) {
+export async function containerDeTeste({
+  agora = AGORA,
+  logado = true,
+  localizacao,
+  agendador,
+}: { agora?: string; logado?: boolean; localizacao?: Localizacao; agendador?: AgendadorDeLembretes } = {}) {
   sessaoStore.setState({ token: logado ? 'token-de-teste' : null, carregada: true });
   preferenciasStore.setState({ modoIdosoCasaId: null, carregada: true });
 
@@ -62,6 +74,7 @@ export async function containerDeTeste({ agora = AGORA, logado = true, localizac
     sorteio: () => 0.5,
     demo: new CoreDemoGateway(clock, 0),
     localizacao,
+    agendador,
   });
   const mudarRede = (online: boolean) => {
     rede.offline = !online;

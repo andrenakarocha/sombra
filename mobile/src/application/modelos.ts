@@ -6,8 +6,9 @@ import type { AcaoDoCuidador, EstadoDoAlerta, EventoDoAlerta } from '@/domain/al
 import type { NivelDeRisco } from '@/domain/clima/nivel-de-risco';
 import type { FatorDeRisco } from '@/domain/morador/fator-de-risco';
 import type { RiscoPersonalizado } from '@/domain/risco/risco-personalizado';
+import type { DadosDaRotina } from '@/domain/rotina/rotina';
 
-export type { EstadoDoAlerta, EventoDoAlerta, FatorDeRisco };
+export type { DadosDaRotina, EstadoDoAlerta, EventoDoAlerta, FatorDeRisco };
 export type AcaoDeReconhecimento = AcaoDoCuidador;
 
 export type Leitura = {
@@ -122,3 +123,6 @@ export type PainelDaCasa = {
 
 // RECUSADO: o Core recusou de vez (foi para a dead-letter da Central de sincronização).
 export type ResultadoDoEnvio = 'ENVIADO' | 'NA_FILA' | 'RECUSADO';
+
+// rascunho: POST /domicilios/{id}/sentinelas responde com o segredo HMAC uma única vez (core-api.md).
+export type SentinelaVinculada = { deviceId: string; segredo: string };
