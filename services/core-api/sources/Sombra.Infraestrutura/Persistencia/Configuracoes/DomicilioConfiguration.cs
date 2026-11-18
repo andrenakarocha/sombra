@@ -36,11 +36,6 @@ internal sealed class DomicilioConfiguration : IEntityTypeConfiguration<Domicili
             rotina.Ignore(r => r.HorarioDoCheckInDiario);
         });
 
-        builder.Property(d => d.RedeDeCuidado)
-            .HasConversion(Conversores.RedeEmJson, Conversores.RedePorConteudo)
-            .HasColumnType("jsonb")
-            .HasDefaultValueSql("'[]'::jsonb");
-
         builder.HasMany(d => d.Moradores).WithOne().HasForeignKey("DomicilioId").IsRequired().OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(d => d.Sentinelas).WithOne().HasForeignKey("DomicilioId").IsRequired().OnDelete(DeleteBehavior.Cascade);
         builder.Navigation(d => d.Moradores).AutoInclude();
@@ -48,7 +43,7 @@ internal sealed class DomicilioConfiguration : IEntityTypeConfiguration<Domicili
     }
 }
 
-/// <summary>O morador. CPF, Cartão SUS e saúde passam por conversores (a F2.3 os cifra).</summary>
+/// <summary>O morador. CPF, Cartão SUS, telefone e saúde são cifrados em <see cref="CamposSensiveis"/>.</summary>
 internal sealed class MoradorConfiguration : IEntityTypeConfiguration<Morador>
 {
     /// <inheritdoc/>
@@ -59,12 +54,6 @@ internal sealed class MoradorConfiguration : IEntityTypeConfiguration<Morador>
         builder.Property(m => m.Id).ValueGeneratedNever();
         builder.Property(m => m.Nome).HasMaxLength(80);
         builder.Property(m => m.DataDeNascimento);
-        builder.Property(m => m.Cpf).HasConversion(Conversores.CpfEmTexto).HasMaxLength(11);
-        builder.Property(m => m.CartaoSus).HasConversion(Conversores.CartaoSusEmTexto).HasMaxLength(15);
-        builder.Property(m => m.PerfilDeSaude).HasConversion(Conversores.PerfilEmCodigos).HasMaxLength(200);
-        builder.Property(m => m.Telefone).HasConversion(Conversores.TelefoneEmTexto).HasMaxLength(11);
-        builder.Property(m => m.ObservacoesDeSaude).HasMaxLength(500);
-        builder.HasIndex("DomicilioId", nameof(Morador.Cpf)).IsUnique();
     }
 }
 

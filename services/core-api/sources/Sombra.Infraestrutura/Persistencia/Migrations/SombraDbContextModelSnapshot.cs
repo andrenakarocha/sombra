@@ -140,10 +140,8 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
 
                     b.Property<string>("RedeDeCuidado")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("rede_de_cuidado")
-                        .HasDefaultValueSql("'[]'::jsonb");
+                        .HasColumnType("text")
+                        .HasColumnName("rede_de_cuidado");
 
                     b.Property<string>("RegiaoClimatica")
                         .IsRequired()
@@ -222,15 +220,18 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("CartaoSus")
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)")
+                        .HasColumnType("text")
                         .HasColumnName("cartao_sus");
 
                     b.Property<string>("Cpf")
                         .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)")
+                        .HasColumnType("text")
                         .HasColumnName("cpf");
+
+                    b.Property<string>("CpfIndice")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("cpf_indice");
 
                     b.Property<DateOnly>("DataDeNascimento")
                         .HasColumnType("date")
@@ -247,27 +248,24 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasColumnName("nome");
 
                     b.Property<string>("ObservacoesDeSaude")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasColumnType("text")
                         .HasColumnName("observacoes_de_saude");
 
                     b.Property<string>("PerfilDeSaude")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasColumnType("text")
                         .HasColumnName("perfil_de_saude");
 
                     b.Property<string>("Telefone")
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)")
+                        .HasColumnType("text")
                         .HasColumnName("telefone");
 
                     b.HasKey("Id")
                         .HasName("pk_moradores");
 
-                    b.HasIndex("DomicilioId", "Cpf")
+                    b.HasIndex("DomicilioId", "CpfIndice")
                         .IsUnique()
-                        .HasDatabaseName("ix_moradores_domicilio_id_cpf");
+                        .HasDatabaseName("ix_moradores_domicilio_id_cpf_indice");
 
                     b.ToTable("moradores", (string)null);
                 });

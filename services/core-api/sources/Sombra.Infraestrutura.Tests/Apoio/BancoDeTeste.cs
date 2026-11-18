@@ -1,9 +1,11 @@
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Npgsql;
 using Sombra.Infraestrutura.Persistencia;
+using Sombra.Privacidade.Repouso;
 using Testcontainers.PostgreSql;
 
 namespace Sombra.Infraestrutura.Tests.Apoio;
@@ -16,6 +18,9 @@ namespace Sombra.Infraestrutura.Tests.Apoio;
 public sealed class BancoDeTeste
 {
     private static PostgreSqlContainer? _postgres;
+
+    /// <summary>Gets a cifra dos testes: chaves aleatórias, as mesmas no processo inteiro.</summary>
+    internal static CifraDeCampos Cifra { get; } = new(RandomNumberGenerator.GetBytes(32), RandomNumberGenerator.GetBytes(32));
 
     /// <summary>Sobe o contêiner uma vez para a montagem inteira.</summary>
     /// <param name="contexto">O contexto do MSTest.</param>
@@ -49,11 +54,12 @@ public sealed class BancoDeTeste
         {
             DbContextOptionsBuilder<SombraDbContext> opcoes = new();
             SombraDbContext.Configurar(opcoes, conexao);
-            return new SombraDbContext(opcoes.Options);
+            return new SombraDbContext(opcoes.Options, Cifra);
         }
 
         await using SombraDbContext db = Criar();
         await db.Database.MigrateAsync();
+        await db.CifrarLegadoAsync(default);
         return Criar;
     }
 }
