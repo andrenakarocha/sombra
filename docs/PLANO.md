@@ -826,9 +826,11 @@ falha documentados.
   🔎 revisado pelo operador.
   ⏸ 2026-11-18: `qa/especificacao/features.yaml` com as 12 Features e 43 critérios de aceite, tirados das regras R1–R14
   e do contrato de níveis; espera a revisão do operador.
-- [ ] **F10.3** 🤖 🤝 `casos-de-teste.yaml` (40–50, positivos e negativos, técnica de cada um, vínculo com o teste
+- [x] **F10.3** 🤖 🤝 `casos-de-teste.yaml` (40–50, positivos e negativos, técnica de cada um, vínculo com o teste
   automatizado).
-  🔎 cada Feature tem pelo menos 1 negativo.
+  🔎 cada Feature tem pelo menos 1 negativo — 2026-11-18 (`qa/ferramentas/conferir_especificacao.py`: 50 casos, 22
+  positivos e 28 negativos, as quatro técnicas, todo critério coberto e os 102 testes citados existem no repositório;
+  48 automatizados e 2 manuais).
 - [ ] **F10.4** 🤖 `sincronizar_azure.py` idempotente (REST + PAT).
   🔎 o Boards mostra tudo, com passos e vínculos; uma segunda execução não duplica nada (P12).
 - [ ] **F10.5** 🧑🤖 Prints (Playwright com sessão ou manual), matriz de rastreabilidade e PDF.
