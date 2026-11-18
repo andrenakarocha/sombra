@@ -10,6 +10,7 @@ mesmo PR** (§0 do plano).
 | REST do Core | app, painel, monitor → Core | [`core-api.openapi.json`](core-api.openapi.json) (fonte da verdade, gerado pelo Core) + [`core-api.md`](core-api.md) (visão geral) | o teste de API falha se divergirem; `make -C services/core-api openapi` regenera |
 | REST do Clima | Core → Clima | [`clima-service.md`](clima-service.md) (vira `clima-service.openapi.json` na F3.4) | teste de contrato no Core (F3.9) |
 | Tempo real | Core → app, painel | [`signalr.md`](signalr.md) | testes de integração do Core |
+| Contrato vivo do app | Core → app | [`amostras/`](amostras/) (respostas reais do Core, uma por rota que o app lê) | o teste de integração do Core confere o formato; o Jest do app passa cada uma pelos schemas Zod; `make -C services/core-api amostras` regrava |
 | Risco personalizado (R3) | app ↔ Core | [`risco-personalizado.vetores.json`](risco-personalizado.vetores.json) (regra do app, D17) | testes do domínio do Core e o Jest do app |
 | Vínculo da Sentinela (QR) | Sentinela → app → Core | [`vinculo-da-sentinela.vetores.json`](vinculo-da-sentinela.vetores.json) (`sombra://sentinela/vincular?v=1&d=…&c=…`) | `tools/vinculo/codigo.py --conferir` e os testes do domínio do Core |
 

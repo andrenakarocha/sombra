@@ -1,0 +1,58 @@
+[
+  {
+    "id": "9a1f2c3d-0001-4b5c-8d6e-7f8091a2b3c4",
+    "nome": "Biblioteca do bairro (exemplo)",
+    "tipo": "BIBLIOTECA",
+    "distanciaKm": 0.8,
+    "horario": {
+      "abre": "09:00",
+      "fecha": "18:00"
+    },
+    "acessivel": true,
+    "fonte": "dados de exemplo do Sombra (a lista real vem do Clima na F3.9)",
+    "lat": -23.503,
+    "lon": -46.623
+  },
+  {
+    "id": "9a1f2c3d-0002-4b5c-8d6e-7f8091a2b3c4",
+    "nome": "Centro de convivência do idoso (exemplo)",
+    "tipo": "CENTRO_DE_CONVIVENCIA",
+    "distanciaKm": 1.2,
+    "horario": {
+      "abre": "08:00",
+      "fecha": "17:00"
+    },
+    "acessivel": true,
+    "fonte": "dados de exemplo do Sombra (a lista real vem do Clima na F3.9)",
+    "lat": -23.489,
+    "lon": -46.611
+  },
+  {
+    "id": "9a1f2c3d-0003-4b5c-8d6e-7f8091a2b3c4",
+    "nome": "UBS do bairro (exemplo)",
+    "tipo": "UBS",
+    "distanciaKm": 2,
+    "horario": {
+      "abre": "07:00",
+      "fecha": "19:00"
+    },
+    "acessivel": true,
+    "fonte": "dados de exemplo do Sombra (a lista real vem do Clima na F3.9)",
+    "lat": -23.512,
+    "lon": -46.629
+  },
+  {
+    "id": "9a1f2c3d-0004-4b5c-8d6e-7f8091a2b3c4",
+    "nome": "Shopping climatizado (exemplo)",
+    "tipo": "SHOPPING",
+    "distanciaKm": 2.5,
+    "horario": {
+      "abre": "10:00",
+      "fecha": "22:00"
+    },
+    "acessivel": true,
+    "fonte": "dados de exemplo do Sombra (a lista real vem do Clima na F3.9)",
+    "lat": -23.479,
+    "lon": -46.605
+  }
+]

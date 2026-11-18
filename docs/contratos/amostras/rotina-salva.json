@@ -1,0 +1,9 @@
+{
+  "checkInDiario": {
+    "ativo": false,
+    "horario": "10:30"
+  },
+  "lembreteDeAgua": {
+    "ativo": true
+  }
+}

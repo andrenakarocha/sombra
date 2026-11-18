@@ -1,0 +1,36 @@
+{
+  "id": "01a1ef28-ccd0-73d3-aa93-2a19fc6f0583",
+  "momento": "2026-11-18T14:56:30.9027969+00:00",
+  "origem": "APP",
+  "situacao": "ESTOU_BEM",
+  "alerta": {
+    "id": "01a1ef28-ca8c-73da-aca1-6513eee8c148",
+    "domicilioId": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10",
+    "apelidoDaCasa": "Casa da Dona Lurdes",
+    "tipo": "DE_SENTINELA",
+    "estado": "RESOLVIDO",
+    "nivel": "PERIGO",
+    "degrau": 0,
+    "abertoEm": "2026-11-18T14:56:30+00:00",
+    "prazo": "2026-11-18T15:11:30+00:00",
+    "encerradoEm": "2026-11-18T14:56:30.9027969+00:00",
+    "mensagemAoMorador": "Calor perigoso. Aperte o verde. Sem resposta em 15 min, avisamos sua família.",
+    "linhaDoTempo": [
+      {
+        "momento": "2026-11-18T14:56:30+00:00",
+        "degrau": 0,
+        "descricao": "A Sentinela lembrou e pediu o \"estou bem\"."
+      },
+      {
+        "momento": "2026-11-18T14:56:30.894611+00:00",
+        "degrau": 0,
+        "descricao": "Alguém da família vai ligar."
+      },
+      {
+        "momento": "2026-11-18T14:56:30.9027969+00:00",
+        "degrau": 0,
+        "descricao": "Apertou \"estou bem\" no celular."
+      }
+    ]
+  }
+}
