@@ -2,14 +2,14 @@ import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 
-import { useMoradores, useSalvarMorador } from '@/api/consultas';
-import { mensagemDeErro } from '@/api/mensagens';
-import type { FatorDeRisco, Morador, NovoMorador } from '@/application/modelos';
-import { Botao } from '@/componentes/Botao';
-import { Campo } from '@/componentes/Campo';
-import { Texto } from '@/componentes/Texto';
-import { type Formulario, VAZIO, validar } from '@/dominio/morador';
-import { espaco, raio, toque, useTema } from '@/tema';
+import { usePainelDaCasa, useSalvarMorador } from '@/presentation/hooks/consultas';
+import { mensagemDeErro } from '@/presentation/util/mensagens';
+import type { FatorDeRisco, Morador } from '@/application/modelos';
+import { Botao } from '@/presentation/componentes/Botao';
+import { Campo } from '@/presentation/componentes/Campo';
+import { Texto } from '@/presentation/componentes/Texto';
+import { type Formulario, paraNovoMorador, VAZIO } from '@/presentation/formularios/morador';
+import { espaco, raio, toque, useTema } from '@/presentation/tema';
 import {
   aplicarPadrao,
   exibirCartaoSus,
@@ -17,7 +17,7 @@ import {
   exibirSaude,
   exibirTelefone,
   PADRAO,
-} from '@/util/mascaras';
+} from '@/presentation/util/mascaras';
 
 const FATORES: { fator: FatorDeRisco; rotulo: string }[] = [
   { fator: 'IDADE_AVANCADA', rotulo: '80 anos ou mais' },
@@ -25,16 +25,10 @@ const FATORES: { fator: FatorDeRisco; rotulo: string }[] = [
   { fator: 'USO_DE_DIURETICO', rotulo: 'Toma diurético' },
 ];
 
-function corpo(f: Formulario): NovoMorador {
-  const { idade, ...resto } = f;
-  // Campos vazios não vão: na edição, o Core mantém o que já tem.
-  const preenchidos = Object.fromEntries(Object.entries(resto).filter(([, v]) => v !== '')) as Omit<NovoMorador, 'idade'>;
-  return { ...preenchidos, idade: Number(idade) };
-}
-
 export default function MoradorDaCasa() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const moradores = useMoradores(id);
+  const painel = usePainelDaCasa(id);
+  const moradores = painel.data?.dados.moradores ?? [];
   const [editando, setEditando] = useState<Morador | null>(null);
   const [form, setForm] = useState<Formulario>(VAZIO);
   const [erro, setErro] = useState<string | null>(null);
@@ -57,11 +51,10 @@ export default function MoradorDaCasa() {
   }
 
   function aoSalvar() {
-    const problema = validar(form, !!editando);
-    setErro(problema);
-    if (problema) return;
-    salvar.mutate(corpo(form), {
-      onSuccess: () => {
+    setErro(null);
+    salvar.mutate(paraNovoMorador(form), {
+      onSuccess: (resultado) => {
+        if (!resultado.ok) return setErro(resultado.erro.mensagem);
         setEditando(null);
         setForm(VAZIO);
       },
@@ -71,8 +64,8 @@ export default function MoradorDaCasa() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={{ padding: espaco[5], gap: espaco[4] }} keyboardShouldPersistTaps="handled">
-        {moradores.isError && <Texto accessibilityRole="alert">{mensagemDeErro(moradores.error)}</Texto>}
-        {moradores.data?.map((m) => (
+        {painel.isError && <Texto accessibilityRole="alert">{mensagemDeErro(painel.error)}</Texto>}
+        {moradores.map((m) => (
           <CartaoMorador key={m.id} morador={m} aoEditar={() => editar(m)} />
         ))}
 
@@ -117,7 +110,7 @@ export default function MoradorDaCasa() {
 
         {erro && <Texto accessibilityRole="alert">{erro}</Texto>}
         {salvar.isError && <Texto accessibilityRole="alert">{mensagemDeErro(salvar.error)}</Texto>}
-        {salvar.isSuccess && <Texto accessibilityRole="alert">Salvo. Os documentos aparecem mascarados.</Texto>}
+        {salvar.data?.ok && <Texto accessibilityRole="alert">Salvo. Os documentos aparecem mascarados.</Texto>}
         <Botao rotulo={salvar.isPending ? 'Salvando…' : 'Salvar'} aoTocar={aoSalvar} />
         {editando && (
           <Botao

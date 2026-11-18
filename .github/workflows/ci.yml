@@ -107,7 +107,7 @@ jobs:
       - name: tokens.css e tokens.ts do app em dia com o tokens.json
         run: |
           python3 -I design/tokens.py gerar
-          git diff --exit-code design/tokens.css mobile/src/tema/tokens.ts
+          git diff --exit-code design/tokens.css mobile/src/presentation/tema/tokens.ts
 
   mobile:
     name: app (mobile)

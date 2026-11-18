@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { entrar } from '@/api/auth';
-import { mensagemDeErro } from '@/api/mensagens';
-import { Botao } from '@/componentes/Botao';
-import { Campo } from '@/componentes/Campo';
-import { Texto } from '@/componentes/Texto';
-import { TOKEN_DEMO, useSessao } from '@/sessao/sessao';
-import { espaco, useTema } from '@/tema';
+import { mensagemDeErro } from '@/presentation/util/mensagens';
+import { Botao } from '@/presentation/componentes/Botao';
+import { Campo } from '@/presentation/componentes/Campo';
+import { Texto } from '@/presentation/componentes/Texto';
+import { useContainer } from '@/presentation/providers/container';
+import { espaco, useTema } from '@/presentation/tema';
 
 export default function Entrar() {
   const tema = useTema();
+  const { sessao } = useContainer();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [enviando, setEnviando] = useState(false);
@@ -21,7 +21,7 @@ export default function Entrar() {
     setEnviando(true);
     setErro(null);
     try {
-      await entrar(email.trim(), senha);
+      await sessao.entrar(email, senha);
     } catch (e) {
       setErro(mensagemDeErro(e, { 401: 'E-mail ou senha incorretos.' }));
     } finally {
@@ -66,7 +66,7 @@ export default function Entrar() {
             rotulo="Ver com dados de exemplo"
             variante="secundario"
             dica="Abre o app no modo demonstração, sem conta e sem servidor"
-            aoTocar={() => useSessao.getState().definir(TOKEN_DEMO)}
+            aoTocar={() => sessao.entrarNaDemonstracao()}
           />
         </ScrollView>
       </KeyboardAvoidingView>

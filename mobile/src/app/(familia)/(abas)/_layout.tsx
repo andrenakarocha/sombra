@@ -2,9 +2,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import type { ColorValue } from 'react-native';
 
-import { useAlertas } from '@/api/consultas';
-import { ativo } from '@/dominio/alerta';
-import { fonte, useTema } from '@/tema';
+import { useAlertas } from '@/presentation/hooks/consultas';
+import { ativo } from '@/presentation/util/textos-do-alerta';
+import { fonte, useTema } from '@/presentation/tema';
 
 type Icone = React.ComponentProps<typeof Ionicons>['name'];
 

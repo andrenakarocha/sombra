@@ -30,9 +30,9 @@ export class SincronizacaoRepositorySqlite implements SincronizacaoRepository {
 
 // Sair da conta ou "apagar tudo" no Centro de Privacidade: nenhum dado de casa fica no aparelho.
 export async function apagarDadosLocais(db: SqlDatabase, { inclusivePreferencias }: { inclusivePreferencias: boolean }) {
-  await db.transaction(async () => {
-    await db.exec(`DELETE FROM eventos_do_alerta; DELETE FROM alertas; DELETE FROM leituras; DELETE FROM moradores;
+  await db.transaction(async (tx) => {
+    await tx.exec(`DELETE FROM eventos_do_alerta; DELETE FROM alertas; DELETE FROM leituras; DELETE FROM moradores;
                    DELETE FROM rede_de_cuidado; DELETE FROM casas; DELETE FROM outbox; DELETE FROM sincronizacao;`);
-    if (inclusivePreferencias) await db.exec('DELETE FROM preferencias');
+    if (inclusivePreferencias) await tx.exec('DELETE FROM preferencias');
   });
 }

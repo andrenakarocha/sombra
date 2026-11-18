@@ -154,6 +154,26 @@ describe('motor de sincronização', () => {
     expect(core.recebidas).toEqual(['op-1']);
   });
 
+  it('uma operação enfileirada durante uma drenagem sai na rodada seguinte, sem esperar a rede', async () => {
+    const { outbox, core, motor, checkIn } = await montar();
+    await checkIn('op-1');
+    let liberar!: () => void;
+    const enviarDeVerdade = core.enviar.bind(core);
+    core.enviar = async (op) => {
+      if (op.operationId === 'op-1') await new Promise<void>((r) => (liberar = r));
+      return enviarDeVerdade(op);
+    };
+    const primeira = motor.drenar();
+    await new Promise((r) => setTimeout(r, 0));
+    await checkIn('op-2');
+    const segunda = motor.drenar();
+    liberar();
+    await primeira;
+    await segunda;
+    expect(core.recebidas).toEqual(['op-1', 'op-2']);
+    expect(await outbox.contar()).toEqual({ pendentes: 0, deadLetter: 0 });
+  });
+
   it('o mesmo operationId enfileirado de novo é ignorado (idempotência local)', async () => {
     const { outbox, checkIn } = await montar();
     await checkIn('op-1');

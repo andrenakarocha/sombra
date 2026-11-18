@@ -2,7 +2,7 @@
 """Tokens de design do Sombra: gera o CSS e confere o contraste (WCAG 2.2).
 
 Uso:
-    design/tokens.py gerar      escreve design/tokens.css e mobile/src/tema/tokens.ts a partir de design/tokens.json
+    design/tokens.py gerar      escreve design/tokens.css e mobile/src/presentation/tema/tokens.ts a partir de design/tokens.json
     design/tokens.py conferir   confere os pares de contraste dos dois temas (sai com 0 se todos passam)
 """
 
@@ -12,7 +12,7 @@ import re
 import sys
 
 PASTA = pathlib.Path(__file__).resolve().parent
-TOKENS_TS = PASTA.parent / "mobile" / "src" / "tema" / "tokens.ts"
+TOKENS_TS = PASTA.parent / "mobile" / "src" / "presentation" / "tema" / "tokens.ts"
 TOKENS = json.loads((PASTA / "tokens.json").read_text(encoding="utf-8"))
 NIVEIS = ("normal", "atencao", "cautelaExtrema", "perigo", "perigoExtremo")
 
@@ -105,7 +105,7 @@ def arvore(no: dict) -> dict:
 
 
 def gerar_ts() -> None:
-    # As pilhas de fonte do CSS não valem no app: lá as famílias são as carregadas em mobile/src/tema/fontes.ts.
+    # As pilhas de fonte do CSS não valem no app: lá as famílias são as carregadas em mobile/src/presentation/tema/fontes.ts.
     valores = arvore({k: v for k, v in TOKENS.items() if k != "fonte"})
     linhas = [
         "// Gerado por design/tokens.py a partir de design/tokens.json. Não edite à mão.",
@@ -115,7 +115,7 @@ def gerar_ts() -> None:
     ]
     TOKENS_TS.parent.mkdir(parents=True, exist_ok=True)
     TOKENS_TS.write_text("\n".join(linhas), encoding="utf-8")
-    print("mobile/src/tema/tokens.ts gerado")
+    print("mobile/src/presentation/tema/tokens.ts gerado")
 
 
 def luminancia(hex_cor: str) -> float:

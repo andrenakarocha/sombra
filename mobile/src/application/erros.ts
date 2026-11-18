@@ -19,3 +19,18 @@ export class ErroDaApi extends Error {
     return this.correlationId.slice(0, 8);
   }
 }
+
+// A resposta chegou, mas não bate com o contrato (schema Zod): não entra no domínio.
+export class RespostaForaDoContrato extends Error {
+  constructor(
+    readonly rota: string,
+    readonly detalhe: string,
+  ) {
+    super(`Resposta fora do contrato em ${rota}`);
+  }
+}
+
+// Para consultas: só "fora do ar" cai no dado local. Sessão vencida e erro de regra aparecem para a pessoa.
+export function foraDoAr(erro: unknown) {
+  return erro instanceof SemConexao || (erro instanceof ErroDaApi && erro.status >= 500);
+}

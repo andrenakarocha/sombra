@@ -1,15 +1,15 @@
 import { ActivityIndicator, Linking, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useCasas, usePontosDeResfriamento } from '@/api/consultas';
-import { mensagemDeErro } from '@/api/mensagens';
+import { useCasas, usePontosDeResfriamento } from '@/presentation/hooks/consultas';
+import { mensagemDeErro } from '@/presentation/util/mensagens';
 import type { PontoDeResfriamento } from '@/application/modelos';
-import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
-import { Botao } from '@/componentes/Botao';
-import { SeletorDeCasa, useCasaEscolhida } from '@/componentes/SeletorDeCasa';
-import { Texto } from '@/componentes/Texto';
-import { espaco, raio, useTema } from '@/tema';
-import { abertoAgora, formatarKm } from '@/util/formato';
+import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao';
+import { Botao } from '@/presentation/componentes/Botao';
+import { SeletorDeCasa, useCasaEscolhida } from '@/presentation/componentes/SeletorDeCasa';
+import { Texto } from '@/presentation/componentes/Texto';
+import { espaco, raio, useTema } from '@/presentation/tema';
+import { abertoAgora, formatarKm } from '@/presentation/util/formato';
 
 function abrirRota(ponto: PontoDeResfriamento, bairro: string) {
   const destino = ponto.lat !== undefined && ponto.lon !== undefined ? `${ponto.lat},${ponto.lon}` : `${ponto.nome}, ${bairro}, São Paulo`;
