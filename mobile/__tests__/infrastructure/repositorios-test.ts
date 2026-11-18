@@ -189,7 +189,7 @@ describe('morador, rede, preferências e sincronização', () => {
       cpf: '***.982.247-**',
       cartaoSus: '*** **** **** 1234',
       perfilDeSaude: '[DADO DE SAÚDE PROTEGIDO]',
-      fatoresDeRisco: ['USO_DE_DIURETICO'],
+      fatoresDeRisco: ['USO_DE_DIURETICO' as const],
     };
     await repo.substituirDaCasa('d1', [morador]);
     expect(await repo.listarDaCasa('d1')).toEqual([morador]);
@@ -233,12 +233,42 @@ describe('morador, rede, preferências e sincronização', () => {
     expect(await new PreferenciaRepositorySqlite(db).ler('tema')).toBeNull();
   });
 
+  it('concorrência: o ROLLBACK de uma transação não desfaz a escrita de outra cadeia', async () => {
+    const db = await banco();
+    const repo = new CasaRepositorySqlite(db);
+    let soltar!: () => void;
+    const falhando = db.transaction(async (tx) => {
+      await new CasaRepositorySqlite(tx).salvar(casa('d1'));
+      await new Promise<void>((r) => (soltar = r));
+      throw new Error('falhou');
+    });
+    // Escrita fora da transação, pedida enquanto ela está aberta: espera a vez em vez de entrar nela.
+    const independente = repo.salvar(casa('d2'));
+    await new Promise((r) => setTimeout(r, 0));
+    soltar();
+    await expect(falhando).rejects.toThrow('falhou');
+    await independente;
+    expect((await repo.listar()).map((c) => c.id)).toEqual(['d2']);
+  });
+
+  it('concorrência: duas gravações do mesmo alerta ao mesmo tempo não se misturam', async () => {
+    const db = await banco();
+    const repo = new AlertaRepositorySqlite(db);
+    const clock = FixedClock.at('2026-11-18T18:00:00Z');
+    const alerta = valorOuErro(
+      AlertaDeCalor.abrir({ id: 'a1', domicilioId: 'd1', tipo: 'DE_SENTINELA', nivel: 'PERIGO', temVizinho: true, clock }),
+    );
+    const reconhecido = valorOuErro(alerta.reconhecer('VOU_LIGAR', clock));
+    await Promise.all([repo.salvar(alerta, 'A'), repo.salvar(reconhecido, 'A'), repo.salvar(alerta, 'A')]);
+    expect((await repo.buscar('a1'))!.alerta.dados.linhaDoTempo).toHaveLength(1);
+  });
+
   it('transação desfaz tudo se algo falhar no meio', async () => {
     const db = await banco();
     const repo = new CasaRepositorySqlite(db);
     await expect(
-      db.transaction(async () => {
-        await repo.salvar(casa('d1'));
+      db.transaction(async (tx) => {
+        await new CasaRepositorySqlite(tx).salvar(casa('d1'));
         throw new Error('falhou');
       }),
     ).rejects.toThrow('falhou');

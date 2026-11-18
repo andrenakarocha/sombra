@@ -626,9 +626,13 @@ Go; o APK via EAS é um extra.
   regra da noite, D13) e risco personalizado explicável (R3: limiar por fator, contribuição de cada um).
   🔎 testes de toda transição válida e inválida; cada fator explica quanto baixou o limiar — 2026-11-17. As reduções
   do R3 (≥ 80 anos −2 °C · cardiopatia −2,5 · diurético −1,5) são propostas do app: alinhar com o Core (F1.3).
-- [ ] **F6.11** 🤖 Casos de uso, ports, composition root e Zod no contrato: as telas falam só com os casos de uso;
-  toda resposta da API passa por um schema Zod antes de entrar no domínio.
-  🔎 teste de arquitetura: `domain` não importa nada de fora; `presentation` não importa `infrastructure`.
+- [x] **F6.11** 🤖 Casos de uso, ports, composition root e Zod no contrato: as telas falam só com os casos de uso;
+  toda resposta da API passa por um schema Zod antes de entrar no domínio. Com a virada: SQLite como fonte da verdade
+  das telas, escritas otimistas com rebase das pendentes sobre cada retrato do servidor, Unit of Work com transações
+  serializadas, e a demonstração como um `CoreGateway` que usa a mesma máquina de estados do domínio.
+  🔎 teste de arquitetura: `domain` não importa nada de fora; `presentation` não importa `infrastructure` — 2026-11-17.
+  Os testes de tela acharam dois bugs de concorrência, corrigidos com teste de regressão: uma escrita durante uma
+  drenagem esperava a próxima rede, e duas cadeias dividiam a mesma transação (um ROLLBACK desfazia o envio da outra).
 - [x] **F6.12** 🤖 Local-first: porta `SqlDatabase` (`expo-sqlite` no aparelho, `sql.js` no Jest), migrações
   versionadas e repositórios; o SQLite vira a fonte da verdade das telas (a virada das telas é na F6.11).
   🔎 repositórios testados com SQL real no Jest — 2026-11-17 (inclui a migração 3 → 4 sem perder check-in da fila).

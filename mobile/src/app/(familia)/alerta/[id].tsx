@@ -1,15 +1,16 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 
-import { useAlerta, useReconhecer } from '@/api/consultas';
-import { mensagemDeErro } from '@/api/mensagens';
+import { useAlerta, useReconhecer } from '@/presentation/hooks/consultas';
+import { mensagemDeErro } from '@/presentation/util/mensagens';
 import type { AcaoDeReconhecimento } from '@/application/modelos';
-import { Botao } from '@/componentes/Botao';
-import { Farol } from '@/componentes/Farol';
-import { Texto } from '@/componentes/Texto';
-import { ativo, ROTULO_DO_ESTADO } from '@/dominio/alerta';
-import { espaco, useTema } from '@/tema';
-import { formatarHora } from '@/util/formato';
+import { Botao } from '@/presentation/componentes/Botao';
+import { AvisoOffline } from '@/presentation/componentes/AvisoOffline';
+import { Farol } from '@/presentation/componentes/Farol';
+import { Texto } from '@/presentation/componentes/Texto';
+import { ativo, ROTULO_DO_ESTADO } from '@/presentation/util/textos-do-alerta';
+import { espaco, useTema } from '@/presentation/tema';
+import { formatarHora } from '@/presentation/util/formato';
 
 const ACOES: { acao: AcaoDeReconhecimento; rotulo: string; dica: string }[] = [
   { acao: 'VOU_LIGAR', rotulo: 'Vou ligar', dica: 'Avisa a rede que você vai ligar agora' },
@@ -32,7 +33,7 @@ export default function AlertaDetalhe() {
     );
   }
 
-  const a = alerta.data;
+  const a = alerta.data.dados;
   return (
     <ScrollView contentContainerStyle={{ padding: espaco[5], gap: espaco[4] }}>
       <Stack.Screen options={{ title: a.apelidoDaCasa }} />
@@ -40,13 +41,20 @@ export default function AlertaDetalhe() {
       <Texto variante="subtitulo" forte>
         {ROTULO_DO_ESTADO[a.estado]}
       </Texto>
-      {ativo(a) && <Texto>Responder até {formatarHora(a.prazo)}.</Texto>}
+      {ativo(a) && a.estado !== 'RECONHECIDO' && <Texto>Responder até {formatarHora(a.prazo)}.</Texto>}
+      {a.minutosAteProximoDegrau != null && (
+        <Texto forte accessibilityLiveRegion="polite">
+          {a.minutosAteProximoDegrau === 0
+            ? 'O próximo aviso da rede sai agora.'
+            : `Sem resposta, o próximo aviso da rede sai em ${a.minutosAteProximoDegrau} min.`}
+        </Texto>
+      )}
+      {alerta.data.origem === 'local' && <AvisoOffline atualizadoEm={alerta.data.atualizadoEm} />}
 
       <Texto variante="subtitulo" accessibilityRole="header" style={{ marginTop: espaco[4] }}>
         Linha do tempo
       </Texto>
       <View accessibilityRole="list" style={{ gap: espaco[3] }}>
-        <Evento momento={a.abertoEm} descricao="Alerta aberto" />
         {a.linhaDoTempo?.map((e) => (
           <Evento key={`${e.momento}-${e.degrau}`} momento={e.momento} descricao={e.descricao} />
         ))}
@@ -65,7 +73,15 @@ export default function AlertaDetalhe() {
           ))}
         </View>
       )}
-      {reconhecer.isSuccess && <Texto accessibilityRole="alert">Pronto, a rede de cuidado foi avisada.</Texto>}
+      {reconhecer.isSuccess && (
+        <Texto accessibilityRole="alert">
+          {reconhecer.data === 'NA_FILA'
+            ? 'Guardado. Sem internet agora: a rede é avisada assim que a internet voltar.'
+            : reconhecer.data === 'RECUSADO'
+              ? 'O Sombra não aceitou esta resposta. Veja em Ajustes → Sincronização.'
+              : 'Pronto, a rede de cuidado foi avisada.'}
+        </Texto>
+      )}
       {reconhecer.isError && <Texto accessibilityRole="alert">{mensagemDeErro(reconhecer.error)}</Texto>}
     </ScrollView>
   );

@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
-import { BotaoGigante } from '@/componentes/BotaoGigante';
-import { CartaoCasa } from '@/componentes/CartaoCasa';
-import { Farol } from '@/componentes/Farol';
-import { CASAS } from '@/demo/fixtures';
+import { BotaoGigante } from '@/presentation/componentes/BotaoGigante';
+import { CartaoCasa } from '@/presentation/componentes/CartaoCasa';
+import { Farol } from '@/presentation/componentes/Farol';
+import { CASAS } from '@/infrastructure/demo/fixtures';
 import { INFO_DO_NIVEL, NIVEIS } from '@/domain/clima/nivel-de-risco';
 
 const casa = CASAS[0]!;

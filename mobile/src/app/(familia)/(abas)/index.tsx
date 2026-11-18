@@ -2,13 +2,13 @@ import { router } from 'expo-router';
 import { ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useCasas } from '@/api/consultas';
-import { mensagemDeErro } from '@/api/mensagens';
-import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
-import { AvisoOffline } from '@/componentes/AvisoOffline';
-import { CartaoCasa } from '@/componentes/CartaoCasa';
-import { Texto } from '@/componentes/Texto';
-import { espaco, useTema } from '@/tema';
+import { useCasas } from '@/presentation/hooks/consultas';
+import { mensagemDeErro } from '@/presentation/util/mensagens';
+import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao';
+import { AvisoOffline } from '@/presentation/componentes/AvisoOffline';
+import { CartaoCasa } from '@/presentation/componentes/CartaoCasa';
+import { Texto } from '@/presentation/componentes/Texto';
+import { espaco, useTema } from '@/presentation/tema';
 
 export default function Inicio() {
   const tema = useTema();
@@ -25,7 +25,7 @@ export default function Inicio() {
         </Texto>
         <AvisoDemonstracao />
 
-        {casas.data?.origem === 'cache' && <AvisoOffline atualizadoEm={casas.data.atualizadoEm} />}
+        {casas.data?.origem === 'local' && <AvisoOffline atualizadoEm={casas.data.atualizadoEm} />}
         {casas.isPending && <ActivityIndicator accessibilityLabel="Carregando as casas" color={tema.marca} />}
         {casas.isError && <Texto accessibilityRole="alert">{mensagemDeErro(casas.error)}</Texto>}
         {casas.data?.dados.length === 0 && <Texto suave>Nenhuma casa na sua rede de cuidado ainda.</Texto>}

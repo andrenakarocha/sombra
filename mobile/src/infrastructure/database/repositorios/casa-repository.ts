@@ -109,10 +109,11 @@ export class CasaRepositorySqlite implements CasaRepository {
   }
 
   substituirTodas(casas: Domicilio[]) {
-    return this.db.transaction(async () => {
-      for (const casa of casas) await this.gravar(casa);
+    return this.db.transaction(async (tx) => {
+      const r = new CasaRepositorySqlite(tx);
+      for (const casa of casas) await r.gravar(casa);
       const ids = casas.map((c) => c.id);
-      await this.db.run(
+      await tx.run(
         `DELETE FROM casas WHERE id NOT IN (${ids.map(() => '?').join(', ') || "''"})`,
         ids,
       );
@@ -120,7 +121,7 @@ export class CasaRepositorySqlite implements CasaRepository {
   }
 
   salvar(casa: Domicilio) {
-    return this.db.transaction(() => this.gravar(casa));
+    return this.db.transaction((tx) => new CasaRepositorySqlite(tx).gravar(casa));
   }
 
   async listar() {
@@ -133,9 +134,9 @@ export class CasaRepositorySqlite implements CasaRepository {
   }
 
   registrarLeitura(id: string, leitura: Leitura, nivel: NivelDeRisco) {
-    return this.db.transaction(async () => {
-      await this.inserirLeitura(id, leitura);
-      await this.db.run('UPDATE casas SET nivel_atual = ? WHERE id = ?', [nivel, id]);
+    return this.db.transaction(async (tx) => {
+      await new CasaRepositorySqlite(tx).inserirLeitura(id, leitura);
+      await tx.run('UPDATE casas SET nivel_atual = ? WHERE id = ?', [nivel, id]);
     });
   }
 

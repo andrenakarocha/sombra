@@ -114,9 +114,9 @@ export const MIGRACOES: readonly string[] = [
 export async function migrar(db: SqlDatabase) {
   const linha = await db.first<{ user_version: number }>('PRAGMA user_version');
   for (let versao = linha?.user_version ?? 0; versao < MIGRACOES.length; versao++) {
-    await db.transaction(async () => {
-      await db.exec(MIGRACOES[versao]!);
-      await db.exec(`PRAGMA user_version = ${versao + 1}`);
+    await db.transaction(async (tx) => {
+      await tx.exec(MIGRACOES[versao]!);
+      await tx.exec(`PRAGMA user_version = ${versao + 1}`);
     });
   }
 }

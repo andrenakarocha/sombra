@@ -1,7 +1,14 @@
-// Tipos do contrato REST do Core (docs/contratos/core-api.md). Na F1.7 o OpenAPI do Core vira a fonte da verdade.
-// O contrato ainda não detalha Alerta, Morador e a rede de cuidado: os campos marcados com "rascunho" são a leitura do app.
+// Modelos de leitura: o que as telas mostram e o que o contrato REST do Core (docs/contratos/core-api.md) transporta.
+// O contrato ainda não detalha Alerta, Morador e a rede de cuidado: os campos marcados com "rascunho" são a leitura do
+// app. Na F1.7 o OpenAPI do Core vira a fonte da verdade; os schemas Zod da infraestrutura conferem cada resposta.
 
+import type { AcaoDoCuidador, EstadoDoAlerta, EventoDoAlerta } from '@/domain/alerta/alerta-de-calor';
 import type { NivelDeRisco } from '@/domain/clima/nivel-de-risco';
+import type { FatorDeRisco } from '@/domain/morador/fator-de-risco';
+import type { RiscoPersonalizado } from '@/domain/risco/risco-personalizado';
+
+export type { EstadoDoAlerta, EventoDoAlerta, FatorDeRisco };
+export type AcaoDeReconhecimento = AcaoDoCuidador;
 
 export type Leitura = {
   momento: string;
@@ -33,14 +40,6 @@ export type Domicilio = {
 export type Pagina<T> = { itens: T[]; pagina: number; tamanho: number; total: number };
 
 // rascunho
-export type EstadoDoAlerta = 'AGUARDANDO_CHECKIN' | 'ESCALONADO' | 'RECONHECIDO' | 'RESOLVIDO';
-
-export type AcaoDeReconhecimento = 'VOU_LIGAR' | 'ESTOU_INDO' | 'ELA_ESTA_BEM';
-
-// rascunho: a linha do tempo dos degraus (GET /alertas/{id})
-export type EventoDoAlerta = { momento: string; degrau: number; descricao: string };
-
-// rascunho
 export type Alerta = {
   id: string;
   domicilioId: string;
@@ -52,6 +51,8 @@ export type Alerta = {
   abertoEm: string;
   prazo: string;
   linhaDoTempo?: EventoDoAlerta[];
+  // Calculado no app pela máquina de estados (null: não vai haver próximo degrau).
+  minutosAteProximoDegrau?: number | null;
 };
 
 // rascunho: o telefone chega sem máscara só para o Cuidador da própria casa (spec 07)
@@ -63,7 +64,7 @@ export type Morador = {
   cpf: string;
   cartaoSus: string;
   perfilDeSaude: string;
-  fatoresDeRisco: string[];
+  fatoresDeRisco: FatorDeRisco[];
 };
 
 // rascunho
@@ -96,8 +97,6 @@ export type PrivacidadeDaCasa = {
   mensagens: { momento: string; mensagemCidadao: string; fonte: 'IA' | 'template' }[];
 };
 
-export type FatorDeRisco = 'IDADE_AVANCADA' | 'CARDIOPATIA' | 'USO_DE_DIURETICO';
-
 // O que o app manda ao cadastrar ou editar um morador (os dados vão inteiros; a resposta volta mascarada).
 export type NovoMorador = {
   nome: string;
@@ -108,3 +107,18 @@ export type NovoMorador = {
   perfilDeSaude: string;
   fatoresDeRisco: FatorDeRisco[];
 };
+
+// Local-first: as telas sempre leem do aparelho; `origem` diz se o servidor respondeu agora.
+export type Resultado<T> = { dados: T; atualizadoEm: string | null; origem: 'servidor' | 'local' };
+
+export type PainelDaCasa = {
+  casa: Domicilio;
+  leituras24h: Leitura[];
+  moradores: Morador[];
+  rede: ContatoDaRede[];
+  // R3: risco do primeiro morador (a casa do Sombra é de quem mora sozinho).
+  risco: RiscoPersonalizado | null;
+};
+
+// RECUSADO: o Core recusou de vez (foi para a dead-letter da Central de sincronização).
+export type ResultadoDoEnvio = 'ENVIADO' | 'NA_FILA' | 'RECUSADO';

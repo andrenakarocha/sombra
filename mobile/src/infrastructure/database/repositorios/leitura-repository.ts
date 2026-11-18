@@ -9,9 +9,9 @@ export class LeituraRepositorySqlite implements LeituraRepository {
   constructor(private readonly db: SqlDatabase) {}
 
   inserir(domicilioId: string, leituras: Leitura[]) {
-    return this.db.transaction(async () => {
+    return this.db.transaction(async (tx) => {
       for (const l of leituras) {
-        await this.db.run(
+        await tx.run(
           `INSERT OR REPLACE INTO leituras (domicilio_id, momento, temperatura_c, umidade_pct, indice_de_calor_c)
            VALUES (?, ?, ?, ?, ?)`,
           [domicilioId, l.momento, l.temperaturaC, l.umidadePct, l.indiceDeCalorC],

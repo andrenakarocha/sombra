@@ -70,13 +70,14 @@ export class AlertaRepositorySqlite implements AlertaRepository {
   }
 
   salvar(alerta: AlertaDeCalor, apelidoDaCasa: string) {
-    return this.db.transaction(() => this.gravar(alerta, apelidoDaCasa));
+    return this.db.transaction((tx) => new AlertaRepositorySqlite(tx).gravar(alerta, apelidoDaCasa));
   }
 
   substituirTodos(alertas: AlertaSalvo[]) {
-    return this.db.transaction(async () => {
-      await this.db.exec('DELETE FROM alertas');
-      for (const { alerta, apelidoDaCasa } of alertas) await this.gravar(alerta, apelidoDaCasa);
+    return this.db.transaction(async (tx) => {
+      const r = new AlertaRepositorySqlite(tx);
+      await tx.exec('DELETE FROM alertas');
+      for (const { alerta, apelidoDaCasa } of alertas) await r.gravar(alerta, apelidoDaCasa);
     });
   }
 

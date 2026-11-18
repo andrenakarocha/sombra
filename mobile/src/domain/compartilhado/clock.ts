@@ -33,3 +33,10 @@ export function ehNoite(momento: Date): boolean {
   const hora = horaLocal(momento);
   return hora >= 22 || hora < 7;
 }
+
+const horaEMinuto = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
+
+// "15:30": o Core fala em UTC; as mensagens para a pessoa, no horário de São Paulo.
+export function horarioEmSaoPaulo(momento: Date | string): string {
+  return horaEMinuto.format(new Date(momento));
+}
