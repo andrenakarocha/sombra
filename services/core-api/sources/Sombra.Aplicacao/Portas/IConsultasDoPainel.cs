@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Sombra.Aplicacao.Dtos;
@@ -14,16 +15,24 @@ public interface IConsultasDoPainel
 {
     /// <summary>Lista as casas, com o nível atual e o estado da Sentinela.</summary>
     /// <param name="filtro">Nível, bairro e paginação.</param>
+    /// <param name="soEstasCasas">As casas que o Cuidador pode ver, ou nulo para todas (Operador e Admin).</param>
     /// <param name="agora">O instante de referência, para saber quem está online.</param>
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>Uma página de casas, por apelido.</returns>
-    Task<Paginado<DomicilioResumoResposta>> ListarDomiciliosAsync(FiltroDeDomiciliosDto filtro, DateTimeOffset agora, CancellationToken cancellationToken);
+    Task<Paginado<DomicilioResumoResposta>> ListarDomiciliosAsync(FiltroDeDomiciliosDto filtro, IReadOnlyCollection<Guid>? soEstasCasas, DateTimeOffset agora, CancellationToken cancellationToken);
 
     /// <summary>Lista os alertas.</summary>
     /// <param name="filtro">Estado, nível e paginação.</param>
+    /// <param name="soEstasCasas">As casas que o Cuidador pode ver, ou nulo para todas (Operador e Admin).</param>
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>Uma página de alertas, do mais recente ao mais antigo.</returns>
-    Task<Paginado<AlertaResposta>> ListarAlertasAsync(FiltroDeAlertasDto filtro, CancellationToken cancellationToken);
+    Task<Paginado<AlertaResposta>> ListarAlertasAsync(FiltroDeAlertasDto filtro, IReadOnlyCollection<Guid>? soEstasCasas, CancellationToken cancellationToken);
+
+    /// <summary>Busca um alerta.</summary>
+    /// <param name="id">O alerta.</param>
+    /// <param name="cancellationToken">Cancela a consulta.</param>
+    /// <returns>O alerta, ou nulo.</returns>
+    Task<AlertaResposta?> ObterAlertaAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>Lista as leituras de uma casa num período.</summary>
     /// <param name="domicilioId">A casa.</param>

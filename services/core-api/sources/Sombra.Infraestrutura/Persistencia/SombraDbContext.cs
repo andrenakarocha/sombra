@@ -5,6 +5,7 @@ using Sombra.Aplicacao.Portas;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Casas;
 using Sombra.Dominio.Sentinelas;
+using Sombra.Infraestrutura.Autenticacao;
 
 namespace Sombra.Infraestrutura.Persistencia;
 
@@ -29,6 +30,9 @@ public sealed class SombraDbContext : DbContext, IUnitOfWork
 
     /// <summary>Gets os check-ins.</summary>
     public DbSet<CheckIn> CheckIns => Set<CheckIn>();
+
+    /// <summary>Gets as contas de acesso.</summary>
+    public DbSet<Usuario> Usuarios => Set<Usuario>();
 
     /// <summary>Monta as opções do contexto: Npgsql e nomes em snake_case (os mesmos no app e nas migrações).</summary>
     /// <param name="builder">O construtor de opções.</param>

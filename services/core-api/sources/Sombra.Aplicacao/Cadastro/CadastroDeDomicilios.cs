@@ -78,6 +78,20 @@ public sealed class CadastroDeDomicilios
         return DomicilioDetalheResposta.De(casa, ultimaLeitura, ultimoCheckIn, alerta, _relogio.Agora);
     }
 
+    /// <summary>Corrige o apelido e o endereço da casa.</summary>
+    /// <param name="id">A casa.</param>
+    /// <param name="dto">O apelido e o endereço novos.</param>
+    /// <param name="cancellationToken">Cancela o caso de uso.</param>
+    /// <returns>A casa.</returns>
+    public async Task<DomicilioResposta> AtualizarAsync(Guid id, AtualizacaoDeDomicilioDto dto, CancellationToken cancellationToken)
+    {
+        Validacao.Garantir(dto);
+        Domicilio casa = await CasaAsync(id, cancellationToken);
+        casa.AtualizarCadastro(dto.Apelido, Endereco.Criar(dto.Logradouro, dto.Numero, dto.Bairro, dto.Cidade, dto.Uf, dto.Cep));
+        await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
+        return DomicilioResposta.De(casa);
+    }
+
     /// <summary>Remove a casa.</summary>
     /// <param name="id">A casa.</param>
     /// <param name="cancellationToken">Cancela o caso de uso.</param>
@@ -119,6 +133,29 @@ public sealed class CadastroDeDomicilios
         casa.AdicionarMorador(morador);
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
         return MoradorResposta.De(morador, hoje);
+    }
+
+    /// <summary>Um morador, com a PII mascarada.</summary>
+    /// <param name="id">A casa.</param>
+    /// <param name="moradorId">O morador.</param>
+    /// <param name="cancellationToken">Cancela a consulta.</param>
+    /// <returns>O morador.</returns>
+    public async Task<MoradorResposta> ObterMoradorAsync(Guid id, Guid moradorId, CancellationToken cancellationToken)
+        => MoradorResposta.De(MoradorDa(await CasaAsync(id, cancellationToken), moradorId), Hoje);
+
+    /// <summary>Atualiza os fatores de risco declarados de um morador (R3: mudam os limites térmicos da casa).</summary>
+    /// <param name="id">A casa.</param>
+    /// <param name="moradorId">O morador.</param>
+    /// <param name="dto">Os fatores.</param>
+    /// <param name="cancellationToken">Cancela o caso de uso.</param>
+    /// <returns>O morador.</returns>
+    public async Task<MoradorResposta> AtualizarPerfilDoMoradorAsync(Guid id, Guid moradorId, PerfilDoMoradorDto dto, CancellationToken cancellationToken)
+    {
+        Validacao.Garantir(dto);
+        Morador morador = MoradorDa(await CasaAsync(id, cancellationToken), moradorId);
+        morador.AtualizarPerfil(PerfilDeSaude.Com(dto.FatoresDeRisco.Select(FatorDeRisco.DoCodigo)));
+        await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
+        return MoradorResposta.De(morador, Hoje);
     }
 
     /// <summary>Remove um morador (R8: não remove o último de uma casa monitorada).</summary>
@@ -205,6 +242,17 @@ public sealed class CadastroDeDomicilios
         return SentinelaResposta.De(sentinela, _relogio.Agora);
     }
 
+    /// <summary>As Sentinelas da casa e se estão falando com o Core (R9).</summary>
+    /// <param name="id">A casa.</param>
+    /// <param name="cancellationToken">Cancela a consulta.</param>
+    /// <returns>As Sentinelas.</returns>
+    public async Task<IReadOnlyList<SentinelaResposta>> ListarSentinelasAsync(Guid id, CancellationToken cancellationToken)
+    {
+        Domicilio casa = await CasaAsync(id, cancellationToken);
+        DateTimeOffset agora = _relogio.Agora;
+        return [.. casa.Sentinelas.Select(s => SentinelaResposta.De(s, agora))];
+    }
+
     /// <summary>Liga o monitoramento (R8: precisa de morador e de contato).</summary>
     /// <param name="id">A casa.</param>
     /// <param name="cancellationToken">Cancela o caso de uso.</param>
@@ -228,6 +276,9 @@ public sealed class CadastroDeDomicilios
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
         return DomicilioResposta.De(casa);
     }
+
+    private static Morador MoradorDa(Domicilio casa, Guid moradorId)
+        => casa.Moradores.SingleOrDefault(m => m.Id == moradorId) ?? throw new RecursoNaoEncontradoException("Morador não encontrado.");
 
     private async Task<Domicilio> CasaAsync(Guid id, CancellationToken cancellationToken)
         => await _domicilios.ObterAsync(id, cancellationToken) ?? throw new RecursoNaoEncontradoException("Domicílio não encontrado.");

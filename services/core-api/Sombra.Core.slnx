@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/sources/">
     <Project Path="sources/Sombra.Api/Sombra.Api.csproj" />
+    <Project Path="sources/Sombra.Api.IntegrationTests/Sombra.Api.IntegrationTests.csproj" />
     <Project Path="sources/Sombra.Aplicacao/Sombra.Aplicacao.csproj" />
     <Project Path="sources/Sombra.Aplicacao.Tests/Sombra.Aplicacao.Tests.csproj" />
     <Project Path="sources/Sombra.Dominio.Tests/Sombra.Dominio.Tests.csproj" />

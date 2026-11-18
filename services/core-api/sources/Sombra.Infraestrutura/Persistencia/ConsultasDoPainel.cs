@@ -10,6 +10,7 @@ using Sombra.Aplicacao.Portas;
 using Sombra.Aplicacao.Respostas;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Calor;
+using Sombra.Dominio.Casas;
 using Sombra.Dominio.Sentinelas;
 using Sombra.Infraestrutura.Persistencia.Configuracoes;
 
@@ -29,11 +30,12 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
     public ConsultasDoPainel(SombraDbContext db) => _db = db ?? throw new ArgumentNullException(nameof(db));
 
     /// <inheritdoc/>
-    public async Task<Paginado<DomicilioResumoResposta>> ListarDomiciliosAsync(FiltroDeDomiciliosDto filtro, DateTimeOffset agora, CancellationToken cancellationToken)
+    public async Task<Paginado<DomicilioResumoResposta>> ListarDomiciliosAsync(FiltroDeDomiciliosDto filtro, IReadOnlyCollection<Guid>? soEstasCasas, DateTimeOffset agora, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(filtro);
         DateTimeOffset onlineDesde = agora.ToUniversalTime() - _toleranciaOnline;
-        var casas = _db.Domicilios.AsNoTracking().Select(d => new
+        IQueryable<Domicilio> visiveis = soEstasCasas is null ? _db.Domicilios : _db.Domicilios.Where(d => soEstasCasas.Contains(d.Id));
+        var casas = visiveis.AsNoTracking().Select(d => new
         {
             d.Id,
             d.Apelido,
@@ -70,10 +72,15 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
     }
 
     /// <inheritdoc/>
-    public async Task<Paginado<AlertaResposta>> ListarAlertasAsync(FiltroDeAlertasDto filtro, CancellationToken cancellationToken)
+    public async Task<Paginado<AlertaResposta>> ListarAlertasAsync(FiltroDeAlertasDto filtro, IReadOnlyCollection<Guid>? soEstasCasas, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(filtro);
         IQueryable<AlertaDeCalor> alertas = _db.Alertas.AsNoTracking();
+        if (soEstasCasas is not null)
+        {
+            alertas = alertas.Where(a => soEstasCasas.Contains(a.DomicilioId));
+        }
+
         if (filtro.Estado is { } estado)
         {
             alertas = alertas.Where(a => a.Estado == estado);
@@ -91,6 +98,13 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
             .Take(filtro.Tamanho)
             .ToListAsync(cancellationToken);
         return new([.. pagina.Select(AlertaResposta.De)], filtro.Pagina, filtro.Tamanho, total);
+    }
+
+    /// <inheritdoc/>
+    public async Task<AlertaResposta?> ObterAlertaAsync(Guid id, CancellationToken cancellationToken)
+    {
+        AlertaDeCalor? alerta = await _db.Alertas.AsNoTracking().SingleOrDefaultAsync(a => a.Id == id, cancellationToken);
+        return alerta is null ? null : AlertaResposta.De(alerta);
     }
 
     /// <inheritdoc/>

@@ -1,7 +1,9 @@
 # Core API · contrato REST
 
-> **Rascunho da F0.7.** Existe para o app, o painel e o monitor da VM começarem antes do código. Na F1.7, o OpenAPI
-> gerado pelo próprio Core vira a fonte da verdade e o CI o exporta para `core-api.openapi.json`, nesta pasta.
+> **Fonte da verdade desde a F1.7:** [`core-api.openapi.json`](core-api.openapi.json), gerado pelo próprio Core
+> (`make -C services/core-api openapi`). O teste de API falha se a API e esse arquivo divergirem, e o Scalar do Core
+> (`/scalar/v1`) mostra o mesmo documento. Esta página fica como visão geral. As rotas de `/sentinelas/{deviceId}/leituras`
+> e `/ops/alertas` chegam na F1.9, as de `/privacidade` na F2.5 e a de pontos de resfriamento na F3.9.
 
 ## Convenções
 
@@ -66,7 +68,7 @@
   "alertaAberto": {
     "id": "5d2e9a40-1b7c-4f0e-8e1a-3c9b2d7f6a55",
     "tipo": "DE_SENTINELA",
-    "estado": "AGUARDANDO_CHECKIN",
+    "estado": "AGUARDANDO_CHECK_IN",
     "degrau": 0,
     "prazo": "2026-11-18T18:30:00Z"
   }

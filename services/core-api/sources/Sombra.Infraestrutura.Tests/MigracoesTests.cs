@@ -16,7 +16,7 @@ namespace Sombra.Infraestrutura.Tests;
 [TestClass]
 public sealed class MigracoesTests
 {
-    /// <summary>As quatro migrações, em ordem, e a casa da Dona Lurdes inteira no seed.</summary>
+    /// <summary>As migrações, em ordem, e a casa da Dona Lurdes inteira no seed.</summary>
     /// <returns>O teste.</returns>
     [TestMethod]
     public async Task BancoNasceDoZeroComAsMigracoesEOSeed()
@@ -24,7 +24,7 @@ public sealed class MigracoesTests
         Func<SombraDbContext> criar = await BancoDeTeste.NovoBancoAsync();
         await using SombraDbContext db = criar();
         DomicilioRepository casas = new(db);
-        string[] esperadas = ["Inicial", "AlertasECheckIns", "RedeDeCuidadoEIndices", "SeedDemo"];
+        string[] esperadas = ["Inicial", "AlertasECheckIns", "RedeDeCuidadoEIndices", "SeedDemo", "Usuarios"];
 
         string[] aplicadas = [.. (await db.Database.GetAppliedMigrationsAsync()).Select(m => m[(m.IndexOf('_', StringComparison.Ordinal) + 1)..])];
         Domicilio? lurdes = await casas.ObterAsync(Casas.Lurdes, CancellationToken.None);

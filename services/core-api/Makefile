@@ -20,7 +20,7 @@ EF := dotnet tool restore >/dev/null && dotnet ef
 DB_PORTA := $(or $(shell grep -m1 '^DB_PORTA_LOCAL=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-),55432)
 CORE_DB_PASSWORD := $(shell grep -m1 '^CORE_DB_PASSWORD=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-)
 
-.PHONY: help restore build test coverage format format-fix quality migration migration-check db-migrate
+.PHONY: help restore build test coverage format format-fix quality migration migration-check db-migrate openapi
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-11s %s\n", $$1, $$2}'
@@ -60,3 +60,6 @@ db-migrate: restore ## Aplica as migrações no banco local do make up
 	@test -n "$(CORE_DB_PASSWORD)" || { echo "falta CORE_DB_PASSWORD no .env da raiz: rode make env"; exit 1; }
 	@SOMBRA_CORE_DB="Host=127.0.0.1;Port=$(DB_PORTA);Database=sombra_core;Username=sombra_core;Password=$(CORE_DB_PASSWORD)" \
 		$(SDK_RUN) --network host -e SOMBRA_CORE_DB $(SDK_IMAGE) sh -c '$(EF) database update --project sources/Sombra.Infraestrutura'
+
+openapi: build ## Regenera docs/contratos/core-api.openapi.json a partir da API (o teste confere que não diverge)
+	@$(DOTNET_COM_DOCKER) sh -c 'SOMBRA_ATUALIZAR_OPENAPI=1 dotnet test sources/Sombra.Api.IntegrationTests --no-build --nologo -v quiet --filter SaudeVersaoEDocumentacao'

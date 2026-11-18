@@ -324,6 +324,51 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                     b.ToTable("sentinelas", (string)null);
                 });
 
+            modelBuilder.Entity("Sombra.Infraestrutura.Autenticacao.Usuario", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.PrimitiveCollection<Guid[]>("Casas")
+                        .IsRequired()
+                        .HasColumnType("uuid[]")
+                        .HasColumnName("casas");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("nome");
+
+                    b.Property<string>("Papel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("papel");
+
+                    b.Property<string>("SenhaHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("senha_hash");
+
+                    b.HasKey("Id")
+                        .HasName("pk_usuarios");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_usuarios_email");
+
+                    b.ToTable("usuarios", (string)null);
+                });
+
             modelBuilder.Entity("Sombra.Dominio.Alertas.AlertaDePedidoDeAjuda", b =>
                 {
                     b.HasBaseType("Sombra.Dominio.Alertas.AlertaDeCalor");

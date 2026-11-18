@@ -1,0 +1,3550 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Sombra \u00B7 Core API",
+    "description": "Alerta de calor extremo para pessoas idosas que moram sozinhas: casas, moradores, rede de cuidado, Sentinelas, leituras, alertas e check-ins. Entre por POST /api/v1/auth/login e use o token no bot\u00E3o de autentica\u00E7\u00E3o. Erros em ProblemDetails (RFC 9457), PII sempre mascarada, dados de demonstra\u00E7\u00E3o fict\u00EDcios.",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/v1/alertas": {
+      "get": {
+        "tags": [
+          "Alertas"
+        ],
+        "summary": "Lista os alertas, do mais recente ao mais antigo.",
+        "description": "O Cuidador v\u00EA s\u00F3 os das casas dele.",
+        "parameters": [
+          {
+            "name": "Estado",
+            "in": "query",
+            "description": "O estado.",
+            "schema": {
+              "$ref": "#/components/schemas/EstadoDoAlerta"
+            },
+            "example": "ESCALONADO"
+          },
+          {
+            "name": "Nivel",
+            "in": "query",
+            "description": "O n\u00EDvel de risco.",
+            "schema": {
+              "$ref": "#/components/schemas/NivelDeRisco"
+            },
+            "example": "PERIGO"
+          },
+          {
+            "name": "Pagina",
+            "in": "query",
+            "schema": {
+              "maximum": 10000,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Tamanho",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginadoOfAlertaResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginadoOfAlertaResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/alertas/{id}": {
+      "get": {
+        "tags": [
+          "Alertas"
+        ],
+        "summary": "Um alerta.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "O alerta.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "5d2e9a40-1b7c-4f0e-8e1a-3c9b2d7f6a55"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertaResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertaResposta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/alertas/{id}/reconhecer": {
+      "post": {
+        "tags": [
+          "Alertas"
+        ],
+        "summary": "Responde a um alerta.",
+        "description": "\u0022VOU_LIGAR\u0022 e \u0022ESTOU_INDO\u0022 param o escalonamento; \u0022ELA_ESTA_BEM\u0022 encerra. Regra R5: um alerta encerrado n\u00E3o muda mais (422).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "O alerta.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "5d2e9a40-1b7c-4f0e-8e1a-3c9b2d7f6a55"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReconhecimentoDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReconhecimentoDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/ReconhecimentoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertaResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertaResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Autentica\u00E7\u00E3o"
+        ],
+        "summary": "Entra e recebe o token.",
+        "description": "O token vale 8 horas. O login tem um limite pr\u00F3prio de tentativas por minuto, contra for\u00E7a bruta.",
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        }
+      }
+    },
+    "/api/v1/domicilios/{id}/rede-de-cuidado": {
+      "get": {
+        "tags": [
+          "Rede de cuidado e rotina"
+        ],
+        "summary": "A rede de cuidado, na ordem de escalonamento.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedeDeCuidadoResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedeDeCuidadoResposta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Rede de cuidado e rotina"
+        ],
+        "summary": "Substitui a rede de cuidado inteira.",
+        "description": "D13: o primeiro FAMILIAR recebe o lembrete leve, o primeiro VIZINHO o \u0022pode dar uma olhada?\u0022, e a rede toda o alerta.\nRegra R8: at\u00E9 cinco contatos, sem telefone repetido, e uma casa monitorada n\u00E3o fica sem nenhum.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedeDeCuidadoDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedeDeCuidadoDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/RedeDeCuidadoDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedeDeCuidadoResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedeDeCuidadoResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}/rotina": {
+      "get": {
+        "tags": [
+          "Rede de cuidado e rotina"
+        ],
+        "summary": "A rotina combinada: check-in di\u00E1rio e lembrete de \u00E1gua.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotinaResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotinaResposta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Rede de cuidado e rotina"
+        ],
+        "summary": "Substitui a rotina.",
+        "description": "Regras R11 e R12: o check-in di\u00E1rio \u00E9 opcional e nunca entre 22h e 7h; esquecer gera s\u00F3 um lembrete leve.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RotinaDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RotinaDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/RotinaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotinaResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RotinaResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios": {
+      "get": {
+        "tags": [
+          "Domic\u00EDlios"
+        ],
+        "summary": "Lista as casas.",
+        "description": "O Cuidador v\u00EA s\u00F3 as casas dele; Operador e Admin veem todas. Filtra pelo n\u00EDvel da \u00FAltima leitura e pelo bairro.",
+        "parameters": [
+          {
+            "name": "Nivel",
+            "in": "query",
+            "description": "O n\u00EDvel atual (o da \u00FAltima leitura).",
+            "schema": {
+              "$ref": "#/components/schemas/NivelDeRisco"
+            },
+            "example": "PERIGO"
+          },
+          {
+            "name": "Bairro",
+            "in": "query",
+            "description": "O bairro.",
+            "schema": {
+              "maxLength": 60,
+              "minLength": 0,
+              "type": "string"
+            },
+            "example": "Santana"
+          },
+          {
+            "name": "Pagina",
+            "in": "query",
+            "schema": {
+              "maximum": 10000,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Tamanho",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginadoOfDomicilioResumoResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginadoOfDomicilioResumoResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Domic\u00EDlios"
+        ],
+        "summary": "Cadastra uma casa.",
+        "description": "A casa nasce sem monitoramento. Quando quem cadastra \u00E9 um Cuidador, ele passa a ter acesso a ela.",
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoDomicilioDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoDomicilioDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoDomicilioDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}": {
+      "get": {
+        "tags": [
+          "Domic\u00EDlios"
+        ],
+        "summary": "A vis\u00E3o da casa.",
+        "description": "N\u00EDvel atual, \u00FAltima leitura, Sentinela, \u00FAltimo check-in e o alerta aberto mais importante.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioDetalheResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioDetalheResposta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Domic\u00EDlios"
+        ],
+        "summary": "Corrige o apelido e o endere\u00E7o.",
+        "description": "A regi\u00E3o clim\u00E1tica n\u00E3o muda: ela decide qual esta\u00E7\u00E3o atende a casa.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AtualizacaoDeDomicilioDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AtualizacaoDeDomicilioDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/AtualizacaoDeDomicilioDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Domic\u00EDlios"
+        ],
+        "summary": "Remove a casa.",
+        "description": "Moradores, Sentinela, leituras, alertas e check-ins saem junto.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}/monitoramento": {
+      "post": {
+        "tags": [
+          "Domic\u00EDlios"
+        ],
+        "summary": "Liga o monitoramento.",
+        "description": "Regra R8: precisa de pelo menos um morador e um contato de cuidado.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioResposta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Domic\u00EDlios"
+        ],
+        "summary": "Desliga o monitoramento.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DomicilioResposta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}/check-ins": {
+      "post": {
+        "tags": [
+          "Domic\u00EDlios"
+        ],
+        "summary": "Registra um \u0022estou bem\u0022 ou um \u0022preciso de ajuda\u0022.",
+        "description": "O \u0022estou bem\u0022 encerra o alerta que pede resposta (caminho A). O \u0022preciso de ajuda\u0022 avisa a rede toda na hora (R7),\nno alerta que j\u00E1 estiver aberto ou num pedido de ajuda novo (R4).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoCheckInDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoCheckInDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoCheckInDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}/moradores": {
+      "get": {
+        "tags": [
+          "Moradores"
+        ],
+        "summary": "Lista os moradores.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MoradorResposta"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MoradorResposta"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Moradores"
+        ],
+        "summary": "Cadastra um morador.",
+        "description": "Regra R1: CPF e Cart\u00E3o SUS v\u00E1lidos pelo d\u00EDgito verificador, sem CPF repetido na casa. No m\u00E1ximo quatro moradores.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoMoradorDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoMoradorDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoMoradorDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoradorResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoradorResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}/moradores/{moradorId}": {
+      "get": {
+        "tags": [
+          "Moradores"
+        ],
+        "summary": "Um morador.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          },
+          {
+            "name": "moradorId",
+            "in": "path",
+            "description": "O morador.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "c1a8e2f4-7b3d-4e9a-8f2c-6d5b4a3e2f10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoradorResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoradorResposta"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Moradores"
+        ],
+        "summary": "Atualiza os fatores de risco declarados.",
+        "description": "Regra R3: os fatores reduzem os limites t\u00E9rmicos da casa. A idade avan\u00E7ada vem da data de nascimento.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          },
+          {
+            "name": "moradorId",
+            "in": "path",
+            "description": "O morador.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "c1a8e2f4-7b3d-4e9a-8f2c-6d5b4a3e2f10"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerfilDoMoradorDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerfilDoMoradorDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/PerfilDoMoradorDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoradorResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoradorResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Moradores"
+        ],
+        "summary": "Remove um morador.",
+        "description": "Regra R8: o \u00FAltimo morador de uma casa monitorada s\u00F3 sai depois de desligar o monitoramento.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          },
+          {
+            "name": "moradorId",
+            "in": "path",
+            "description": "O morador.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "c1a8e2f4-7b3d-4e9a-8f2c-6d5b4a3e2f10"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/painel/resumo": {
+      "get": {
+        "tags": [
+          "Painel"
+        ],
+        "summary": "O resumo do painel e os indicadores de impacto.",
+        "description": "Casas monitoradas, alertas ativos por n\u00EDvel, mediana at\u00E9 o \u0022estou bem\u0022, alertas resolvidos antes de chamar a rede toda,\nalarmes desnecess\u00E1rios, escalonamentos de hoje por degrau, Sentinelas offline e alertas da semana por bairro.",
+        "responses": {
+          "200": {
+            "description": "O resumo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PainelResumoResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PainelResumoResposta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}/sentinelas": {
+      "get": {
+        "tags": [
+          "Sentinelas e leituras"
+        ],
+        "summary": "As Sentinelas da casa e se est\u00E3o online.",
+        "description": "Regra R9: a Sentinela fica offline depois de tr\u00EAs telemetrias perdidas (30 segundos).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SentinelaResposta"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SentinelaResposta"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Sentinelas e leituras"
+        ],
+        "summary": "Vincula a Sentinela da casa.",
+        "description": "Uma Sentinela por casa, e uma casa por Sentinela (409 se ela j\u00E1 for de outra casa).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaSentinelaDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaSentinelaDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaSentinelaDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentinelaResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentinelaResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}/leituras": {
+      "get": {
+        "tags": [
+          "Sentinelas e leituras"
+        ],
+        "summary": "As leituras de um per\u00EDodo, da mais recente \u00E0 mais antiga.",
+        "description": "O per\u00EDodo \u00E9 fechado no come\u00E7o e aberto no fim. O \u00EDndice de calor \u00E9 o calculado pelo Core.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          },
+          {
+            "name": "De",
+            "in": "query",
+            "description": "O come\u00E7o do per\u00EDodo.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2026-11-18T00:00:00Z"
+          },
+          {
+            "name": "Ate",
+            "in": "query",
+            "description": "O fim do per\u00EDodo.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2026-11-19T00:00:00Z"
+          },
+          {
+            "name": "Pagina",
+            "in": "query",
+            "schema": {
+              "maximum": 10000,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Tamanho",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginadoOfLeituraResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginadoOfLeituraResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/health/live": {
+      "get": {
+        "tags": [
+          "Sistema"
+        ],
+        "summary": "O processo est\u00E1 vivo.",
+        "description": "N\u00E3o consulta nada: serve para o systemd e o compose saberem se o processo responde.",
+        "responses": {
+          "200": {
+            "description": "Sempre \u0060Healthy\u0060.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaudeResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaudeResposta"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "Sistema"
+        ],
+        "summary": "O Core est\u00E1 pronto para atender.",
+        "description": "Confere o banco (o broker MQTT entra na F1.9). Responde 503 quando alguma depend\u00EAncia falha.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaudeResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaudeResposta"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaudeResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaudeResposta"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "tags": [
+          "Sistema"
+        ],
+        "summary": "A vers\u00E3o em execu\u00E7\u00E3o.",
+        "responses": {
+          "200": {
+            "description": "Vers\u00E3o, commit e data do build.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersaoResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersaoResposta"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AcaoDoCuidador": {
+        "enum": [
+          "VOU_LIGAR",
+          "ESTOU_INDO",
+          "ELA_ESTA_BEM",
+          null
+        ]
+      },
+      "AlertaResposta": {
+        "required": [
+          "id",
+          "domicilioId",
+          "tipo",
+          "estado",
+          "nivel",
+          "degrau",
+          "abertoEm",
+          "prazo",
+          "encerradoEm",
+          "mensagemAoMorador"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "O identificador.",
+            "format": "uuid"
+          },
+          "domicilioId": {
+            "type": "string",
+            "description": "A casa.",
+            "format": "uuid"
+          },
+          "tipo": {
+            "type": "string",
+            "description": "O tipo: \u0060PREVENTIVO\u0060, \u0060DE_SENTINELA\u0060 ou \u0060PEDIDO_DE_AJUDA\u0060."
+          },
+          "estado": {
+            "description": "O estado atual.",
+            "$ref": "#/components/schemas/EstadoDoAlerta"
+          },
+          "nivel": {
+            "description": "O n\u00EDvel de risco atual.",
+            "$ref": "#/components/schemas/NivelDeRisco"
+          },
+          "degrau": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "O degrau do escalonamento, de 0 a 3.",
+            "format": "int32"
+          },
+          "abertoEm": {
+            "type": "string",
+            "description": "Quando foi aberto.",
+            "format": "date-time"
+          },
+          "prazo": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "O prazo do \u0022estou bem\u0022, quando o tipo pede.",
+            "format": "date-time"
+          },
+          "encerradoEm": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Quando foi encerrado.",
+            "format": "date-time"
+          },
+          "mensagemAoMorador": {
+            "type": "string",
+            "description": "O texto da tela da Sentinela, sem dado pessoal."
+          }
+        },
+        "description": "Um alerta e onde ele est\u00E1 na m\u00E1quina de estados."
+      },
+      "AtualizacaoDeDomicilioDto": {
+        "required": [
+          "apelido",
+          "logradouro",
+          "numero",
+          "bairro",
+          "cidade",
+          "uf",
+          "cep"
+        ],
+        "type": "object",
+        "properties": {
+          "apelido": {
+            "examples": [
+              "Casa da Dona Lurdes"
+            ],
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string",
+            "description": "Como a fam\u00EDlia chama a casa."
+          },
+          "logradouro": {
+            "examples": [
+              "Rua das Flores"
+            ],
+            "maxLength": 120,
+            "minLength": 0,
+            "type": "string",
+            "description": "O logradouro."
+          },
+          "numero": {
+            "examples": [
+              12
+            ],
+            "maxLength": 10,
+            "minLength": 0,
+            "type": "string",
+            "description": "O n\u00FAmero."
+          },
+          "bairro": {
+            "examples": [
+              "Santana"
+            ],
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string",
+            "description": "O bairro."
+          },
+          "cidade": {
+            "examples": [
+              "S\u00E3o Paulo"
+            ],
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string",
+            "description": "A cidade."
+          },
+          "uf": {
+            "examples": [
+              "SP"
+            ],
+            "maxLength": 2,
+            "minLength": 2,
+            "type": "string",
+            "description": "A UF."
+          },
+          "cep": {
+            "examples": [
+              "02012-000"
+            ],
+            "maxLength": 9,
+            "minLength": 0,
+            "type": "string",
+            "description": "O CEP, com ou sem h\u00EDfen."
+          }
+        },
+        "description": "A corre\u00E7\u00E3o do cadastro da casa: apelido e endere\u00E7o (a regi\u00E3o clim\u00E1tica n\u00E3o muda)."
+      },
+      "CheckInResposta": {
+        "required": [
+          "id",
+          "momento",
+          "origem",
+          "situacao",
+          "alerta"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "O identificador do check-in.",
+            "format": "uuid"
+          },
+          "momento": {
+            "type": "string",
+            "description": "Quando foi feito, em UTC.",
+            "format": "date-time"
+          },
+          "origem": {
+            "description": "De onde veio.",
+            "$ref": "#/components/schemas/OrigemDoCheckIn"
+          },
+          "situacao": {
+            "description": "O que a pessoa disse.",
+            "$ref": "#/components/schemas/SituacaoDoCheckIn"
+          },
+          "alerta": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "O alerta afetado, se houve.",
+                "$ref": "#/components/schemas/AlertaResposta"
+              }
+            ]
+          }
+        },
+        "description": "O resultado de um check-in: ele, e o alerta que ele encerrou ou abriu."
+      },
+      "ContatoDto": {
+        "required": [
+          "nome",
+          "telefone",
+          "papel"
+        ],
+        "type": "object",
+        "properties": {
+          "nome": {
+            "examples": [
+              "Ana (filha)"
+            ],
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string",
+            "description": "O nome ou apelido do contato."
+          },
+          "telefone": {
+            "examples": [
+              "(11) 98765-4321"
+            ],
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string",
+            "description": "O telefone com DDD."
+          },
+          "papel": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "O papel no escalonamento.",
+                "examples": [
+                  "FAMILIAR"
+                ],
+                "$ref": "#/components/schemas/PapelDoContato"
+              }
+            ]
+          }
+        },
+        "description": "Um contato da rede de cuidado."
+      },
+      "ContatoResposta": {
+        "required": [
+          "nome",
+          "telefone",
+          "papel"
+        ],
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "O nome ou apelido."
+          },
+          "telefone": {
+            "type": "string",
+            "description": "O telefone mascarado."
+          },
+          "papel": {
+            "description": "O papel no escalonamento.",
+            "$ref": "#/components/schemas/PapelDoContato"
+          }
+        },
+        "description": "Um contato da rede de cuidado, com o telefone mascarado."
+      },
+      "DomicilioDetalheResposta": {
+        "required": [
+          "id",
+          "apelido",
+          "bairro",
+          "regiaoClimatica",
+          "monitorado",
+          "nivelAtual",
+          "ultimaLeitura",
+          "sentinela",
+          "ultimoCheckIn",
+          "alertaAberto"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "O identificador.",
+            "format": "uuid"
+          },
+          "apelido": {
+            "type": "string",
+            "description": "Como a fam\u00EDlia chama a casa."
+          },
+          "bairro": {
+            "type": "string",
+            "description": "O bairro."
+          },
+          "regiaoClimatica": {
+            "type": "string",
+            "description": "O c\u00F3digo da regi\u00E3o clim\u00E1tica."
+          },
+          "monitorado": {
+            "type": "boolean",
+            "description": "Se o monitoramento est\u00E1 ligado."
+          },
+          "nivelAtual": {
+            "description": "O n\u00EDvel da \u00FAltima leitura, ou normal quando ainda n\u00E3o h\u00E1 leitura.",
+            "$ref": "#/components/schemas/NivelDeRisco"
+          },
+          "ultimaLeitura": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "A \u00FAltima leitura da Sentinela.",
+                "$ref": "#/components/schemas/LeituraResposta"
+              }
+            ]
+          },
+          "sentinela": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "A Sentinela vinculada.",
+                "$ref": "#/components/schemas/SentinelaResposta"
+              }
+            ]
+          },
+          "ultimoCheckIn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Quando foi o \u00FAltimo check-in.",
+            "format": "date-time"
+          },
+          "alertaAberto": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "O alerta aberto mais importante (o que pede resposta vem antes do preventivo).",
+                "$ref": "#/components/schemas/AlertaResposta"
+              }
+            ]
+          }
+        },
+        "description": "A vis\u00E3o da casa para o app e o painel (contrato \u0060GET /domicilios/{id}\u0060)."
+      },
+      "DomicilioResposta": {
+        "required": [
+          "id",
+          "apelido",
+          "bairro",
+          "regiaoClimatica",
+          "monitorado"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "O identificador.",
+            "format": "uuid"
+          },
+          "apelido": {
+            "type": "string",
+            "description": "Como a fam\u00EDlia chama a casa."
+          },
+          "bairro": {
+            "type": "string",
+            "description": "O bairro."
+          },
+          "regiaoClimatica": {
+            "type": "string",
+            "description": "O c\u00F3digo da regi\u00E3o clim\u00E1tica."
+          },
+          "monitorado": {
+            "type": "boolean",
+            "description": "Se o monitoramento est\u00E1 ligado."
+          }
+        },
+        "description": "A casa, sem o endere\u00E7o completo: s\u00F3 o bairro sai da API."
+      },
+      "DomicilioResumoResposta": {
+        "required": [
+          "id",
+          "apelido",
+          "bairro",
+          "monitorado",
+          "nivelAtual",
+          "sentinelaOnline",
+          "alertaAberto"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "O identificador.",
+            "format": "uuid"
+          },
+          "apelido": {
+            "type": "string",
+            "description": "Como a fam\u00EDlia chama a casa."
+          },
+          "bairro": {
+            "type": "string",
+            "description": "O bairro."
+          },
+          "monitorado": {
+            "type": "boolean",
+            "description": "Se o monitoramento est\u00E1 ligado."
+          },
+          "nivelAtual": {
+            "description": "O n\u00EDvel da \u00FAltima leitura, ou normal sem leitura.",
+            "$ref": "#/components/schemas/NivelDeRisco"
+          },
+          "sentinelaOnline": {
+            "type": "boolean",
+            "description": "Se a Sentinela falou nos \u00FAltimos 30 segundos (R9)."
+          },
+          "alertaAberto": {
+            "type": "boolean",
+            "description": "Se h\u00E1 algum alerta aberto."
+          }
+        },
+        "description": "Uma casa na lista do painel, sem dado pessoal al\u00E9m do apelido e do bairro."
+      },
+      "EstadoDoAlerta": {
+        "enum": [
+          "INFORMATIVO",
+          "AGUARDANDO_CHECK_IN",
+          "ESCALONADO",
+          "RECONHECIDO",
+          "RESOLVIDO",
+          "EXPIRADO"
+        ],
+        "description": "Os estados de um alerta (regra R5)."
+      },
+      "LeituraResposta": {
+        "required": [
+          "momento",
+          "temperaturaC",
+          "umidadePct",
+          "indiceDeCalorC",
+          "nivel"
+        ],
+        "type": "object",
+        "properties": {
+          "momento": {
+            "type": "string",
+            "description": "O instante da medi\u00E7\u00E3o, em UTC.",
+            "format": "date-time"
+          },
+          "temperaturaC": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "A temperatura, em \u00B0C.",
+            "format": "double"
+          },
+          "umidadePct": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "A umidade relativa, em %.",
+            "format": "double"
+          },
+          "indiceDeCalorC": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "O \u00EDndice de calor, em \u00B0C, com duas casas.",
+            "format": "double"
+          },
+          "nivel": {
+            "description": "O n\u00EDvel pelos limites pessoais da casa.",
+            "$ref": "#/components/schemas/NivelDeRisco"
+          }
+        },
+        "description": "Uma leitura da Sentinela, com o \u00EDndice de calor calculado pelo Core."
+      },
+      "LoginDto": {
+        "required": [
+          "email",
+          "senha"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "examples": [
+              "ana.filha@demo.sombra"
+            ],
+            "maxLength": 120,
+            "minLength": 0,
+            "type": "string",
+            "description": "O e-mail da conta."
+          },
+          "senha": {
+            "maxLength": 128,
+            "minLength": 8,
+            "type": "string",
+            "description": "A senha (nunca vai para log, resposta ou banco: o banco guarda s\u00F3 o hash)."
+          }
+        },
+        "description": "As credenciais do login."
+      },
+      "MoradorResposta": {
+        "required": [
+          "id",
+          "nome",
+          "idade",
+          "cpf",
+          "cartaoSus",
+          "perfilDeSaude",
+          "fatoresDeRisco"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "O identificador.",
+            "format": "uuid"
+          },
+          "nome": {
+            "type": "string",
+            "description": "O nome."
+          },
+          "idade": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "A idade em anos completos.",
+            "format": "int32"
+          },
+          "cpf": {
+            "type": "string",
+            "description": "O CPF mascarado."
+          },
+          "cartaoSus": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "O Cart\u00E3o SUS mascarado, quando houver."
+          },
+          "perfilDeSaude": {
+            "type": "string",
+            "description": "Sempre \u0060[DADO DE SA\u00DADE PROTEGIDO]\u0060."
+          },
+          "fatoresDeRisco": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Os c\u00F3digos dos fatores que valem hoje, inclusive a idade avan\u00E7ada."
+          }
+        },
+        "description": "Um morador, com CPF, Cart\u00E3o SUS e sa\u00FAde mascarados (spec 07). Os fatores saem s\u00F3 como c\u00F3digo."
+      },
+      "NivelDeRisco": {
+        "enum": [
+          "NORMAL",
+          "ATENCAO",
+          "CAUTELA_EXTREMA",
+          "PERIGO",
+          "PERIGO_EXTREMO"
+        ],
+        "description": "Os cinco n\u00EDveis de calor do contrato (docs/contratos/niveis-de-risco.md), do mais leve ao mais grave."
+      },
+      "NovaSentinelaDto": {
+        "required": [
+          "deviceId"
+        ],
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "examples": [
+              "snt-7f3a9c"
+            ],
+            "pattern": "^snt-[0-9a-f]{6}$",
+            "type": "string",
+            "description": "O identificador p\u00FAblico da Sentinela (ex.: \u0060snt-7f3a9c\u0060)."
+          }
+        },
+        "description": "O v\u00EDnculo de uma Sentinela com a casa."
+      },
+      "NovoCheckInDto": {
+        "required": [
+          "origem",
+          "situacao"
+        ],
+        "type": "object",
+        "properties": {
+          "origem": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "De onde veio.",
+                "examples": [
+                  "APP"
+                ],
+                "$ref": "#/components/schemas/OrigemDoCheckIn"
+              }
+            ]
+          },
+          "situacao": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "O que a pessoa disse.",
+                "examples": [
+                  "ESTOU_BEM"
+                ],
+                "$ref": "#/components/schemas/SituacaoDoCheckIn"
+              }
+            ]
+          }
+        },
+        "description": "Um \u0022estou bem\u0022 ou \u0022preciso de ajuda\u0022."
+      },
+      "NovoDomicilioDto": {
+        "required": [
+          "apelido",
+          "logradouro",
+          "numero",
+          "bairro",
+          "cidade",
+          "uf",
+          "cep",
+          "regiaoClimatica"
+        ],
+        "type": "object",
+        "properties": {
+          "apelido": {
+            "examples": [
+              "Casa da Dona Lurdes"
+            ],
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string",
+            "description": "Como a fam\u00EDlia chama a casa (ex.: \u0022Casa da Dona Lurdes\u0022)."
+          },
+          "logradouro": {
+            "examples": [
+              "Rua das Flores"
+            ],
+            "maxLength": 120,
+            "minLength": 0,
+            "type": "string",
+            "description": "O logradouro."
+          },
+          "numero": {
+            "examples": [
+              12
+            ],
+            "maxLength": 10,
+            "minLength": 0,
+            "type": "string",
+            "description": "O n\u00FAmero."
+          },
+          "bairro": {
+            "examples": [
+              "Santana"
+            ],
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string",
+            "description": "O bairro."
+          },
+          "cidade": {
+            "examples": [
+              "S\u00E3o Paulo"
+            ],
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string",
+            "description": "A cidade."
+          },
+          "uf": {
+            "examples": [
+              "SP"
+            ],
+            "maxLength": 2,
+            "minLength": 2,
+            "type": "string",
+            "description": "A UF."
+          },
+          "cep": {
+            "examples": [
+              "02012-000"
+            ],
+            "maxLength": 9,
+            "minLength": 0,
+            "type": "string",
+            "description": "O CEP, com ou sem h\u00EDfen."
+          },
+          "regiaoClimatica": {
+            "examples": [
+              "SP-MIRANTE"
+            ],
+            "maxLength": 33,
+            "minLength": 0,
+            "type": "string",
+            "description": "O c\u00F3digo da regi\u00E3o clim\u00E1tica (ex.: \u0060SP-MIRANTE\u0060)."
+          }
+        },
+        "description": "O corpo do cadastro de uma casa. O formato do endere\u00E7o e da regi\u00E3o \u00E9 regra do dom\u00EDnio."
+      },
+      "NovoMoradorDto": {
+        "required": [
+          "nome",
+          "dataDeNascimento",
+          "cpf",
+          "fatoresDeRisco"
+        ],
+        "type": "object",
+        "properties": {
+          "nome": {
+            "examples": [
+              "Lurdes A."
+            ],
+            "maxLength": 80,
+            "minLength": 0,
+            "type": "string",
+            "description": "O nome."
+          },
+          "dataDeNascimento": {
+            "examples": [
+              "1948-04-02"
+            ],
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "A data de nascimento.",
+            "format": "date"
+          },
+          "cpf": {
+            "examples": [
+              "348.757.636-89"
+            ],
+            "maxLength": 14,
+            "minLength": 0,
+            "type": "string",
+            "description": "O CPF, com ou sem pontua\u00E7\u00E3o."
+          },
+          "cartaoSus": {
+            "examples": [
+              703093750001765
+            ],
+            "maxLength": 18,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "O Cart\u00E3o SUS, quando houver."
+          },
+          "fatoresDeRisco": {
+            "examples": [
+              [
+                "USO_DE_DIURETICO"
+              ]
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Os c\u00F3digos dos fatores de risco declarados (ex.: \u0060CARDIOPATIA\u0060); lista vazia quando n\u00E3o h\u00E1."
+          }
+        },
+        "description": "O corpo do cadastro de um morador. CPF e Cart\u00E3o SUS s\u00E3o conferidos pelo d\u00EDgito verificador no dom\u00EDnio (R1)."
+      },
+      "OrigemDoCheckIn": {
+        "enum": [
+          "BOTAO_SENTINELA",
+          "APP",
+          "CUIDADOR"
+        ],
+        "description": "De onde veio o check-in."
+      },
+      "PaginadoOfAlertaResposta": {
+        "required": [
+          "itens",
+          "pagina",
+          "tamanho",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AlertaResposta"
+            },
+            "description": "Os itens desta p\u00E1gina."
+          },
+          "pagina": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "A p\u00E1gina, a partir de 1.",
+            "format": "int32"
+          },
+          "tamanho": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "O tamanho pedido.",
+            "format": "int32"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantos itens existem com estes filtros.",
+            "format": "int32"
+          }
+        },
+        "description": "Uma p\u00E1gina de resultados (contrato: \u0060itens\u0060, \u0060pagina\u0060, \u0060tamanho\u0060, \u0060total\u0060)."
+      },
+      "PaginadoOfDomicilioResumoResposta": {
+        "required": [
+          "itens",
+          "pagina",
+          "tamanho",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DomicilioResumoResposta"
+            },
+            "description": "Os itens desta p\u00E1gina."
+          },
+          "pagina": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "A p\u00E1gina, a partir de 1.",
+            "format": "int32"
+          },
+          "tamanho": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "O tamanho pedido.",
+            "format": "int32"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantos itens existem com estes filtros.",
+            "format": "int32"
+          }
+        },
+        "description": "Uma p\u00E1gina de resultados (contrato: \u0060itens\u0060, \u0060pagina\u0060, \u0060tamanho\u0060, \u0060total\u0060)."
+      },
+      "PaginadoOfLeituraResposta": {
+        "required": [
+          "itens",
+          "pagina",
+          "tamanho",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LeituraResposta"
+            },
+            "description": "Os itens desta p\u00E1gina."
+          },
+          "pagina": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "A p\u00E1gina, a partir de 1.",
+            "format": "int32"
+          },
+          "tamanho": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "O tamanho pedido.",
+            "format": "int32"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantos itens existem com estes filtros.",
+            "format": "int32"
+          }
+        },
+        "description": "Uma p\u00E1gina de resultados (contrato: \u0060itens\u0060, \u0060pagina\u0060, \u0060tamanho\u0060, \u0060total\u0060)."
+      },
+      "PainelResumoResposta": {
+        "required": [
+          "casasMonitoradas",
+          "alertasAtivos",
+          "tempoMedianoAteCheckInMin",
+          "alertasResolvidosSemUltimoDegrauPct",
+          "alarmesDesnecessariosSemana",
+          "escalonamentosHojePorDegrau",
+          "sentinelasOffline",
+          "alertasAtivosPorNivel",
+          "alertasDaSemanaPorBairro"
+        ],
+        "type": "object",
+        "properties": {
+          "casasMonitoradas": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantas casas t\u00EAm o monitoramento ligado.",
+            "format": "int32"
+          },
+          "alertasAtivos": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantos alertas est\u00E3o abertos.",
+            "format": "int32"
+          },
+          "tempoMedianoAteCheckInMin": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "Na semana, a mediana dos minutos entre a abertura e o \u0022estou bem\u0022 nos alertas de Sentinela resolvidos.",
+            "format": "double"
+          },
+          "alertasResolvidosSemUltimoDegrauPct": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "Na semana, quantos por cento dos alertas de Sentinela resolvidos terminaram antes de chamar a rede toda.",
+            "format": "double"
+          },
+          "alarmesDesnecessariosSemana": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Na semana, alertas que chamaram a rede toda e terminaram com o cuidador dizendo que estava tudo bem.",
+            "format": "int32"
+          },
+          "escalonamentosHojePorDegrau": {
+            "type": "object",
+            "additionalProperties": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            },
+            "description": "Os alertas abertos hoje (hor\u00E1rio local) pelo degrau mais alto que alcan\u00E7aram, de 1 a 3."
+          },
+          "sentinelasOffline": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Sentinelas de casas monitoradas sem contato nos \u00FAltimos 30 segundos.",
+            "format": "int32"
+          },
+          "alertasAtivosPorNivel": {
+            "type": "object",
+            "additionalProperties": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            },
+            "description": "Os alertas abertos por n\u00EDvel de risco."
+          },
+          "alertasDaSemanaPorBairro": {
+            "type": "object",
+            "additionalProperties": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            },
+            "description": "Os alertas abertos nos \u00FAltimos 7 dias, por bairro."
+          }
+        },
+        "description": "Os n\u00FAmeros do painel e os indicadores de impacto (contrato \u0060GET /painel/resumo\u0060)."
+      },
+      "PapelDoContato": {
+        "enum": [
+          "FAMILIAR",
+          "VIZINHO"
+        ],
+        "description": "O papel de um contato no escalonamento em degraus (D13)."
+      },
+      "PerfilDoMoradorDto": {
+        "required": [
+          "fatoresDeRisco"
+        ],
+        "type": "object",
+        "properties": {
+          "fatoresDeRisco": {
+            "examples": [
+              [
+                "CARDIOPATIA"
+              ]
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Os c\u00F3digos dos fatores (lista vazia quando n\u00E3o h\u00E1)."
+          }
+        },
+        "description": "Os fatores de risco declarados de um morador (a idade avan\u00E7ada vem da data de nascimento)."
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ReconhecimentoDto": {
+        "required": [
+          "acao"
+        ],
+        "type": "object",
+        "properties": {
+          "acao": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "A a\u00E7\u00E3o: vou ligar, estou indo ou ela est\u00E1 bem.",
+                "examples": [
+                  "ESTOU_INDO"
+                ],
+                "$ref": "#/components/schemas/AcaoDoCuidador"
+              }
+            ]
+          }
+        },
+        "description": "A resposta de um cuidador a um alerta."
+      },
+      "RedeDeCuidadoDto": {
+        "required": [
+          "contatos"
+        ],
+        "type": "object",
+        "properties": {
+          "contatos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContatoDto"
+            },
+            "description": "Os contatos, do primeiro ao \u00FAltimo."
+          }
+        },
+        "description": "A rede de cuidado inteira, na ordem em que o escalonamento procura os contatos."
+      },
+      "RedeDeCuidadoResposta": {
+        "required": [
+          "contatos"
+        ],
+        "type": "object",
+        "properties": {
+          "contatos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContatoResposta"
+            },
+            "description": "Os contatos."
+          }
+        },
+        "description": "A rede de cuidado, na ordem de escalonamento."
+      },
+      "RotinaDto": {
+        "required": [
+          "lembreteDeAguaAtivo"
+        ],
+        "type": "object",
+        "properties": {
+          "horarioDoCheckInDiario": {
+            "examples": [
+              "09:00:00"
+            ],
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "O hor\u00E1rio local do check-in di\u00E1rio, ou nulo para n\u00E3o ter.",
+            "format": "time"
+          },
+          "lembreteDeAguaAtivo": {
+            "examples": [
+              true
+            ],
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "Se o lembrete de \u00E1gua fica ligado."
+          }
+        },
+        "description": "A rotina combinada com a pessoa (R11, R12)."
+      },
+      "RotinaResposta": {
+        "required": [
+          "horarioDoCheckInDiario",
+          "lembreteDeAguaAtivo"
+        ],
+        "type": "object",
+        "properties": {
+          "horarioDoCheckInDiario": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "O hor\u00E1rio local do check-in di\u00E1rio, ou nulo.",
+            "format": "time"
+          },
+          "lembreteDeAguaAtivo": {
+            "type": "boolean",
+            "description": "Se o lembrete de \u00E1gua est\u00E1 ligado."
+          }
+        },
+        "description": "A rotina combinada com a pessoa."
+      },
+      "SaudeResposta": {
+        "required": [
+          "status",
+          "verificacoes"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "O estado geral: \u0060Healthy\u0060, \u0060Degraded\u0060 ou \u0060Unhealthy\u0060."
+          },
+          "verificacoes": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "O estado de cada depend\u00EAncia."
+          }
+        },
+        "description": "O estado de sa\u00FAde de um servi\u00E7o."
+      },
+      "SentinelaResposta": {
+        "required": [
+          "deviceId",
+          "online"
+        ],
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "description": "O identificador p\u00FAblico."
+          },
+          "online": {
+            "type": "boolean",
+            "description": "Se o \u00FAltimo contato \u00E9 recente."
+          }
+        },
+        "description": "A Sentinela e se ela est\u00E1 falando com o Core (R9)."
+      },
+      "SituacaoDoCheckIn": {
+        "enum": [
+          "ESTOU_BEM",
+          "PRECISO_DE_AJUDA"
+        ],
+        "description": "O que a pessoa disse no check-in."
+      },
+      "TokenResposta": {
+        "required": [
+          "token",
+          "expiraEm",
+          "papel",
+          "nome"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "O JWT, para o header \u0060Authorization: Bearer \u2026\u0060."
+          },
+          "expiraEm": {
+            "type": "string",
+            "description": "Quando o token vence.",
+            "format": "date-time"
+          },
+          "papel": {
+            "type": "string",
+            "description": "O papel de acesso."
+          },
+          "nome": {
+            "type": "string",
+            "description": "O nome de exibi\u00E7\u00E3o."
+          }
+        },
+        "description": "O token devolvido pelo login."
+      },
+      "ValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "VersaoResposta": {
+        "required": [
+          "versao",
+          "commit",
+          "construidoEm"
+        ],
+        "type": "object",
+        "properties": {
+          "versao": {
+            "type": "string",
+            "description": "A vers\u00E3o do assembly."
+          },
+          "commit": {
+            "type": "string",
+            "description": "O commit do build."
+          },
+          "construidoEm": {
+            "type": "string",
+            "description": "Quando o build foi feito."
+          }
+        },
+        "description": "A vers\u00E3o em execu\u00E7\u00E3o (o mesmo \u0060commit\u0060 dos logs, \u00A76 do plano)."
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "O token devolvido por POST /api/v1/auth/login.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Alertas"
+    },
+    {
+      "name": "Autentica\u00E7\u00E3o"
+    },
+    {
+      "name": "Rede de cuidado e rotina"
+    },
+    {
+      "name": "Domic\u00EDlios"
+    },
+    {
+      "name": "Moradores"
+    },
+    {
+      "name": "Painel"
+    },
+    {
+      "name": "Sentinelas e leituras"
+    },
+    {
+      "name": "Sistema"
+    }
+  ]
+}
