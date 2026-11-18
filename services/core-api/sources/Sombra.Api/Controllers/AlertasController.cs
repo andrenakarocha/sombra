@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sombra.Api.Autenticacao;
+using Sombra.Api.Composicao;
 using Sombra.Aplicacao.Alertas;
 using Sombra.Aplicacao.Comum;
 using Sombra.Aplicacao.Dtos;
@@ -73,6 +74,7 @@ public sealed class AlertasController : ControllerBase
     /// <param name="cancellationToken">Cancela a requisição.</param>
     /// <returns>O alerta depois da resposta.</returns>
     [HttpPost("{id:guid}/reconhecer")]
+    [Idempotente]
     [Authorize(Roles = Papeis.Cuidador)]
     [ProducesResponseType<AlertaResposta>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]

@@ -58,14 +58,14 @@ public sealed class RegistrarCheckIn
         Domicilio casa = await _domicilios.ObterAsync(domicilioId, cancellationToken)
             ?? throw new RecursoNaoEncontradoException("Domicílio não encontrado.");
 
-        DateTimeOffset agora = _relogio.Agora;
-        CheckIn checkIn = CheckIn.Registrar(casa.Id, agora, dto.Origem.GetValueOrDefault(), dto.Situacao.GetValueOrDefault());
+        CheckIn checkIn = CheckIn.RegistrarTocadoEm(casa.Id, dto.Momento, _relogio.Agora, dto.Origem.GetValueOrDefault(), dto.Situacao.GetValueOrDefault());
         _checkIns.Adicionar(checkIn);
 
+        // O horário que vale é o do toque (R14): um "estou bem" que esperou a rede responde no tempo certo.
         AlertaDeCalor? aberto = await AlertasAbertos.QuePedeRespostaAsync(_alertas, casa.Id, cancellationToken);
         AlertaDeCalor? alerta = checkIn.Situacao == SituacaoDoCheckIn.EstouBem
-            ? ConfirmarEstouBem(aberto, agora, checkIn.Origem)
-            : await PedirAjudaAsync(casa, aberto, agora, cancellationToken);
+            ? ConfirmarEstouBem(aberto, checkIn.Momento, checkIn.Origem)
+            : await PedirAjudaAsync(casa, aberto, checkIn.Momento, cancellationToken);
         if (checkIn.Situacao == SituacaoDoCheckIn.EstouBem && alerta is not null)
         {
             await _avisos.EncerramentoAsync(alerta, cancellationToken);
@@ -75,24 +75,30 @@ public sealed class RegistrarCheckIn
         return new CheckInResposta(checkIn.Id, checkIn.Momento, checkIn.Origem, checkIn.Situacao, alerta is null ? null : AlertaResposta.De(alerta, casa.Apelido));
     }
 
-    private static AlertaDeCalor? ConfirmarEstouBem(AlertaDeCalor? aberto, DateTimeOffset agora, OrigemDoCheckIn origem)
+    // Um "estou bem" de antes de o alerta abrir não responde a ele: a pessoa estava bem antes do calor chegar.
+    private static AlertaDeCalor? ConfirmarEstouBem(AlertaDeCalor? aberto, DateTimeOffset momento, OrigemDoCheckIn origem)
     {
-        aberto?.ConfirmarEstouBem(agora, origem);
+        if (aberto is null || momento < aberto.AbertoEm)
+        {
+            return null;
+        }
+
+        aberto.ConfirmarEstouBem(momento, origem);
         return aberto;
     }
 
-    private async Task<AlertaDeCalor> PedirAjudaAsync(Domicilio casa, AlertaDeCalor? aberto, DateTimeOffset agora, CancellationToken cancellationToken)
+    private async Task<AlertaDeCalor> PedirAjudaAsync(Domicilio casa, AlertaDeCalor? aberto, DateTimeOffset momento, CancellationToken cancellationToken)
     {
         AlertaDeCalor alerta;
         if (aberto is null)
         {
             Leitura? ultima = await _leituras.ObterUltimaAsync(casa.Id, cancellationToken);
-            alerta = AlertaDePedidoDeAjuda.Abrir(casa.Id, ultima?.Nivel ?? NivelDeRisco.Normal, agora);
+            alerta = AlertaDePedidoDeAjuda.Abrir(casa.Id, ultima?.Nivel ?? NivelDeRisco.Normal, momento);
             _alertas.Adicionar(alerta);
         }
         else if (aberto is AlertaDeSentinela deSentinela && deSentinela.Degrau < DegrauDeEscalonamento.AlertaParaARede)
         {
-            deSentinela.PedirAjuda(agora);
+            deSentinela.PedirAjuda(momento);
             alerta = deSentinela;
         }
         else

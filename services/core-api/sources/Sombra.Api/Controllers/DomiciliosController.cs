@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sombra.Api.Autenticacao;
+using Sombra.Api.Composicao;
 using Sombra.Aplicacao.Alertas;
 using Sombra.Aplicacao.Cadastro;
 using Sombra.Aplicacao.Comum;
@@ -153,13 +154,15 @@ public sealed class DomiciliosController : ControllerBase
     /// <summary>Registra um "estou bem" ou um "preciso de ajuda".</summary>
     /// <remarks>
     /// O "estou bem" encerra o alerta que pede resposta (caminho A). O "preciso de ajuda" avisa a rede toda na hora (R7),
-    /// no alerta que já estiver aberto ou num pedido de ajuda novo (R4).
+    /// no alerta que já estiver aberto ou num pedido de ajuda novo (R4). Vindo da fila offline do app, vale o horário do
+    /// toque em <c>momento</c> (R14: nunca no futuro, até 24 horas atrás), e a <c>Idempotency-Key</c> evita contar duas vezes.
     /// </remarks>
     /// <param name="id" example="0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10">A casa.</param>
     /// <param name="dto">A origem e a situação.</param>
     /// <param name="cancellationToken">Cancela a requisição.</param>
     /// <returns>O check-in e o alerta afetado.</returns>
     [HttpPost("{id:guid}/check-ins")]
+    [Idempotente]
     [Authorize(Roles = Acesso.CuidadorOuAdmin, Policy = CasaDoCuidador.Politica)]
     [ProducesResponseType<CheckInResposta>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]

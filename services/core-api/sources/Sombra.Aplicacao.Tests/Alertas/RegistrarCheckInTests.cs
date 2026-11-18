@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sombra.Aplicacao.Alertas;
 using Sombra.Aplicacao.Comum;
 using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Portas;
@@ -10,6 +11,7 @@ using Sombra.Aplicacao.Respostas;
 using Sombra.Aplicacao.Tests.Apoio;
 using Sombra.Dominio.Calor;
 using Sombra.Dominio.Casas;
+using Sombra.Dominio.Comum;
 
 namespace Sombra.Aplicacao.Tests.Alertas;
 
@@ -108,5 +110,35 @@ public sealed class RegistrarCheckInTests
 
         Assert.HasCount(2, vazio.Erros);
         Assert.IsEmpty(cenario.CheckIns.Itens);
+    }
+
+    /// <summary>
+    /// F6.23 e R14: o "estou bem" que esperou a rede vale no horário do toque. O tempo até o check-in sai certo, e um toque
+    /// de antes de o alerta abrir não responde a ele.
+    /// </summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task CheckInDaFilaOfflineValeNoHorarioDoToque()
+    {
+        Cenario cenario = new();
+        Domicilio casa = cenario.CasaMonitorada();
+        await cenario.MedirAsync(36, 60);
+        cenario.Relogio.Avancar(TimeSpan.FromMinutes(40));
+        RegistrarCheckIn checkIn = cenario.RegistrarCheckIn();
+
+        CheckInResposta antesDoAlerta = await checkIn.ExecutarAsync(
+            casa.Id, new NovoCheckInDto { Origem = OrigemDoCheckIn.App, Situacao = SituacaoDoCheckIn.EstouBem, Momento = Cenario.Inicio.AddMinutes(-5) }, CancellationToken.None);
+        CheckInResposta doToque = await checkIn.ExecutarAsync(
+            casa.Id, new NovoCheckInDto { Origem = OrigemDoCheckIn.App, Situacao = SituacaoDoCheckIn.EstouBem, Momento = Cenario.Inicio.AddMinutes(7) }, CancellationToken.None);
+        RegraVioladaException futuro = await Assert.ThrowsExactlyAsync<RegraVioladaException>(() => checkIn.ExecutarAsync(
+            casa.Id, new NovoCheckInDto { Origem = OrigemDoCheckIn.App, Situacao = SituacaoDoCheckIn.EstouBem, Momento = cenario.Relogio.Agora.AddMinutes(5) }, CancellationToken.None));
+
+        Assert.IsNull(antesDoAlerta.Alerta);
+        Assert.AreEqual(Cenario.Inicio.AddMinutes(-5), antesDoAlerta.Momento);
+        Assert.AreEqual(Cenario.Inicio.AddMinutes(7), doToque.Momento);
+        Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, doToque.Alerta?.Estado);
+        Assert.AreEqual(Cenario.Inicio.AddMinutes(7), doToque.Alerta?.EncerradoEm);
+        Assert.AreEqual("Apertou \"estou bem\" no celular.", doToque.Alerta?.LinhaDoTempo[^1].Descricao);
+        Assert.AreEqual("R14", futuro.Regra);
     }
 }

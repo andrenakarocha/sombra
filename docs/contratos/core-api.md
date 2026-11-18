@@ -21,6 +21,9 @@
   `"R5"`) · `429` limite de requisições.
 - **Paginação:** `?pagina=1&tamanho=20` (máximo 100) → `{ "itens": [], "pagina": 1, "tamanho": 20, "total": 57 }`.
 - **Correlação:** o header `X-Correlation-Id` é aceito e devolvido. Sem ele, o Core gera um (§6 do plano).
+- **Idempotência (F6.23):** o check-in e o reconhecer aceitam `Idempotency-Key` (até 100 caracteres). A mesma chave, pelo
+  mesmo usuário e na mesma rota, devolve a mesma resposta por 24 h com `Idempotency-Replayed: true`, sem repetir o efeito;
+  em outra rota, 422 com regra `IDEMPOTENCIA`. Sem a chave, nada muda.
 - **PII:** CPF, Cartão SUS e saúde saem **sempre mascarados**. O telefone (do morador e da rede de cuidado) sai inteiro
   só para o `Cuidador` da própria casa, que liga dali; para os outros papéis, mascarado (spec 07). Máscara do CPF:
   `***.456.***-00` (o bloco do meio e os verificadores).
@@ -47,8 +50,8 @@
 | POST | `/sentinelas/{deviceId}/leituras` | assinatura HMAC | alternativa por HTTP ao MQTT, com o mesmo payload assinado |
 | GET | `/alertas?estado=&nivel=&pagina=` | Cuidador, Operador | alertas com o `apelidoDaCasa` e a linha do tempo (o Cuidador vê só os seus) |
 | GET | `/alertas/{id}` | Cuidador, Operador | alerta com a linha do tempo dos degraus (`momento`, `degrau`, `descricao`) |
-| POST | `/alertas/{id}/reconhecer` | Cuidador | `{"acao": "VOU_LIGAR" \| "ESTOU_INDO" \| "ELA_ESTA_BEM"}` |
-| POST | `/domicilios/{id}/check-ins` | Cuidador | `{"origem": "APP" \| "CUIDADOR", "situacao": "ESTOU_BEM" \| "PRECISO_DE_AJUDA"}` |
+| POST | `/alertas/{id}/reconhecer` | Cuidador | `{"acao": "VOU_LIGAR" \| "ESTOU_INDO" \| "ELA_ESTA_BEM"}`; aceita `Idempotency-Key` |
+| POST | `/domicilios/{id}/check-ins` | Cuidador | `{"origem": "APP" \| "CUIDADOR", "situacao": "ESTOU_BEM" \| "PRECISO_DE_AJUDA", "momento"?}`; o `momento` do toque vale (R14) e aceita `Idempotency-Key` |
 | GET | `/domicilios/{id}/pontos-de-resfriamento?raioKm=` | Cuidador | pontos perto da casa, via Clima, com fallback |
 | GET | `/painel/resumo` | Operador | números do painel e indicadores de impacto |
 | GET | `/privacidade/risco-cidadao` | Operador | farol global e por categoria |

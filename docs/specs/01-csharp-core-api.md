@@ -62,6 +62,10 @@ services/core-api/
 - **R13** · **Carência depois do "estou bem"** (achada no 🔎 da F1.9, com o simulador): por 1 h depois de a pessoa
   confirmar, uma leitura no mesmo nível ou abaixo não abre outro alerta; só um nível mais alto reabre. Sem ela, a casa
   ainda quente pediria o botão de novo a cada 10 s.
+- **R14** · **Check-in da fila offline** (F6.23, D17): o app manda o horário do toque (`momento`), e é ele que vale para
+  encerrar o alerta e medir o tempo até o check-in. Nunca no futuro (tolerância de 2 min para o relógio do celular) e até
+  24 h atrás; um toque de antes de o alerta abrir não responde a ele. Com a `Idempotency-Key` (o `operationId` da fila),
+  o reenvio devolve a mesma resposta sem repetir o efeito, no check-in e no reconhecer.
 
 ## Endpoints (rascunho)
 `POST /auth/login` · CRUD `/domicilios` (filtros `nivel`, `bairro`, paginação) · CRUD `/domicilios/{id}/moradores` · `GET|PUT /domicilios/{id}/rede-de-cuidado` · `GET|PUT /domicilios/{id}/rotina` (check-in diário e lembretes) · `POST /domicilios/{id}/sentinelas` · `GET /domicilios/{id}/leituras?de=&ate=` · `GET /alertas?estado=&nivel=` · `POST /alertas/{id}/reconhecer` · `POST /domicilios/{id}/check-ins` · `GET /domicilios/{id}/pontos-de-resfriamento` (proxy resiliente para o Clima) · `GET /painel/resumo` · `GET /privacidade/risco-cidadao` · `GET /privacidade/eventos` · `POST /ops/alertas` (monitor da VM) · `GET /health/live|ready` · `GET /version` · hub `/hubs/sombra`

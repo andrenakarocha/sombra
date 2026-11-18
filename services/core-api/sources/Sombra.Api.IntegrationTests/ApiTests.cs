@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sombra.Api.Autenticacao;
+using Sombra.Api.Composicao;
 using Sombra.Api.Controllers;
 using Sombra.Api.IntegrationTests.Apoio;
 using Sombra.Aplicacao.Dtos;
@@ -174,10 +176,44 @@ public sealed class ApiTests
 
         Assert.AreEqual(TipoDoAlertaNoApp.DeSentinela, pedido.Alerta.Tipo);
         Assert.AreEqual(3, pedido.Alerta.Degrau);
-        Assert.AreEqual(3, pedido.Alerta.Degrau);
         Assert.IsTrue(daAna.Itens.Any(a => a.Id == pedido.Alerta.Id));
         Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, resolvido.Estado);
         Assert.AreEqual("R5", regra);
+    }
+
+    /// <summary>
+    /// F6.23: a fila offline do app reenvia com a mesma <c>Idempotency-Key</c>. A repetição devolve a mesma resposta, sem
+    /// abrir outro alerta nem virar 422 no reconhecer; a chave em outra rota é recusada, e uma chave malformada também.
+    /// </summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task FilaOfflineNaoRepeteComAMesmaChave()
+    {
+        using HttpClient ana = await Api.ClienteDeAsync(Demo.Ana);
+        DomicilioResposta casa = await (await ana.EnviarAsync(HttpMethod.Post, "/api/v1/domicilios", NovaCasa())).CorpoAsync<DomicilioResposta>(HttpStatusCode.Created);
+        string checkInUrl = $"/api/v1/domicilios/{casa.Id}/check-ins";
+        NovoCheckInDto pedido = new() { Origem = OrigemDoCheckIn.App, Situacao = SituacaoDoCheckIn.PrecisoDeAjuda };
+        string chaveDoPedido = Guid.NewGuid().ToString();
+        string chaveDoReconhecer = Guid.NewGuid().ToString();
+
+        using HttpResponseMessage primeiro = await ComChaveAsync(ana, checkInUrl, pedido, chaveDoPedido);
+        using HttpResponseMessage repetido = await ComChaveAsync(ana, checkInUrl, pedido, chaveDoPedido);
+        CheckInResposta original = await primeiro.CorpoAsync<CheckInResposta>(HttpStatusCode.OK);
+        CheckInResposta repeticao = await repetido.CorpoAsync<CheckInResposta>(HttpStatusCode.OK);
+        string alertaUrl = $"/api/v1/alertas/{original.Alerta?.Id}/reconhecer";
+        ReconhecimentoDto estaBem = new() { Acao = AcaoDoCuidador.ElaEstaBem };
+        using HttpResponseMessage reconhecido = await ComChaveAsync(ana, alertaUrl, estaBem, chaveDoReconhecer);
+        using HttpResponseMessage reenviado = await ComChaveAsync(ana, alertaUrl, estaBem, chaveDoReconhecer);
+        Paginado<AlertaResposta> alertas = await (await ana.GetAsync(new Uri("/api/v1/alertas?tamanho=100", UriKind.Relative))).CorpoAsync<Paginado<AlertaResposta>>(HttpStatusCode.OK);
+
+        Assert.AreEqual(original.Id, repeticao.Id);
+        Assert.IsFalse(primeiro.Headers.Contains(FiltroDeIdempotencia.CabecalhoDeRepeticao));
+        Assert.AreEqual("true", repetido.Headers.GetValues(FiltroDeIdempotencia.CabecalhoDeRepeticao).Single());
+        Assert.AreEqual(1, alertas.Itens.Count(a => a.DomicilioId == casa.Id));
+        Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, (await reconhecido.CorpoAsync<AlertaResposta>(HttpStatusCode.OK)).Estado);
+        Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, (await reenviado.CorpoAsync<AlertaResposta>(HttpStatusCode.OK)).Estado);
+        Assert.AreEqual("IDEMPOTENCIA", await RegraAsync(await ComChaveAsync(ana, alertaUrl, estaBem, chaveDoPedido)));
+        await (await ComChaveAsync(ana, checkInUrl, pedido, "chave com espaço")).ProblemaAsync(HttpStatusCode.BadRequest);
     }
 
     /// <summary>
@@ -265,6 +301,13 @@ public sealed class ApiTests
         Telefone = "(11) 92345-6789",
         FatoresDeRisco = ["CARDIOPATIA"],
     };
+
+    private static async Task<HttpResponseMessage> ComChaveAsync(HttpClient cliente, string url, object corpo, string chave)
+    {
+        using HttpRequestMessage requisicao = new(HttpMethod.Post, url) { Content = JsonContent.Create(corpo, options: AmbienteDaApi.Json) };
+        requisicao.Headers.Add(FiltroDeIdempotencia.Cabecalho, chave);
+        return await cliente.SendAsync(requisicao);
+    }
 
     private static NovaSentinelaDto Sentinela(string deviceId)
         => new() { DeviceId = deviceId, CodigoDeVinculo = CodigoDeVinculo.Derivar(deviceId, FabricaDaApi.ChaveDeVinculo) };

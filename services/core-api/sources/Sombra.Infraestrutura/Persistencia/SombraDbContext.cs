@@ -58,6 +58,9 @@ public sealed class SombraDbContext : DbContext, IUnitOfWork
     /// <summary>Gets a trilha de segurança.</summary>
     public DbSet<EventoDeSeguranca> EventosDeSeguranca => Set<EventoDeSeguranca>();
 
+    /// <summary>Gets as respostas guardadas por <c>Idempotency-Key</c>.</summary>
+    public DbSet<RequisicaoIdempotente> RequisicoesIdempotentes => Set<RequisicaoIdempotente>();
+
     /// <summary>Monta as opções do contexto: Npgsql e nomes em snake_case (os mesmos no app e nas migrações).</summary>
     /// <param name="builder">O construtor de opções.</param>
     /// <param name="conexao">A string de conexão.</param>
