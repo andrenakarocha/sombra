@@ -41,6 +41,12 @@
         {
           "cameraPermission": "O Sombra usa a câmera só para ler o QR da Sentinela."
         }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "O Sombra usa o Face ID para proteger os dados das casas neste celular."
+        }
       ]
     ],
     "scheme": "sombra",

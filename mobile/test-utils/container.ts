@@ -7,6 +7,7 @@ import { sessaoStore } from '@/application/estado/sessao';
 import type { CoreGateway } from '@/application/ports/core-gateway';
 import type {
   AgendadorDeLembretes,
+  Biometria,
   CofreDeSessao,
   Localizacao,
   MonitorDeRede,
@@ -26,7 +27,14 @@ export async function containerDeTeste({
   logado = true,
   localizacao,
   agendador,
-}: { agora?: string; logado?: boolean; localizacao?: Localizacao; agendador?: AgendadorDeLembretes } = {}) {
+  biometria,
+}: {
+  agora?: string;
+  logado?: boolean;
+  localizacao?: Localizacao;
+  agendador?: AgendadorDeLembretes;
+  biometria?: Biometria;
+} = {}) {
   sessaoStore.setState({ token: logado ? 'token-de-teste' : null, carregada: true });
   preferenciasStore.setState({ modoIdosoCasaId: null, carregada: true });
 
@@ -75,6 +83,7 @@ export async function containerDeTeste({
     demo: new CoreDemoGateway(clock, 0),
     localizacao,
     agendador,
+    biometria,
   });
   const mudarRede = (online: boolean) => {
     rede.offline = !online;

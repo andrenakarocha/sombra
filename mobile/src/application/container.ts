@@ -3,10 +3,12 @@
 import type { Clock } from '@/domain/compartilhado/clock';
 
 import type { Barramento } from './barramento';
+import type { ServicoDeBloqueio } from './casos-de-uso/bloqueio';
 import type { CasaESentinela } from './casos-de-uso/casa-e-sentinela';
 import type { CentralDeSincronizacao } from './casos-de-uso/central-de-sincronizacao';
 import type { Consultas } from './casos-de-uso/consultas';
 import type { Escritas } from './casos-de-uso/escritas';
+import type { PrivacidadeLocal } from './casos-de-uso/privacidade-local';
 import type { ServicoDeSessao } from './casos-de-uso/sessao';
 import type { ProjetorDeEventos } from './eventos/projetor';
 import type { OutboxRepository } from './ports/outbox';
@@ -25,6 +27,8 @@ export type Container = {
   consultas: Consultas;
   escritas: Escritas;
   casaESentinela: CasaESentinela;
+  bloqueio: ServicoDeBloqueio;
+  privacidadeLocal: PrivacidadeLocal;
   sessao: ServicoDeSessao;
   eventos: ProjetorDeEventos;
   sincronizacao: { motor: MotorDeSincronizacao; outbox: OutboxRepository };

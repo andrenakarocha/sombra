@@ -665,9 +665,10 @@ Go; o APK via EAS é um extra.
   ⏸ 2026-11-17: parser, rotina (R11/R12), fuso de SP, vínculo e telas testados; o formato do QR
   (`sombra://sentinela/vincular?v=1&d=snt-…&c=…`) é proposta do app e precisa ser exibido pela Sentinela (F5);
   falta ler um QR de verdade no aparelho.
-- [ ] **F6.19** 🤖 Biometria na área da família (protege a PII) + Centro de Privacidade (exportar os dados locais em
+- [x] **F6.19** 🤖 Biometria na área da família (protege a PII) + Centro de Privacidade (exportar os dados locais em
   JSON, LGPD art. 18, e apagar tudo do aparelho).
-  🔎 testes do bloqueio e do export sem PII inteira.
+  🔎 testes do bloqueio e do export sem PII inteira — 2026-11-17. Face ID não roda no Expo Go do iOS (digital no
+  Android, sim); o Modo Idoso nunca é bloqueado.
 - [ ] **F6.20** 🤖🔑 Qualidade: teste do app inteiro (rotas reais), gate de cobertura ≥ 95% no CI e APK via EAS
   (`eas.json`; o job roda só com `EXPO_TOKEN` nos secrets, pedido ao dono do repositório).
   🔎 CI verde com o gate; APK gerado quando o token existir.
