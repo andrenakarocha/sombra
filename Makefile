@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint test test-sim test-core test-mobile sim vinculo
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-mobile sim vinculo
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -46,6 +46,9 @@ lint: ## shellcheck nos scripts, ruff no Python e ESLint + tsc no app
 	@shellcheck tools/*.sh infra/compose/postgres/init/*.sh && echo "shellcheck ok"
 	@cd tools/sentinela-sim && uv run -q ruff check . && uv run -q ruff format --check . >/dev/null && echo "ruff ok"
 	@cd mobile && npm run -s lint && npm run -s typecheck && echo "app ok"
+
+semgrep: ## Taint estático do Core: o canário dispara e o código de produção sai limpo (SARIF em security/semgrep/)
+	@security/semgrep/rodar.sh
 
 test: contratos test-sim test-core test-mobile ## Roda todos os testes (cada componente acrescenta os seus)
 
