@@ -15,16 +15,19 @@ public sealed class ReconhecerAlerta
     private readonly IAlertaRepository _alertas;
     private readonly IRelogio _relogio;
     private readonly IUnitOfWork _unidadeDeTrabalho;
+    private readonly Avisos _avisos;
 
     /// <summary>Initializes a new instance of the <see cref="ReconhecerAlerta"/> class.</summary>
     /// <param name="alertas">Os alertas.</param>
     /// <param name="relogio">O relógio.</param>
+    /// <param name="notificador">Quem entrega os avisos.</param>
     /// <param name="unidadeDeTrabalho">A transação.</param>
-    public ReconhecerAlerta(IAlertaRepository alertas, IRelogio relogio, IUnitOfWork unidadeDeTrabalho)
+    public ReconhecerAlerta(IAlertaRepository alertas, IRelogio relogio, INotificador notificador, IUnitOfWork unidadeDeTrabalho)
     {
         _alertas = alertas ?? throw new ArgumentNullException(nameof(alertas));
         _relogio = relogio ?? throw new ArgumentNullException(nameof(relogio));
         _unidadeDeTrabalho = unidadeDeTrabalho ?? throw new ArgumentNullException(nameof(unidadeDeTrabalho));
+        _avisos = new Avisos(notificador);
     }
 
     /// <summary>Registra a resposta do cuidador.</summary>
@@ -41,6 +44,11 @@ public sealed class ReconhecerAlerta
             ?? throw new RecursoNaoEncontradoException("Alerta não encontrado.");
 
         alerta.Reconhecer(dto.Acao.GetValueOrDefault(), _relogio.Agora);
+        if (!alerta.EstaAberto)
+        {
+            await _avisos.EncerramentoAsync(alerta, cancellationToken);
+        }
+
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
         return AlertaResposta.De(alerta);
     }

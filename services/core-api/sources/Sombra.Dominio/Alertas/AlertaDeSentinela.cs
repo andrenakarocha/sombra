@@ -16,6 +16,9 @@ public sealed class AlertaDeSentinela : AlertaDeCalor
     /// <summary>Quanto tempo entre um degrau e o próximo.</summary>
     public static readonly TimeSpan IntervaloEntreDegraus = TimeSpan.FromMinutes(10);
 
+    /// <summary>Quanto tempo depois do "estou bem" a casa fica sem novo alerta no mesmo nível (regra R13).</summary>
+    public static readonly TimeSpan Carencia = TimeSpan.FromHours(1);
+
     private DateTimeOffset _ultimoDegrauEm;
 
     private AlertaDeSentinela(Guid domicilioId, NivelDeRisco nivel, DateTimeOffset abertoEm)
@@ -41,6 +44,21 @@ public sealed class AlertaDeSentinela : AlertaDeCalor
     public static TimeSpan PrazoPara(NivelDeRisco nivel) => nivel >= NivelDeRisco.Perigo
         ? TimeSpan.FromMinutes(15)
         : TimeSpan.FromMinutes(30);
+
+    /// <summary>
+    /// Regra R13 (carência): a pessoa acabou de dizer que está bem, então, por uma hora, uma leitura no mesmo nível ou
+    /// abaixo não abre outro alerta. Só um nível mais alto reabre. Evita pedir o botão de novo a cada leitura.
+    /// </summary>
+    /// <param name="ultimoEncerrado">O último alerta encerrado da casa, se houver.</param>
+    /// <param name="leitura">A leitura nova.</param>
+    /// <returns><c>true</c> quando a leitura cai na carência.</returns>
+    public static bool EmCarencia(AlertaDeCalor? ultimoEncerrado, Leitura leitura)
+    {
+        ArgumentNullException.ThrowIfNull(leitura);
+        return ultimoEncerrado is AlertaDeSentinela { Estado: EstadoDoAlerta.Resolvido, EncerradoEm: { } fim } anterior
+            && leitura.Momento - fim < Carencia
+            && leitura.Nivel <= anterior.Nivel;
+    }
 
     /// <summary>Abre o alerta a partir de uma leitura de cautela extrema ou acima.</summary>
     /// <param name="domicilioId">A casa.</param>

@@ -2,8 +2,9 @@
 
 > **Fonte da verdade desde a F1.7:** [`core-api.openapi.json`](core-api.openapi.json), gerado pelo próprio Core
 > (`make -C services/core-api openapi`). O teste de API falha se a API e esse arquivo divergirem, e o Scalar do Core
-> (`/scalar/v1`) mostra o mesmo documento. Esta página fica como visão geral. As rotas de `/sentinelas/{deviceId}/leituras`
-> e `/ops/alertas` chegam na F1.9, as de `/privacidade` na F2.5 e a de pontos de resfriamento na F3.9.
+> (`/scalar/v1`) mostra o mesmo documento. Esta página fica como visão geral. As rotas de `/privacidade` chegam na F2.5
+> e a de pontos de resfriamento na F3.9. Em `Development` e `Demo`, `POST /demo/relogio/avancar` (Admin) adianta o
+> relógio do Core para o caminho B caber num vídeo.
 
 ## Convenções
 

@@ -181,6 +181,23 @@ public sealed class AlertasTests
         Assert.AreEqual("R5", Assert.ThrowsExactly<RegraVioladaException>(() => alerta.PedirAjuda(_abertura.AddMinutes(6))).Regra);
     }
 
+    /// <summary>Regra R13: uma hora de carência depois do "estou bem", só para o mesmo nível ou abaixo.</summary>
+    [TestMethod]
+    public void CarenciaDepoisDoEstouBem()
+    {
+        AlertaDeSentinela resolvido = AlertaDeSentinela.Abrir(_casa, Fabricas.Leitura(36, 60, _abertura));
+        resolvido.ConfirmarEstouBem(_abertura.AddMinutes(5));
+        AlertaDePedidoDeAjuda pedido = AlertaDePedidoDeAjuda.Abrir(_casa, NivelDeRisco.Perigo, _abertura);
+        pedido.ConfirmarEstouBem(_abertura.AddMinutes(5));
+
+        Assert.IsTrue(AlertaDeSentinela.EmCarencia(resolvido, Fabricas.Leitura(36, 60, _abertura.AddMinutes(10))));
+        Assert.IsTrue(AlertaDeSentinela.EmCarencia(resolvido, Fabricas.Leitura(33, 45, _abertura.AddMinutes(10))));
+        Assert.IsFalse(AlertaDeSentinela.EmCarencia(resolvido, Fabricas.Leitura(40, 80, _abertura.AddMinutes(10))));
+        Assert.IsFalse(AlertaDeSentinela.EmCarencia(resolvido, Fabricas.Leitura(36, 60, _abertura.AddMinutes(5) + AlertaDeSentinela.Carencia)));
+        Assert.IsFalse(AlertaDeSentinela.EmCarencia(pedido, Fabricas.Leitura(36, 60, _abertura.AddMinutes(10))));
+        Assert.IsFalse(AlertaDeSentinela.EmCarencia(null, Fabricas.Leitura(36, 60, _abertura)));
+    }
+
     /// <summary>As mensagens cabem no OLED (até 80 caracteres) e não têm dado pessoal.</summary>
     [TestMethod]
     public void MensagensCabemNoOled()

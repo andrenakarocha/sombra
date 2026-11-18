@@ -45,21 +45,24 @@ public sealed class SentinelasController : ControllerBase
         => Ok(await _cadastro.ListarSentinelasAsync(id, cancellationToken));
 
     /// <summary>Vincula a Sentinela da casa.</summary>
-    /// <remarks>Uma Sentinela por casa, e uma casa por Sentinela (409 se ela já for de outra casa).</remarks>
+    /// <remarks>
+    /// Uma Sentinela por casa, e uma casa por Sentinela (409 se ela já for de outra casa). A resposta traz, uma única vez, o
+    /// segredo HMAC que assina as mensagens da Sentinela (contrato MQTT): grave-o no firmware.
+    /// </remarks>
     /// <param name="id" example="0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10">A casa.</param>
     /// <param name="dto">O identificador da Sentinela.</param>
     /// <param name="cancellationToken">Cancela a requisição.</param>
-    /// <returns>A Sentinela vinculada.</returns>
+    /// <returns>A Sentinela vinculada, com o segredo.</returns>
     [HttpPost("sentinelas")]
     [Authorize(Roles = Acesso.CuidadorOuAdmin)]
-    [ProducesResponseType<SentinelaResposta>(StatusCodes.Status201Created)]
+    [ProducesResponseType<SentinelaVinculadaResposta>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity, "application/problem+json")]
-    public async Task<ActionResult<SentinelaResposta>> Vincular(Guid id, NovaSentinelaDto dto, CancellationToken cancellationToken)
+    public async Task<ActionResult<SentinelaVinculadaResposta>> Vincular(Guid id, NovaSentinelaDto dto, CancellationToken cancellationToken)
     {
-        SentinelaResposta sentinela = await _cadastro.VincularSentinelaAsync(id, dto, cancellationToken);
+        SentinelaVinculadaResposta sentinela = await _cadastro.VincularSentinelaAsync(id, dto, cancellationToken);
         return CreatedAtAction(nameof(Listar), new { id }, sentinela);
     }
 

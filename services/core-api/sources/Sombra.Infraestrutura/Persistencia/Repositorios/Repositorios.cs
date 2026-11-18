@@ -58,6 +58,13 @@ public sealed class AlertaRepository : IAlertaRepository
         => await Abertos().Where(a => a.DomicilioId == domicilioId).OrderBy(a => a.AbertoEm).ToListAsync(cancellationToken);
 
     /// <inheritdoc/>
+    public Task<AlertaDeCalor?> ObterUltimoEncerradoAsync(Guid domicilioId, CancellationToken cancellationToken)
+        => _db.Alertas
+            .Where(a => a.DomicilioId == domicilioId && a.EncerradoEm != null)
+            .OrderByDescending(a => a.EncerradoEm)
+            .FirstOrDefaultAsync(cancellationToken);
+
+    /// <inheritdoc/>
     public async Task<IReadOnlyList<AlertaDeCalor>> ListarAbertosAsync(CancellationToken cancellationToken)
         => await Abertos().OrderBy(a => a.AbertoEm).ToListAsync(cancellationToken);
 

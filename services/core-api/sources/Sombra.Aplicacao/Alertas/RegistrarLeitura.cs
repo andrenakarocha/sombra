@@ -14,7 +14,7 @@ namespace Sombra.Aplicacao.Alertas;
 
 /// <summary>
 /// A telemetria da Sentinela (MQTT ou POST assinado): guarda a leitura e, numa casa monitorada, abre o alerta a partir de
-/// cautela extrema ou atualiza o que já está aberto (R4, R6, R9).
+/// cautela extrema ou atualiza o que já está aberto (R4, R6, R9), respeitando a carência depois do "estou bem" (R13).
 /// </summary>
 public sealed class RegistrarLeitura
 {
@@ -73,15 +73,16 @@ public sealed class RegistrarLeitura
                 deSentinela.AtualizarComLeitura(leitura);
                 if (deSentinela.Nivel > antes)
                 {
-                    await _avisos.AoMoradorAsync(casa, deSentinela, cancellationToken);
+                    await _avisos.AoMoradorAsync(casa, deSentinela, MotivoDoAviso.AlertaAgravado, cancellationToken);
                 }
 
                 return deSentinela;
 
-            case null when leitura.Nivel >= NivelDeRisco.CautelaExtrema:
+            case null when leitura.Nivel >= NivelDeRisco.CautelaExtrema
+                && !AlertaDeSentinela.EmCarencia(await _alertas.ObterUltimoEncerradoAsync(casa.Id, cancellationToken), leitura):
                 AlertaDeSentinela novo = AlertaDeSentinela.Abrir(casa.Id, leitura);
                 _alertas.Adicionar(novo);
-                await _avisos.AoMoradorAsync(casa, novo, cancellationToken);
+                await _avisos.AoMoradorAsync(casa, novo, MotivoDoAviso.AlertaAberto, cancellationToken);
                 return novo;
 
             default:

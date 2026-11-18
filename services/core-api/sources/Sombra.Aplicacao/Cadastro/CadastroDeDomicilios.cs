@@ -221,13 +221,13 @@ public sealed class CadastroDeDomicilios
         return RotinaResposta.De(casa.Rotina);
     }
 
-    /// <summary>Vincula a Sentinela da casa.</summary>
+    /// <summary>Vincula a Sentinela da casa e devolve, uma única vez, o segredo que assina as mensagens dela.</summary>
     /// <param name="id">A casa.</param>
     /// <param name="dto">O identificador da Sentinela.</param>
     /// <param name="cancellationToken">Cancela o caso de uso.</param>
-    /// <returns>A Sentinela vinculada.</returns>
+    /// <returns>A Sentinela vinculada, com o segredo.</returns>
     /// <exception cref="ConflitoException">Quando a Sentinela já é de outra casa.</exception>
-    public async Task<SentinelaResposta> VincularSentinelaAsync(Guid id, NovaSentinelaDto dto, CancellationToken cancellationToken)
+    public async Task<SentinelaVinculadaResposta> VincularSentinelaAsync(Guid id, NovaSentinelaDto dto, CancellationToken cancellationToken)
     {
         Validacao.Garantir(dto);
         Domicilio casa = await CasaAsync(id, cancellationToken);
@@ -239,7 +239,7 @@ public sealed class CadastroDeDomicilios
 
         Sentinela sentinela = casa.VincularSentinela(dto.DeviceId);
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
-        return SentinelaResposta.De(sentinela, _relogio.Agora);
+        return new SentinelaVinculadaResposta(sentinela.DeviceId, sentinela.EstaOnline(_relogio.Agora), sentinela.SegredoHex ?? string.Empty);
     }
 
     /// <summary>As Sentinelas da casa e se estão falando com o Core (R9).</summary>

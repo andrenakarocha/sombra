@@ -311,9 +311,22 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("domicilio_id");
 
+                    b.Property<string>("SegredoHex")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("segredo_hex");
+
                     b.Property<DateTimeOffset?>("UltimoContato")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ultimo_contato");
+
+                    b.Property<long>("UltimoSeqEnviado")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ultimo_seq_enviado");
+
+                    b.Property<long>("UltimoSeqRecebido")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ultimo_seq_recebido");
 
                     b.HasKey("DeviceId")
                         .HasName("pk_sentinelas");
@@ -367,6 +380,118 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasDatabaseName("ix_usuarios_email");
 
                     b.ToTable("usuarios", (string)null);
+                });
+
+            modelBuilder.Entity("Sombra.Infraestrutura.Mensageria.MensagemDeSaida", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid?>("AlertaId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("alerta_id");
+
+                    b.Property<int>("Contatos")
+                        .HasColumnType("integer")
+                        .HasColumnName("contatos");
+
+                    b.Property<string>("CorrelationId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("correlation_id");
+
+                    b.Property<DateTimeOffset>("CriadaEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("criada_em");
+
+                    b.Property<string>("Destinatario")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("destinatario");
+
+                    b.Property<Guid>("DomicilioId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("domicilio_id");
+
+                    b.Property<string>("Mensagem")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("mensagem");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("motivo");
+
+                    b.Property<DateTimeOffset?>("PublicadaEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("publicada_em");
+
+                    b.Property<int>("Tentativas")
+                        .HasColumnType("integer")
+                        .HasColumnName("tentativas");
+
+                    b.Property<string>("UltimaFalha")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("ultima_falha");
+
+                    b.HasKey("Id")
+                        .HasName("pk_outbox");
+
+                    b.HasIndex("PublicadaEm", "CriadaEm")
+                        .HasDatabaseName("ix_outbox_publicada_em_criada_em");
+
+                    b.HasIndex("DomicilioId", "Motivo", "CriadaEm")
+                        .HasDatabaseName("ix_outbox_domicilio_id_motivo_criada_em");
+
+                    b.ToTable("outbox", (string)null);
+                });
+
+            modelBuilder.Entity("Sombra.Infraestrutura.Seguranca.EventoDeSeguranca", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CorrelationId")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("correlation_id");
+
+                    b.Property<string>("Detalhe")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("detalhe");
+
+                    b.Property<DateTimeOffset>("Momento")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("momento");
+
+                    b.Property<string>("Origem")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("origem");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("tipo");
+
+                    b.HasKey("Id")
+                        .HasName("pk_eventos_de_seguranca");
+
+                    b.HasIndex("Momento")
+                        .HasDatabaseName("ix_eventos_de_seguranca_momento");
+
+                    b.ToTable("eventos_de_seguranca", (string)null);
                 });
 
             modelBuilder.Entity("Sombra.Dominio.Alertas.AlertaDePedidoDeAjuda", b =>

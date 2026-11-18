@@ -134,6 +134,28 @@ public sealed class DomicilioTests
         Assert.ThrowsExactly<RegraVioladaException>(() => casa.AtualizarCadastro(" ", novo));
     }
 
+    /// <summary>Regra R10: a Sentinela nasce com um segredo de 32 bytes e só aceita seq crescente dentro da janela de 300 s.</summary>
+    [TestMethod]
+    public void SentinelaTemSegredoEAntiReplay()
+    {
+        Sentinela sentinela = Fabricas.Casa().VincularSentinela("snt-7f3a9c");
+        Assert.MatchesRegex("^[0-9a-f]{64}$", sentinela.SegredoHex);
+        Assert.AreNotEqual(sentinela.SegredoHex, Sentinela.Criar("snt-7f3a9c").SegredoHex);
+
+        Assert.AreEqual(RecusaDaMensagem.Nenhuma, sentinela.ReceberMensagem(5, _agora, _agora.AddSeconds(2)));
+        Assert.AreEqual(RecusaDaMensagem.Repetida, sentinela.ReceberMensagem(5, _agora, _agora));
+        Assert.AreEqual(RecusaDaMensagem.ForaDaJanela, sentinela.ReceberMensagem(6, _agora.AddSeconds(-301), _agora));
+        Assert.AreEqual(5, sentinela.UltimoSeqRecebido);
+        Assert.AreEqual(_agora, sentinela.UltimoContato);
+        long primeiro = sentinela.ProximoSeqDeComando(_agora);
+        Assert.AreEqual(_agora.ToUnixTimeSeconds(), primeiro);
+        Assert.AreEqual(primeiro + 1, sentinela.ProximoSeqDeComando(_agora));
+
+        sentinela.DefinirSegredo(new string('A', 64));
+        Assert.AreEqual(new string('a', 64), sentinela.SegredoHex);
+        Assert.AreEqual("R10", Assert.ThrowsExactly<RegraVioladaException>(() => sentinela.DefinirSegredo("curto")).Regra);
+    }
+
     /// <summary>A casa nasce com a rotina padrão e guarda a rotina combinada com a pessoa (R11).</summary>
     [TestMethod]
     public void GuardaARotinaCombinada()

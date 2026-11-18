@@ -20,10 +20,13 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Sombra.Api.Autenticacao;
 using Sombra.Api.Erros;
+using Sombra.Api.TempoReal;
 using Sombra.Aplicacao.Alertas;
 using Sombra.Aplicacao.Cadastro;
+using Sombra.Aplicacao.Portas;
 using Sombra.Infraestrutura;
 using Sombra.Infraestrutura.Autenticacao;
+using Sombra.Infraestrutura.Mqtt;
 using Sombra.Infraestrutura.Persistencia;
 
 namespace Sombra.Api.Composicao;
@@ -34,7 +37,7 @@ public static class ComposicaoDoCore
     /// <summary>A política de limite do login (por IP), mais apertada contra força bruta.</summary>
     public const string LimiteDoLogin = "login";
 
-    /// <summary>A tag dos health checks que dizem se o Core está pronto (banco; o broker entra na F1.9).</summary>
+    /// <summary>A tag dos health checks que dizem se o Core está pronto (banco e broker MQTT).</summary>
     public const string TagPronto = "pronto";
 
     /// <summary>Registra os serviços.</summary>
@@ -50,10 +53,16 @@ public static class ComposicaoDoCore
         LogDoSombra.Adicionar(builder, VersaoDoBuild.De(configuracao).Commit);
 
         servicos.AdicionarInfraestrutura(conexao);
+        servicos.AdicionarMensageria();
+        servicos.AddSingleton<ITempoReal, TempoRealSignalR>();
         servicos.AddScoped<CadastroDeDomicilios>();
         servicos.AddScoped<RegistrarLeitura>();
         servicos.AddScoped<RegistrarCheckIn>();
         servicos.AddScoped<ReconhecerAlerta>();
+        servicos.AddScoped<EscalonarAlertas>();
+        servicos.AddScoped<LembrarRotina>();
+        servicos.AddScoped<AvaliarPrevisoes>();
+        servicos.AddSignalR().AddJsonProtocol(json => ConfigurarJson(json.PayloadSerializerOptions));
 
         servicos.AddControllers(opcoes =>
             {
@@ -73,7 +82,9 @@ public static class ComposicaoDoCore
 
         AdicionarSeguranca(servicos, configuracao);
         AdicionarLimites(servicos, configuracao);
-        servicos.AddHealthChecks().AddDbContextCheck<SombraDbContext>("banco", tags: [TagPronto]);
+        servicos.AddHealthChecks()
+            .AddDbContextCheck<SombraDbContext>("banco", tags: [TagPronto])
+            .AddCheck<VerificacaoDoBroker>("broker", tags: [TagPronto]);
         servicos.AddOpenApi("v1", opcoes =>
         {
             opcoes.AddDocumentTransformer<DocumentoDoSombra>();
@@ -89,7 +100,7 @@ public static class ComposicaoDoCore
         ArgumentNullException.ThrowIfNull(app);
         bool migrar = app.Configuration.GetValue<bool>("Banco:MigrarAoIniciar");
         string? senhaDaDemo = app.Configuration["Demo:Senha"];
-        if (!migrar && string.IsNullOrEmpty(senhaDaDemo))
+        if (!migrar && string.IsNullOrEmpty(senhaDaDemo) && string.IsNullOrEmpty(app.Configuration["Demo:SentinelaSegredoHex"]))
         {
             return;
         }
@@ -104,6 +115,11 @@ public static class ComposicaoDoCore
         if (!string.IsNullOrEmpty(senhaDaDemo))
         {
             await UsuariosDemo.SemearAsync(db, senhaDaDemo, app.Lifetime.ApplicationStopping);
+        }
+
+        if (app.Configuration["Demo:SentinelaDeviceId"] is { Length: > 0 } sentinela && app.Configuration["Demo:SentinelaSegredoHex"] is { Length: > 0 } segredo)
+        {
+            await SentinelaDaDemo.ConfigurarAsync(db, sentinela, segredo, app.Lifetime.ApplicationStopping);
         }
     }
 
@@ -120,6 +136,7 @@ public static class ComposicaoDoCore
         app.UseRateLimiter();
         app.UseAuthorization();
         app.MapControllers();
+        app.MapHub<HubDoSombra>(HubDoSombra.Rota);
         app.MapOpenApi().DisableRateLimiting();
         app.MapScalarApiReference(opcoes => opcoes.WithTitle("Sombra · Core API")).DisableRateLimiting();
     }
@@ -159,6 +176,19 @@ public static class ComposicaoDoCore
         servicos.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opcoes =>
         {
             opcoes.MapInboundClaims = false;
+            opcoes.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = contexto =>
+                {
+                    if (contexto.Request.Path.StartsWithSegments(HubDoSombra.Rota, StringComparison.Ordinal)
+                        && contexto.Request.Query["access_token"].ToString() is { Length: > 0 } token)
+                    {
+                        contexto.Token = token;
+                    }
+
+                    return Task.CompletedTask;
+                },
+            };
             opcoes.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidIssuer = configuracao["Jwt:Emissor"] ?? "sombra-core",

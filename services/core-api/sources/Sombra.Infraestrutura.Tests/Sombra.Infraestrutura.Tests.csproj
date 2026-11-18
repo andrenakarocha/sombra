@@ -18,6 +18,11 @@
     <ProjectReference Include="..\Sombra.Infraestrutura\Sombra.Infraestrutura.csproj" />
   </ItemGroup>
 
+  <!-- Os vetores de assinatura MQTT que a Sentinela, o simulador e o Core conferem (ADR-006). -->
+  <ItemGroup>
+    <None Include="..\..\..\..\docs\contratos\mqtt-assinatura.vetores.json" Link="Contratos\mqtt-assinatura.vetores.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <!-- O mesmo gerador de CPF e CNS sintéticos dos testes de domínio. -->
   <ItemGroup>
     <Compile Include="..\Sombra.Dominio.Tests\Apoio\DocumentosSinteticos.cs" Link="Apoio\DocumentosSinteticos.cs" />

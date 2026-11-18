@@ -20,6 +20,7 @@
 | `SentinelaStatus` | casa, operadores | `domicilioId`, `deviceId`, `online` |
 | `AlertaAberto` | casa, operadores | `alertaId`, `domicilioId`, `tipo` (`PREVENTIVO` ou `DE_SENTINELA`), `nivel`, `prazo` |
 | `AlertaEscalonado` | casa, operadores | `alertaId`, `domicilioId`, `degrau` (1 a 3), `destinatario` (`FAMILIAR`, `VIZINHO` ou `REDE`), `mensagem` |
+| `AvisoParaARede` | casa, operadores | `domicilioId`, `alertaId` (ou `null`), `destinatario`, `motivo` (`PREVISAO` ou `CHECK_IN_DIARIO`), `mensagem` |
 | `AlertaResolvido` | casa, operadores | `alertaId`, `domicilioId`, `resolvidoPor` (`CHECKIN_SENTINELA`, `CHECKIN_APP` ou `CUIDADOR`), `minutosAteCheckIn` |
 | `CheckInRegistrado` | casa, operadores | `domicilioId`, `momento`, `origem`, `situacao` |
 | `RiscoCidadaoAtualizado` | casa (se for da casa), operadores | `domicilioId` (ou `null` para o farol global), `farol`, `mensagemCidadao` |
