@@ -8,7 +8,6 @@ using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Portas;
 using Sombra.Aplicacao.Respostas;
 using Sombra.Aplicacao.Tests.Apoio;
-using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Calor;
 using Sombra.Dominio.Casas;
 
@@ -31,7 +30,7 @@ public sealed class RegistrarCheckInTests
         CheckInResposta resposta = await cenario.CheckInAsync(casa.Id, OrigemDoCheckIn.BotaoSentinela, SituacaoDoCheckIn.EstouBem);
 
         Assert.IsNotNull(resposta.Alerta);
-        Assert.AreEqual(EstadoDoAlerta.Resolvido, resposta.Alerta.Estado);
+        Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, resposta.Alerta.Estado);
         Assert.AreEqual(Cenario.Inicio.AddMinutes(6), resposta.Alerta.EncerradoEm);
         Assert.AreEqual(Cenario.Inicio.AddMinutes(6), resposta.Momento);
         Assert.HasCount(1, cenario.CheckIns.Itens);
@@ -64,7 +63,8 @@ public sealed class RegistrarCheckInTests
         CheckInResposta resposta = await cenario.CheckInAsync(casa.Id, OrigemDoCheckIn.App, SituacaoDoCheckIn.PrecisoDeAjuda);
 
         Assert.IsNotNull(resposta.Alerta);
-        Assert.AreEqual("PEDIDO_DE_AJUDA", resposta.Alerta.Tipo);
+        Assert.AreEqual(TipoDoAlertaNoApp.DeSentinela, resposta.Alerta.Tipo);
+        Assert.AreEqual("Pedido de ajuda pela Sentinela ou pelo app.", resposta.Alerta.LinhaDoTempo[0].Descricao);
         Assert.AreEqual(NivelDeRisco.Atencao, resposta.Alerta.Nivel);
         Assert.AreEqual(3, resposta.Alerta.Degrau);
         Notificacao rede = cenario.Notificador.Avisos.Single(a => a.Destinatario == Destinatario.Rede);
@@ -86,7 +86,7 @@ public sealed class RegistrarCheckInTests
         CheckInResposta segundo = await cenario.CheckInAsync(casa.Id, OrigemDoCheckIn.App, SituacaoDoCheckIn.PrecisoDeAjuda);
 
         Assert.IsNotNull(primeiro.Alerta);
-        Assert.AreEqual("DE_SENTINELA", primeiro.Alerta.Tipo);
+        Assert.AreEqual(TipoDoAlertaNoApp.DeSentinela, primeiro.Alerta.Tipo);
         Assert.AreEqual(3, primeiro.Alerta.Degrau);
         Assert.AreEqual(primeiro.Alerta.Id, segundo.Alerta?.Id);
         Assert.HasCount(1, cenario.Alertas.Alertas);

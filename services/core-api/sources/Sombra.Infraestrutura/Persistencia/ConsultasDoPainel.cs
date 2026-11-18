@@ -30,24 +30,20 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
     public ConsultasDoPainel(SombraDbContext db) => _db = db ?? throw new ArgumentNullException(nameof(db));
 
     /// <inheritdoc/>
-    public async Task<Paginado<DomicilioResumoResposta>> ListarDomiciliosAsync(FiltroDeDomiciliosDto filtro, IReadOnlyCollection<Guid>? soEstasCasas, DateTimeOffset agora, CancellationToken cancellationToken)
+    public async Task<Paginado<DomicilioDetalheResposta>> ListarDomiciliosAsync(FiltroDeDomiciliosDto filtro, IReadOnlyCollection<Guid>? soEstasCasas, DateTimeOffset agora, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(filtro);
-        DateTimeOffset onlineDesde = agora.ToUniversalTime() - _toleranciaOnline;
         IQueryable<Domicilio> visiveis = soEstasCasas is null ? _db.Domicilios : _db.Domicilios.Where(d => soEstasCasas.Contains(d.Id));
         var casas = visiveis.AsNoTracking().Select(d => new
         {
             d.Id,
             d.Apelido,
             d.Endereco.Bairro,
-            d.Monitorado,
             Nivel = _db.Leituras
                 .Where(l => EF.Property<Guid>(l, LeituraConfiguration.DomicilioId) == d.Id)
                 .OrderByDescending(l => l.Momento)
                 .Select(l => (NivelDeRisco?)l.Nivel)
                 .FirstOrDefault() ?? NivelDeRisco.Normal,
-            Online = d.Sentinelas.Any(s => s.UltimoContato >= onlineDesde),
-            AlertaAberto = _db.Alertas.Any(a => a.DomicilioId == d.Id && a.Estado != EstadoDoAlerta.Resolvido && a.Estado != EstadoDoAlerta.Expirado),
         });
 
         if (!string.IsNullOrWhiteSpace(filtro.Bairro))
@@ -62,13 +58,43 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
         }
 
         int total = await casas.CountAsync(cancellationToken);
-        var pagina = await casas
+        List<Guid> ids = await casas
             .OrderBy(c => c.Apelido)
             .ThenBy(c => c.Id)
             .Skip((filtro.Pagina - 1) * filtro.Tamanho)
             .Take(filtro.Tamanho)
+            .Select(c => c.Id)
             .ToListAsync(cancellationToken);
-        return new([.. pagina.Select(c => new DomicilioResumoResposta(c.Id, c.Apelido, c.Bairro, c.Monitorado, c.Nivel, c.Online, c.AlertaAberto))], filtro.Pagina, filtro.Tamanho, total);
+
+        // O card da Início mostra o mesmo que a tela da casa (D17): a página inteira sai em quatro consultas, não quatro por casa.
+        Dictionary<Guid, Domicilio> doPagina = await _db.Domicilios.AsNoTracking().Where(d => ids.Contains(d.Id)).ToDictionaryAsync(d => d.Id, cancellationToken);
+        Dictionary<Guid, Leitura> ultimasLeituras = (await _db.Leituras.AsNoTracking()
+                .Where(l => ids.Contains(EF.Property<Guid>(l, LeituraConfiguration.DomicilioId)))
+                .GroupBy(l => EF.Property<Guid>(l, LeituraConfiguration.DomicilioId))
+                .Select(g => new { DomicilioId = g.Key, Leitura = g.OrderByDescending(l => l.Momento).First() })
+                .ToListAsync(cancellationToken))
+            .ToDictionary(u => u.DomicilioId, u => u.Leitura);
+        Dictionary<Guid, DateTimeOffset> ultimosCheckIns = await _db.CheckIns.AsNoTracking()
+            .Where(c => ids.Contains(c.DomicilioId))
+            .GroupBy(c => c.DomicilioId)
+            .Select(g => new { DomicilioId = g.Key, Momento = g.Max(c => c.Momento) })
+            .ToDictionaryAsync(u => u.DomicilioId, u => u.Momento, cancellationToken);
+        ILookup<Guid, AlertaDeCalor> abertos = (await _db.Alertas.AsNoTracking()
+                .Where(a => ids.Contains(a.DomicilioId) && a.Estado != EstadoDoAlerta.Resolvido && a.Estado != EstadoDoAlerta.Expirado)
+                .OrderBy(a => a.AbertoEm)
+                .ToListAsync(cancellationToken))
+            .ToLookup(a => a.DomicilioId);
+
+        return new(
+            [.. ids.Select(id => DomicilioDetalheResposta.De(
+                doPagina[id],
+                ultimasLeituras.GetValueOrDefault(id),
+                ultimosCheckIns.TryGetValue(id, out DateTimeOffset checkIn) ? checkIn : null,
+                DomicilioDetalheResposta.AlertaQueAparece([.. abertos[id]]),
+                agora))],
+            filtro.Pagina,
+            filtro.Tamanho,
+            total);
     }
 
     /// <inheritdoc/>
@@ -83,7 +109,8 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
 
         if (filtro.Estado is { } estado)
         {
-            alertas = alertas.Where(a => a.Estado == estado);
+            IReadOnlyList<EstadoDoAlerta> doDominio = AlertaResposta.EstadosDoDominio(estado);
+            alertas = alertas.Where(a => doDominio.Contains(a.Estado));
         }
 
         if (filtro.Nivel is { } nivel)
@@ -97,14 +124,21 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
             .Skip((filtro.Pagina - 1) * filtro.Tamanho)
             .Take(filtro.Tamanho)
             .ToListAsync(cancellationToken);
-        return new([.. pagina.Select(AlertaResposta.De)], filtro.Pagina, filtro.Tamanho, total);
+        Dictionary<Guid, string> apelidos = await ApelidosAsync(pagina.Select(a => a.DomicilioId), cancellationToken);
+        return new([.. pagina.Select(a => AlertaResposta.De(a, apelidos.GetValueOrDefault(a.DomicilioId, string.Empty)))], filtro.Pagina, filtro.Tamanho, total);
     }
 
     /// <inheritdoc/>
     public async Task<AlertaResposta?> ObterAlertaAsync(Guid id, CancellationToken cancellationToken)
     {
         AlertaDeCalor? alerta = await _db.Alertas.AsNoTracking().SingleOrDefaultAsync(a => a.Id == id, cancellationToken);
-        return alerta is null ? null : AlertaResposta.De(alerta);
+        if (alerta is null)
+        {
+            return null;
+        }
+
+        Dictionary<Guid, string> apelidos = await ApelidosAsync([alerta.DomicilioId], cancellationToken);
+        return AlertaResposta.De(alerta, apelidos.GetValueOrDefault(alerta.DomicilioId, string.Empty));
     }
 
     /// <inheritdoc/>
@@ -191,5 +225,11 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
         int meio = valores.Length / 2;
         double mediana = valores.Length % 2 == 1 ? valores[meio] : (valores[meio - 1] + valores[meio]) / 2.0;
         return Math.Round(mediana, 1);
+    }
+
+    private async Task<Dictionary<Guid, string>> ApelidosAsync(IEnumerable<Guid> casas, CancellationToken cancellationToken)
+    {
+        Guid[] ids = [.. casas.Distinct()];
+        return await _db.Domicilios.AsNoTracking().Where(d => ids.Contains(d.Id)).Select(d => new { d.Id, d.Apelido }).ToDictionaryAsync(d => d.Id, d => d.Apelido, cancellationToken);
     }
 }

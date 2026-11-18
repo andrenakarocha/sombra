@@ -60,6 +60,7 @@ internal sealed class MoradorConfiguration : IEntityTypeConfiguration<Morador>
         builder.Property(m => m.Cpf).HasConversion(Conversores.CpfEmTexto).HasMaxLength(11);
         builder.Property(m => m.CartaoSus).HasConversion(Conversores.CartaoSusEmTexto).HasMaxLength(15);
         builder.Property(m => m.PerfilDeSaude).HasConversion(Conversores.PerfilEmCodigos).HasMaxLength(200);
+        builder.Property(m => m.Telefone).HasConversion(Conversores.TelefoneEmTexto).HasMaxLength(11);
         builder.HasIndex("DomicilioId", nameof(Morador.Cpf)).IsUnique();
     }
 }

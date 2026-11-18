@@ -1,5 +1,6 @@
 using System;
 using Sombra.Dominio.Calor;
+using Sombra.Dominio.Casas;
 using Sombra.Dominio.Comum;
 
 namespace Sombra.Dominio.Alertas;
@@ -24,6 +25,9 @@ public sealed class AlertaPreventivo : AlertaDeCalor
     /// <inheritdoc/>
     public override string MensagemAoMorador => "Amanhã: calor perigoso. Encha sua garrafa de água.";
 
+    /// <inheritdoc/>
+    protected override string DescricaoDaAbertura => "Previsão de calor perigoso nas próximas 24 horas.";
+
     /// <summary>Gets até quando a previsão vale.</summary>
     public DateTimeOffset ValidoAte => AbertoEm + Validade;
 
@@ -47,8 +51,9 @@ public sealed class AlertaPreventivo : AlertaDeCalor
 
     /// <summary>O preventivo não pede "estou bem": quem pede é o alerta de Sentinela.</summary>
     /// <param name="momento">Quando a pessoa apertou.</param>
+    /// <param name="origem">De onde veio o "estou bem".</param>
     /// <exception cref="RegraVioladaException">Sempre (R5).</exception>
-    public override void ConfirmarEstouBem(DateTimeOffset momento)
+    public override void ConfirmarEstouBem(DateTimeOffset momento, OrigemDoCheckIn origem)
         => throw new RegraVioladaException("R5", "O alerta preventivo não pede check-in.");
 
     /// <summary>Encerra o alerta quando a janela da previsão passou.</summary>
@@ -61,6 +66,7 @@ public sealed class AlertaPreventivo : AlertaDeCalor
             return false;
         }
 
+        Anotar(agora, "A previsão de 24 horas terminou.");
         Encerrar(EstadoDoAlerta.Expirado, agora);
         return true;
     }

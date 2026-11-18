@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sombra.Api.Autenticacao;
 using Sombra.Aplicacao.Cadastro;
+using Sombra.Aplicacao.Comum;
 using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Respostas;
 
@@ -27,12 +29,12 @@ public sealed class CuidadoController : ControllerBase
     /// <summary>A rede de cuidado, na ordem de escalonamento.</summary>
     /// <param name="id" example="0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10">A casa.</param>
     /// <param name="cancellationToken">Cancela a requisição.</param>
-    /// <returns>A rede, com os telefones mascarados.</returns>
+    /// <returns>A rede, com os telefones inteiros para o Cuidador da casa e mascarados para os outros papéis.</returns>
     [HttpGet("rede-de-cuidado")]
-    [ProducesResponseType<RedeDeCuidadoResposta>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IReadOnlyList<ContatoResposta>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
-    public async Task<ActionResult<RedeDeCuidadoResposta>> ObterRede(Guid id, CancellationToken cancellationToken)
-        => await _cadastro.ObterRedeDeCuidadoAsync(id, cancellationToken);
+    public async Task<ActionResult<IReadOnlyList<ContatoResposta>>> ObterRede(Guid id, CancellationToken cancellationToken)
+        => Ok(await _cadastro.ObterRedeDeCuidadoAsync(id, User.IsInRole(Papeis.Cuidador), cancellationToken));
 
     /// <summary>Substitui a rede de cuidado inteira.</summary>
     /// <remarks>
@@ -44,12 +46,12 @@ public sealed class CuidadoController : ControllerBase
     /// <param name="cancellationToken">Cancela a requisição.</param>
     /// <returns>A rede nova.</returns>
     [HttpPut("rede-de-cuidado")]
-    [ProducesResponseType<RedeDeCuidadoResposta>(StatusCodes.Status200OK)]
+    [ProducesResponseType<IReadOnlyList<ContatoResposta>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity, "application/problem+json")]
-    public async Task<ActionResult<RedeDeCuidadoResposta>> DefinirRede(Guid id, RedeDeCuidadoDto dto, CancellationToken cancellationToken)
-        => await _cadastro.DefinirRedeDeCuidadoAsync(id, dto, cancellationToken);
+    public async Task<ActionResult<IReadOnlyList<ContatoResposta>>> DefinirRede(Guid id, RedeDeCuidadoDto dto, CancellationToken cancellationToken)
+        => Ok(await _cadastro.DefinirRedeDeCuidadoAsync(id, dto, User.IsInRole(Papeis.Cuidador), cancellationToken));
 
     /// <summary>A rotina combinada: check-in diário e lembrete de água.</summary>
     /// <param name="id" example="0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10">A casa.</param>

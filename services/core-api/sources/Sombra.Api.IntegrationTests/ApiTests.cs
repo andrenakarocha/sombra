@@ -75,10 +75,10 @@ public sealed class ApiTests
         using HttpClient ana = await Api.ClienteDeAsync(Demo.Ana);
         using HttpClient operador = await Api.ClienteDeAsync(Demo.Operador);
 
-        Paginado<DomicilioResumoResposta> casasDaAna = await (await ana.GetAsync(new Uri("/api/v1/domicilios", UriKind.Relative)))
-            .CorpoAsync<Paginado<DomicilioResumoResposta>>(HttpStatusCode.OK);
-        Paginado<DomicilioResumoResposta> todas = await (await operador.GetAsync(new Uri("/api/v1/domicilios", UriKind.Relative)))
-            .CorpoAsync<Paginado<DomicilioResumoResposta>>(HttpStatusCode.OK);
+        Paginado<DomicilioDetalheResposta> casasDaAna = await (await ana.GetAsync(new Uri("/api/v1/domicilios", UriKind.Relative)))
+            .CorpoAsync<Paginado<DomicilioDetalheResposta>>(HttpStatusCode.OK);
+        Paginado<DomicilioDetalheResposta> todas = await (await operador.GetAsync(new Uri("/api/v1/domicilios", UriKind.Relative)))
+            .CorpoAsync<Paginado<DomicilioDetalheResposta>>(HttpStatusCode.OK);
 
         Assert.IsTrue(casasDaAna.Itens.All(c => c.Id != Demo.Joaquim));
         Assert.IsTrue(casasDaAna.Itens.Any(c => c.Id == Demo.Lurdes));
@@ -110,11 +110,14 @@ public sealed class ApiTests
         Assert.AreEqual($"***.{cpf[3..6]}.***-{cpf[9..]}", morador.Cpf);
         Assert.AreEqual("R1", await RegraAsync(await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/moradores", Morador("123.456.789-00"))));
 
-        RedeDeCuidadoResposta rede = await (await ana.EnviarAsync(HttpMethod.Put, $"{casaUrl}/rede-de-cuidado", new RedeDeCuidadoDto
+        List<ContatoResposta> rede = await (await ana.EnviarAsync(HttpMethod.Put, $"{casaUrl}/rede-de-cuidado", new RedeDeCuidadoDto
         {
             Contatos = [new ContatoDto { Nome = "Ana (filha)", Telefone = "(11) 98765-4321", Papel = PapelDoContato.Familiar }],
-        })).CorpoAsync<RedeDeCuidadoResposta>(HttpStatusCode.OK);
-        Assert.AreEqual("(11) *****-4321", rede.Contatos.Single().Telefone);
+        })).CorpoAsync<List<ContatoResposta>>(HttpStatusCode.OK);
+        Assert.AreEqual("(11) 98765-4321", rede.Single().Telefone);
+        using HttpClient admin = await Api.ClienteDeAsync(Demo.Admin);
+        List<ContatoResposta> vistaPeloAdmin = await (await admin.GetAsync(new Uri($"{casaUrl}/rede-de-cuidado", UriKind.Relative))).CorpoAsync<List<ContatoResposta>>(HttpStatusCode.OK);
+        Assert.AreEqual("(11) *****-4321", vistaPeloAdmin.Single().Telefone);
         Assert.AreEqual("R12", await RegraAsync(await ana.EnviarAsync(HttpMethod.Put, $"{casaUrl}/rotina", new RotinaDto { HorarioDoCheckInDiario = new TimeOnly(23, 0), LembreteDeAguaAtivo = true })));
 
         await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", new NovaSentinelaDto { DeviceId = "snt-7f3a9c" })).ProblemaAsync(HttpStatusCode.Conflict);
@@ -137,7 +140,7 @@ public sealed class ApiTests
             Cep = "02306-000",
         })).CorpoAsync<DomicilioResposta>(HttpStatusCode.OK);
         Assert.AreEqual("Tucuruvi", renomeada.Bairro);
-        await (await ana.GetAsync(new Uri("/api/v1/domicilios?nivel=CAUTELA_EXTREMA", UriKind.Relative))).CorpoAsync<Paginado<DomicilioResumoResposta>>(HttpStatusCode.OK);
+        await (await ana.GetAsync(new Uri("/api/v1/domicilios?nivel=CAUTELA_EXTREMA", UriKind.Relative))).CorpoAsync<Paginado<DomicilioDetalheResposta>>(HttpStatusCode.OK);
         await (await ana.GetAsync(new Uri("/api/v1/domicilios?nivel=QUENTE", UriKind.Relative))).ProblemaAsync(HttpStatusCode.BadRequest);
         Assert.AreEqual(HttpStatusCode.NoContent, (await ana.EnviarAsync(HttpMethod.Delete, casaUrl)).StatusCode);
         await (await ana.GetAsync(new Uri(casaUrl, UriKind.Relative))).ProblemaAsync(HttpStatusCode.NotFound);
@@ -167,10 +170,11 @@ public sealed class ApiTests
             .CorpoAsync<AlertaResposta>(HttpStatusCode.OK);
         string regra = await RegraAsync(await ana.EnviarAsync(HttpMethod.Post, $"{alertaUrl}/reconhecer", new ReconhecimentoDto { Acao = AcaoDoCuidador.VouLigar }));
 
-        Assert.AreEqual("PEDIDO_DE_AJUDA", pedido.Alerta.Tipo);
+        Assert.AreEqual(TipoDoAlertaNoApp.DeSentinela, pedido.Alerta.Tipo);
+        Assert.AreEqual(3, pedido.Alerta.Degrau);
         Assert.AreEqual(3, pedido.Alerta.Degrau);
         Assert.IsTrue(daAna.Itens.Any(a => a.Id == pedido.Alerta.Id));
-        Assert.AreEqual(EstadoDoAlerta.Resolvido, resolvido.Estado);
+        Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, resolvido.Estado);
         Assert.AreEqual("R5", regra);
     }
 

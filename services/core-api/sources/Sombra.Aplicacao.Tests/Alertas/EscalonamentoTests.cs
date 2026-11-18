@@ -119,9 +119,9 @@ public sealed class EscalonamentoTests
         int subidasDepois = await cenario.EscalonarAlertas().ExecutarAsync(CancellationToken.None);
         AlertaResposta bem = await cenario.ReconhecerAlerta().ExecutarAsync(leitura.Alerta.Id, new ReconhecimentoDto { Acao = AcaoDoCuidador.ElaEstaBem }, CancellationToken.None);
 
-        Assert.AreEqual(EstadoDoAlerta.Reconhecido, indo.Estado);
+        Assert.AreEqual(EstadoDoAlertaNoApp.Reconhecido, indo.Estado);
         Assert.AreEqual(0, subidasDepois);
-        Assert.AreEqual(EstadoDoAlerta.Resolvido, bem.Estado);
+        Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, bem.Estado);
         await Assert.ThrowsExactlyAsync<RecursoNaoEncontradoException>(
             () => cenario.ReconhecerAlerta().ExecutarAsync(Guid.CreateVersion7(), new ReconhecimentoDto { Acao = AcaoDoCuidador.VouLigar }, CancellationToken.None));
     }

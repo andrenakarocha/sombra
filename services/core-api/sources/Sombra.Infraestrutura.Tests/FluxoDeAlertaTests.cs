@@ -7,7 +7,6 @@ using Sombra.Aplicacao.Alertas;
 using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Portas;
 using Sombra.Aplicacao.Respostas;
-using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Casas;
 using Sombra.Infraestrutura.Persistencia;
 using Sombra.Infraestrutura.Persistencia.Repositorios;
@@ -34,7 +33,7 @@ public sealed class FluxoDeAlertaTests
         {
             LeituraRegistradaResposta leitura = await new RegistrarLeitura(new DomicilioRepository(db), new AlertaRepository(db), new LeituraRepository(db), notificador, db)
                 .ExecutarAsync(new NovaLeituraDto { DeviceId = "snt-7f3a9c", Momento = relogio.Agora, TemperaturaC = 36, UmidadePct = 60 }, _semCancelar);
-            Assert.AreEqual("DE_SENTINELA", leitura.Alerta?.Tipo);
+            Assert.AreEqual(TipoDoAlertaNoApp.DeSentinela, leitura.Alerta?.Tipo);
         }
 
         int[] subidas = new int[3];
@@ -57,7 +56,7 @@ public sealed class FluxoDeAlertaTests
         CollectionAssert.AreEqual(umPorVolta, subidas);
         CollectionAssert.AreEqual(daRede, notificador.Avisos.Where(a => a.Destinatario != Destinatario.Morador).Select(a => a.Destinatario).ToArray());
         Assert.IsNotNull(checkIn.Alerta);
-        Assert.AreEqual(EstadoDoAlerta.Resolvido, checkIn.Alerta.Estado);
+        Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, checkIn.Alerta.Estado);
         await using (SombraDbContext db = criar())
         {
             Assert.IsEmpty(await new AlertaRepository(db).ListarAbertosAsync(_semCancelar));

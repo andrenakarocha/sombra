@@ -23,6 +23,9 @@ internal static class Conversores
     /// <summary>Cartão SUS ↔ os 15 dígitos. É opcional, mas o EF nunca passa nulo para um conversor.</summary>
     internal static readonly ValueConverter<CartaoSus?, string> CartaoSusEmTexto = new(c => c!.Valor, s => CartaoSus.Criar(s));
 
+    /// <summary>Telefone do morador ↔ os dígitos, com o DDD. É opcional, como o Cartão SUS.</summary>
+    internal static readonly ValueConverter<Telefone?, string> TelefoneEmTexto = new(t => t!.Valor, s => Telefone.Criar(s));
+
     /// <summary>Temperatura ↔ °C.</summary>
     internal static readonly ValueConverter<Temperatura, double> TemperaturaEmCelsius = new(t => t.Celsius, c => Temperatura.Criar(c));
 

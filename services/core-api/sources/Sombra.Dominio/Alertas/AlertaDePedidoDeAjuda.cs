@@ -20,6 +20,9 @@ public sealed class AlertaDePedidoDeAjuda : AlertaDeCalor
     /// <inheritdoc/>
     public override string MensagemAoMorador => "Pedido recebido. Sua família foi avisada.";
 
+    /// <inheritdoc/>
+    protected override string DescricaoDaAbertura => "Pedido de ajuda pela Sentinela ou pelo app.";
+
     /// <summary>Abre o pedido de ajuda e avisa a rede inteira na hora.</summary>
     /// <param name="domicilioId">A casa.</param>
     /// <param name="nivelAtual">O nível de calor no momento, só para contexto.</param>
@@ -29,7 +32,7 @@ public sealed class AlertaDePedidoDeAjuda : AlertaDeCalor
     {
         AlertaDePedidoDeAjuda alerta = new(domicilioId, nivelAtual, momento);
         alerta.RegistrarAbertura();
-        alerta.SubirPara(DegrauDeEscalonamento.AlertaParaARede, momento);
+        alerta.SubirPara(DegrauDeEscalonamento.AlertaParaARede, momento, "Toda a rede de cuidado foi avisada.");
         return alerta;
     }
 }

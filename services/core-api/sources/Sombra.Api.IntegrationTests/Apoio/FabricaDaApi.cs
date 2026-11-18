@@ -179,6 +179,9 @@ internal static class Demo
     /// <summary>A operação (Operador).</summary>
     internal const string Operador = "operador@demo.sombra";
 
+    /// <summary>A administração (Admin).</summary>
+    internal const string Admin = "admin@demo.sombra";
+
     /// <summary>A casa da Dona Lurdes.</summary>
     internal static readonly Guid Lurdes = new("0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10");
 

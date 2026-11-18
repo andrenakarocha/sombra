@@ -33,21 +33,22 @@ public sealed class ConsultasDoPainelTests
         await using SombraDbContext db = criar();
         ConsultasDoPainel consultas = new(db);
 
-        Paginado<DomicilioResumoResposta> emPerigo = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Nivel = nivelDaLurdes }, null, Casas.Agora, _semCancelar);
-        Paginado<DomicilioResumoResposta> vilaMaria = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Bairro = "Vila Maria" }, null, Casas.Agora, _semCancelar);
-        Paginado<DomicilioResumoResposta> segunda = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Pagina = 2, Tamanho = 2 }, null, Casas.Agora, _semCancelar);
+        Paginado<DomicilioDetalheResposta> emPerigo = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Nivel = nivelDaLurdes }, null, Casas.Agora, _semCancelar);
+        Paginado<DomicilioDetalheResposta> vilaMaria = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Bairro = "Vila Maria" }, null, Casas.Agora, _semCancelar);
+        Paginado<DomicilioDetalheResposta> segunda = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Pagina = 2, Tamanho = 2 }, null, Casas.Agora, _semCancelar);
 
         Assert.AreEqual(NivelDeRisco.Perigo, nivelDaLurdes);
         Assert.AreEqual(1, emPerigo.Total);
         Assert.AreEqual("Casa da Dona Lurdes", emPerigo.Itens.Single().Apelido);
-        Assert.IsTrue(emPerigo.Itens.Single().SentinelaOnline);
-        DomicilioResumoResposta joaquim = vilaMaria.Itens.Single();
+        Assert.IsTrue(emPerigo.Itens.Single().Sentinela?.Online);
+        Assert.AreEqual(36, emPerigo.Itens.Single().UltimaLeitura?.TemperaturaC);
+        DomicilioDetalheResposta joaquim = vilaMaria.Itens.Single();
         Assert.AreEqual(NivelDeRisco.Normal, joaquim.NivelAtual);
-        Assert.IsFalse(joaquim.SentinelaOnline);
+        Assert.IsFalse(joaquim.Sentinela?.Online);
         Assert.AreEqual(3, segunda.Total);
         Assert.AreEqual("Casa do Seu Joaquim", segunda.Itens.Single().Apelido);
 
-        Paginado<DomicilioResumoResposta> doCuidador = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto(), [Casas.Joaquim], Casas.Agora, _semCancelar);
+        Paginado<DomicilioDetalheResposta> doCuidador = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto(), [Casas.Joaquim], Casas.Agora, _semCancelar);
         Assert.AreEqual(Casas.Joaquim, doCuidador.Itens.Single().Id);
     }
 
@@ -72,14 +73,18 @@ public sealed class ConsultasDoPainelTests
             new FiltroDeLeiturasDto { De = Casas.Agora.AddMinutes(-90), Ate = Casas.Agora },
             _semCancelar);
         Paginado<AlertaResposta> todos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto(), null, _semCancelar);
-        Paginado<AlertaResposta> informativos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto { Estado = EstadoDoAlerta.Informativo }, null, _semCancelar);
+        Paginado<AlertaResposta> informativos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto { Estado = EstadoDoAlertaNoApp.AguardandoCheckin }, null, _semCancelar);
 
         Assert.AreEqual(1, leituras.Total);
         Assert.AreEqual(Casas.Agora.AddHours(-1), leituras.Itens.Single().Momento);
         Assert.AreEqual(33, leituras.Itens.Single().TemperaturaC);
-        string[] tipos = ["PREVENTIVO", "PEDIDO_DE_AJUDA"];
+        TipoDoAlertaNoApp[] tipos = [TipoDoAlertaNoApp.Preventivo, TipoDoAlertaNoApp.DeSentinela];
         CollectionAssert.AreEqual(tipos, todos.Itens.Select(a => a.Tipo).ToArray());
-        Assert.AreEqual("PREVENTIVO", informativos.Itens.Single().Tipo);
+        Assert.IsTrue(todos.Itens.All(a => a.ApelidoDaCasa == "Casa da Dona Lurdes"));
+        AlertaResposta preventivo = informativos.Itens.Single();
+        Assert.AreEqual(TipoDoAlertaNoApp.Preventivo, preventivo.Tipo);
+        Assert.AreEqual(preventivo.AbertoEm + AlertaPreventivo.Validade, preventivo.Prazo);
+        Assert.AreEqual("Previsão de calor perigoso nas próximas 24 horas.", preventivo.LinhaDoTempo.Single().Descricao);
     }
 
     /// <summary>O resumo do painel: agregações por nível, degrau e bairro, mediana até o check-in e Sentinelas offline.</summary>

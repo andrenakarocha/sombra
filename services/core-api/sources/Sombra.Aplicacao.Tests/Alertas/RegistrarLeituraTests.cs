@@ -31,8 +31,8 @@ public sealed class RegistrarLeituraTests
 
         Assert.AreEqual(NivelDeRisco.CautelaExtrema, resposta.Leitura.Nivel);
         Assert.IsNotNull(resposta.Alerta);
-        Assert.AreEqual("DE_SENTINELA", resposta.Alerta.Tipo);
-        Assert.AreEqual(EstadoDoAlerta.AguardandoCheckIn, resposta.Alerta.Estado);
+        Assert.AreEqual(TipoDoAlertaNoApp.DeSentinela, resposta.Alerta.Tipo);
+        Assert.AreEqual(EstadoDoAlertaNoApp.AguardandoCheckin, resposta.Alerta.Estado);
         Assert.AreEqual(Cenario.Inicio.AddMinutes(30), resposta.Alerta.Prazo);
         Notificacao aviso = cenario.Notificador.Avisos.Single();
         Assert.AreEqual(Destinatario.Morador, aviso.Destinatario);
@@ -121,7 +121,7 @@ public sealed class RegistrarLeituraTests
 
         LeituraRegistradaResposta resposta = await cenario.MedirAsync(36, 60);
 
-        Assert.AreEqual("DE_SENTINELA", resposta.Alerta?.Tipo);
+        Assert.AreEqual(TipoDoAlertaNoApp.DeSentinela, resposta.Alerta?.Tipo);
         Assert.AreEqual(2, cenario.Alertas.Alertas.Count(a => a.EstaAberto));
     }
 

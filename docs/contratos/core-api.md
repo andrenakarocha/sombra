@@ -21,27 +21,32 @@
   `"R5"`) · `429` limite de requisições.
 - **Paginação:** `?pagina=1&tamanho=20` (máximo 100) → `{ "itens": [], "pagina": 1, "tamanho": 20, "total": 57 }`.
 - **Correlação:** o header `X-Correlation-Id` é aceito e devolvido. Sem ele, o Core gera um (§6 do plano).
-- **PII:** CPF, Cartão SUS, telefone e saúde saem **sempre mascarados**, exceto em endpoints marcados para o `Cuidador`
-  da própria casa (spec 07). Máscara do CPF: `***.456.***-00` (o bloco do meio e os verificadores).
+- **PII:** CPF, Cartão SUS e saúde saem **sempre mascarados**. O telefone (do morador e da rede de cuidado) sai inteiro
+  só para o `Cuidador` da própria casa, que liga dali; para os outros papéis, mascarado (spec 07). Máscara do CPF:
+  `***.456.***-00` (o bloco do meio e os verificadores).
+- **O app é a referência (D17):** onde o app e o Core divergiam, o Core passou a falar o contrato do app. Os alertas
+  saem com os estados que o app conhece (`AGUARDANDO_CHECKIN`, `ESCALONADO`, `RECONHECIDO`, `RESOLVIDO`; no domínio, o
+  preventivo informativo e o expirado viram o primeiro e o último) e os tipos `PREVENTIVO` e `DE_SENTINELA` (o pedido de
+  ajuda aparece como da Sentinela, no degrau 3).
 
 ## Endpoints
 
 | Método | Rota | Papel | O que faz |
 |---|---|---|---|
 | POST | `/auth/login` | público | entra e recebe o token |
-| GET | `/domicilios?nivel=&bairro=&pagina=&tamanho=` | Cuidador, Operador | lista as casas (o Cuidador vê só as suas) |
+| GET | `/domicilios?nivel=&bairro=&pagina=&tamanho=` | Cuidador, Operador | lista as casas no mesmo formato do detalhe, que é o card do app (o Cuidador vê só as suas) |
 | POST | `/domicilios` | Cuidador, Admin | cadastra uma casa |
 | GET · PUT · DELETE | `/domicilios/{id}` | Cuidador, Admin | consulta, edita, remove |
 | GET · POST | `/domicilios/{id}/moradores` | Cuidador, Admin | lista e cadastra moradores |
 | GET · PUT · DELETE | `/domicilios/{id}/moradores/{moradorId}` | Cuidador, Admin | consulta, edita, remove |
-| GET · PUT | `/domicilios/{id}/rede-de-cuidado` | Cuidador | contatos em ordem, com papel `Familiar` ou `Vizinho` |
-| GET · PUT | `/domicilios/{id}/rotina` | Cuidador | check-in diário e lembretes (D13) |
+| GET · PUT | `/domicilios/{id}/rede-de-cuidado` | Cuidador | lista de contatos em ordem (`id`, `nome`, `papel` `FAMILIAR` ou `VIZINHO`, `telefone`) |
+| GET · PUT | `/domicilios/{id}/rotina` | Cuidador | `{ checkInDiario: { ativo, horario }, lembreteDeAgua: { ativo } }` (D13) |
 | POST | `/domicilios/{id}/sentinelas` | Cuidador, Admin | vincula uma Sentinela e devolve o segredo HMAC **uma única vez** |
 | GET | `/domicilios/{id}/sentinelas` | Cuidador, Operador | Sentinelas da casa e se estão online |
 | GET | `/domicilios/{id}/leituras?de=&ate=&pagina=` | Cuidador, Operador | leituras num período, da mais recente para a mais antiga |
 | POST | `/sentinelas/{deviceId}/leituras` | assinatura HMAC | alternativa por HTTP ao MQTT, com o mesmo payload assinado |
-| GET | `/alertas?estado=&nivel=&pagina=` | Cuidador, Operador | alertas (o Cuidador vê só os seus) |
-| GET | `/alertas/{id}` | Cuidador, Operador | alerta com a linha do tempo dos degraus |
+| GET | `/alertas?estado=&nivel=&pagina=` | Cuidador, Operador | alertas com o `apelidoDaCasa` e a linha do tempo (o Cuidador vê só os seus) |
+| GET | `/alertas/{id}` | Cuidador, Operador | alerta com a linha do tempo dos degraus (`momento`, `degrau`, `descricao`) |
 | POST | `/alertas/{id}/reconhecer` | Cuidador | `{"acao": "VOU_LIGAR" \| "ESTOU_INDO" \| "ELA_ESTA_BEM"}` |
 | POST | `/domicilios/{id}/check-ins` | Cuidador | `{"origem": "APP" \| "CUIDADOR", "situacao": "ESTOU_BEM" \| "PRECISO_DE_AJUDA"}` |
 | GET | `/domicilios/{id}/pontos-de-resfriamento?raioKm=` | Cuidador | pontos perto da casa, via Clima, com fallback |
@@ -69,7 +74,7 @@
   "alertaAberto": {
     "id": "5d2e9a40-1b7c-4f0e-8e1a-3c9b2d7f6a55",
     "tipo": "DE_SENTINELA",
-    "estado": "AGUARDANDO_CHECK_IN",
+    "estado": "AGUARDANDO_CHECKIN",
     "degrau": 0,
     "prazo": "2026-11-18T18:30:00Z"
   }

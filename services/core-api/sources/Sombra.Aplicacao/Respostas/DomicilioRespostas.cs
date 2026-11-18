@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Calor;
 using Sombra.Dominio.Casas;
@@ -50,11 +52,11 @@ public sealed record DomicilioDetalheResposta(
     /// <summary>Monta a visão a partir da casa e do que aconteceu nela por último.</summary>
     /// <param name="casa">A casa.</param>
     /// <param name="ultimaLeitura">A última leitura, se houver.</param>
-    /// <param name="ultimoCheckIn">O último check-in, se houver.</param>
+    /// <param name="ultimoCheckIn">Quando foi o último check-in, se houver.</param>
     /// <param name="alerta">O alerta aberto, se houver.</param>
     /// <param name="agora">O instante de referência, para saber se a Sentinela está online.</param>
     /// <returns>A visão.</returns>
-    public static DomicilioDetalheResposta De(Domicilio casa, Leitura? ultimaLeitura, CheckIn? ultimoCheckIn, AlertaDeCalor? alerta, DateTimeOffset agora)
+    public static DomicilioDetalheResposta De(Domicilio casa, Leitura? ultimaLeitura, DateTimeOffset? ultimoCheckIn, AlertaDeCalor? alerta, DateTimeOffset agora)
     {
         ArgumentNullException.ThrowIfNull(casa);
         Sentinela? sentinela = casa.Sentinelas.Count > 0 ? casa.Sentinelas[0] : null;
@@ -67,8 +69,17 @@ public sealed record DomicilioDetalheResposta(
             ultimaLeitura?.Nivel ?? NivelDeRisco.Normal,
             ultimaLeitura is null ? null : LeituraResposta.De(ultimaLeitura),
             sentinela is null ? null : SentinelaResposta.De(sentinela, agora),
-            ultimoCheckIn?.Momento,
-            alerta is null ? null : AlertaResposta.De(alerta));
+            ultimoCheckIn,
+            alerta is null ? null : AlertaResposta.De(alerta, casa.Apelido));
+    }
+
+    /// <summary>O alerta que a casa mostra: o que pede resposta vem antes do preventivo.</summary>
+    /// <param name="abertos">Os alertas abertos da casa, na ordem de abertura.</param>
+    /// <returns>O alerta, ou nulo quando não há nenhum aberto.</returns>
+    public static AlertaDeCalor? AlertaQueAparece(IReadOnlyList<AlertaDeCalor> abertos)
+    {
+        ArgumentNullException.ThrowIfNull(abertos);
+        return abertos.FirstOrDefault(a => a is not AlertaPreventivo) ?? (abertos.Count > 0 ? abertos[0] : null);
     }
 }
 

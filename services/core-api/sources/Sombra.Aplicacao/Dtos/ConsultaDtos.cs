@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Sombra.Dominio.Alertas;
+using Sombra.Aplicacao.Respostas;
 using Sombra.Dominio.Calor;
 
 namespace Sombra.Aplicacao.Dtos;
@@ -38,8 +38,8 @@ public sealed record FiltroDeAlertasDto : ConsultaPaginadaDto
 {
     /// <summary>O estado.</summary>
     /// <example>ESCALONADO</example>
-    [EnumDataType(typeof(EstadoDoAlerta), ErrorMessage = "Estado desconhecido.")]
-    public EstadoDoAlerta? Estado { get; init; }
+    [EnumDataType(typeof(EstadoDoAlertaNoApp), ErrorMessage = "Estado desconhecido.")]
+    public EstadoDoAlertaNoApp? Estado { get; init; }
 
     /// <summary>O nível de risco.</summary>
     /// <example>PERIGO</example>
