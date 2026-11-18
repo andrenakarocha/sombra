@@ -508,6 +508,44 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                     b.ToTable("eventos_de_seguranca", (string)null);
                 });
 
+            modelBuilder.Entity("Sombra.Infraestrutura.Seguranca.RequisicaoIdempotente", b =>
+                {
+                    b.Property<Guid>("Usuario")
+                        .HasColumnType("uuid")
+                        .HasColumnName("usuario");
+
+                    b.Property<string>("Chave")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("chave");
+
+                    b.Property<string>("Corpo")
+                        .HasColumnType("text")
+                        .HasColumnName("corpo");
+
+                    b.Property<DateTimeOffset>("CriadaEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("criada_em");
+
+                    b.Property<string>("Rota")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("rota");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.HasKey("Usuario", "Chave")
+                        .HasName("pk_requisicoes_idempotentes");
+
+                    b.HasIndex("CriadaEm")
+                        .HasDatabaseName("ix_requisicoes_idempotentes_criada_em");
+
+                    b.ToTable("requisicoes_idempotentes", (string)null);
+                });
+
             modelBuilder.Entity("Sombra.Dominio.Alertas.AlertaDePedidoDeAjuda", b =>
                 {
                     b.HasBaseType("Sombra.Dominio.Alertas.AlertaDeCalor");

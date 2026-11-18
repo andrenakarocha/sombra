@@ -184,6 +184,16 @@
               "format": "uuid"
             },
             "example": "5d2e9a40-1b7c-4f0e-8e1a-3c9b2d7f6a55"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Identifica a opera\u00E7\u00E3o da fila offline do app (o operationId). A mesma chave, pelo mesmo usu\u00E1rio e na mesma rota, devolve a mesma resposta por 24 horas, sem repetir o efeito (com o cabe\u00E7alho Idempotency-Replayed: true). Usada em outra rota: 422 com regra IDEMPOTENCIA.",
+            "schema": {
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9._:-]{1,100}$",
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -1293,7 +1303,7 @@
           "Domic\u00EDlios"
         ],
         "summary": "Registra um \u0022estou bem\u0022 ou um \u0022preciso de ajuda\u0022.",
-        "description": "O \u0022estou bem\u0022 encerra o alerta que pede resposta (caminho A). O \u0022preciso de ajuda\u0022 avisa a rede toda na hora (R7),\nno alerta que j\u00E1 estiver aberto ou num pedido de ajuda novo (R4).",
+        "description": "O \u0022estou bem\u0022 encerra o alerta que pede resposta (caminho A). O \u0022preciso de ajuda\u0022 avisa a rede toda na hora (R7),\nno alerta que j\u00E1 estiver aberto ou num pedido de ajuda novo (R4). Vindo da fila offline do app, vale o hor\u00E1rio do\ntoque em \u0060momento\u0060 (R14: nunca no futuro, at\u00E9 24 horas atr\u00E1s), e a \u0060Idempotency-Key\u0060 evita contar duas vezes.",
         "parameters": [
           {
             "name": "id",
@@ -1305,6 +1315,16 @@
               "format": "uuid"
             },
             "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Identifica a opera\u00E7\u00E3o da fila offline do app (o operationId). A mesma chave, pelo mesmo usu\u00E1rio e na mesma rota, devolve a mesma resposta por 24 horas, sem repetir o efeito (com o cabe\u00E7alho Idempotency-Replayed: true). Usada em outra rota: 422 com regra IDEMPOTENCIA.",
+            "schema": {
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9._:-]{1,100}$",
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -3292,6 +3312,17 @@
                 "$ref": "#/components/schemas/SituacaoDoCheckIn"
               }
             ]
+          },
+          "momento": {
+            "examples": [
+              "2026-11-18T18:06:00Z"
+            ],
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Quando a pessoa apertou (o app manda o hor\u00E1rio do toque quando o check-in esperou a rede); sem ele, vale o agora (R14).",
+            "format": "date-time"
           }
         },
         "description": "Um \u0022estou bem\u0022 ou \u0022preciso de ajuda\u0022."

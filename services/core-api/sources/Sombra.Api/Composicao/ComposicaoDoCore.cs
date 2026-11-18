@@ -89,6 +89,7 @@ public static class ComposicaoDoCore
         {
             opcoes.AddDocumentTransformer<DocumentoDoSombra>();
             opcoes.AddOperationTransformer<RespostasDeSeguranca>();
+            opcoes.AddOperationTransformer<CabecalhoDeIdempotencia>();
         });
     }
 

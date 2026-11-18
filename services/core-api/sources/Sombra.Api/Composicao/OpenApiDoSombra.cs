@@ -66,3 +66,31 @@ public sealed class RespostasDeSeguranca : IOpenApiOperationTransformer
         return Task.CompletedTask;
     }
 }
+
+/// <summary>Documenta o cabeçalho <c>Idempotency-Key</c> nas escritas marcadas com <see cref="IdempotenteAttribute"/>.</summary>
+public sealed class CabecalhoDeIdempotencia : IOpenApiOperationTransformer
+{
+    /// <inheritdoc/>
+    public Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+        ArgumentNullException.ThrowIfNull(context);
+        if (context.Description.ActionDescriptor.EndpointMetadata.OfType<IdempotenteAttribute>().Any())
+        {
+            operation.Parameters ??= [];
+            operation.Parameters.Add(new OpenApiParameter
+            {
+                Name = FiltroDeIdempotencia.Cabecalho,
+                In = ParameterLocation.Header,
+                Required = false,
+                Description = "Identifica a operação da fila offline do app (o operationId). A mesma chave, pelo mesmo usuário e na mesma rota, "
+                    + "devolve a mesma resposta por 24 horas, sem repetir o efeito (com o cabeçalho Idempotency-Replayed: true). "
+                    + "Usada em outra rota: 422 com regra IDEMPOTENCIA.",
+                Schema = new OpenApiSchema { Type = JsonSchemaType.String, MaxLength = 100, Pattern = "^[A-Za-z0-9._:-]{1,100}$" },
+            });
+        }
+
+        return Task.CompletedTask;
+    }
+}
+

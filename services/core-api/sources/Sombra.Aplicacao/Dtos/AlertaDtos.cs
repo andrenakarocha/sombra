@@ -47,6 +47,10 @@ public sealed record NovoCheckInDto
     [Required(ErrorMessage = "Informe a situação.")]
     [EnumDataType(typeof(SituacaoDoCheckIn), ErrorMessage = "Situação desconhecida.")]
     public SituacaoDoCheckIn? Situacao { get; init; }
+
+    /// <summary>Quando a pessoa apertou (o app manda o horário do toque quando o check-in esperou a rede); sem ele, vale o agora (R14).</summary>
+    /// <example>2026-11-18T18:06:00Z</example>
+    public DateTimeOffset? Momento { get; init; }
 }
 
 /// <summary>A resposta de um cuidador a um alerta.</summary>

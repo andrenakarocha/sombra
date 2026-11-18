@@ -30,6 +30,22 @@ internal sealed class MensagemDeSaidaConfiguration : IEntityTypeConfiguration<Me
     }
 }
 
+/// <summary>As respostas por <c>Idempotency-Key</c>, por usuário e chave, com índice na data para a limpeza.</summary>
+internal sealed class RequisicaoIdempotenteConfiguration : IEntityTypeConfiguration<RequisicaoIdempotente>
+{
+    public void Configure(EntityTypeBuilder<RequisicaoIdempotente> builder)
+    {
+        builder.ToTable("requisicoes_idempotentes");
+        builder.HasKey(r => new { r.Usuario, r.Chave });
+        builder.Property(r => r.Chave).HasMaxLength(100);
+        builder.Property(r => r.Rota).HasMaxLength(200);
+        builder.Property(r => r.Status);
+        builder.Property(r => r.Corpo).HasColumnType("text");
+        builder.Property(r => r.CriadaEm);
+        builder.HasIndex(r => r.CriadaEm);
+    }
+}
+
 /// <summary>A trilha de segurança, que só cresce.</summary>
 internal sealed class EventoDeSegurancaConfiguration : IEntityTypeConfiguration<EventoDeSeguranca>
 {
