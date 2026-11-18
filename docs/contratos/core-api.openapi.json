@@ -280,6 +280,154 @@
         ]
       }
     },
+    "/api/v1/domicilios/{id}/pontos-de-resfriamento": {
+      "get": {
+        "tags": [
+          "Perto de mim e privacidade"
+        ],
+        "summary": "Os pontos de resfriamento perto da casa.",
+        "description": "Do mais perto ao mais longe, dentro do raio (padr\u00E3o de 3 km), medidos da esta\u00E7\u00E3o do INMET da regi\u00E3o clim\u00E1tica da\ncasa. Por enquanto a lista \u00E9 de exemplo, rotulada na \u0060fonte\u0060; na F3.9 ela vem do Clima, no mesmo formato.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          },
+          {
+            "name": "RaioKm",
+            "in": "query",
+            "description": "Gets o raio, em km.",
+            "schema": {
+              "maximum": 20,
+              "minimum": 0.1,
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+              "type": [
+                "number",
+                "string"
+              ],
+              "format": "double"
+            },
+            "example": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PontoDeResfriamentoResposta"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PontoDeResfriamentoResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/domicilios/{id}/privacidade": {
+      "get": {
+        "tags": [
+          "Perto de mim e privacidade"
+        ],
+        "summary": "O farol de privacidade da casa e as mensagens para o cidad\u00E3o.",
+        "description": "Conta os eventos de seguran\u00E7a das Sentinelas da casa na \u00FAltima semana: nenhum \u00E9 verde, um ou dois \u00E9 amarelo, tr\u00EAs\nou mais \u00E9 vermelho. As mensagens v\u00EAm de templates, sem dado pessoal; a F2.5 troca o c\u00E1lculo e a F2.6 traz a tradu\u00E7\u00E3o\nda IA, sem mudar o formato.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "A casa.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "O farol e as mensagens.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacidadeDaCasaResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacidadeDaCasaResposta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "tags": [
@@ -3081,6 +3229,32 @@
         },
         "description": "Um passo da linha do tempo do alerta."
       },
+      "FarolDePrivacidade": {
+        "enum": [
+          "VERDE",
+          "AMARELO",
+          "VERMELHO"
+        ],
+        "description": "O farol de privacidade da casa: cor, \u00EDcone e texto v\u00EAm daqui (D12)."
+      },
+      "HorarioDeFuncionamentoResposta": {
+        "required": [
+          "abre",
+          "fecha"
+        ],
+        "type": "object",
+        "properties": {
+          "abre": {
+            "type": "string",
+            "description": "Quando abre."
+          },
+          "fecha": {
+            "type": "string",
+            "description": "Quando fecha."
+          }
+        },
+        "description": "O hor\u00E1rio de um ponto de resfriamento, \u0060HH:mm\u0060 local."
+      },
       "JsonElement": {},
       "LeituraResposta": {
         "required": [
@@ -3184,6 +3358,30 @@
           }
         },
         "description": "As credenciais do login."
+      },
+      "MensagemDePrivacidadeResposta": {
+        "required": [
+          "momento",
+          "mensagemCidadao",
+          "fonte"
+        ],
+        "type": "object",
+        "properties": {
+          "momento": {
+            "type": "string",
+            "description": "Quando aconteceu.",
+            "format": "date-time"
+          },
+          "mensagemCidadao": {
+            "type": "string",
+            "description": "O que aconteceu, em linguagem simples."
+          },
+          "fonte": {
+            "type": "string",
+            "description": "\u0060template\u0060 (texto fixo) ou \u0060IA\u0060 (traduzida pela IA, na F2.6)."
+          }
+        },
+        "description": "Uma mensagem de privacidade para o cidad\u00E3o, sem dado pessoal e sem jarg\u00E3o."
       },
       "MoradorResposta": {
         "required": [
@@ -3745,6 +3943,95 @@
         ],
         "description": "O papel de um contato no escalonamento em degraus (D13)."
       },
+      "PontoDeResfriamentoResposta": {
+        "required": [
+          "id",
+          "nome",
+          "tipo",
+          "distanciaKm",
+          "horario",
+          "acessivel",
+          "fonte",
+          "lat",
+          "lon"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "O identificador."
+          },
+          "nome": {
+            "type": "string",
+            "description": "O nome."
+          },
+          "tipo": {
+            "type": "string",
+            "description": "O tipo (\u0060BIBLIOTECA\u0060, \u0060UBS\u0060\u2026)."
+          },
+          "distanciaKm": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "A dist\u00E2ncia em linha reta at\u00E9 a refer\u00EAncia da casa, com uma casa decimal.",
+            "format": "double"
+          },
+          "horario": {
+            "description": "O hor\u00E1rio.",
+            "$ref": "#/components/schemas/HorarioDeFuncionamentoResposta"
+          },
+          "acessivel": {
+            "type": "boolean",
+            "description": "Se tem acesso para quem usa cadeira de rodas ou andador."
+          },
+          "fonte": {
+            "type": "string",
+            "description": "De onde veio o dado."
+          },
+          "lat": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "A latitude, para o \u0022abrir rota\u0022.",
+            "format": "double"
+          },
+          "lon": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "A longitude, para o \u0022abrir rota\u0022.",
+            "format": "double"
+          }
+        },
+        "description": "Um lugar fresco perto da casa, no formato do app e do contrato do Clima."
+      },
+      "PrivacidadeDaCasaResposta": {
+        "required": [
+          "farol",
+          "mensagens"
+        ],
+        "type": "object",
+        "properties": {
+          "farol": {
+            "description": "A cor do farol.",
+            "$ref": "#/components/schemas/FarolDePrivacidade"
+          },
+          "mensagens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MensagemDePrivacidadeResposta"
+            },
+            "description": "As \u00FAltimas mensagens, da mais recente para a mais antiga."
+          }
+        },
+        "description": "A privacidade da casa, no formato do app (D17). Por enquanto o farol conta os eventos de seguran\u00E7a das Sentinelas da\ncasa na \u00FAltima semana e as mensagens v\u00EAm de templates; a F2.5 troca o c\u00E1lculo por pesos e decaimento, e a F2.6 traz a\ntradu\u00E7\u00E3o da IA, sem mudar o formato."
+      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -4074,6 +4361,9 @@
   "tags": [
     {
       "name": "Alertas"
+    },
+    {
+      "name": "Perto de mim e privacidade"
     },
     {
       "name": "Autentica\u00E7\u00E3o"

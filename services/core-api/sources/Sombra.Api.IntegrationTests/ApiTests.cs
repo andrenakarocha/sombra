@@ -181,6 +181,30 @@ public sealed class ApiTests
         Assert.AreEqual("R5", regra);
     }
 
+    /// <summary>F6.25: as rotas que o app já chamava, de pé no formato dele; o Cuidador de outra casa não vê nada.</summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task PertoDeMimEPrivacidadePelaApi()
+    {
+        using HttpClient ana = await Api.ClienteDeAsync(Demo.Ana);
+        using HttpClient marcos = await Api.ClienteDeAsync(Demo.Marcos);
+        string casaUrl = $"/api/v1/domicilios/{Demo.Lurdes}";
+
+        List<PontoDeResfriamentoResposta> pontos = await (await ana.GetAsync(new Uri($"{casaUrl}/pontos-de-resfriamento?raioKm=3", UriKind.Relative)))
+            .CorpoAsync<List<PontoDeResfriamentoResposta>>(HttpStatusCode.OK);
+        PrivacidadeDaCasaResposta privacidade = await (await ana.GetAsync(new Uri($"{casaUrl}/privacidade", UriKind.Relative)))
+            .CorpoAsync<PrivacidadeDaCasaResposta>(HttpStatusCode.OK);
+        string corpo = await (await ana.GetAsync(new Uri($"{casaUrl}/privacidade", UriKind.Relative))).Content.ReadAsStringAsync();
+
+        Assert.HasCount(4, pontos);
+        Assert.IsTrue(pontos.Zip(pontos.Skip(1)).All(par => par.First.DistanciaKm <= par.Second.DistanciaKm));
+        Assert.AreEqual(FarolDePrivacidade.Verde, privacidade.Farol);
+        Assert.Contains("\"farol\":\"VERDE\"", corpo);
+        await (await ana.GetAsync(new Uri($"{casaUrl}/pontos-de-resfriamento?raioKm=50", UriKind.Relative))).ProblemaAsync(HttpStatusCode.BadRequest);
+        await (await marcos.GetAsync(new Uri($"{casaUrl}/privacidade", UriKind.Relative))).ProblemaAsync(HttpStatusCode.Forbidden);
+        await (await marcos.GetAsync(new Uri($"{casaUrl}/pontos-de-resfriamento", UriKind.Relative))).ProblemaAsync(HttpStatusCode.Forbidden);
+    }
+
     /// <summary>
     /// F6.23: a fila offline do app reenvia com a mesma <c>Idempotency-Key</c>. A repetição devolve a mesma resposta, sem
     /// abrir outro alerta nem virar 422 no reconhecer; a chave em outra rota é recusada, e uma chave malformada também.

@@ -733,10 +733,12 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   🔎 os dois lados passam nos mesmos vetores; spec 01 atualizada — 2026-11-18 (16 casos, 8 combinações × 79 e 80 anos, no
   Jest do app e no domínio do Core; 173 testes no Core). Para a DA6: com ≥ 80 anos e cardiopatia, o `PERIGO` pessoal começa
   em 34,94 °C, e o pico real de nov/2023 (35,47 °C) já é perigo para essa pessoa.
-- [ ] **F6.25** 🤖 As rotas que o app já usa: `GET /domicilios/{id}/privacidade` (farol pelos eventos de segurança da
+- [x] **F6.25** 🤖 As rotas que o app já usa: `GET /domicilios/{id}/privacidade` (farol pelos eventos de segurança da
   casa, mensagens por template; a F2.5 troca o cálculo por dentro) e `GET /domicilios/{id}/pontos-de-resfriamento`
   (lista versionada, rotulada como exemplo; a F3.9 passa a buscar no Clima).
-  🔎 as duas respostas passam nos schemas do app, e o formato não muda na F2.5 nem na F3.9.
+  🔎 as duas respostas passam nos schemas do app, e o formato não muda na F2.5 nem na F3.9 — 2026-11-18 (15 de 15
+  respostas do Core real nos schemas do app; uma telemetria adulterada pelo simulador deixa o farol da casa amarelo; a
+  referência da casa é a estação A701 da região; 181 testes).
 - [ ] **F6.26** 🤖 Contrato vivo: um teste de integração do Core grava amostras reais em `docs/contratos/amostras/` e o
   Jest do app passa cada uma pelos schemas Zod; README do Core e `core-api.md` em dia.
   🔎 mudar um campo no Core sem mudar o app deixa o CI vermelho.

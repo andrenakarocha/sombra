@@ -9,9 +9,12 @@ using Sombra.Aplicacao.Respostas;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Calor;
 using Sombra.Dominio.Casas;
+using Sombra.Dominio.Geo;
 using Sombra.Dominio.Sentinelas;
+using Sombra.Infraestrutura.Clima;
 using Sombra.Infraestrutura.Persistencia;
 using Sombra.Infraestrutura.Persistencia.Repositorios;
+using Sombra.Infraestrutura.Seguranca;
 using Sombra.Infraestrutura.Tests.Apoio;
 
 namespace Sombra.Infraestrutura.Tests;
@@ -152,6 +155,39 @@ public sealed class ConsultasDoPainelTests
         Leitura? leitura = await new LeituraRepository(db).ObterUltimaAsync(casaId, _semCancelar);
         Assert.IsNotNull(leitura);
         return leitura;
+    }
+
+    /// <summary>
+    /// D17: o farol de privacidade da casa conta só os eventos de segurança das Sentinelas dela, na última semana; os
+    /// pontos de exemplo saem do mais perto ao mais longe, dentro do raio, com a fonte rotulada.
+    /// </summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task PrivacidadeDaCasaEPontosDeExemplo()
+    {
+        Func<SombraDbContext> criar = await BancoDeTeste.NovoBancoAsync();
+        await using (SombraDbContext db = criar())
+        {
+            db.EventosDeSeguranca.AddRange(
+                EventoDeSeguranca.Registrar(Casas.Agora.AddHours(-1), "MQTT_ASSINATURA_INVALIDA", "snt-7f3a9c", null, "telemetria seq 9"),
+                EventoDeSeguranca.Registrar(Casas.Agora.AddHours(-2), "MQTT_REPLAY", "snt-7f3a9c", null, "seq 8 repetido"),
+                EventoDeSeguranca.Registrar(Casas.Agora.AddDays(-9), "MQTT_REPLAY", "snt-7f3a9c", null, "seq 1 repetido"),
+                EventoDeSeguranca.Registrar(Casas.Agora.AddHours(-1), "MQTT_SENTINELA_DESCONHECIDA", "snt-999999", null, "Sentinela sem casa"));
+            await db.SaveChangesAsync(_semCancelar);
+        }
+
+        await using SombraDbContext leitura = criar();
+        ConsultasDoPainel consultas = new(leitura);
+        PrivacidadeDaCasaResposta daLurdes = await consultas.PrivacidadeDaCasaAsync(Casas.Lurdes, Casas.Agora, _semCancelar);
+        PrivacidadeDaCasaResposta doJoaquim = await consultas.PrivacidadeDaCasaAsync(Casas.Joaquim, Casas.Agora, _semCancelar);
+        IReadOnlyList<PontoDeResfriamentoResposta> pontos = await new PontosDeResfriamentoDeExemplo().ProximosAsync(PontoGeografico.Criar(-23.4964, -46.6200), 3, _semCancelar);
+
+        Assert.AreEqual(FarolDePrivacidade.Amarelo, daLurdes.Farol);
+        Assert.HasCount(2, daLurdes.Mensagens);
+        Assert.AreEqual(FarolDePrivacidade.Verde, doJoaquim.Farol);
+        double[] distancias = [0.8, 1.2, 2.0, 2.5];
+        CollectionAssert.AreEqual(distancias, pontos.Select(p => p.DistanciaKm).ToArray());
+        Assert.IsTrue(pontos.All(p => p.Nome.EndsWith("(exemplo)", StringComparison.Ordinal) && p.Fonte == PontosDeResfriamentoDeExemplo.Fonte));
     }
 
     private static async Task GravarAlertasAsync(Func<SombraDbContext> criar, params AlertaDeCalor[] alertas)
