@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sombra.Aplicacao.Portas;
 using Sombra.Infraestrutura.Autenticacao;
 using Sombra.Infraestrutura.Clima;
+using Sombra.Infraestrutura.Ia;
 using Sombra.Infraestrutura.Mensageria;
 using Sombra.Infraestrutura.Mqtt;
 using Sombra.Infraestrutura.Persistencia;
@@ -34,6 +35,7 @@ public static class ServicosDaInfraestrutura
         servicos.AddSingleton<FilaDeVazamentos>();
         servicos.AddSingleton<IObservadorDeVazamentos>(provedor => provedor.GetRequiredService<FilaDeVazamentos>());
         servicos.AddTransient<GuardaDeSaidaHttp>();
+        servicos.AddScoped<TradutorDeRisco>();
         servicos.AddDbContext<SombraDbContext>(opcoes => SombraDbContext.Configurar(opcoes, conexao));
         servicos.AddScoped<IUnitOfWork>(provedor => provedor.GetRequiredService<SombraDbContext>());
         servicos.AddScoped<IDomicilioRepository, DomicilioRepository>();
@@ -67,6 +69,7 @@ public static class ServicosDaInfraestrutura
     {
         servicos.AddSingleton<ConexaoMqtt>();
         servicos.AddHostedService<VazamentosWorker>();
+        servicos.AddHostedService<TradutorDeRiscoWorker>();
         servicos.AddScoped<ProcessadorDaSentinela>();
         servicos.AddScoped<ICanalDeNotificacao, CanalSentinela>();
         servicos.AddScoped<ICanalDeNotificacao, CanalApp>();

@@ -154,7 +154,7 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
         List<EventoDeSeguranca> eventos = await _db.EventosDeSeguranca.AsNoTracking()
             .Where(e => (e.DomicilioId == domicilioId || sentinelas.Contains(e.Origem)) && e.Momento >= desde)
             .ToListAsync(cancellationToken);
-        return PrivacidadeDaCasaResposta.De(eventos.Select(e => (e.Tipo, e.ParaRisco())), agora);
+        return PrivacidadeDaCasaResposta.De(eventos.Select(e => (e.Tipo, e.ParaRisco(), e.Traducao)), agora);
     }
 
     /// <inheritdoc/>
@@ -176,7 +176,7 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
             .Take(filtro.Tamanho)
             .ToListAsync(cancellationToken);
         return new(
-            [.. pagina.Select(e => new EventoDeSegurancaResposta(e.Id, e.Momento, e.Tipo, e.Origem, e.Sink, e.Categoria, e.Severidade, e.Regra, e.Bloqueado, e.DomicilioId, e.CorrelationId, e.Detalhe))],
+            [.. pagina.Select(e => new EventoDeSegurancaResposta(e.Id, e.Momento, e.Tipo, e.Origem, e.Sink, e.Categoria, e.Severidade, e.Regra, e.Bloqueado, e.DomicilioId, e.CorrelationId, e.Detalhe, e.Traducao))],
             filtro.Pagina,
             filtro.Tamanho,
             total);
