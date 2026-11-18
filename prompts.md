@@ -20,4 +20,24 @@ integrante sabe explicar o que entregou.
 5. *"Proponha uma direção de arte a partir das fotos do território, com tokens e contraste verificado nos dois temas."*
 6. *"Monte o ambiente local, o simulador da Sentinela, o CI e o download dos dados reais do INMET."*
 
+## Core API (C#)
+
+1. *"Monte o Core em .NET 10 com cinco camadas (Domínio, Aplicação, Infraestrutura, Privacidade e API) e o pipeline de
+   qualidade do professor sem alteração, com todo comando rodando na imagem do SDK, igual ao CI."*
+2. *"Modele o domínio do Sombra com POO de verdade: value objects que recusam estado inválido, o agregado Domicilio, os
+   fatores de risco que reduzem os limites térmicos e a hierarquia de alertas com a máquina de estados e o escalonamento
+   em degraus da entrevista. Cada regra com teste."*
+3. *"Escreva os casos de uso e as portas da aplicação, com DTOs validados por DataAnnotations e testes com fakes para os
+   caminhos A e B do roteiro."*
+4. *"Persista o domínio com EF Core e PostgreSQL sem contaminar o domínio: tipos complexos, conversores, TPH, as
+   migrações do plano e as consultas LINQ do painel, com testes de integração em Testcontainers."*
+5. *"Exponha a API v1 com ProblemDetails, JWT com papéis, Cuidador restrito às casas dele, limite de requisições e
+   OpenAPI com resumo, exemplo e 4xx em todo endpoint, no Scalar."*
+6. *"Siga o formato de log da observabilidade, uma linha JSON por evento com correlação de ponta a ponta e nenhum dado
+   pessoal, e ponha o Core real no `make up`."*
+7. *"Ligue o Core à Sentinela por MQTT assinado, com HMAC e anti-replay, outbox, workers, o lembrete da rotina e o hub
+   SignalR. Rode o simulador nos três cenários do roteiro e corrija o que ele revelar."*
+8. *"Escreva testes de arquitetura que barrem dependências erradas entre as camadas e um teste que rode o roteiro da
+   Dona Lurdes de ponta a ponta; depois, o README da pasta com a rubrica e as evidências."*
+
 <!-- Cada parte acrescenta aqui os seus prompts principais quando fecha (PLANO §0, regra 16). -->
