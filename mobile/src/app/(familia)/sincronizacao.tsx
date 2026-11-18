@@ -63,7 +63,7 @@ export default function Sincronizacao() {
               </Texto>
               {op.estado === 'DEAD_LETTER' && (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: espaco[3] }}>
-                  <Botao rotulo="Reenviar" aoTocar={() => central.reenviar(op.operationId).then(atualizar)} />
+                  <Botao rotulo="Reenviar" dica="Tenta enviar este aviso de novo" aoTocar={() => central.reenviar(op.operationId).then(atualizar)} />
                   <Botao
                     rotulo="Descartar"
                     variante="secundario"
@@ -75,7 +75,7 @@ export default function Sincronizacao() {
             </View>
           ))}
 
-          <Botao rotulo="Tentar enviar agora" aoTocar={() => central.tentarAgora().then(atualizar)} />
+          <Botao rotulo="Tentar enviar agora" dica="Envia agora o que está esperando a internet" aoTocar={() => central.tentarAgora().then(atualizar)} />
 
           <View
             style={{ flexDirection: 'row', alignItems: 'center', gap: espaco[3], minHeight: toque.minimo, marginTop: espaco[4] }}
@@ -88,6 +88,7 @@ export default function Sincronizacao() {
             </View>
             <Switch
               accessibilityLabel="Simular sem internet"
+              accessibilityHint="Segura os envios no celular até você desligar"
               value={d.offlineForcado}
               onValueChange={(v) => {
                 central.forcarOffline(v);

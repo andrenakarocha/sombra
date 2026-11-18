@@ -97,9 +97,9 @@ export default function ModoIdoso() {
               {CONFIRMACAO[resposta.situacao][resposta.resultado]}
             </Texto>
             {resposta.situacao === 'PRECISO_DE_AJUDA' && resposta.resultado !== 'ENVIADO' && (
-              <Botao rotulo="Ligar 192 (SAMU)" aoTocar={() => ligar('192')} />
+              <Botao rotulo="Ligar 192 (SAMU)" dica="Liga para a emergência" aoTocar={() => ligar('192')} />
             )}
-            <Botao rotulo="Voltar" variante="secundario" aoTocar={() => setResposta(null)} />
+            <Botao rotulo="Voltar" variante="secundario" dica="Volta para a tela com os botões grandes" aoTocar={() => setResposta(null)} />
           </View>
         ) : (
           <>
@@ -123,7 +123,7 @@ export default function ModoIdoso() {
         )}
 
         <View style={{ flex: 1 }} />
-        <Botao rotulo="Ouvir de novo" variante="secundario" aoTocar={() => falar(situacao)} />
+        <Botao rotulo="Ouvir de novo" variante="secundario" dica="Fala a situação em voz alta de novo" aoTocar={() => falar(situacao)} />
         <SairDoModoIdoso />
       </ScrollView>
     </SafeAreaView>

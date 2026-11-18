@@ -60,7 +60,7 @@ export default function Entrar() {
               {erro}
             </Texto>
           )}
-          <Botao rotulo={enviando ? 'Entrando…' : 'Entrar'} aoTocar={aoEntrar} />
+          <Botao rotulo={enviando ? 'Entrando…' : 'Entrar'} dica="Entra com o e-mail e a senha da sua conta" aoTocar={aoEntrar} />
           <Texto suave>Sem servidor por perto? Dá para conhecer o app com dados de exemplo.</Texto>
           <Botao
             rotulo="Ver com dados de exemplo"

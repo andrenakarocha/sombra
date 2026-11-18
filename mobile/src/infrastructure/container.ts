@@ -9,6 +9,7 @@ import { Escritas } from '@/application/casos-de-uso/escritas';
 import { PrivacidadeLocal } from '@/application/casos-de-uso/privacidade-local';
 import { ServicoDeSessao } from '@/application/casos-de-uso/sessao';
 import type { Container } from '@/application/container';
+import { preferenciasStore } from '@/application/estado/preferencias';
 import { PARADA, reproducaoStore } from '@/application/estado/reproducao';
 import { emDemonstracao } from '@/application/estado/sessao';
 import { ProjetorDeEventos } from '@/application/eventos/projetor';
@@ -146,6 +147,7 @@ export async function montarContainer(a: Adaptadores): Promise<Container & { dem
       apagarTudo: async () => {
         await sessao.sair();
         await apagarDadosLocais(a.db, { inclusivePreferencias: true });
+        preferenciasStore.setState({ escalaDoTexto: 'NORMAL' });
       },
     }),
     eventos,

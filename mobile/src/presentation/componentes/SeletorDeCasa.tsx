@@ -34,6 +34,7 @@ export function SeletorDeCasa({
             accessibilityRole="radio"
             accessibilityState={{ checked: ativa }}
             accessibilityLabel={c.apelido}
+            accessibilityHint="Mostra os dados desta casa"
             onPress={() => aoEscolher(c.id)}
             style={{
               minHeight: toque.minimo,

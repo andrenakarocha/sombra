@@ -77,7 +77,7 @@ export function CartaoCasa({ casa, aoAbrir, aoLigar }: Props) {
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: espaco[3] }}>
         {aoLigar && <Botao rotulo="Ligar" dica="Liga para o primeiro contato da rede de cuidado" aoTocar={aoLigar} />}
-        <Botao rotulo="Ver a casa" variante="secundario" aoTocar={aoAbrir} />
+        <Botao rotulo="Ver a casa" variante="secundario" dica="Abre o gráfico, o risco e a rede de cuidado" aoTocar={aoAbrir} />
       </View>
     </View>
   );

@@ -55,6 +55,7 @@ export default function RotinaDaCasa() {
                 accessibilityRole="radio"
                 accessibilityState={{ checked: escolhido }}
                 accessibilityLabel={`${Number(h.slice(0, 2))} horas`}
+                accessibilityHint="Escolhe o horário do check-in diário"
                 onPress={() => setDados((d) => ({ ...d, checkInDiario: { ...d.checkInDiario, horario: h } }))}
                 style={{
                   minHeight: toque.minimo,
@@ -85,7 +86,7 @@ export default function RotinaDaCasa() {
 
       <Texto suave>Entre 22h e 7h o Sombra não manda lembrete. Alerta de perigo toca a qualquer hora.</Texto>
       {mensagem && <Texto accessibilityRole="alert">{mensagem}</Texto>}
-      <Botao rotulo="Salvar a rotina" aoTocar={salvar} />
+      <Botao rotulo="Salvar a rotina" dica="Envia os horários ao Sombra e à Sentinela" aoTocar={salvar} />
     </ScrollView>
   );
 }
@@ -100,7 +101,7 @@ function Linha({ titulo, explicacao, valor, aoMudar }: { titulo: string; explica
           {explicacao}
         </Texto>
       </View>
-      <Switch accessibilityLabel={titulo} value={valor} onValueChange={aoMudar} trackColor={{ true: tema.marca, false: tema.borda }} />
+      <Switch accessibilityLabel={titulo} accessibilityHint={explicacao} value={valor} onValueChange={aoMudar} trackColor={{ true: tema.marca, false: tema.borda }} />
     </View>
   );
 }

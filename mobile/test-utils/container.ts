@@ -36,7 +36,7 @@ export async function containerDeTeste({
   biometria?: Biometria;
 } = {}) {
   sessaoStore.setState({ token: logado ? 'token-de-teste' : null, carregada: true });
-  preferenciasStore.setState({ modoIdosoCasaId: null, carregada: true });
+  preferenciasStore.setState({ modoIdosoCasaId: null, escalaDoTexto: 'NORMAL', carregada: true });
 
   const clock = FixedClock.at(agora);
   const db = await SqlJsDatabase.abrir();

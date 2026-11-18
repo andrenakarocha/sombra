@@ -64,7 +64,7 @@ export default function Casa() {
         />
       )}
       {morador && podeLigar(morador.telefone) && (
-        <Botao rotulo={`Ligar para ${morador.nome}`} aoTocar={() => ligar(morador.telefone!)} />
+        <Botao rotulo={`Ligar para ${morador.nome}`} dica="Abre o discador com o telefone dela" aoTocar={() => ligar(morador.telefone!)} />
       )}
 
       {morador && risco && (
