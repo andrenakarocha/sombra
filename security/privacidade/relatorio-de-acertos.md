@@ -3,13 +3,13 @@
 > Gerado por `make pii-relatorio` (teste `RelatorioDeAcertos` em `Sombra.Privacidade.Tests`). Regras: `pii-regras.json`.
 > Os casos usam só dados sintéticos e o relatório não reproduz nenhum texto analisado.
 
-**56 de 56 casos corretos** · falsos negativos: **0** · falsos positivos: **0**
+**58 de 58 casos corretos** · falsos negativos: **0** · falsos positivos: **0**
 
 ## Por regra
 
 | Regra | Casos com o dado | Detectados | Falsos negativos | Falsos positivos | Recall |
 |---|---:|---:|---:|---:|---:|
-| `cpf` | 7 | 7 | 0 | 0 | 100 % |
+| `cpf` | 8 | 8 | 0 | 0 | 100 % |
 | `cns` | 3 | 3 | 0 | 0 | 100 % |
 | `rg` | 3 | 3 | 0 | 0 | 100 % |
 | `telefone` | 7 | 7 | 0 | 0 | 100 % |
@@ -23,7 +23,7 @@
 | Tipo | Casos | Corretos |
 |---|---:|---:|
 | Positivo | 29 | 29 |
-| Difícil | 10 | 10 |
+| Difícil | 12 | 12 |
 | Negativo | 17 | 17 |
 
 ## Casos
@@ -80,9 +80,11 @@
 | 48 | Negativo | UUID de correlação | texto livre | nenhum | nenhum | ✅ |
 | 49 | Negativo | Identificador longo sem dígitos | texto livre | nenhum | nenhum | ✅ |
 | 50 | Negativo | Hash curto de commit | texto livre | nenhum | nenhum | ✅ |
-| 51 | Positivo | Vários dados no mesmo texto livre | texto livre | `telefone`, `email`, `cpf` | `cpf`, `email`, `telefone` | ✅ |
-| 52 | Difícil | JSON serializado dentro de um campo | texto livre | `cpf` | `cpf` | ✅ |
-| 53 | Negativo | Coordenadas | texto livre | nenhum | nenhum | ✅ |
-| 54 | Negativo | Mensagem de alerta comum | texto livre | nenhum | nenhum | ✅ |
-| 55 | Negativo | Identificador da Sentinela | texto livre | nenhum | nenhum | ✅ |
-| 56 | Negativo | Campo vazio com chave sensível | `cpf` | nenhum | nenhum | ✅ |
+| 51 | Difícil | Assinatura HMAC no campo sig não é segredo | `sig` | nenhum | nenhum | ✅ |
+| 52 | Difícil | CPF escondido no campo sig continua sendo CPF | `sig` | `cpf` | `cpf` | ✅ |
+| 53 | Positivo | Vários dados no mesmo texto livre | texto livre | `telefone`, `email`, `cpf` | `cpf`, `email`, `telefone` | ✅ |
+| 54 | Difícil | JSON serializado dentro de um campo | texto livre | `cpf` | `cpf` | ✅ |
+| 55 | Negativo | Coordenadas | texto livre | nenhum | nenhum | ✅ |
+| 56 | Negativo | Mensagem de alerta comum | texto livre | nenhum | nenhum | ✅ |
+| 57 | Negativo | Identificador da Sentinela | texto livre | nenhum | nenhum | ✅ |
+| 58 | Negativo | Campo vazio com chave sensível | `cpf` | nenhum | nenhum | ✅ |

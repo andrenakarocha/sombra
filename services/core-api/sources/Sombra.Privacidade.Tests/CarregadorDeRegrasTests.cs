@@ -53,6 +53,9 @@ public sealed class CarregadorDeRegrasTests
     [DataRow("""{"versao":1,"regras":[{"id":"x","categoria":"Contato","severidade":"Alta","chaves":["x",""],"mascara":"cpf","baseLegal":"LGPD art. 5º"}]}""", ".chaves: precisa ser uma lista")]
     [DataRow("""{"versao":1,"regras":[{"id":"x","categoria":"Contato","severidade":"Alta","chaves":["x"],"baseLegal":"LGPD art. 5º"}]}""", ".mascara: obrigatório")]
     [DataRow("""{"versao":1,"regras":[{"id":"x","categoria":"Contato","severidade":"Alta","chaves":["x"],"mascara":"cpf","baseLegal":"LGPD art. 5º","cor":"azul"}]}""", ".cor: campo desconhecido")]
+    [DataRow("""{"versao":1,"regras":[{"id":"x","categoria":"Contato","severidade":"Alta","chaves":["x"],"excetoChaves":["sig"],"mascara":"cpf","baseLegal":"LGPD art. 5º"}]}""", ".excetoChaves: só vale")]
+    [DataRow("""{"versao":1,"regras":[{"id":"x","categoria":"Contato","severidade":"Alta","padrao":"x","campoLivre":true,"mascara":"cpf","baseLegal":"LGPD art. 5º"}]}""", ".campoLivre: só vale")]
+    [DataRow("""{"versao":1,"regras":[{"id":"x","categoria":"Contato","severidade":"Alta","chaves":["x"],"campoLivre":"sim","mascara":"cpf","baseLegal":"LGPD art. 5º"}]}""", ".campoLivre: precisa ser")]
     public void RecusaSchemaInvalido(string json, string trecho)
     {
         RegrasDePiiInvalidasException erro = Assert.ThrowsExactly<RegrasDePiiInvalidasException>(() => CarregadorDeRegras.Carregar(json));
