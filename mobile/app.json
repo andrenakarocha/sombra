@@ -29,7 +29,13 @@
       "expo-asset",
       "expo-sqlite",
       "expo-secure-store",
-      "expo-background-task"
+      "expo-background-task",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "O Sombra usa sua localização só para mostrar o lugar fresco mais perto e a direção até ele."
+        }
+      ]
     ],
     "scheme": "sombra",
     "experiments": {

@@ -54,3 +54,12 @@ export type EstadoDoSegundoPlano = 'ATIVO' | 'RESTRITO' | 'INDISPONIVEL';
 export interface SincronizacaoEmSegundoPlano {
   registrar(): Promise<EstadoDoSegundoPlano>;
 }
+
+export type Coordenadas = { lat: number; lon: number };
+
+export interface Localizacao {
+  // null: sem permissão ou sem sinal (a tela segue com a distância que o servidor mandou).
+  atual(): Promise<Coordenadas | null>;
+  // Direção do aparelho em graus (bússola); devolve a função que para de ouvir.
+  observarDirecao(ouvinte: (graus: number) => void): Promise<() => void>;
+}

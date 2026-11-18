@@ -14,6 +14,7 @@ import type { GeradorDeId } from '@/application/ports/outbox';
 import type {
   CanalDeTempoReal,
   CofreDeSessao,
+  Localizacao,
   MonitorDeRede,
   Notificador,
   RepositoriosDaUnidade,
@@ -72,6 +73,7 @@ export type Adaptadores = {
   rede: MonitorDeRede;
   ids: GeradorDeId;
   worker?: SincronizacaoEmSegundoPlano;
+  localizacao?: Localizacao;
   clock?: Clock;
   sorteio?: () => number;
   demo?: CoreDemoGateway;
@@ -119,6 +121,7 @@ export async function montarContainer(a: Adaptadores): Promise<Container & { dem
     tempoReal,
     rede: a.rede,
     notificador: a.notificador,
+    localizacao: a.localizacao ?? { atual: async () => null, observarDirecao: async () => () => {} },
     clock,
     demoGateway: demo,
     demonstracao: {
