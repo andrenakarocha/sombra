@@ -678,8 +678,8 @@ Go; o APK via EAS é um extra.
   para a A701:** o índice de calor real máximo é 35,5 °C (14 e 15/11), ou seja, `CAUTELA_EXTREMA`; nenhuma hora chega a
   `PERIGO` (39,44 °C) pela régua da NWS. Com o R3, o mesmo pico é `PERIGO` para quem tem cardiopatia e toma diurético.
   Vale também para o roteiro (§3.4) e o replay do Clima (F3). Espera a decisão do operador; o app mostra os dois níveis.
-- [ ] **F6.16** 🤖 Risco explicável na tela da casa: "por que a Dona Lurdes está em risco" (fatores e limiar).
-  🔎 o limiar exibido bate com o domínio para cada combinação de fatores.
+- [x] **F6.16** 🤖 Risco explicável na tela da casa: "por que a Dona Lurdes está em risco" (fatores e limiar).
+  🔎 o limiar exibido bate com o domínio para cada combinação de fatores — 2026-11-17 (8 combinações × 2 idades).
 - [ ] **F6.17** 🤖 Perto de mim com GPS e bússola: distância (haversine) e uma seta grande até o ponto fresco.
   🔎 testes de distância e rumo; seta conferida no aparelho do operador.
 - [ ] **F6.18** 🤖 Parear a Sentinela por QR (câmera; o segredo HMAC vai para o SecureStore) + Rotina (check-in

@@ -4,6 +4,7 @@ import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-nativ
 import { INFO_DO_NIVEL } from '@/domain/clima/nivel-de-risco';
 import { AvisoOffline } from '@/presentation/componentes/AvisoOffline';
 import { Botao } from '@/presentation/componentes/Botao';
+import { ExplicacaoDoRisco } from '@/presentation/componentes/ExplicacaoDoRisco';
 import { Farol } from '@/presentation/componentes/Farol';
 import { GraficoDeCalor } from '@/presentation/componentes/GraficoDeCalor';
 import { Texto } from '@/presentation/componentes/Texto';
@@ -27,7 +28,7 @@ export default function Casa() {
     );
   }
 
-  const { casa: c, leituras24h, moradores, rede } = painel.data.dados;
+  const { casa: c, leituras24h, moradores, rede, risco } = painel.data.dados;
   const morador = moradores[0];
   return (
     <ScrollView
@@ -64,6 +65,10 @@ export default function Casa() {
       )}
       {morador && podeLigar(morador.telefone) && (
         <Botao rotulo={`Ligar para ${morador.nome}`} aoTocar={() => ligar(morador.telefone!)} />
+      )}
+
+      {morador && risco && (
+        <ExplicacaoDoRisco nome={morador.nome.split(' ')[0]!} risco={risco} indiceC={c.ultimaLeitura?.indiceDeCalorC ?? null} />
       )}
 
       <Botao
