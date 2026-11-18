@@ -20,7 +20,7 @@ EF := dotnet tool restore >/dev/null && dotnet ef
 DB_PORTA := $(or $(shell grep -m1 '^DB_PORTA_LOCAL=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-),55432)
 CORE_DB_PASSWORD := $(shell grep -m1 '^CORE_DB_PASSWORD=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-)
 
-.PHONY: help restore build test coverage coverage-report format format-fix quality migration migration-check db-migrate openapi amostras
+.PHONY: help restore build test coverage coverage-report format format-fix quality migration migration-check db-migrate openapi amostras pii-relatorio
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-11s %s\n", $$1, $$2}'
@@ -75,3 +75,8 @@ openapi: build ## Regenera docs/contratos/core-api.openapi.json a partir da API 
 amostras: build ## Regrava docs/contratos/amostras/ com as respostas reais que o app lê (o teste confere o formato; o Jest do app, os schemas)
 	@$(DOTNET_COM_DOCKER) sh -c 'SOMBRA_ATUALIZAR_AMOSTRAS=1 dotnet test sources/Sombra.Api.IntegrationTests --no-build --nologo -v quiet --filter AmostrasDoAppBatemComOCore'
 
+
+pii-relatorio: build ## Roda a tabela do motor de PII e regrava security/privacidade/relatorio-de-acertos.md
+	@mkdir -p $(RAIZ)/security/privacidade
+	@$(DOTNET) sh -c 'SOMBRA_RELATORIO_PII=/repo/security/privacidade/relatorio-de-acertos.md dotnet test sources/Sombra.Privacidade.Tests --no-build --nologo -v quiet --filter RelatorioDeAcertos'
+	@sed -n '5p' $(RAIZ)/security/privacidade/relatorio-de-acertos.md
