@@ -83,6 +83,33 @@ public sealed class RegistrarLeituraTests
         Assert.HasCount(2, cenario.Leituras.Itens);
     }
 
+    /// <summary>
+    /// Regra R13: logo depois do "estou bem", a casa ainda quente não pede o botão de novo; um nível mais alto reabre, e
+    /// passada uma hora também.
+    /// </summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task CarenciaDepoisDoEstouBem()
+    {
+        Cenario cenario = new();
+        Domicilio casa = cenario.CasaMonitorada();
+        await cenario.MedirAsync(36, 60);
+        await cenario.CheckInAsync(casa.Id, OrigemDoCheckIn.BotaoSentinela, SituacaoDoCheckIn.EstouBem);
+
+        cenario.Relogio.Avancar(TimeSpan.FromMinutes(1));
+        LeituraRegistradaResposta aindaQuente = await cenario.MedirAsync(36, 60);
+        cenario.Relogio.Avancar(TimeSpan.FromMinutes(1));
+        LeituraRegistradaResposta piorou = await cenario.MedirAsync(40, 80);
+        await cenario.CheckInAsync(casa.Id, OrigemDoCheckIn.BotaoSentinela, SituacaoDoCheckIn.EstouBem);
+        cenario.Relogio.Avancar(AlertaDeSentinela.Carencia);
+        LeituraRegistradaResposta passouAHora = await cenario.MedirAsync(36, 60);
+
+        Assert.IsNull(aindaQuente.Alerta);
+        Assert.AreEqual(NivelDeRisco.PerigoExtremo, piorou.Alerta?.Nivel);
+        Assert.IsNotNull(passouAHora.Alerta);
+        Assert.HasCount(3, cenario.Alertas.Alertas);
+    }
+
     /// <summary>Regra R4 como o Sombra a aplica: o preventivo da véspera não impede o alerta de Sentinela.</summary>
     /// <returns>O teste.</returns>
     [TestMethod]

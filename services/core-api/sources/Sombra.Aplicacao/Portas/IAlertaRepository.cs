@@ -21,6 +21,12 @@ public interface IAlertaRepository
     /// <returns>Os alertas abertos, do mais antigo ao mais novo.</returns>
     Task<IReadOnlyList<AlertaDeCalor>> ListarAbertosDaCasaAsync(Guid domicilioId, CancellationToken cancellationToken);
 
+    /// <summary>Busca o alerta encerrado mais recente de uma casa (para a carência da R13).</summary>
+    /// <param name="domicilioId">A casa.</param>
+    /// <param name="cancellationToken">Cancela a consulta.</param>
+    /// <returns>O alerta, ou nulo.</returns>
+    Task<AlertaDeCalor?> ObterUltimoEncerradoAsync(Guid domicilioId, CancellationToken cancellationToken);
+
     /// <summary>Lista todos os alertas abertos (para o escalonador).</summary>
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>Os alertas abertos.</returns>

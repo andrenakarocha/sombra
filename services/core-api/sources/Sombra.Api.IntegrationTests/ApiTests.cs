@@ -118,7 +118,9 @@ public sealed class ApiTests
         Assert.AreEqual("R12", await RegraAsync(await ana.EnviarAsync(HttpMethod.Put, $"{casaUrl}/rotina", new RotinaDto { HorarioDoCheckInDiario = new TimeOnly(23, 0), LembreteDeAguaAtivo = true })));
 
         await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", new NovaSentinelaDto { DeviceId = "snt-7f3a9c" })).ProblemaAsync(HttpStatusCode.Conflict);
-        await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", new NovaSentinelaDto { DeviceId = "snt-abc123" })).CorpoAsync<SentinelaResposta>(HttpStatusCode.Created);
+        SentinelaVinculadaResposta vinculada = await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/sentinelas", new NovaSentinelaDto { DeviceId = "snt-abc123" }))
+            .CorpoAsync<SentinelaVinculadaResposta>(HttpStatusCode.Created);
+        Assert.MatchesRegex("^[0-9a-f]{64}$", vinculada.SegredoHex);
         DomicilioResposta monitorada = await (await ana.EnviarAsync(HttpMethod.Post, $"{casaUrl}/monitoramento")).CorpoAsync<DomicilioResposta>(HttpStatusCode.OK);
         Assert.IsTrue(monitorada.Monitorado);
         Assert.AreEqual("R8", await RegraAsync(await ana.EnviarAsync(HttpMethod.Delete, $"{casaUrl}/moradores/{morador.Id}")));
@@ -181,6 +183,7 @@ public sealed class ApiTests
     public async Task SaudeVersaoEDocumentacao()
     {
         using HttpClient anonimo = Api.CreateClient();
+        await Api.EsperarProntoAsync();
 
         SaudeResposta vivo = await (await anonimo.GetAsync(new Uri("/health/live", UriKind.Relative))).CorpoAsync<SaudeResposta>(HttpStatusCode.OK);
         SaudeResposta pronto = await (await anonimo.GetAsync(new Uri("/health/ready", UriKind.Relative))).CorpoAsync<SaudeResposta>(HttpStatusCode.OK);
@@ -191,6 +194,7 @@ public sealed class ApiTests
 
         Assert.AreEqual("Healthy", vivo.Status);
         Assert.AreEqual("Healthy", pronto.Verificacoes["banco"]);
+        Assert.AreEqual("Healthy", pronto.Verificacoes["broker"]);
         Assert.AreEqual("teste01", versao.Commit);
         Assert.AreEqual(HttpStatusCode.OK, scalar.StatusCode);
         Assert.AreEqual("text/html", scalar.Content.Headers.ContentType?.MediaType);

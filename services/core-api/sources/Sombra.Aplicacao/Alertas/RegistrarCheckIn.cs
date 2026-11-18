@@ -66,6 +66,10 @@ public sealed class RegistrarCheckIn
         AlertaDeCalor? alerta = checkIn.Situacao == SituacaoDoCheckIn.EstouBem
             ? ConfirmarEstouBem(aberto, agora)
             : await PedirAjudaAsync(casa, aberto, agora, cancellationToken);
+        if (checkIn.Situacao == SituacaoDoCheckIn.EstouBem && alerta is not null)
+        {
+            await _avisos.EncerramentoAsync(alerta, cancellationToken);
+        }
 
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
         return new CheckInResposta(checkIn.Id, checkIn.Momento, checkIn.Origem, checkIn.Situacao, alerta is null ? null : AlertaResposta.De(alerta));
@@ -98,7 +102,7 @@ public sealed class RegistrarCheckIn
         }
 
         await _avisos.DoPedidoDeAjudaAsync(casa, alerta, cancellationToken);
-        await _avisos.AoMoradorAsync(casa, alerta, cancellationToken);
+        await _avisos.AoMoradorAsync(casa, alerta, MotivoDoAviso.PedidoDeAjuda, cancellationToken);
         return alerta;
     }
 }

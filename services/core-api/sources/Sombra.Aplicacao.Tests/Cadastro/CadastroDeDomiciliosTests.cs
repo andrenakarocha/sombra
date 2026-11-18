@@ -43,7 +43,7 @@ public sealed class CadastroDeDomiciliosTests
             new RedeDeCuidadoDto { Contatos = [new ContatoDto { Nome = "Ana", Telefone = "(11) 98765-4321", Papel = PapelDoContato.Familiar }] },
             _semCancelar);
         RotinaResposta rotina = await cadastro.DefinirRotinaAsync(casa.Id, new RotinaDto { HorarioDoCheckInDiario = new TimeOnly(9, 0), LembreteDeAguaAtivo = true }, _semCancelar);
-        SentinelaResposta sentinela = await cadastro.VincularSentinelaAsync(casa.Id, new NovaSentinelaDto { DeviceId = Cenario.DeviceId }, _semCancelar);
+        SentinelaVinculadaResposta sentinela = await cadastro.VincularSentinelaAsync(casa.Id, new NovaSentinelaDto { DeviceId = Cenario.DeviceId }, _semCancelar);
         DomicilioResposta monitorada = await cadastro.AtivarMonitoramentoAsync(casa.Id, _semCancelar);
 
         Assert.AreEqual("Santana", casa.Bairro);
@@ -56,6 +56,7 @@ public sealed class CadastroDeDomiciliosTests
         Assert.AreEqual("(11) *****-4321", rede.Contatos.Single().Telefone);
         Assert.AreEqual(new TimeOnly(9, 0), rotina.HorarioDoCheckInDiario);
         Assert.IsFalse(sentinela.Online);
+        Assert.MatchesRegex("^[0-9a-f]{64}$", sentinela.SegredoHex);
         Assert.IsTrue(monitorada.Monitorado);
         Assert.AreEqual(6, cenario.UnidadeDeTrabalho.Gravacoes);
     }

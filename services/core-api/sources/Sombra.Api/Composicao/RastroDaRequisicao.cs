@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Sombra.Aplicacao.Comum;
 
 namespace Sombra.Api.Composicao;
 
@@ -41,6 +42,7 @@ public sealed partial class RastroDaRequisicao
         string recebido = contexto.Request.Headers[Cabecalho].ToString();
         string id = FormatoValido().IsMatch(recebido) ? recebido : Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(8));
         contexto.TraceIdentifier = id;
+        Correlacao.Atual = id;
         contexto.Response.OnStarting(() =>
         {
             contexto.Response.Headers[Cabecalho] = id;

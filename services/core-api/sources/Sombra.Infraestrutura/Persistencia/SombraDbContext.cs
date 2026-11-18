@@ -4,37 +4,37 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Sombra.Aplicacao.Portas;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Casas;
 using Sombra.Dominio.Comum;
 using Sombra.Dominio.Sentinelas;
 using Sombra.Infraestrutura.Autenticacao;
+using Sombra.Infraestrutura.Mensageria;
 using Sombra.Infraestrutura.Persistencia.Configuracoes;
+using Sombra.Infraestrutura.Seguranca;
 
 namespace Sombra.Infraestrutura.Persistencia;
 
 /// <summary>O banco do Core (PostgreSQL, ADR-003), que também é a unidade de trabalho dos casos de uso.</summary>
 public sealed class SombraDbContext : DbContext, IUnitOfWork
 {
-    private readonly ILogger _log;
+    private readonly DespachanteDeFatos? _despachante;
 
-    /// <summary>Initializes a new instance of the <see cref="SombraDbContext"/> class, sem log (migrações e testes).</summary>
+    /// <summary>Initializes a new instance of the <see cref="SombraDbContext"/> class, sem despachar fatos (migrações e testes).</summary>
     /// <param name="options">As opções, montadas por <see cref="Configurar"/>.</param>
     public SombraDbContext(DbContextOptions<SombraDbContext> options)
-        : this(options, NullLogger<SombraDbContext>.Instance)
+        : base(options)
     {
     }
 
     /// <summary>Initializes a new instance of the <see cref="SombraDbContext"/> class.</summary>
     /// <param name="options">As opções, montadas por <see cref="Configurar"/>.</param>
-    /// <param name="log">O log dos fatos de negócio gravados.</param>
-    public SombraDbContext(DbContextOptions<SombraDbContext> options, ILogger<SombraDbContext> log)
+    /// <param name="despachante">Quem registra e publica os fatos depois de cada gravação.</param>
+    public SombraDbContext(DbContextOptions<SombraDbContext> options, DespachanteDeFatos despachante)
         : base(options)
     {
-        _log = log ?? throw new ArgumentNullException(nameof(log));
+        _despachante = despachante ?? throw new ArgumentNullException(nameof(despachante));
     }
 
     /// <summary>Gets as casas, com moradores e Sentinelas.</summary>
@@ -52,6 +52,12 @@ public sealed class SombraDbContext : DbContext, IUnitOfWork
     /// <summary>Gets as contas de acesso.</summary>
     public DbSet<Usuario> Usuarios => Set<Usuario>();
 
+    /// <summary>Gets o outbox dos avisos.</summary>
+    public DbSet<MensagemDeSaida> Outbox => Set<MensagemDeSaida>();
+
+    /// <summary>Gets a trilha de segurança.</summary>
+    public DbSet<EventoDeSeguranca> EventosDeSeguranca => Set<EventoDeSeguranca>();
+
     /// <summary>Monta as opções do contexto: Npgsql e nomes em snake_case (os mesmos no app e nas migrações).</summary>
     /// <param name="builder">O construtor de opções.</param>
     /// <param name="conexao">A string de conexão.</param>
@@ -60,8 +66,8 @@ public sealed class SombraDbContext : DbContext, IUnitOfWork
         => builder.UseNpgsql(conexao, npgsql => npgsql.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)).UseSnakeCaseNamingConvention();
 
     /// <summary>
-    /// Grava tudo numa transação e só então registra no log os fatos de negócio: leituras e check-ins novos e os eventos
-    /// de domínio dos alertas, que são esquecidos depois de registrados.
+    /// Grava tudo numa transação (agregados, leituras, check-ins e o outbox dos avisos) e só então despacha os fatos: log e
+    /// tempo real. Os eventos de domínio são esquecidos depois de despachados.
     /// </summary>
     /// <param name="cancellationToken">Cancela a gravação.</param>
     /// <returns>A gravação.</returns>
@@ -71,58 +77,19 @@ public sealed class SombraDbContext : DbContext, IUnitOfWork
             .Where(e => e.State == EntityState.Added)
             .Select(e => (e.Entity, e.Property<Guid>(LeituraConfiguration.DomicilioId).CurrentValue))];
         List<CheckIn> checkIns = [.. ChangeTracker.Entries<CheckIn>().Where(e => e.State == EntityState.Added).Select(e => e.Entity)];
-        List<RaizDeAgregado> agregados = [.. ChangeTracker.Entries<RaizDeAgregado>().Select(e => e.Entity).Where(a => a.EventosDeDominio.Count > 0)];
+        List<AlertaDeCalor> alertas = [.. ChangeTracker.Entries<AlertaDeCalor>().Select(e => e.Entity).Where(a => a.EventosDeDominio.Count > 0)];
 
         await SaveChangesAsync(cancellationToken);
 
-        foreach ((Leitura leitura, Guid domicilioId) in leituras)
+        FatosGravados fatos = new(leituras, checkIns, [.. alertas.Select(a => (a, (IReadOnlyList<EventoDeDominio>)[.. a.EventosDeDominio]))]);
+        foreach (AlertaDeCalor alerta in alertas)
         {
-            _log.LeituraRegistrada(leitura.DeviceId, domicilioId, leitura.Nivel);
+            alerta.LimparEventos();
         }
 
-        foreach (CheckIn checkIn in checkIns)
+        if (_despachante is not null)
         {
-            _log.CheckInRegistrado(checkIn.Situacao, checkIn.Origem, checkIn.DomicilioId);
-            if (checkIn.Situacao == SituacaoDoCheckIn.PrecisoDeAjuda)
-            {
-                _log.PedidoDeAjudaRecebido(checkIn.DomicilioId, checkIn.Origem);
-            }
-        }
-
-        foreach (RaizDeAgregado agregado in agregados)
-        {
-            foreach (EventoDeDominio evento in agregado.EventosDeDominio)
-            {
-                RegistrarNoLog(evento);
-            }
-
-            agregado.LimparEventos();
-        }
-    }
-
-    private void RegistrarNoLog(EventoDeDominio evento)
-    {
-        switch (evento)
-        {
-            case AlertaAberto a:
-                _log.AlertaAberto(a.AlertaId, a.Tipo, a.DomicilioId, a.Nivel);
-                break;
-            case AlertaAgravado a:
-                _log.AlertaAgravado(a.AlertaId, a.DomicilioId, a.Nivel);
-                break;
-            case AlertaEscalonado a:
-                _log.AlertaEscalonado(a.AlertaId, a.DomicilioId, (int)a.Degrau);
-                break;
-            case AlertaReconhecido a:
-                _log.AlertaReconhecido(a.AlertaId, a.DomicilioId, a.Acao);
-                break;
-            case AlertaEncerrado { Estado: EstadoDoAlerta.Expirado } a:
-                _log.AlertaExpirado(a.AlertaId, a.DomicilioId);
-                break;
-            case AlertaEncerrado a:
-                double minutos = Math.Round(a.MinutosAteResolver, 1);
-                _log.AlertaResolvido(a.AlertaId, a.DomicilioId, minutos);
-                break;
+            await _despachante.DespacharAsync(fatos, cancellationToken);
         }
     }
 

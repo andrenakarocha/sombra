@@ -48,6 +48,11 @@ services:
       Jwt__Emissor: ${Jwt__Emissor:-sombra-core}
       Jwt__Segredo: ${Jwt__Segredo:?rode make env}
       Demo__Senha: ${Demo__Senha:-}
+      Demo__SentinelaDeviceId: ${SENTINELA_DEVICE_ID:-snt-7f3a9c}
+      Demo__SentinelaSegredoHex: ${SENTINELA_SEGREDO_HEX:-}
+      Ops__TokenDoMonitor: ${Ops__TokenDoMonitor:-}
+      Mqtt__Host: mqtt
+      Mqtt__Porta: "1883"
       Banco__MigrarAoIniciar: "true"
     ports:
       - "127.0.0.1:5080:5080"

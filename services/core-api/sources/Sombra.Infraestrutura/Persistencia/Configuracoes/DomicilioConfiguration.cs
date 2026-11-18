@@ -74,5 +74,8 @@ internal sealed class SentinelaConfiguration : IEntityTypeConfiguration<Sentinel
         builder.HasKey(s => s.DeviceId);
         builder.Property(s => s.DeviceId).HasMaxLength(10).ValueGeneratedNever();
         builder.Property(s => s.UltimoContato);
+        builder.Property(s => s.SegredoHex).HasMaxLength(64);
+        builder.Property(s => s.UltimoSeqRecebido);
+        builder.Property(s => s.UltimoSeqEnviado);
     }
 }

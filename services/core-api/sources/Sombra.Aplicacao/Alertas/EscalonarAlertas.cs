@@ -73,7 +73,7 @@ public sealed class EscalonarAlertas
 
         if (subidas.Length > 0)
         {
-            await _avisos.AoMoradorAsync(casa, alerta, cancellationToken);
+            await _avisos.AoMoradorAsync(casa, alerta, MotivoDoAviso.Escalonamento, cancellationToken);
         }
 
         return subidas.Length;

@@ -482,7 +482,7 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
   e num teste de API: os 8 campos, a rota-modelo, a correlação aceita, devolvida e gerada; nenhum nome, CPF, CNS, senha
   ou token no log). Os fatos de negócio saem depois de gravados, só por ID, com a mesma correlação da requisição; o Core
   real substitui o placeholder no compose (Dockerfile Alpine, sem root).
-- [ ] **F1.9** 🤖 Workers e tempo real:
+- [x] **F1.9** 🤖 Workers e tempo real:
   - `IngestaoMqttWorker`: MQTTnet → HMAC + anti-replay → `Channel<T>` → `RegistrarLeitura`;
   - `EscalonadorDeAlertasWorker`: a cada 15 s; na mesma volta roda o caso de uso `LembrarRotina` (check-in diário
     esquecido vira lembrete leve, R11; lembrete de água no pico da tarde, no máximo 2 por dia, nunca à noite, R12);
@@ -491,7 +491,13 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
   - hub SignalR `/hubs/sombra`.
 
   🔎 com o simulador: `onda-de-calor` abre o alerta e emite no hub; `sem-resposta` escalona; `payload-adulterado` é
-  descartado e gera evento de segurança; os testes do `LembrarRotina` cobrem R11 e R12 com relógio falso.
+  descartado e gera evento de segurança; os testes do `LembrarRotina` cobrem R11 e R12 com relógio falso — 2026-11-18
+  (com o simulador Python no `make up`: `onda-de-calor` abre, agrava e o botão resolve, com a tela recebendo os comandos
+  assinados; `sem-resposta` escalona até a rede com o relógio adiantado pela API; `payload-adulterado` vira
+  `MQTT_ASSINATURA_INVALIDA`. O hub é conferido em 4 testes de API num Mosquitto e num PostgreSQL reais; 132 testes;
+  quality 100/100). O 🔎 achou a R13 (carência depois do "estou bem", na spec 01). O `Demo__EscalaDeTempo` deu lugar a
+  `POST /api/v1/demo/relogio/avancar`, porque uma escala quebraria a janela anti-replay das mensagens da Sentinela. O
+  monitor de previsão usa o `ClimaSimulado` (`Clima__Simulado__{regiao}`) até a F3.9.
 - [ ] **F1.10** 🤖 Testes de arquitetura (NetArchTest) e teste de integração dos caminhos A e B do roteiro.
   🔎 `make test` verde; relatório de cobertura gerado.
 - [ ] **F1.11** 🤖 README da pasta (Ficha, diagrama de classes em Mermaid, como rodar, comando que cria o banco, link do
@@ -837,12 +843,12 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** F1 em andamento: API v1 no ar e no `make up`, com logs estruturados (F1.1–F1.8: 121 testes, 15 num PostgreSQL real; cobertura 92,3%; quality 100/100). Próximo: **F1.9** (workers MQTT, escalonador com `LembrarRotina`, monitor de previsão, outbox e SignalR). Em paralelo: ML (F4) e app (F6).
+**Agora:** F1 em andamento: o Core conversa com a Sentinela (F1.1–F1.9: 132 testes, 19 em PostgreSQL e Mosquitto reais; cobertura 91,8%; quality 100/100). Próximo: **F1.10** (testes de arquitetura e integração dos caminhos A e B). Em paralelo: ML (F4) e app (F6).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
-| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.8 feitas: domínio, casos de uso, EF Core (5 migrações), API v1 com JWT e Scalar, logs JSON com correlação; Core no `make up` |
+| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.9 feitas: domínio, casos de uso, EF Core (6 migrações), API v1, logs JSON, MQTT assinado, outbox, workers e SignalR |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |

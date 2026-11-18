@@ -21,6 +21,9 @@ internal sealed class Cenario
     /// <summary>O instante em que o cenário começa.</summary>
     internal static readonly DateTimeOffset Inicio = new(2026, 11, 18, 18, 0, 0, TimeSpan.Zero);
 
+    /// <summary>Initializes a new instance of the <see cref="Cenario"/> class.</summary>
+    internal Cenario() => Notificador = new NotificadorGravado(Relogio);
+
     /// <summary>Gets o relógio.</summary>
     internal RelogioFixo Relogio { get; } = new(Inicio);
 
@@ -37,7 +40,7 @@ internal sealed class Cenario
     internal CheckInsEmMemoria CheckIns { get; } = new();
 
     /// <summary>Gets os avisos registrados.</summary>
-    internal NotificadorGravado Notificador { get; } = new();
+    internal NotificadorGravado Notificador { get; }
 
     /// <summary>Gets o Clima Service.</summary>
     internal ClimaFalso Clima { get; } = new();
@@ -59,7 +62,11 @@ internal sealed class Cenario
 
     /// <summary>O caso de uso da resposta do cuidador.</summary>
     /// <returns>O caso de uso.</returns>
-    internal ReconhecerAlerta ReconhecerAlerta() => new(Alertas, Relogio, UnidadeDeTrabalho);
+    internal ReconhecerAlerta ReconhecerAlerta() => new(Alertas, Relogio, Notificador, UnidadeDeTrabalho);
+
+    /// <summary>O caso de uso da rotina.</summary>
+    /// <returns>O caso de uso.</returns>
+    internal LembrarRotina LembrarRotina() => new(Domicilios, Leituras, CheckIns, Notificador, Relogio, Notificador, UnidadeDeTrabalho);
 
     /// <summary>O caso de uso do escalonador.</summary>
     /// <returns>O caso de uso.</returns>

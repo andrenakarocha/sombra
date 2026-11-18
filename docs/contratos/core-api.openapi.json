@@ -668,6 +668,87 @@
         ]
       }
     },
+    "/api/v1/demo/relogio/avancar": {
+      "post": {
+        "tags": [
+          "Demonstra\u00E7\u00E3o"
+        ],
+        "summary": "Adianta o rel\u00F3gio do Core.",
+        "description": "Para o caminho B do roteiro caber num v\u00EDdeo: adiantar 15 minutos vence o prazo do \u0022estou bem\u0022 e o escalonador sobe\no primeiro degrau na volta seguinte. A janela anti-replay das mensagens da Sentinela continua no tempo real.",
+        "requestBody": {
+          "description": "Os minutos.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvancoDoRelogioDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvancoDoRelogioDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/AvancoDoRelogioDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelogioResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelogioResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/domicilios": {
       "get": {
         "tags": [
@@ -1714,6 +1795,64 @@
         ]
       }
     },
+    "/api/v1/ops/alertas": {
+      "post": {
+        "tags": [
+          "Opera\u00E7\u00E3o"
+        ],
+        "summary": "Recebe um alerta de infraestrutura e o empurra para o painel.",
+        "description": "Autentica\u00E7\u00E3o pelo token do monitor (\u0060Ops__TokenDoMonitor\u0060 do \u0060.env\u0060), no header\n\u0060Authorization: Bearer \u2026\u0060. O painel recebe o evento \u0060AlertaDeInfra\u0060 pelo hub.",
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertaDeInfraDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertaDeInfraDto"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertaDeInfraDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        }
+      }
+    },
     "/api/v1/painel/resumo": {
       "get": {
         "tags": [
@@ -1827,7 +1966,7 @@
           "Sentinelas e leituras"
         ],
         "summary": "Vincula a Sentinela da casa.",
-        "description": "Uma Sentinela por casa, e uma casa por Sentinela (409 se ela j\u00E1 for de outra casa).",
+        "description": "Uma Sentinela por casa, e uma casa por Sentinela (409 se ela j\u00E1 for de outra casa). A resposta traz, uma \u00FAnica vez, o\nsegredo HMAC que assina as mensagens da Sentinela (contrato MQTT): grave-o no firmware.",
         "parameters": [
           {
             "name": "id",
@@ -1868,12 +2007,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SentinelaResposta"
+                  "$ref": "#/components/schemas/SentinelaVinculadaResposta"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SentinelaResposta"
+                  "$ref": "#/components/schemas/SentinelaVinculadaResposta"
                 }
               }
             }
@@ -2146,6 +2285,106 @@
           }
         }
       }
+    },
+    "/api/v1/sentinelas/{deviceId}/leituras": {
+      "post": {
+        "tags": [
+          "Sentinelas e leituras"
+        ],
+        "summary": "Recebe uma telemetria assinada da Sentinela.",
+        "description": "O corpo \u00E9 exatamente o payload do t\u00F3pico \u0060telemetria\u0060 do contrato MQTT, com o \u0060sig\u0060 HMAC. Assinatura\nerrada d\u00E1 401; \u0060seq\u0060 repetido ou \u0060ts\u0060 fora da janela de 300 s d\u00E1 409 (R10); leitura fora da faixa f\u00EDsica\nd\u00E1 422 (R9). Toda recusa vira um evento de seguran\u00E7a.",
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "A Sentinela.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "snt-7f3a9c"
+          }
+        ],
+        "requestBody": {
+          "description": "Cancela a requisi\u00E7\u00E3o.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            },
+            "application/*\u002Bjson": {
+              "schema": {
+                "$ref": "#/components/schemas/JsonElement"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2157,6 +2396,91 @@
           "ELA_ESTA_BEM",
           null
         ]
+      },
+      "AlertaDeInfraDto": {
+        "required": [
+          "host",
+          "recurso",
+          "severidade",
+          "mensagem",
+          "momento"
+        ],
+        "type": "object",
+        "properties": {
+          "host": {
+            "examples": [
+              "sombra-srv01"
+            ],
+            "maxLength": 64,
+            "minLength": 0,
+            "type": "string",
+            "description": "Gets o servidor."
+          },
+          "recurso": {
+            "examples": [
+              "CPU"
+            ],
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "Gets o recurso: CPU, mem\u00F3ria, disco ou servi\u00E7o."
+          },
+          "severidade": {
+            "examples": [
+              "CRITICO"
+            ],
+            "pattern": "^(AVISO|CRITICO)$",
+            "type": "string",
+            "description": "Gets a severidade."
+          },
+          "valor": {
+            "examples": [
+              96.4
+            ],
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "Gets o valor medido.",
+            "format": "double"
+          },
+          "limite": {
+            "examples": [
+              90
+            ],
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "description": "Gets o limite que foi passado.",
+            "format": "double"
+          },
+          "mensagem": {
+            "examples": [
+              "CPU acima de 90% por 3 verifica\u00E7\u00F5es seguidas"
+            ],
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string",
+            "description": "Gets o que o monitor viu."
+          },
+          "momento": {
+            "examples": [
+              "2026-11-18T18:05:00Z"
+            ],
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Gets quando.",
+            "format": "date-time"
+          }
+        },
+        "description": "Um alerta de infraestrutura do monitor da VM (spec 08)."
       },
       "AlertaResposta": {
         "required": [
@@ -2309,6 +2633,30 @@
           }
         },
         "description": "A corre\u00E7\u00E3o do cadastro da casa: apelido e endere\u00E7o (a regi\u00E3o clim\u00E1tica n\u00E3o muda)."
+      },
+      "AvancoDoRelogioDto": {
+        "required": [
+          "minutos"
+        ],
+        "type": "object",
+        "properties": {
+          "minutos": {
+            "examples": [
+              15
+            ],
+            "maximum": 1440,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "description": "Gets os minutos (at\u00E9 um dia).",
+            "format": "int32"
+          }
+        },
+        "description": "Quanto adiantar o rel\u00F3gio do Core na demonstra\u00E7\u00E3o."
       },
       "CheckInResposta": {
         "required": [
@@ -2591,6 +2939,7 @@
         ],
         "description": "Os estados de um alerta (regra R5)."
       },
+      "JsonElement": {},
       "LeituraResposta": {
         "required": [
           "momento",
@@ -3314,6 +3663,20 @@
         },
         "description": "A rede de cuidado, na ordem de escalonamento."
       },
+      "RelogioResposta": {
+        "required": [
+          "agora"
+        ],
+        "type": "object",
+        "properties": {
+          "agora": {
+            "type": "string",
+            "description": "O novo agora do Core.",
+            "format": "date-time"
+          }
+        },
+        "description": "O rel\u00F3gio do Core adiantado depois do avan\u00E7o."
+      },
       "RotinaDto": {
         "required": [
           "lembreteDeAguaAtivo"
@@ -3404,6 +3767,29 @@
           }
         },
         "description": "A Sentinela e se ela est\u00E1 falando com o Core (R9)."
+      },
+      "SentinelaVinculadaResposta": {
+        "required": [
+          "deviceId",
+          "online",
+          "segredoHex"
+        ],
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "description": "O identificador p\u00FAblico."
+          },
+          "online": {
+            "type": "boolean",
+            "description": "Se j\u00E1 est\u00E1 falando com o Core."
+          },
+          "segredoHex": {
+            "type": "string",
+            "description": "Os 32 bytes do segredo, em hexadecimal."
+          }
+        },
+        "description": "A Sentinela rec\u00E9m-vinculada, com o segredo HMAC que assina as mensagens (contrato MQTT). O segredo aparece s\u00F3 nesta\nresposta: grave-o na Sentinela."
       },
       "SituacaoDoCheckIn": {
         "enum": [
@@ -3532,10 +3918,16 @@
       "name": "Rede de cuidado e rotina"
     },
     {
+      "name": "Demonstra\u00E7\u00E3o"
+    },
+    {
       "name": "Domic\u00EDlios"
     },
     {
       "name": "Moradores"
+    },
+    {
+      "name": "Opera\u00E7\u00E3o"
     },
     {
       "name": "Painel"

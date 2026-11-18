@@ -59,6 +59,9 @@ services/core-api/
 - **R11** · **Check-in diário** opcional, no horário escolhido pela pessoa; esquecer gera só lembrete leve. **Lembrete de
   água** no pico da tarde (15h–16h) em dias ≥ `ATENCAO`, no máximo 2 por dia.
 - **R12** · Lembretes (água, check-in diário) nunca entre 22h e 7h. Alertas de perigo funcionam a qualquer hora.
+- **R13** · **Carência depois do "estou bem"** (achada no 🔎 da F1.9, com o simulador): por 1 h depois de a pessoa
+  confirmar, uma leitura no mesmo nível ou abaixo não abre outro alerta; só um nível mais alto reabre. Sem ela, a casa
+  ainda quente pediria o botão de novo a cada 10 s.
 
 ## Endpoints (rascunho)
 `POST /auth/login` · CRUD `/domicilios` (filtros `nivel`, `bairro`, paginação) · CRUD `/domicilios/{id}/moradores` · `GET|PUT /domicilios/{id}/rede-de-cuidado` · `GET|PUT /domicilios/{id}/rotina` (check-in diário e lembretes) · `POST /domicilios/{id}/sentinelas` · `GET /domicilios/{id}/leituras?de=&ate=` · `GET /alertas?estado=&nivel=` · `POST /alertas/{id}/reconhecer` · `POST /domicilios/{id}/check-ins` · `GET /domicilios/{id}/pontos-de-resfriamento` (proxy resiliente para o Clima) · `GET /painel/resumo` · `GET /privacidade/risco-cidadao` · `GET /privacidade/eventos` · `POST /ops/alertas` (monitor da VM) · `GET /health/live|ready` · `GET /version` · hub `/hubs/sombra`

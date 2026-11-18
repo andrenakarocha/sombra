@@ -75,7 +75,7 @@ public sealed class AvaliarPrevisoes
 
         AlertaPreventivo alerta = AlertaPreventivo.Abrir(casa.Id, nivelPrevisto, agora);
         _alertas.Adicionar(alerta);
-        await _avisos.AoMoradorAsync(casa, alerta, cancellationToken);
+        await _avisos.AoMoradorAsync(casa, alerta, MotivoDoAviso.Previsao, cancellationToken);
         await _avisos.DaPrevisaoAsync(casa, alerta, cancellationToken);
         return true;
     }

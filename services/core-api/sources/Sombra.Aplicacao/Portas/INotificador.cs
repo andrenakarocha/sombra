@@ -22,13 +22,54 @@ public enum Destinatario
     Rede = 3,
 }
 
+/// <summary>Por que um aviso foi enviado (decide o comando da Sentinela e o evento do app).</summary>
+public enum MotivoDoAviso
+{
+    /// <summary>Um alerta de Sentinela abriu.</summary>
+    AlertaAberto = 0,
+
+    /// <summary>O nível do alerta subiu.</summary>
+    AlertaAgravado = 1,
+
+    /// <summary>O alerta subiu um degrau (D13).</summary>
+    Escalonamento = 2,
+
+    /// <summary>A pessoa pediu ajuda (R7).</summary>
+    PedidoDeAjuda = 3,
+
+    /// <summary>A previsão de 24 h chegou a perigo.</summary>
+    Previsao = 4,
+
+    /// <summary>O alerta terminou: a tela da Sentinela volta ao normal.</summary>
+    AlertaEncerrado = 5,
+
+    /// <summary>Lembrete de água no pico da tarde (R11).</summary>
+    LembreteDeAgua = 6,
+
+    /// <summary>O check-in diário foi esquecido: lembrete leve (R11).</summary>
+    CheckInDiario = 7,
+}
+
 /// <summary>Um aviso a entregar. A mensagem nunca tem dado pessoal: no máximo o apelido da casa.</summary>
 /// <param name="DomicilioId">A casa.</param>
-/// <param name="AlertaId">O alerta que gerou o aviso.</param>
+/// <param name="AlertaId">O alerta que gerou o aviso, quando há (lembretes da rotina não têm).</param>
 /// <param name="Destinatario">Para quem vai.</param>
 /// <param name="Contatos">Os contatos que recebem; vazio quando o destinatário é o morador.</param>
-/// <param name="Mensagem">O texto.</param>
-public sealed record Notificacao(Guid DomicilioId, Guid AlertaId, Destinatario Destinatario, IReadOnlyList<ContatoDeCuidado> Contatos, string Mensagem);
+/// <param name="Mensagem">O texto (até 80 caracteres quando vai para a tela da Sentinela).</param>
+/// <param name="Motivo">Por que o aviso foi enviado.</param>
+public sealed record Notificacao(Guid DomicilioId, Guid? AlertaId, Destinatario Destinatario, IReadOnlyList<ContatoDeCuidado> Contatos, string Mensagem, MotivoDoAviso Motivo);
+
+/// <summary>Quando os avisos de um tipo saíram para uma casa (o <c>LembrarRotina</c> respeita o máximo por dia).</summary>
+public interface IHistoricoDeAvisos
+{
+    /// <summary>Os instantes dos avisos de um motivo desde um momento.</summary>
+    /// <param name="domicilioId">A casa.</param>
+    /// <param name="motivo">O motivo.</param>
+    /// <param name="desde">Desde quando.</param>
+    /// <param name="cancellationToken">Cancela a consulta.</param>
+    /// <returns>Os instantes, do mais antigo ao mais novo.</returns>
+    Task<IReadOnlyList<DateTimeOffset>> MomentosAsync(Guid domicilioId, MotivoDoAviso motivo, DateTimeOffset desde, CancellationToken cancellationToken);
+}
 
 /// <summary>
 /// Entrega avisos pelos canais (app, Sentinela, SMS simulado). A implementação grava no outbox, dentro da mesma unidade

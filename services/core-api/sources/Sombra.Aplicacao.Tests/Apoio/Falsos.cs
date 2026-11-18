@@ -65,6 +65,10 @@ internal sealed class AlertasEmMemoria : IAlertaRepository
         => Task.FromResult<IReadOnlyList<AlertaDeCalor>>([.. Alertas.Where(a => a.DomicilioId == domicilioId && a.EstaAberto)]);
 
     /// <inheritdoc/>
+    public Task<AlertaDeCalor?> ObterUltimoEncerradoAsync(Guid domicilioId, CancellationToken cancellationToken)
+        => Task.FromResult(Alertas.Where(a => a.DomicilioId == domicilioId && a.EncerradoEm is not null).MaxBy(a => a.EncerradoEm));
+
+    /// <inheritdoc/>
     public Task<IReadOnlyList<AlertaDeCalor>> ListarAbertosAsync(CancellationToken cancellationToken)
         => Task.FromResult<IReadOnlyList<AlertaDeCalor>>([.. Alertas.Where(a => a.EstaAberto)]);
 
@@ -114,18 +118,32 @@ internal sealed class UnidadeDeTrabalhoContada : IUnitOfWork
     }
 }
 
-/// <summary>Guarda os avisos em vez de entregar.</summary>
-internal sealed class NotificadorGravado : INotificador
+/// <summary>Guarda os avisos em vez de entregar, com a hora do relógio, e responde o histórico deles.</summary>
+internal sealed class NotificadorGravado : INotificador, IHistoricoDeAvisos
 {
+    private readonly IRelogio _relogio;
+    private readonly List<(Notificacao Aviso, DateTimeOffset Momento)> _registro = [];
+
+    /// <summary>Initializes a new instance of the <see cref="NotificadorGravado"/> class.</summary>
+    /// <param name="relogio">O relógio que carimba cada aviso.</param>
+    internal NotificadorGravado(IRelogio relogio) => _relogio = relogio;
+
     /// <summary>Gets os avisos, na ordem em que foram registrados.</summary>
-    internal List<Notificacao> Avisos { get; } = [];
+    internal IReadOnlyList<Notificacao> Avisos => [.. _registro.Select(r => r.Aviso)];
 
     /// <inheritdoc/>
     public Task NotificarAsync(Notificacao notificacao, CancellationToken cancellationToken)
     {
-        Avisos.Add(notificacao);
+        _registro.Add((notificacao, _relogio.Agora));
         return Task.CompletedTask;
     }
+
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<DateTimeOffset>> MomentosAsync(Guid domicilioId, MotivoDoAviso motivo, DateTimeOffset desde, CancellationToken cancellationToken)
+        => Task.FromResult<IReadOnlyList<DateTimeOffset>>([.. _registro
+            .Where(r => r.Aviso.DomicilioId == domicilioId && r.Aviso.Motivo == motivo && r.Momento >= desde)
+            .Select(r => r.Momento)
+            .Distinct()]);
 }
 
 /// <summary>Um Clima Service de mentira, com o risco de cada região definido pelo teste.</summary>
