@@ -57,8 +57,8 @@ Nome `<contexto>.<fato>` em português, no particípio. Evento novo entra aqui n
 
 | Serviço | Eventos |
 |---|---|
-| todos | `servico.iniciado` (com versão e configuração **sem segredos**), `servico.encerrado`, `requisicao.concluida` (método, rota-modelo, status, duração; sem corpo) |
-| Core | `leitura.registrada`, `leitura.recusada`, `mqtt.assinatura_invalida`, `mqtt.replay_descartado`, `sentinela.online`, `sentinela.offline`, `alerta.aberto`, `alerta.escalonado`, `alerta.reconhecido`, `alerta.resolvido`, `checkin.registrado`, `pedido_de_ajuda.recebido`, `lembrete.enviado`, `comando.publicado`, `clima.indisponivel`, `clima.recuperado` |
+| todos | `servico.iniciado` (com versão e configuração **sem segredos**), `servico.encerrado`, `requisicao.concluida` (método, rota-modelo, status, duração; sem corpo), `requisicao.falhou` (exceção inesperada, com o tipo e o stack trace só no log) |
+| Core | `leitura.registrada`, `leitura.recusada`, `mqtt.assinatura_invalida`, `mqtt.replay_descartado`, `sentinela.online`, `sentinela.offline`, `alerta.aberto`, `alerta.agravado`, `alerta.escalonado`, `alerta.reconhecido`, `alerta.resolvido`, `alerta.expirado`, `aviso.registrado`, `checkin.registrado`, `pedido_de_ajuda.recebido`, `lembrete.enviado`, `comando.publicado`, `clima.indisponivel`, `clima.recuperado` |
 | Core · Privacidade | `privacidade.pii_detectada`, `privacidade.vazamento_bloqueado`, `privacidade.saida_externa_bloqueada`, `ia.traducao_gerada`, `ia.fallback_template`, `risco_cidadao.atualizado` |
 | Clima | `observacao.registrada`, `observacao.recusada`, `previsao.calculada` (com `fonte`: `onnx` ou `regra`), `modelo.carregado`, `modelo.indisponivel`, `fonte_meteorologica.falhou`, `replay.iniciado`, `replay.encerrado` |
 | Sentinela (serial) e simulador | `boot`, `wifi.conectado`, `mqtt.conectado`, `mqtt.desconectado`, `telemetria.enviada`, `nivel.mudou`, `checkin.enviado`, `evento.enviado`, `comando.aceito`, `comando.recusado`, `fila.descarregada`; só no simulador: `telemetria.adulterada_enviada`, `comando.publicado`, `simulador.ouvindo` |

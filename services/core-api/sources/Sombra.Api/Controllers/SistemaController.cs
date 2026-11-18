@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -69,13 +68,5 @@ public sealed class SistemaController : ControllerBase
     /// <returns>Versão, commit e data do build.</returns>
     [HttpGet("/version")]
     [ProducesResponseType<VersaoResposta>(StatusCodes.Status200OK)]
-    public ActionResult<VersaoResposta> Versao()
-    {
-        string informacional = typeof(SistemaController).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0";
-        string[] partes = informacional.Split('+', 2);
-        string commit = _configuracao["Versao:Commit"] is { Length: > 0 } configurado && configurado != "dev"
-            ? configurado
-            : partes.Length == 2 ? partes[1][..Math.Min(7, partes[1].Length)] : "dev";
-        return new VersaoResposta(partes[0], commit, _configuracao["Versao:ConstruidoEm"] ?? string.Empty);
-    }
+    public ActionResult<VersaoResposta> Versao() => VersaoDoBuild.De(_configuracao);
 }

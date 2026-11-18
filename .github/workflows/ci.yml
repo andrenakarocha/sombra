@@ -55,6 +55,7 @@ jobs:
               - 'compose.yaml'
               - 'infra/compose/**'
               - 'Makefile'
+              - 'services/core-api/**'
               - 'tools/novo-env.py'
               - '.env.example'
             scripts:

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -46,6 +47,7 @@ public static class ComposicaoDoCore
         IServiceCollection servicos = builder.Services;
         string conexao = configuracao.GetConnectionString("Core")
             ?? throw new InvalidOperationException("Defina ConnectionStrings__Core (o compose monta a partir do .env).");
+        LogDoSombra.Adicionar(builder, VersaoDoBuild.De(configuracao).Commit);
 
         servicos.AdicionarInfraestrutura(conexao);
         servicos.AddScoped<CadastroDeDomicilios>();
@@ -110,10 +112,9 @@ public static class ComposicaoDoCore
     public static void UsarCore(this WebApplication app)
     {
         ArgumentNullException.ThrowIfNull(app);
-        app.UseExceptionHandler(new ExceptionHandlerOptions
-        {
-            SuppressDiagnosticsCallback = contexto => TradutorDeExcecoes.EhEsperada(contexto.Exception),
-        });
+        RegistrarCicloDeVida(app);
+        app.UseMiddleware<RastroDaRequisicao>();
+        app.UseExceptionHandler(new ExceptionHandlerOptions { SuppressDiagnosticsCallback = _ => true });
         app.UseStatusCodePages();
         app.UseAuthentication();
         app.UseRateLimiter();
@@ -121,6 +122,28 @@ public static class ComposicaoDoCore
         app.MapControllers();
         app.MapOpenApi().DisableRateLimiting();
         app.MapScalarApiReference(opcoes => opcoes.WithTitle("Sombra · Core API")).DisableRateLimiting();
+    }
+
+    private static void RegistrarCicloDeVida(WebApplication app)
+    {
+        ILogger log = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Sombra.Api");
+        IConfiguration configuracao = app.Configuration;
+        app.Lifetime.ApplicationStarted.Register(() =>
+        {
+            if (!log.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            string versao = VersaoDoBuild.De(configuracao).Commit;
+            bool migrar = configuracao.GetValue<bool>("Banco:MigrarAoIniciar");
+            bool contasDaDemo = !string.IsNullOrEmpty(configuracao["Demo:Senha"]);
+            int porMinuto = configuracao.GetValue("LimiteDeRequisicoes:PorMinuto", 120);
+            int loginPorMinuto = configuracao.GetValue("LimiteDeRequisicoes:LoginPorMinuto", 5);
+            string emissor = configuracao["Jwt:Emissor"] ?? "sombra-core";
+            log.ServicoIniciado(versao, app.Environment.EnvironmentName, migrar, contasDaDemo, porMinuto, loginPorMinuto, emissor);
+        });
+        app.Lifetime.ApplicationStopping.Register(log.ServicoEncerrado);
     }
 
     private static void ConfigurarJson(JsonSerializerOptions json)

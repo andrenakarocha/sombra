@@ -35,14 +35,20 @@ services:
       retries: 20
 
   core:
-    # placeholder até a F1.8 (API com logs e /health)
-    image: nginx:1-alpine
+    # a Core API (.NET 10): migra o banco ao subir e cria as contas da demo quando há Demo__Senha
+    build:
+      context: services/core-api
+      args:
+        COMMIT: ${SOMBRA_COMMIT:-dev}
+        CONSTRUIDO_EM: ${SOMBRA_CONSTRUIDO_EM:-}
+    image: sombra-core-api:local
     environment:
-      SERVICO: core-api
-      PORTA: "5080"
-      FASE: F1.8
-    volumes:
-      - ./infra/compose/placeholder:/etc/nginx/templates:ro
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__Core: Host=db;Port=5432;Database=sombra_core;Username=sombra_core;Password=${CORE_DB_PASSWORD:?rode make env}
+      Jwt__Emissor: ${Jwt__Emissor:-sombra-core}
+      Jwt__Segredo: ${Jwt__Segredo:?rode make env}
+      Demo__Senha: ${Demo__Senha:-}
+      Banco__MigrarAoIniciar: "true"
     ports:
       - "127.0.0.1:5080:5080"
     depends_on:
