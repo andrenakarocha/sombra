@@ -1,0 +1,79 @@
+# Sombra · taint estático (spec 07 §2, F2.7). Complementa o taint em tempo de execução do Sombra.Privacidade:
+# o dinâmico bloqueia o que escapar em produção; o estático acusa no PR o código que levaria o dado a um sink.
+# Fontes: campos de PII dos DTOs e do domínio. Sinks: log, mensagem de erro e saída externa. Sanitizers: as máscaras,
+# o Sensivel<T> e o motor de PII. Roda no CI com SARIF; o canário em canario/ prova que cada regra pega o vazamento.
+rules:
+  - id: sombra-pii-para-log
+    mode: taint
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Dado pessoal ($CAMPO) chegando a um log. Passe pelo MascaradorDePii, embrulhe em Sensivel<T> ou logue só metadados
+      (spec 07 §2; LGPD art. 46).
+    metadata:
+      category: security
+      cwe: "CWE-532: Insertion of Sensitive Information into Log File"
+      lgpd: "art. 46"
+    pattern-sources: &fontes
+      - patterns:
+          - pattern: $OBJ.$CAMPO
+          - metavariable-regex:
+              metavariable: $CAMPO
+              regex: ^(Cpf|Cns|CartaoSus|Laudo|Senha|PerfilDeSaude|ObservacoesDeSaude|Telefone|Email)$
+    pattern-sanitizers: &sanitizers
+      - pattern: MascaradorDePii.$MASCARA(...)
+      - pattern: new Sensivel<$T>(...)
+      - pattern: $MOTOR.Mascarar(...)
+      - pattern: $GUARDA.Verificar(...).Redigido
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $LOG.$METODO(...)
+              - pattern: $METODO($LOG, ...)
+          - metavariable-regex:
+              metavariable: $LOG
+              regex: ^_?(log|logger)$
+      - pattern: Console.Write(...)
+      - pattern: Console.WriteLine(...)
+
+  - id: sombra-pii-na-mensagem-de-erro
+    mode: taint
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Dado pessoal ($CAMPO) virando mensagem de erro: exceções e ProblemDetails vão para a resposta e para o log. Não
+      interpole valores de entrada em mensagens (spec 07 §2.4).
+    metadata:
+      category: security
+      cwe: "CWE-209: Generation of Error Message Containing Sensitive Information"
+      lgpd: "art. 46"
+    pattern-sources: *fontes
+    pattern-sanitizers: *sanitizers
+    pattern-sinks:
+      - patterns:
+          - pattern: new $EXCECAO(...)
+          - metavariable-regex:
+              metavariable: $EXCECAO
+              regex: .*Exception$  # o metavariable-regex casa a partir do início (re.match)
+      - pattern: Problem(...)
+      - pattern: "new ProblemDetails { ..., Detail = $DETALHE, ... }"
+
+  - id: sombra-pii-para-fora
+    mode: taint
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Dado pessoal ($CAMPO) saindo do Core (HTTP para fora, LLM ou MQTT). Monte o payload só com metadados: "nem a IA vê
+      o dado" (spec 07 §2.3).
+    metadata:
+      category: security
+      cwe: "CWE-359: Exposure of Private Personal Information to an Unauthorized Actor"
+      lgpd: "art. 46"
+    pattern-sources: *fontes
+    pattern-sanitizers: *sanitizers
+    pattern-sinks:
+      - pattern: $HTTP.PostAsJsonAsync(...)
+      - pattern: $HTTP.PutAsJsonAsync(...)
+      - pattern: $HTTP.PostAsync(...)
+      - pattern: $HTTP.SendAsync(...)
+      - pattern: $MQTT.PublicarAsync(...)

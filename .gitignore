@@ -55,3 +55,6 @@ pitch/renders/
 
 # Cache de downloads do INMET (só os CSVs da A701 são versionados)
 ml/dados/cache/
+
+# SARIF do Semgrep (gerado por make semgrep)
+security/semgrep/semgrep.sarif

@@ -536,7 +536,7 @@ verde · roteiro de alerta funcionando com o simulador.
   de correção), guardas na saída da IA, cache e fallback.
   🔎 com a chave, tradução real registrada; sem chave ou com timeout, cai no template (`fonte: template`); um teste
   prova que o prompt nunca tem PII (P5).
-- [ ] **F2.7** 🤖 Semgrep em modo taint (`security/semgrep/`) + canário + job no CI com SARIF.
+- [x] **F2.7** (2026-11-18) 🤖 Semgrep em modo taint (`security/semgrep/`) + canário + job no CI com SARIF.
   🔎 o Semgrep acha o canário e nenhum vazamento no código real (P6).
 - [ ] **F2.8** 🤖 Auditoria antes × depois (`security/auditoria/rodar-auditoria.sh`; modo inseguro **só** no ambiente
   `Demo`) + `relatorio.md` e JSON.
@@ -956,7 +956,7 @@ F11.8 (VM no Azure) saíram.**
 | P3 | O `Invoke-CodeQuality.ps1` do professor roda no Linux (pwsh) e dá 100 com a estrutura nova | F1.1 | 🟡 deu 100/100 no CP06 (ExpenseHub) |
 | P4 | Testcontainers funciona na máquina de desenvolvimento (Docker) | F1.6 | ✅ 2026-11-17: Testcontainers 4.17 sobe o `postgres:16-alpine` de dentro do contêiner do SDK (socket do Docker, grupo e rede do host) |
 | P5 | A chave Gemini atual responde, com cota gratuita suficiente para a demo | F2.6 | ✅ 2026-11-18: `models.list` e `generateContent` respondem com a chave (header `x-goog-api-key`); `gemini-3.5-flash-lite` em 1–4 s; os Flash 3.6/3.8 davam 503 ou timeout na hora, daí o padrão Flash-Lite, o timeout de 8 s e o template |
-| P6 | O Semgrep CE em modo taint cobre as regras planejadas em C# | F2.7 | ⬜ |
+| P6 | O Semgrep CE em modo taint cobre as regras planejadas em C# | F2.7 | ✅ 2026-11-18 (Semgrep 1.177.0): as 3 regras acham os 8 vazamentos do canário, nenhum falso positivo, e o Core de produção sai limpo; limites: o parser não lê os raw strings do C# 11 dos testes (fora da varredura) e parâmetro solto (a senha na query do A7) não é fonte, o que fica com o taint dinâmico |
 | P7 | A Open-Meteo dá, sem chave, as variáveis horárias que o modelo usa (temperatura, umidade, pressão, radiação, vento), incluindo horas passadas | F3.5 | ⬜ |
 | P8 | XGBoost → ONNX (onnxmltools) e ONNX Runtime Java dão a mesma probabilidade | F4.6, F9.1 | ⬜ |
 | P9 | O ESP32 no Wokwi conecta num broker MQTT público pela rede `Wokwi-GUEST`, e o projeto abre por link público | F5.3, F5.5 | ⬜ |
@@ -981,7 +981,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
-| F2 Privacidade (Cyber) | 🟨 em andamento | 2026-11-18 | | F2.1–F2.6 feitas: motor de PII com regras em JSON (8 regras, 58 casos, 0 falso negativo em `make pii-relatorio`); middleware com taint e política de campo livre (A1 como teste de integração); PII cifrada em repouso (AES-256-GCM + índice cego, conferido no `psql`); guardas de log, resposta, saída externa, MQTT e exceções (A2–A7 como testes); eventos gravados e farol do Risco Cidadão (pesos e decaimento) no painel e na casa; tradução da IA nas três audiências (Gemini Flash-Lite, guarda, cache e template) |
+| F2 Privacidade (Cyber) | 🟨 em andamento | 2026-11-18 | | F2.1–F2.7 feitas: motor de PII com regras em JSON (8 regras, 58 casos, 0 falso negativo em `make pii-relatorio`); middleware com taint e política de campo livre (A1 como teste de integração); PII cifrada em repouso (AES-256-GCM + índice cego, conferido no `psql`); guardas de log, resposta, saída externa, MQTT e exceções (A2–A7 como testes); eventos gravados e farol do Risco Cidadão (pesos e decaimento) no painel e na casa; tradução da IA nas três audiências (Gemini Flash-Lite, guarda, cache e template); Semgrep em modo taint com canário e SARIF no CI |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |

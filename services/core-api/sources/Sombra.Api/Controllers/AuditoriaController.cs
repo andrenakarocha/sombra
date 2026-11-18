@@ -66,6 +66,7 @@ public sealed partial class AuditoriaController : ControllerBase
     public IActionResult Excecao(CenarioDeAuditoriaDto dto)
     {
         ArgumentNullException.ThrowIfNull(dto);
+        // nosemgrep: sombra-pii-na-mensagem-de-erro -- vulnerabilidade proposital da auditoria (A2); o Sombra.Privacidade bloqueia em execução
         return Disponivel ? throw new RegraVioladaException("A2", $"Laudo recusado: {dto.Laudo}") : NotFound();
     }
 
@@ -87,6 +88,7 @@ public sealed partial class AuditoriaController : ControllerBase
             return NotFound();
         }
 
+        // nosemgrep: sombra-pii-para-log -- vulnerabilidade proposital da auditoria (A4); o Sombra.Privacidade bloqueia em execução
         CartaoDeDepuracao(_log, dto.CartaoSus);
         return NoContent();
     }
@@ -106,6 +108,7 @@ public sealed partial class AuditoriaController : ControllerBase
             return NotFound();
         }
 
+        // nosemgrep: sombra-pii-para-fora -- vulnerabilidade proposital da auditoria (A5); o Sombra.Privacidade bloqueia em execução
         using HttpResponseMessage resposta = await fabrica.CreateClient(ClienteLlm)
             .PostAsJsonAsync(new Uri("/v1/gerar", UriKind.Relative), new { prompt = $"Explique o risco do cidadão de CPF {dto.Cpf}." }, cancellationToken);
         return StatusCode((int)resposta.StatusCode);
@@ -126,6 +129,7 @@ public sealed partial class AuditoriaController : ControllerBase
             return NotFound();
         }
 
+        // nosemgrep: sombra-pii-para-fora -- vulnerabilidade proposital da auditoria (A6); o Sombra.Privacidade bloqueia em execução
         await mqtt.PublicarAsync($"{mqtt.Prefixo}/auditoria/eco", JsonSerializer.Serialize(new { aviso = $"Ligar para {dto.Telefone}" }), cancellationToken);
         return Accepted();
     }

@@ -32,6 +32,7 @@ jobs:
       ambiente: ${{ steps.filtro.outputs.ambiente }}
       scripts: ${{ steps.filtro.outputs.scripts }}
       workflows: ${{ steps.filtro.outputs.workflows }}
+      semgrep: ${{ steps.filtro.outputs.semgrep }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -73,6 +74,8 @@ jobs:
               - '**/*.sh'
             workflows:
               - '.github/workflows/**'
+            semgrep:
+              - 'security/semgrep/**'
 
   contratos:
     name: contratos
@@ -244,6 +247,27 @@ jobs:
           cat services/core-api/artifacts/code-quality/report.md >> "$GITHUB_STEP_SUMMARY"
           python3 -I -c "import json,sys; r=json.load(open('services/core-api/artifacts/code-quality/report.json')); n=r['score']['final']; print('nota', n); sys.exit(0 if n == 100 else 1)"
 
+  semgrep:
+    name: Semgrep (taint estático)
+    needs: mudancas
+    if: needs.mudancas.outputs.core == 'true' || needs.mudancas.outputs.semgrep == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: canário dispara e o código de produção sai limpo (semgrep/semgrep:1.177.0)
+        run: make semgrep
+      - name: SARIF no GitHub Code Scanning
+        if: always() && hashFiles('security/semgrep/semgrep.sarif') != ''
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: security/semgrep/semgrep.sarif
+          category: semgrep-taint
+
   ambiente-local:
     name: ambiente local (make up)
     needs: mudancas
@@ -313,7 +337,7 @@ jobs:
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [mudancas, contratos, design, simulador, core, mobile, ambiente-local, scripts, workflows, segredos]
+    needs: [mudancas, contratos, design, simulador, core, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
     runs-on: ubuntu-latest
     steps:
       - name: nenhum job falhou nem foi cancelado
