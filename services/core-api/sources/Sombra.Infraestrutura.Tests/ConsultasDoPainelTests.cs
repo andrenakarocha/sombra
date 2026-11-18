@@ -1,0 +1,160 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sombra.Aplicacao.Dtos;
+using Sombra.Aplicacao.Respostas;
+using Sombra.Dominio.Alertas;
+using Sombra.Dominio.Calor;
+using Sombra.Dominio.Casas;
+using Sombra.Dominio.Sentinelas;
+using Sombra.Infraestrutura.Persistencia;
+using Sombra.Infraestrutura.Persistencia.Repositorios;
+using Sombra.Infraestrutura.Tests.Apoio;
+
+namespace Sombra.Infraestrutura.Tests;
+
+/// <summary>As consultas LINQ do painel, traduzidas para SQL e conferidas no PostgreSQL com o seed da demonstração.</summary>
+[TestClass]
+public sealed class ConsultasDoPainelTests
+{
+    private static readonly CancellationToken _semCancelar = CancellationToken.None;
+
+    /// <summary>A lista de casas filtra pelo nível da última leitura e pelo bairro, pagina e diz quem está online.</summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task ListaDeCasasFiltraEPagina()
+    {
+        Func<SombraDbContext> criar = await BancoDeTeste.NovoBancoAsync();
+        NivelDeRisco nivelDaLurdes = await MedirAsync(criar, Casas.Lurdes, "snt-7f3a9c", Casas.Agora, 36, 60);
+        await MedirAsync(criar, Casas.Joaquim, "snt-2b81d4", Casas.Agora.AddHours(-1), 24, 50);
+        await using SombraDbContext db = criar();
+        ConsultasDoPainel consultas = new(db);
+
+        Paginado<DomicilioResumoResposta> emPerigo = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Nivel = nivelDaLurdes }, Casas.Agora, _semCancelar);
+        Paginado<DomicilioResumoResposta> vilaMaria = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Bairro = "Vila Maria" }, Casas.Agora, _semCancelar);
+        Paginado<DomicilioResumoResposta> segunda = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Pagina = 2, Tamanho = 2 }, Casas.Agora, _semCancelar);
+
+        Assert.AreEqual(NivelDeRisco.Perigo, nivelDaLurdes);
+        Assert.AreEqual(1, emPerigo.Total);
+        Assert.AreEqual("Casa da Dona Lurdes", emPerigo.Itens.Single().Apelido);
+        Assert.IsTrue(emPerigo.Itens.Single().SentinelaOnline);
+        DomicilioResumoResposta joaquim = vilaMaria.Itens.Single();
+        Assert.AreEqual(NivelDeRisco.Normal, joaquim.NivelAtual);
+        Assert.IsFalse(joaquim.SentinelaOnline);
+        Assert.AreEqual(3, segunda.Total);
+        Assert.AreEqual("Casa do Seu Joaquim", segunda.Itens.Single().Apelido);
+    }
+
+    /// <summary>Alertas e leituras: filtros, período fechado embaixo e aberto em cima, do mais recente ao mais antigo.</summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task AlertasELeiturasFiltramEOrdenam()
+    {
+        Func<SombraDbContext> criar = await BancoDeTeste.NovoBancoAsync();
+        await MedirAsync(criar, Casas.Lurdes, "snt-7f3a9c", Casas.Agora.AddHours(-2), 30, 50);
+        await MedirAsync(criar, Casas.Lurdes, "snt-7f3a9c", Casas.Agora.AddHours(-1), 33, 45);
+        await MedirAsync(criar, Casas.Lurdes, "snt-7f3a9c", Casas.Agora, 36, 60);
+        await GravarAlertasAsync(
+            criar,
+            AlertaDePedidoDeAjuda.Abrir(Casas.Lurdes, NivelDeRisco.Normal, Casas.Agora.AddDays(-1)),
+            AlertaPreventivo.Abrir(Casas.Lurdes, NivelDeRisco.Perigo, Casas.Agora.AddHours(-3)));
+        await using SombraDbContext db = criar();
+        ConsultasDoPainel consultas = new(db);
+
+        Paginado<LeituraResposta> leituras = await consultas.ListarLeiturasAsync(
+            Casas.Lurdes,
+            new FiltroDeLeiturasDto { De = Casas.Agora.AddMinutes(-90), Ate = Casas.Agora },
+            _semCancelar);
+        Paginado<AlertaResposta> todos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto(), _semCancelar);
+        Paginado<AlertaResposta> informativos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto { Estado = EstadoDoAlerta.Informativo }, _semCancelar);
+
+        Assert.AreEqual(1, leituras.Total);
+        Assert.AreEqual(Casas.Agora.AddHours(-1), leituras.Itens.Single().Momento);
+        Assert.AreEqual(33, leituras.Itens.Single().TemperaturaC);
+        string[] tipos = ["PREVENTIVO", "PEDIDO_DE_AJUDA"];
+        CollectionAssert.AreEqual(tipos, todos.Itens.Select(a => a.Tipo).ToArray());
+        Assert.AreEqual("PREVENTIVO", informativos.Itens.Single().Tipo);
+    }
+
+    /// <summary>O resumo do painel: agregações por nível, degrau e bairro, mediana até o check-in e Sentinelas offline.</summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task ResumoDoPainelAgregaNoBanco()
+    {
+        Func<SombraDbContext> criar = await BancoDeTeste.NovoBancoAsync();
+        Leitura daLurdes = await LeituraAsync(criar, Casas.Lurdes, "snt-7f3a9c", Casas.Agora.AddHours(-2));
+        Leitura doJoaquim = await LeituraAsync(criar, Casas.Joaquim, "snt-2b81d4", Casas.Agora.AddHours(-1));
+        await MedirAsync(criar, Casas.Lurdes, "snt-7f3a9c", Casas.Agora, 24, 50);
+
+        AlertaDeSentinela respondido = AlertaDeSentinela.Abrir(Casas.Lurdes, daLurdes);
+        respondido.ConfirmarEstouBem(daLurdes.Momento.AddMinutes(6));
+        AlertaDeSentinela redeToda = AlertaDeSentinela.Abrir(Casas.Joaquim, doJoaquim);
+        await using (SombraDbContext db = criar())
+        {
+            Domicilio? joaquim = await new DomicilioRepository(db).ObterAsync(Casas.Joaquim, _semCancelar);
+            Assert.IsNotNull(joaquim);
+            redeToda.Escalonar(doJoaquim.Momento.AddMinutes(35), joaquim.RedeDeCuidado);
+        }
+
+        redeToda.Reconhecer(AcaoDoCuidador.ElaEstaBem, doJoaquim.Momento.AddMinutes(40));
+        await GravarAlertasAsync(
+            criar,
+            respondido,
+            redeToda,
+            AlertaDePedidoDeAjuda.Abrir(Casas.Joaquim, NivelDeRisco.Normal, Casas.Agora),
+            AlertaPreventivo.Abrir(Casas.Benedita, NivelDeRisco.Perigo, Casas.Agora.AddHours(-3)));
+
+        await using SombraDbContext leitura = criar();
+        PainelResumoResposta resumo = await new ConsultasDoPainel(leitura).ObterResumoAsync(Casas.Agora, _semCancelar);
+
+        Assert.AreEqual(2, resumo.CasasMonitoradas);
+        Assert.AreEqual(2, resumo.AlertasAtivos);
+        Assert.AreEqual(1, resumo.AlertasAtivosPorNivel[NivelDeRisco.Normal]);
+        Assert.AreEqual(1, resumo.AlertasAtivosPorNivel[NivelDeRisco.Perigo]);
+        Assert.AreEqual(23.0, resumo.TempoMedianoAteCheckInMin);
+        Assert.AreEqual(50.0, resumo.AlertasResolvidosSemUltimoDegrauPct);
+        Assert.AreEqual(1, resumo.AlarmesDesnecessariosSemana);
+        CollectionAssert.AreEquivalent(
+            new Dictionary<int, int> { [1] = 0, [2] = 0, [3] = 2 }.ToArray(),
+            resumo.EscalonamentosHojePorDegrau.ToArray());
+        Assert.AreEqual(1, resumo.SentinelasOffline);
+        CollectionAssert.AreEquivalent(
+            new Dictionary<string, int> { ["Santana"] = 1, ["Vila Maria"] = 2, ["Tucuruvi"] = 1 }.ToArray(),
+            resumo.AlertasDaSemanaPorBairro.ToArray());
+    }
+
+    private static async Task<NivelDeRisco> MedirAsync(Func<SombraDbContext> criar, Guid casaId, string deviceId, DateTimeOffset momento, double temperatura, double umidade)
+    {
+        await using SombraDbContext db = criar();
+        Domicilio? casa = await new DomicilioRepository(db).ObterAsync(casaId, _semCancelar);
+        Assert.IsNotNull(casa);
+        Leitura leitura = casa.RegistrarLeitura(deviceId, momento, Temperatura.Criar(temperatura), UmidadeRelativa.Criar(umidade));
+        new LeituraRepository(db).Adicionar(casaId, leitura);
+        await db.SalvarAsync(_semCancelar);
+        return leitura.Nivel;
+    }
+
+    private static async Task<Leitura> LeituraAsync(Func<SombraDbContext> criar, Guid casaId, string deviceId, DateTimeOffset momento)
+    {
+        await MedirAsync(criar, casaId, deviceId, momento, 36, 60);
+        await using SombraDbContext db = criar();
+        Leitura? leitura = await new LeituraRepository(db).ObterUltimaAsync(casaId, _semCancelar);
+        Assert.IsNotNull(leitura);
+        return leitura;
+    }
+
+    private static async Task GravarAlertasAsync(Func<SombraDbContext> criar, params AlertaDeCalor[] alertas)
+    {
+        await using SombraDbContext db = criar();
+        AlertaRepository repositorio = new(db);
+        foreach (AlertaDeCalor alerta in alertas)
+        {
+            repositorio.Adicionar(alerta);
+        }
+
+        await db.SalvarAsync(_semCancelar);
+    }
+}

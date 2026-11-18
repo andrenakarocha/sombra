@@ -32,7 +32,8 @@ db-reset: .env ## Apaga o banco local e recria do zero (bancos e papéis por ser
 	@$(COMPOSE) rm -sf db
 	@docker volume rm -f sombra_dados-postgres >/dev/null
 	@$(COMPOSE) up -d --wait db
-	@echo "banco recriado"
+	@$(MAKE) -s -C services/core-api db-migrate
+	@echo "banco recriado, com as migrações e o seed do Core"
 
 contratos: ## Confere os contratos: vetores do índice de calor, assinatura MQTT, contraste e AsyncAPI
 	@python3 -I tools/indice-de-calor/vetores.py

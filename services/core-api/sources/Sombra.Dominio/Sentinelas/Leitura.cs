@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Sombra.Dominio.Calor;
 
 namespace Sombra.Dominio.Sentinelas;
@@ -18,6 +19,22 @@ public sealed class Leitura
         Umidade = umidade;
         IndiceDeCalor = IndiceDeCalor.Calcular(temperatura, umidade);
         Nivel = limites.Classificar(IndiceDeCalor);
+    }
+
+    /// <summary>
+    /// Reconstitui uma leitura gravada (usado pelo EF Core). O índice de calor é recalculado, e o nível é o gravado,
+    /// porque os limites da casa podem ter mudado depois.
+    /// </summary>
+    [ExcludeFromCodeCoverage(Justification = "Só o EF Core chama; coberto pelos testes de integração.")]
+    private Leitura(Guid id, string deviceId, DateTimeOffset momento, Temperatura temperatura, UmidadeRelativa umidade, NivelDeRisco nivel)
+    {
+        Id = id;
+        DeviceId = deviceId;
+        Momento = momento;
+        Temperatura = temperatura;
+        Umidade = umidade;
+        IndiceDeCalor = IndiceDeCalor.Calcular(temperatura, umidade);
+        Nivel = nivel;
     }
 
     /// <summary>Gets o identificador da leitura.</summary>

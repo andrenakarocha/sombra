@@ -13,8 +13,8 @@ public sealed class AlertaPreventivo : AlertaDeCalor
     /// <summary>Por quanto tempo a previsão vale.</summary>
     public static readonly TimeSpan Validade = TimeSpan.FromHours(24);
 
-    private AlertaPreventivo(Guid domicilioId, NivelDeRisco nivelPrevisto, DateTimeOffset abertoEm)
-        : base(domicilioId, nivelPrevisto, abertoEm, EstadoDoAlerta.Informativo)
+    private AlertaPreventivo(Guid domicilioId, NivelDeRisco nivel, DateTimeOffset abertoEm)
+        : base(domicilioId, nivel, abertoEm, EstadoDoAlerta.Informativo)
     {
     }
 

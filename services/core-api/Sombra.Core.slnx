@@ -6,6 +6,7 @@
     <Project Path="sources/Sombra.Dominio.Tests/Sombra.Dominio.Tests.csproj" />
     <Project Path="sources/Sombra.Dominio/Sombra.Dominio.csproj" />
     <Project Path="sources/Sombra.Infraestrutura/Sombra.Infraestrutura.csproj" />
+    <Project Path="sources/Sombra.Infraestrutura.Tests/Sombra.Infraestrutura.Tests.csproj" />
     <Project Path="sources/Sombra.Privacidade/Sombra.Privacidade.csproj" />
   </Folder>
 </Solution>

@@ -11,14 +11,14 @@ namespace Sombra.Dominio.Casas;
 /// <summary>A pessoa idosa que mora no domicílio. Nome, documentos e saúde são dados pessoais.</summary>
 public sealed class Morador
 {
-    private Morador(Guid id, string nome, DateOnly dataDeNascimento, Cpf cpf, CartaoSus? cartaoSus, PerfilDeSaude perfil)
+    private Morador(Guid id, string nome, DateOnly dataDeNascimento, Cpf cpf, CartaoSus? cartaoSus, PerfilDeSaude perfilDeSaude)
     {
         Id = id;
         Nome = nome;
         DataDeNascimento = dataDeNascimento;
         Cpf = cpf;
         CartaoSus = cartaoSus;
-        PerfilDeSaude = perfil;
+        PerfilDeSaude = perfilDeSaude;
     }
 
     /// <summary>Gets o identificador do morador.</summary>
