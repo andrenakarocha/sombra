@@ -94,6 +94,8 @@ internal static class CasosDePii
         new("UUID de correlação", Negativo, null, "correlationId 3f2504e0-4f89-41d3-9a0c-0305e82c3301", []),
         new("Identificador longo sem dígitos", Negativo, null, "ProcessadorDeNotificacoesDeAlertaDoSombra", []),
         new("Hash curto de commit", Negativo, null, "versão 7ac3d9b", []),
+        new("Assinatura HMAC no campo sig não é segredo", Dificil, "sig", Hex(SegredoSintetico(13, 32)), []),
+        new("CPF escondido no campo sig continua sendo CPF", Dificil, "sig", _cpf, ["cpf"]),
 
         // Combinações e texto comum
         new("Vários dados no mesmo texto livre", Positivo, null, $"Ligar (11) 98765-4321 ou maria@exemplo.com, CPF {_cpf}", ["telefone", "email", "cpf"]),
@@ -132,6 +134,8 @@ internal static class CasosDePii
         static string Base64Url(string texto) => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(texto)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
         return string.Join('.', Base64Url("{\"alg\":\"HS256\",\"typ\":\"JWT\"}"), Base64Url("{\"sub\":\"pessoa-ficticia\"}"), Base64Url("assinatura-ficticia"));
     }
+
+    private static string Hex(string texto) => Convert.ToHexStringLower(System.Text.Encoding.UTF8.GetBytes(texto));
 
     private static string TrocarUltimoDigito(string digitos)
         => digitos[..^1] + (char)('0' + ((digitos[^1] - '0' + 1) % 10));

@@ -17,7 +17,7 @@ public sealed class MotorDePii
 
     private static readonly Lazy<MotorDePii> _padrao = new(() => new MotorDePii(CarregadorDeRegras.CarregarPadrao()));
 
-    private readonly IReadOnlyList<IDetectorDePii> _detectores;
+    private readonly IReadOnlyList<(IDetectorDePii Detector, string[][] Exceto)> _detectores;
     private readonly IReadOnlyList<(RegraDePii Regra, string[][] Chaves)> _porChave;
 
     /// <summary>Initializes a new instance of the <see cref="MotorDePii"/> class.</summary>
@@ -26,7 +26,10 @@ public sealed class MotorDePii
     {
         ArgumentNullException.ThrowIfNull(regras);
         Regras = regras;
-        _detectores = [.. regras.Select(CriarDetector).OfType<IDetectorDePii>()];
+        _detectores = [.. regras
+            .Select(r => (Detector: CriarDetector(r), Exceto: r.ExcetoChaves.Select(ChaveDeCampo.Palavras).ToArray()))
+            .Where(d => d.Detector is not null)
+            .Select(d => (d.Detector!, d.Exceto))];
         _porChave = [.. regras.Where(r => r.Chaves.Count > 0).Select(r => (r, r.Chaves.Select(ChaveDeCampo.Palavras).ToArray()))];
     }
 
@@ -67,9 +70,25 @@ public sealed class MotorDePii
             return [new OcorrenciaDePii(regra.Id, regra.Categoria, regra.Severidade, OrigemDaDeteccao.Chave, 0, normalizado.Length)];
         }
 
+        return AnalisarConteudo(normalizado, chave);
+    }
+
+    /// <summary>
+    /// Analisa só o conteúdo, sem o atalho da chave: é o que a política de campo livre usa. O nome do campo ainda conta
+    /// para as exceções das regras (<c>excetoChaves</c>).
+    /// </summary>
+    /// <param name="texto">O valor.</param>
+    /// <param name="chave">O nome do campo, quando houver.</param>
+    /// <returns>As ocorrências, em ordem de posição.</returns>
+    public IReadOnlyList<OcorrenciaDePii> AnalisarConteudo(string texto, string? chave = null)
+    {
+        ArgumentNullException.ThrowIfNull(texto);
+        string normalizado = Normalizar(texto);
+        string[] palavras = chave is null ? [] : ChaveDeCampo.Palavras(chave);
         List<OcorrenciaDePii> escolhidas = [];
         IEnumerable<OcorrenciaDePii> candidatas = _detectores
-            .SelectMany(d => d.Detectar(normalizado))
+            .Where(d => !d.Exceto.Any(e => ChaveDeCampo.Contem(palavras, e)))
+            .SelectMany(d => d.Detector.Detectar(normalizado))
             .OrderByDescending(o => o.Severidade)
             .ThenByDescending(o => o.Tamanho)
             .ThenBy(o => o.Inicio);
@@ -83,6 +102,30 @@ public sealed class MotorDePii
 
         return [.. escolhidas.OrderBy(o => o.Inicio)];
     }
+
+    /// <summary>Troca cada ocorrência pela máscara da regra dela (formato do campo <c>mascara</c>).</summary>
+    /// <param name="texto">O valor, como foi analisado.</param>
+    /// <param name="ocorrencias">As ocorrências devolvidas por <see cref="Analisar"/> para esse valor.</param>
+    /// <returns>O texto normalizado, com as ocorrências mascaradas.</returns>
+    public string Mascarar(string texto, IEnumerable<OcorrenciaDePii> ocorrencias)
+    {
+        ArgumentNullException.ThrowIfNull(ocorrencias);
+        StringBuilder resultado = new(Normalizar(texto));
+        foreach (OcorrenciaDePii o in ocorrencias.OrderByDescending(o => o.Inicio))
+        {
+            string formato = Regras.First(r => r.Id == o.RegraId).Mascara;
+            string trecho = resultado.ToString(o.Inicio, o.Tamanho);
+            resultado.Remove(o.Inicio, o.Tamanho).Insert(o.Inicio, MascaradorDePii.Aplicar(formato, trecho));
+        }
+
+        return resultado.ToString();
+    }
+
+    /// <summary>Analisa e mascara de uma vez.</summary>
+    /// <param name="texto">O valor.</param>
+    /// <param name="chave">O nome do campo, quando houver.</param>
+    /// <returns>O texto normalizado, com toda PII mascarada.</returns>
+    public string Mascarar(string texto, string? chave = null) => Mascarar(texto, Analisar(texto, chave));
 
     /// <summary>Diz se um valor tem algum dado pessoal.</summary>
     /// <param name="texto">O valor.</param>

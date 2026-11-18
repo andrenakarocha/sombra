@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Sombra.Api.Autenticacao;
 using Sombra.Api.Erros;
+using Sombra.Api.Privacidade;
 using Sombra.Api.TempoReal;
 using Sombra.Aplicacao.Alertas;
 using Sombra.Aplicacao.Arredores;
@@ -29,6 +30,8 @@ using Sombra.Infraestrutura;
 using Sombra.Infraestrutura.Autenticacao;
 using Sombra.Infraestrutura.Mqtt;
 using Sombra.Infraestrutura.Persistencia;
+using Sombra.Privacidade.Deteccao;
+using Sombra.Privacidade.Taint;
 
 namespace Sombra.Api.Composicao;
 
@@ -83,6 +86,7 @@ public static class ComposicaoDoCore
         servicos.AddExceptionHandler<TradutorDeExcecoes>();
 
         AdicionarSeguranca(servicos, configuracao);
+        AdicionarPrivacidade(servicos, configuracao);
         AdicionarLimites(servicos, configuracao);
         servicos.AddHealthChecks()
             .AddDbContextCheck<SombraDbContext>("banco", tags: [TagPronto])
@@ -138,6 +142,7 @@ public static class ComposicaoDoCore
         app.UseAuthentication();
         app.UseRateLimiter();
         app.UseAuthorization();
+        app.UseMiddleware<PiiScanningMiddleware>();
         app.MapControllers();
         app.MapHub<HubDoSombra>(HubDoSombra.Rota);
         app.MapOpenApi().DisableRateLimiting();
@@ -206,6 +211,14 @@ public static class ComposicaoDoCore
         servicos.AddAuthorizationBuilder()
             .AddPolicy(CasaDoCuidador.Politica, politica => politica.RequireAuthenticatedUser().AddRequirements(new CasaDoCuidador()));
         servicos.AddScoped<IAuthorizationHandler, CasaDoCuidadorHandler>();
+    }
+
+    private static void AdicionarPrivacidade(IServiceCollection servicos, IConfiguration configuracao)
+    {
+        PoliticaDeCampoLivre politica = configuracao.GetValue("Privacidade:CampoLivre", PoliticaDeCampoLivre.Mascarar);
+        servicos.AddSingleton(MotorDePii.Padrao);
+        servicos.AddSingleton(sp => new VarredorDePii(sp.GetRequiredService<MotorDePii>(), politica));
+        servicos.AddScoped<ContextoDeTaint>();
     }
 
     private static void AdicionarLimites(IServiceCollection servicos, IConfiguration configuracao)

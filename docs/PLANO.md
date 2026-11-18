@@ -521,7 +521,7 @@ verde · roteiro de alerta funcionando com o simulador.
 - [x] **F2.1** (2026-11-18) 🤖 `Sombra.Privacidade`: regras em `pii-regras.json` (com schema validado na carga); detectores CPF, CNS,
   RG, telefone, e-mail, CEP, saúde (CID-10 + dicionário) e credenciais; testes em tabela (positivos, negativos, difíceis).
   🔎 zero falso negativo na tabela; relatório de acertos gerado.
-- [ ] **F2.2** 🤖 `PiiScanningMiddleware` + `ContextoDeTaint` + `MascaradorDePii` + política de campo livre.
+- [x] **F2.2** (2026-11-18) 🤖 `PiiScanningMiddleware` + `ContextoDeTaint` + `MascaradorDePii` + política de campo livre.
   🔎 cenário A1 como teste de integração.
 - [ ] **F2.3** 🤖 Criptografia em repouso: converters AES-256-GCM, índice cego HMAC para CPF, chave por ambiente,
   migração **CamposSensiveisCifrados**.
@@ -981,7 +981,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
-| F2 Privacidade (Cyber) | 🟨 em andamento | 2026-11-18 | | F2.1 feita: motor de PII com regras em JSON (8 regras), 56 casos em tabela, 0 falso negativo (`make pii-relatorio`) |
+| F2 Privacidade (Cyber) | 🟨 em andamento | 2026-11-18 | | F2.1–F2.2 feitas: motor de PII com regras em JSON (8 regras, 58 casos, 0 falso negativo em `make pii-relatorio`); middleware com taint e política de campo livre (A1 como teste de integração) |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |

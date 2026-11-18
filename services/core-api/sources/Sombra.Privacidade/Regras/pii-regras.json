@@ -81,15 +81,17 @@
         "ressonância magnética", "colonoscopia"
       ],
       "mascara": "saude",
-      "baseLegal": "LGPD art. 5º, II e art. 11"
+      "baseLegal": "LGPD art. 5º, II e art. 11",
+      "campoLivre": true
     },
     {
       "id": "credencial",
       "categoria": "Credencial",
       "severidade": "Critica",
       "chaves": ["senha", "password", "passwd", "token", "secret", "segredo", "apiKey", "authorization", "credencial", "jwt"],
-      "padrao": "eyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}|(?<![\\p{L}\\p{N}])Bearer\\s+[A-Za-z0-9._~+/-]{8,}=*|(?<![A-Za-z0-9+/_=-])[A-Za-z0-9+/_=-]{24,}(?![A-Za-z0-9+/_=-])",
+      "padrao": "eyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}|(?<![\\p{L}\\p{N}])Bearer\\s+(?<dado>[A-Za-z0-9._~+/-]{8,}=*)|(?<![A-Za-z0-9+/_=-])[A-Za-z0-9+/_=-]{24,}(?![A-Za-z0-9+/_=-])",
       "validador": "credencial",
+      "excetoChaves": ["sig", "assinatura", "hmac", "hash", "digest", "nonce"],
       "mascara": "removido",
       "baseLegal": "LGPD art. 46"
     }

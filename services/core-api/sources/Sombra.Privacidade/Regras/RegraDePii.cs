@@ -12,6 +12,14 @@ namespace Sombra.Privacidade.Regras;
 /// <param name="Termos">O dicionário de termos (já em minúsculas ou não: o motor ignora caixa e acentos).</param>
 /// <param name="Mascara">O formato da máscara aplicada ao dado (<c>cpf</c>, <c>saude</c>, <c>removido</c>...).</param>
 /// <param name="BaseLegal">O artigo da LGPD que justifica a proteção.</param>
+/// <param name="ExcetoChaves">
+/// Campos em que o conteúdo não dispara esta regra: a assinatura HMAC (<c>sig</c>) tem alta entropia, mas não é segredo.
+/// As outras regras continuam valendo nesses campos.
+/// </param>
+/// <param name="CampoLivre">
+/// Se os campos com estas chaves são texto livre (o perfil de saúde que a família escreve): neles, outra família de dado
+/// pessoal achada no conteúdo cai na política de campo livre.
+/// </param>
 public sealed record RegraDePii(
     string Id,
     CategoriaDePii Categoria,
@@ -21,4 +29,6 @@ public sealed record RegraDePii(
     string Validador,
     IReadOnlyList<string> Termos,
     string Mascara,
-    string BaseLegal);
+    string BaseLegal,
+    IReadOnlyList<string> ExcetoChaves,
+    bool CampoLivre);

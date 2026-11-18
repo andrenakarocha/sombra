@@ -12,6 +12,12 @@ namespace Sombra.Privacidade.Deteccao;
 /// </summary>
 public sealed class DetectorPorPadrao : IDetectorDePii
 {
+    /// <summary>
+    /// O grupo nomeado que limita a ocorrência ao dado: em <c>Bearer (?&lt;dado&gt;...)</c>, o validador vê o match
+    /// inteiro, mas só o token é marcado e mascarado.
+    /// </summary>
+    public const string GrupoDoDado = "dado";
+
     private readonly Regex _padrao;
     private readonly Func<string, bool> _validador;
 
@@ -42,7 +48,9 @@ public sealed class DetectorPorPadrao : IDetectorDePii
         {
             if (_validador(m.Value))
             {
-                yield return new OcorrenciaDePii(Regra.Id, Regra.Categoria, Regra.Severidade, OrigemDaDeteccao.Conteudo, m.Index, m.Length);
+                Group dado = m.Groups[GrupoDoDado];
+                Capture trecho = dado.Success ? dado : m;
+                yield return new OcorrenciaDePii(Regra.Id, Regra.Categoria, Regra.Severidade, OrigemDaDeteccao.Conteudo, trecho.Index, trecho.Length);
             }
         }
     }

@@ -25,7 +25,7 @@ public static class CarregadorDeRegras
 
     private static readonly HashSet<string> _camposDaRegra = new(StringComparer.Ordinal)
     {
-        "id", "categoria", "severidade", "chaves", "padrao", "validador", "termos", "mascara", "baseLegal",
+        "id", "categoria", "severidade", "chaves", "padrao", "validador", "termos", "mascara", "baseLegal", "excetoChaves", "campoLivre",
     };
 
     private static readonly Lazy<IReadOnlyList<RegraDePii>> _padrao = new(() =>
@@ -35,9 +35,6 @@ public static class CarregadorDeRegras
         using StreamReader leitor = new(recurso);
         return Carregar(leitor.ReadToEnd());
     });
-
-    /// <summary>Gets os formatos de máscara que o <c>MascaradorDePii</c> sabe aplicar.</summary>
-    public static IReadOnlyCollection<string> Mascaras { get; } = ["cpf", "cns", "telefone", "email", "saude", "removido", "parcial"];
 
     /// <summary>As regras padrão, embarcadas no assembly (carregadas e validadas uma vez).</summary>
     /// <returns>As regras na ordem do arquivo.</returns>
@@ -135,6 +132,7 @@ public static class CarregadorDeRegras
         SeveridadeDePii severidade = Enum<SeveridadeDePii>(item, "severidade", caminho, erros);
         List<string> chaves = ListaDeTextos(item, "chaves", caminho, erros);
         List<string> termos = ListaDeTextos(item, "termos", caminho, erros);
+        List<string> excetoChaves = ListaDeTextos(item, "excetoChaves", caminho, erros);
         string? padrao = Texto(item, "padrao", caminho, erros, obrigatorio: false);
         if (padrao is not null && !RegexCompila(padrao, out string? motivo))
         {
@@ -148,15 +146,38 @@ public static class CarregadorDeRegras
         }
 
         string? mascara = Texto(item, "mascara", caminho, erros, obrigatorio: true);
-        if (mascara is not null && !Mascaras.Contains(mascara))
+        if (mascara is not null && !MascaradorDePii.Formatos.Contains(mascara))
         {
-            erros.Add($"{caminho}.mascara: '{mascara}' desconhecida (use {string.Join(", ", Mascaras)})");
+            erros.Add($"{caminho}.mascara: '{mascara}' desconhecida (use {string.Join(", ", MascaradorDePii.Formatos)})");
         }
 
         string? baseLegal = Texto(item, "baseLegal", caminho, erros, obrigatorio: true);
         if (baseLegal is not null && !baseLegal.StartsWith("LGPD art.", StringComparison.Ordinal))
         {
             erros.Add($"{caminho}.baseLegal: cite o artigo (ex.: LGPD art. 11)");
+        }
+
+        bool campoLivre = false;
+        if (item.TryGetProperty("campoLivre", out JsonElement livre))
+        {
+            if (livre.ValueKind is JsonValueKind.True or JsonValueKind.False)
+            {
+                campoLivre = livre.GetBoolean();
+            }
+            else
+            {
+                erros.Add($"{caminho}.campoLivre: precisa ser true ou false");
+            }
+        }
+
+        if (campoLivre && chaves.Count == 0)
+        {
+            erros.Add($"{caminho}.campoLivre: só vale para regras com chaves");
+        }
+
+        if (excetoChaves.Count > 0 && termos.Count == 0 && padrao is null)
+        {
+            erros.Add($"{caminho}.excetoChaves: só vale para regras com padrao ou termos");
         }
 
         if (chaves.Count == 0 && termos.Count == 0 && padrao is null)
@@ -166,7 +187,7 @@ public static class CarregadorDeRegras
 
         return erros.Count > antes
             ? null
-            : new RegraDePii(id!, categoria, severidade, chaves, padrao, validador, termos, mascara!, baseLegal!);
+            : new RegraDePii(id!, categoria, severidade, chaves, padrao, validador, termos, mascara!, baseLegal!, excetoChaves, campoLivre);
     }
 
     private static string? Texto(JsonElement item, string campo, string caminho, List<string> erros, bool obrigatorio)
