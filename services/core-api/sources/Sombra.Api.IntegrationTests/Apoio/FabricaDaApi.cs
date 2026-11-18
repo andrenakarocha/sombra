@@ -91,6 +91,9 @@ internal sealed class FabricaDaApi : WebApplicationFactory<Program>
 {
     private readonly string _conexao = AmbienteDaApi.NovaConexao();
     private readonly string _segredoDoJwt = Convert.ToBase64String(RandomNumberGenerator.GetBytes(48));
+
+    /// <summary>Gets a chave de vínculo da API de teste, para os testes calcularem o código do QR.</summary>
+    internal static byte[] ChaveDeVinculo { get; } = RandomNumberGenerator.GetBytes(32);
     private readonly int _loginPorMinuto;
     private readonly ILogEventSink? _log;
     private readonly IReadOnlyDictionary<string, string>? _configuracao;
@@ -135,6 +138,7 @@ internal sealed class FabricaDaApi : WebApplicationFactory<Program>
         builder.UseEnvironment("Test");
         builder.UseSetting("ConnectionStrings:Core", _conexao);
         builder.UseSetting("Jwt:Segredo", _segredoDoJwt);
+        builder.UseSetting("Sentinela:ChaveDeVinculo", Convert.ToHexString(ChaveDeVinculo));
         builder.UseSetting("Demo:Senha", SenhaDaDemo);
         builder.UseSetting("Banco:MigrarAoIniciar", "true");
         builder.UseSetting("LimiteDeRequisicoes:LoginPorMinuto", _loginPorMinuto.ToString(CultureInfo.InvariantCulture));

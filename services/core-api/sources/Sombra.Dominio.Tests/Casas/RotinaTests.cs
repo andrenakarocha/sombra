@@ -47,4 +47,23 @@ public sealed class RotinaTests
         Assert.IsFalse(rotina.CheckInDiarioEsquecido(new TimeOnly(12, 0), jaFezCheckInHoje: true));
         Assert.IsFalse(Rotina.Padrao.CheckInDiarioEsquecido(new TimeOnly(12, 0), jaFezCheckInHoje: false));
     }
+
+    /// <summary>
+    /// D17: como no app, o horário fica guardado com o check-in diário desligado, e a R12 só vale com ele ligado; o padrão
+    /// é desligado, às 9h.
+    /// </summary>
+    [TestMethod]
+    public void CheckInDesligadoGuardaOHorario()
+    {
+        Rotina desligado = Rotina.Criar(checkInDiarioAtivo: false, new TimeOnly(23, 30), lembreteDeAguaAtivo: false);
+        Rotina ligado = Rotina.Criar(checkInDiarioAtivo: true, new TimeOnly(10, 15), lembreteDeAguaAtivo: true);
+
+        Assert.AreEqual(new TimeOnly(23, 30), desligado.HorarioEscolhido);
+        Assert.IsNull(desligado.HorarioDoCheckInDiario);
+        Assert.IsFalse(desligado.CheckInDiarioEsquecido(new TimeOnly(12, 0), jaFezCheckInHoje: false));
+        Assert.AreEqual(new TimeOnly(10, 15), ligado.HorarioDoCheckInDiario);
+        Assert.AreEqual("R12", Assert.ThrowsExactly<RegraVioladaException>(() => Rotina.Criar(checkInDiarioAtivo: true, new TimeOnly(6, 59), lembreteDeAguaAtivo: true)).Regra);
+        Assert.IsFalse(Rotina.Padrao.CheckInDiarioAtivo);
+        Assert.AreEqual(new TimeOnly(9, 0), Rotina.Padrao.HorarioEscolhido);
+    }
 }

@@ -8,6 +8,7 @@ using Sombra.Infraestrutura.Mensageria;
 using Sombra.Infraestrutura.Mqtt;
 using Sombra.Infraestrutura.Persistencia;
 using Sombra.Infraestrutura.Persistencia.Repositorios;
+using Sombra.Infraestrutura.Seguranca;
 using Sombra.Infraestrutura.Workers;
 
 namespace Sombra.Infraestrutura;
@@ -39,6 +40,7 @@ public static class ServicosDaInfraestrutura
         servicos.AddScoped<INotificador>(provedor => provedor.GetRequiredService<NotificadorComOutbox>());
         servicos.AddScoped<IHistoricoDeAvisos>(provedor => provedor.GetRequiredService<NotificadorComOutbox>());
         servicos.AddSingleton<IClimaGateway, ClimaSimulado>();
+        servicos.AddSingleton<ICodigosDeVinculo, CodigosDeVinculo>();
         return servicos;
     }
 

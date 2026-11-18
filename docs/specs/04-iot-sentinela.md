@@ -34,6 +34,11 @@ Custo estimado da lista de materiais: pesquisar e publicar no README (ordem de g
   filha recebe um lembrete"*). No máximo 3 palavras por linha; botões grandes e com cores fixas.
 - Código organizado em abas: `sketch.ino`, `indice_calor.h`, `estado.h`, `mqtt_sombra.h`, `hmac.h`, `display.h`, `config.h` (o segredo **de demo** fica num `secrets.h` de exemplo).
 
+- **Vínculo pelo QR (D17):** ainda sem vínculo, o OLED mostra o QR `sombra://sentinela/vincular?v=1&d=<deviceId>&c=<código>`
+  e o código em texto, para digitar. O código tem 6 caracteres e sai do `deviceId` pela chave de vínculo
+  (`tools/vinculo/codigo.py`, vetores em `docs/contratos/vinculo-da-sentinela.vetores.json`); o app lê o QR e o Core
+  confere o código antes de devolver o segredo HMAC.
+
 ## Checkpoints
 A ordem de execução e os 🔎 ficam no `PLANO.md` (fase indicada no topo desta spec).
 

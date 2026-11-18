@@ -181,4 +181,20 @@ public sealed class DomicilioTests
         Assert.AreEqual("SP-MIRANTE", Domicilio.Cadastrar("Casa", endereco, " sp-mirante ").RegiaoClimatica);
         StringAssert.StartsWith(Fabricas.Casa().ToString(), "Domicilio ");
     }
+
+    /// <summary>Regra R1 na edição: trocar o CPF de um morador para o de outro morador da casa é recusado.</summary>
+    [TestMethod]
+    public void TrocaDeCpfNaoRepeteNaCasa()
+    {
+        Domicilio casa = Fabricas.Casa();
+        Morador primeiro = Fabricas.Morador(78, semente: 1);
+        Morador segundo = Fabricas.Morador(80, semente: 2);
+        casa.AdicionarMorador(primeiro);
+        casa.AdicionarMorador(segundo);
+
+        Assert.AreEqual("R1", Assert.ThrowsExactly<RegraVioladaException>(() => casa.TrocarCpfDoMorador(segundo.Id, primeiro.Cpf)).Regra);
+        casa.TrocarCpfDoMorador(segundo.Id, Cpf.Criar(DocumentosSinteticos.Cpf(9)));
+        Assert.AreEqual(Cpf.Criar(DocumentosSinteticos.Cpf(9)), segundo.Cpf);
+        casa.TrocarCpfDoMorador(primeiro.Id, primeiro.Cpf);
+    }
 }

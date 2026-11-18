@@ -10,7 +10,7 @@ namespace Sombra.Dominio.Saude;
 /// </summary>
 public abstract record FatorDeRisco
 {
-    private static readonly FatorDeRisco[] _declaraveis = [new Cardiopatia(), new UsoDeDiuretico()];
+    private static readonly FatorDeRisco[] _declaraveis = [new IdadeAvancada(), new Cardiopatia(), new UsoDeDiuretico()];
 
     /// <summary>Gets o código estável do fator, usado na API e no banco.</summary>
     public abstract string Codigo { get; }
@@ -18,7 +18,10 @@ public abstract record FatorDeRisco
     /// <summary>Gets quantos °C este fator reduz os limites térmicos.</summary>
     public abstract double ReducaoGraus { get; }
 
-    /// <summary>Encontra um fator declarável pelo código. A idade avançada não entra: vem da data de nascimento.</summary>
+    /// <summary>
+    /// Encontra um fator declarável pelo código. A idade avançada pode ser declarada (o app deixa marcar, D17) e também
+    /// vale sozinha a partir dos 80 anos.
+    /// </summary>
     /// <param name="codigo">O código, ex.: <c>CARDIOPATIA</c>.</param>
     /// <returns>O fator.</returns>
     /// <exception cref="RegraVioladaException">Quando o código não é de um fator declarável (R3).</exception>

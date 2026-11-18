@@ -105,8 +105,8 @@ public sealed record SentinelaResposta(string DeviceId, bool Online)
 /// </summary>
 /// <param name="DeviceId">O identificador público.</param>
 /// <param name="Online">Se já está falando com o Core.</param>
-/// <param name="SegredoHex">Os 32 bytes do segredo, em hexadecimal.</param>
-public sealed record SentinelaVinculadaResposta(string DeviceId, bool Online, string SegredoHex);
+/// <param name="Segredo">Os 32 bytes do segredo, em hexadecimal minúsculo (o app guarda no SecureStore).</param>
+public sealed record SentinelaVinculadaResposta(string DeviceId, bool Online, string Segredo);
 
 /// <summary>Uma leitura da Sentinela, com o índice de calor calculado pelo Core.</summary>
 /// <param name="Momento">O instante da medição, em UTC.</param>

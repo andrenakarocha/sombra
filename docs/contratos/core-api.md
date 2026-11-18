@@ -37,11 +37,11 @@
 | GET | `/domicilios?nivel=&bairro=&pagina=&tamanho=` | Cuidador, Operador | lista as casas no mesmo formato do detalhe, que é o card do app (o Cuidador vê só as suas) |
 | POST | `/domicilios` | Cuidador, Admin | cadastra uma casa |
 | GET · PUT · DELETE | `/domicilios/{id}` | Cuidador, Admin | consulta, edita, remove |
-| GET · POST | `/domicilios/{id}/moradores` | Cuidador, Admin | lista e cadastra moradores |
-| GET · PUT · DELETE | `/domicilios/{id}/moradores/{moradorId}` | Cuidador, Admin | consulta, edita, remove |
+| GET · POST | `/domicilios/{id}/moradores` | Cuidador, Admin | lista e cadastra moradores (`idade`, CPF, Cartão SUS, `telefone`, `perfilDeSaude` em texto livre que nunca volta, fatores) |
+| GET · PUT · DELETE | `/domicilios/{id}/moradores/{moradorId}` | Cuidador, Admin | consulta, edita (campo vazio mantém o que existe), remove |
 | GET · PUT | `/domicilios/{id}/rede-de-cuidado` | Cuidador | lista de contatos em ordem (`id`, `nome`, `papel` `FAMILIAR` ou `VIZINHO`, `telefone`) |
 | GET · PUT | `/domicilios/{id}/rotina` | Cuidador | `{ checkInDiario: { ativo, horario }, lembreteDeAgua: { ativo } }` (D13) |
-| POST | `/domicilios/{id}/sentinelas` | Cuidador, Admin | vincula uma Sentinela e devolve o segredo HMAC **uma única vez** |
+| POST | `/domicilios/{id}/sentinelas` | Cuidador, Admin | `{ deviceId, codigoDeVinculo }` lidos no QR; confere o código (422 `VINCULO`) e devolve o `segredo` HMAC **uma única vez** |
 | GET | `/domicilios/{id}/sentinelas` | Cuidador, Operador | Sentinelas da casa e se estão online |
 | GET | `/domicilios/{id}/leituras?de=&ate=&pagina=` | Cuidador, Operador | leituras num período, da mais recente para a mais antiga |
 | POST | `/sentinelas/{deviceId}/leituras` | assinatura HMAC | alternativa por HTTP ao MQTT, com o mesmo payload assinado |
@@ -88,6 +88,7 @@
   "id": "c1a8e2f4-7b3d-4e9a-8f2c-6d5b4a3e2f10",
   "nome": "Lurdes A.",
   "idade": 78,
+  "telefone": "(11) 91234-5678",
   "cpf": "***.982.***-10",
   "cartaoSus": "*** **** **** 1234",
   "perfilDeSaude": "[DADO DE SAÚDE PROTEGIDO]",

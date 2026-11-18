@@ -716,11 +716,13 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   `id`; morador com `telefone`; rotina como `checkInDiario` e `lembreteDeAgua`.
   🔎 as respostas reais do Core passam nos schemas de `mobile/src/infrastructure/http/schemas.ts` — 2026-11-18 (as 8
   leituras do app, logado como `ana.filha`; telefones inteiros só para o Cuidador da casa, que liga dali; 142 testes).
-- [ ] **F6.22** 🤖 Escritas: morador por `idade` (o Core guarda a data aproximada), com `telefone` e `perfilDeSaude`
+- [x] **F6.22** 🤖 Escritas: morador por `idade` (o Core guarda a data aproximada), com `telefone` e `perfilDeSaude`
   (sempre mascarados na saída), edição completa e `IDADE_AVANCADA` declarável; Cartão SUS obrigatório no cadastro,
   porque a leitura do app sempre espera um; rotina no formato do app; vínculo da Sentinela com o `codigoDeVinculo` do
   QR (6 caracteres derivados do `deviceId` por uma chave de vínculo) e resposta com `segredo`.
-  🔎 cadastro, edição, rotina e vínculo no formato do app voltam 2xx e passam nos schemas.
+  🔎 cadastro, edição, rotina e vínculo no formato do app voltam 2xx e passam nos schemas — 2026-11-18 (contra o Core
+  real: 13 de 13 respostas nos schemas do app; código errado volta 422 `VINCULO`; `make vinculo DEVICE=…` imprime o QR;
+  153 testes).
 - [ ] **F6.23** 🤖 Fila offline de verdade: o check-in aceita o `momento` do toque (nunca no futuro, até 24 h atrás) e
   o `Idempotency-Key` vale no check-in e no reconhecer (a mesma chave devolve a mesma resposta, sem repetir o efeito).
   🔎 check-in feito offline resolve o alerta com o horário do toque; reenviar com a mesma chave não duplica nem vira 422.

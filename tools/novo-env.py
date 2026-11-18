@@ -34,6 +34,7 @@ GERADORES = {
     "Ops__TokenDoMonitor": lambda: secrets.token_hex(24),
     "Demo__Senha": lambda: secrets.token_urlsafe(12),
     "SENTINELA_SEGREDO_HEX": lambda: secrets.token_hex(32),
+    "SENTINELA_CHAVE_DE_VINCULO": lambda: secrets.token_hex(32),
 }
 
 

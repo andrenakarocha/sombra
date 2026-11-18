@@ -48,9 +48,12 @@ internal sealed class Cenario
     /// <summary>Gets a unidade de trabalho.</summary>
     internal UnidadeDeTrabalhoContada UnidadeDeTrabalho { get; } = new();
 
+    /// <summary>Gets quem confere o código do QR da Sentinela.</summary>
+    internal CodigosDeVinculoDeTeste CodigosDeVinculo { get; } = new();
+
     /// <summary>O caso de uso de cadastro.</summary>
     /// <returns>O caso de uso.</returns>
-    internal CadastroDeDomicilios Cadastro() => new(Domicilios, Alertas, Leituras, CheckIns, Relogio, UnidadeDeTrabalho);
+    internal CadastroDeDomicilios Cadastro() => new(Domicilios, Alertas, Leituras, CheckIns, Relogio, UnidadeDeTrabalho, CodigosDeVinculo);
 
     /// <summary>O caso de uso da telemetria.</summary>
     /// <returns>O caso de uso.</returns>

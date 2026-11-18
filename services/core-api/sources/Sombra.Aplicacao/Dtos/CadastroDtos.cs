@@ -103,42 +103,78 @@ public sealed record AtualizacaoDeDomicilioDto
     public string Cep { get; init; } = string.Empty;
 }
 
-/// <summary>Os fatores de risco declarados de um morador (a idade avançada vem da data de nascimento).</summary>
-public sealed record PerfilDoMoradorDto
+/// <summary>
+/// A edição de um morador, como o app manda (D17): nome, idade e fatores sempre; CPF, Cartão SUS, telefone e saúde só
+/// quando a família digitou de novo (vazio quer dizer "manter").
+/// </summary>
+public sealed record AtualizacaoDeMoradorDto
 {
-    /// <summary>Os códigos dos fatores (lista vazia quando não há).</summary>
-    /// <example>["CARDIOPATIA"]</example>
-    [Required(ErrorMessage = "Informe os fatores de risco (lista vazia quando não há).")]
-    public IReadOnlyList<string> FatoresDeRisco { get; init; } = [];
-}
-
-/// <summary>O corpo do cadastro de um morador. CPF e Cartão SUS são conferidos pelo dígito verificador no domínio (R1).</summary>
-public sealed record NovoMoradorDto
-{
-    /// <summary>O nome.</summary>
-    /// <example>Lurdes A.</example>
+    /// <summary>Gets o nome.</summary>
     [Required(ErrorMessage = "Informe o nome.")]
     [StringLength(80, ErrorMessage = "O nome tem até 80 caracteres.")]
     public string Nome { get; init; } = string.Empty;
 
-    /// <summary>A data de nascimento.</summary>
-    /// <example>1948-04-02</example>
-    [Required(ErrorMessage = "Informe a data de nascimento.")]
-    public DateOnly? DataDeNascimento { get; init; }
+    /// <summary>Gets a idade em anos completos.</summary>
+    [Required(ErrorMessage = "Informe a idade.")]
+    [Range(0, 130, ErrorMessage = "A idade vai de 0 a 130 anos.")]
+    public int? Idade { get; init; }
 
-    /// <summary>O CPF, com ou sem pontuação.</summary>
-    /// <example>348.757.636-89</example>
+    /// <summary>Gets os fatores de risco declarados (lista vazia quando não há).</summary>
+    [Required(ErrorMessage = "Informe os fatores de risco (lista vazia quando não há).")]
+    public IReadOnlyList<string> FatoresDeRisco { get; init; } = [];
+
+    /// <summary>Gets o CPF novo, quando muda.</summary>
+    [StringLength(14, ErrorMessage = "O CPF tem até 14 caracteres.")]
+    public string? Cpf { get; init; }
+
+    /// <summary>Gets o Cartão SUS novo, quando muda.</summary>
+    [StringLength(18, ErrorMessage = "O Cartão SUS tem até 18 caracteres.")]
+    public string? CartaoSus { get; init; }
+
+    /// <summary>Gets o telefone novo, quando muda.</summary>
+    [StringLength(20, ErrorMessage = "O telefone tem até 20 caracteres.")]
+    public string? Telefone { get; init; }
+
+    /// <summary>Gets o que a família escreveu sobre a saúde, quando muda.</summary>
+    [StringLength(500, ErrorMessage = "O perfil de saúde tem até 500 caracteres.")]
+    public string? PerfilDeSaude { get; init; }
+}
+
+/// <summary>
+/// Um morador novo, como o app manda (D17). O Core guarda a data de nascimento aproximada pela idade; o Cartão SUS é
+/// obrigatório porque a leitura do app sempre espera um.
+/// </summary>
+public sealed record NovoMoradorDto
+{
+    /// <summary>Gets o nome.</summary>
+    [Required(ErrorMessage = "Informe o nome.")]
+    [StringLength(80, ErrorMessage = "O nome tem até 80 caracteres.")]
+    public string Nome { get; init; } = string.Empty;
+
+    /// <summary>Gets a idade em anos completos.</summary>
+    [Required(ErrorMessage = "Informe a idade.")]
+    [Range(0, 130, ErrorMessage = "A idade vai de 0 a 130 anos.")]
+    public int? Idade { get; init; }
+
+    /// <summary>Gets o CPF (regra R1).</summary>
     [Required(ErrorMessage = "Informe o CPF.")]
     [StringLength(14, ErrorMessage = "O CPF tem até 14 caracteres.")]
     public string Cpf { get; init; } = string.Empty;
 
-    /// <summary>O Cartão SUS, quando houver.</summary>
-    /// <example>703093750001765</example>
+    /// <summary>Gets o Cartão SUS (regra R1).</summary>
+    [Required(ErrorMessage = "Informe o Cartão SUS.")]
     [StringLength(18, ErrorMessage = "O Cartão SUS tem até 18 caracteres.")]
-    public string? CartaoSus { get; init; }
+    public string CartaoSus { get; init; } = string.Empty;
 
-    /// <summary>Os códigos dos fatores de risco declarados (ex.: <c>CARDIOPATIA</c>); lista vazia quando não há.</summary>
-    /// <example>["USO_DE_DIURETICO"]</example>
+    /// <summary>Gets o telefone da pessoa, quando houver.</summary>
+    [StringLength(20, ErrorMessage = "O telefone tem até 20 caracteres.")]
+    public string? Telefone { get; init; }
+
+    /// <summary>Gets o que a família escreveu sobre a saúde (opcional; nunca sai da API).</summary>
+    [StringLength(500, ErrorMessage = "O perfil de saúde tem até 500 caracteres.")]
+    public string? PerfilDeSaude { get; init; }
+
+    /// <summary>Gets os fatores de risco declarados (lista vazia quando não há).</summary>
     [Required(ErrorMessage = "Informe os fatores de risco (lista vazia quando não há).")]
     public IReadOnlyList<string> FatoresDeRisco { get; init; } = [];
 }
@@ -173,25 +209,49 @@ public sealed record RedeDeCuidadoDto
     public IReadOnlyList<ContatoDto> Contatos { get; init; } = [];
 }
 
-/// <summary>A rotina combinada com a pessoa (R11, R12).</summary>
-public sealed record RotinaDto
+/// <summary>O check-in diário, como o app manda: ligado ou não, e o horário guardado nos dois casos.</summary>
+public sealed record CheckInDiarioDto
 {
-    /// <summary>O horário local do check-in diário, ou nulo para não ter.</summary>
-    /// <example>09:00:00</example>
-    public TimeOnly? HorarioDoCheckInDiario { get; init; }
+    /// <summary>Gets se o check-in diário fica ligado.</summary>
+    [Required(ErrorMessage = "Diga se o check-in diário fica ligado.")]
+    public bool? Ativo { get; init; }
 
-    /// <summary>Se o lembrete de água fica ligado.</summary>
-    /// <example>true</example>
-    [Required(ErrorMessage = "Diga se o lembrete de água fica ligado.")]
-    public bool? LembreteDeAguaAtivo { get; init; }
+    /// <summary>Gets o horário local, <c>HH:mm</c>.</summary>
+    [Required(ErrorMessage = "Informe o horário do check-in diário.")]
+    [RegularExpression("^([01][0-9]|2[0-3]):[0-5][0-9]$", ErrorMessage = "O horário é no formato 09:00.")]
+    public string Horario { get; init; } = string.Empty;
 }
 
-/// <summary>O vínculo de uma Sentinela com a casa.</summary>
+/// <summary>O lembrete de água no pico da tarde (R11).</summary>
+public sealed record LembreteDeAguaDto
+{
+    /// <summary>Gets se o lembrete fica ligado.</summary>
+    [Required(ErrorMessage = "Diga se o lembrete de água fica ligado.")]
+    public bool? Ativo { get; init; }
+}
+
+/// <summary>A rotina combinada com a pessoa, no formato do app (D17).</summary>
+public sealed record RotinaDto
+{
+    /// <summary>Gets o check-in diário.</summary>
+    [Required(ErrorMessage = "Informe o check-in diário.")]
+    public CheckInDiarioDto? CheckInDiario { get; init; }
+
+    /// <summary>Gets o lembrete de água.</summary>
+    [Required(ErrorMessage = "Informe o lembrete de água.")]
+    public LembreteDeAguaDto? LembreteDeAgua { get; init; }
+}
+
+/// <summary>A Sentinela lida no QR (ou digitada): o identificador e o código de vínculo que ela mostra.</summary>
 public sealed record NovaSentinelaDto
 {
-    /// <summary>O identificador público da Sentinela (ex.: <c>snt-7f3a9c</c>).</summary>
-    /// <example>snt-7f3a9c</example>
+    /// <summary>Gets o identificador público da Sentinela.</summary>
     [Required(ErrorMessage = "Informe o identificador da Sentinela.")]
     [RegularExpression("^snt-[0-9a-f]{6}$", ErrorMessage = "O identificador segue o formato snt-7f3a9c.")]
     public string DeviceId { get; init; } = string.Empty;
+
+    /// <summary>Gets o código de vínculo que a Sentinela mostra no QR.</summary>
+    [Required(ErrorMessage = "Informe o código de vínculo da Sentinela.")]
+    [RegularExpression("^[A-HJ-NP-Za-hj-np-z2-9]{6}$", ErrorMessage = "O código de vínculo tem 6 letras e números.")]
+    public string CodigoDeVinculo { get; init; } = string.Empty;
 }
