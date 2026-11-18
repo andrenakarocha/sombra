@@ -33,9 +33,9 @@ public sealed class ConsultasDoPainelTests
         await using SombraDbContext db = criar();
         ConsultasDoPainel consultas = new(db);
 
-        Paginado<DomicilioResumoResposta> emPerigo = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Nivel = nivelDaLurdes }, Casas.Agora, _semCancelar);
-        Paginado<DomicilioResumoResposta> vilaMaria = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Bairro = "Vila Maria" }, Casas.Agora, _semCancelar);
-        Paginado<DomicilioResumoResposta> segunda = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Pagina = 2, Tamanho = 2 }, Casas.Agora, _semCancelar);
+        Paginado<DomicilioResumoResposta> emPerigo = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Nivel = nivelDaLurdes }, null, Casas.Agora, _semCancelar);
+        Paginado<DomicilioResumoResposta> vilaMaria = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Bairro = "Vila Maria" }, null, Casas.Agora, _semCancelar);
+        Paginado<DomicilioResumoResposta> segunda = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto { Pagina = 2, Tamanho = 2 }, null, Casas.Agora, _semCancelar);
 
         Assert.AreEqual(NivelDeRisco.Perigo, nivelDaLurdes);
         Assert.AreEqual(1, emPerigo.Total);
@@ -46,6 +46,9 @@ public sealed class ConsultasDoPainelTests
         Assert.IsFalse(joaquim.SentinelaOnline);
         Assert.AreEqual(3, segunda.Total);
         Assert.AreEqual("Casa do Seu Joaquim", segunda.Itens.Single().Apelido);
+
+        Paginado<DomicilioResumoResposta> doCuidador = await consultas.ListarDomiciliosAsync(new FiltroDeDomiciliosDto(), [Casas.Joaquim], Casas.Agora, _semCancelar);
+        Assert.AreEqual(Casas.Joaquim, doCuidador.Itens.Single().Id);
     }
 
     /// <summary>Alertas e leituras: filtros, período fechado embaixo e aberto em cima, do mais recente ao mais antigo.</summary>
@@ -68,8 +71,8 @@ public sealed class ConsultasDoPainelTests
             Casas.Lurdes,
             new FiltroDeLeiturasDto { De = Casas.Agora.AddMinutes(-90), Ate = Casas.Agora },
             _semCancelar);
-        Paginado<AlertaResposta> todos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto(), _semCancelar);
-        Paginado<AlertaResposta> informativos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto { Estado = EstadoDoAlerta.Informativo }, _semCancelar);
+        Paginado<AlertaResposta> todos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto(), null, _semCancelar);
+        Paginado<AlertaResposta> informativos = await consultas.ListarAlertasAsync(new FiltroDeAlertasDto { Estado = EstadoDoAlerta.Informativo }, null, _semCancelar);
 
         Assert.AreEqual(1, leituras.Total);
         Assert.AreEqual(Casas.Agora.AddHours(-1), leituras.Itens.Single().Momento);

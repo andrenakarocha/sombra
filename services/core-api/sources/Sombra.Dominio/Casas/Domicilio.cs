@@ -76,18 +76,25 @@ public sealed partial class Domicilio
     public static Domicilio Cadastrar(string apelido, Endereco endereco, string regiaoClimatica)
     {
         ArgumentNullException.ThrowIfNull(endereco);
-        if (string.IsNullOrWhiteSpace(apelido) || apelido.Trim().Length > 60)
-        {
-            throw new RegraVioladaException("CADASTRO", "O apelido da casa é obrigatório e tem até 60 caracteres.");
-        }
-
+        string apelidoValido = ApelidoValido(apelido);
         string regiao = (regiaoClimatica ?? string.Empty).Trim().ToUpperInvariant();
         if (!FormatoDaRegiao().IsMatch(regiao))
         {
             throw new RegraVioladaException("CADASTRO", "Região climática inválida (ex.: SP-MIRANTE).");
         }
 
-        return new Domicilio(Guid.CreateVersion7(), apelido.Trim(), endereco, regiao);
+        return new Domicilio(Guid.CreateVersion7(), apelidoValido, endereco, regiao);
+    }
+
+    /// <summary>Corrige o apelido e o endereço. A região climática não muda: ela decide qual estação atende a casa.</summary>
+    /// <param name="apelido">O novo apelido.</param>
+    /// <param name="endereco">O novo endereço.</param>
+    /// <exception cref="RegraVioladaException">Quando falta o apelido.</exception>
+    public void AtualizarCadastro(string apelido, Endereco endereco)
+    {
+        ArgumentNullException.ThrowIfNull(endereco);
+        Apelido = ApelidoValido(apelido);
+        Endereco = endereco;
     }
 
     /// <summary>Adiciona um morador.</summary>
@@ -202,6 +209,11 @@ public sealed partial class Domicilio
     /// <summary>Nunca revela o endereço.</summary>
     /// <returns>O identificador, sem dado pessoal.</returns>
     public override string ToString() => $"Domicilio {Id}";
+
+    private static string ApelidoValido(string apelido)
+        => string.IsNullOrWhiteSpace(apelido) || apelido.Trim().Length > 60
+            ? throw new RegraVioladaException("CADASTRO", "O apelido da casa é obrigatório e tem até 60 caracteres.")
+            : apelido.Trim();
 
     [GeneratedRegex("^[A-Z]{2}-[A-Z0-9-]{2,30}$", RegexOptions.CultureInvariant)]
     private static partial Regex FormatoDaRegiao();

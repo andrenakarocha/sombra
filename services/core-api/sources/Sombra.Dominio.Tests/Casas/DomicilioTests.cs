@@ -119,6 +119,21 @@ public sealed class DomicilioTests
         Assert.AreEqual("R10", Assert.ThrowsExactly<RegraVioladaException>(() => Sentinela.Criar("sentinela-1")).Regra);
     }
 
+    /// <summary>O cadastro pode ser corrigido (apelido e endereço), com a mesma regra do apelido.</summary>
+    [TestMethod]
+    public void AtualizaApelidoEEndereco()
+    {
+        Domicilio casa = Fabricas.Casa();
+        Endereco novo = Endereco.Criar("Rua Nova", "7", "Tucuruvi", "São Paulo", "SP", "02306000");
+
+        casa.AtualizarCadastro(" Casa da Lurdes ", novo);
+
+        Assert.AreEqual("Casa da Lurdes", casa.Apelido);
+        Assert.AreEqual(novo, casa.Endereco);
+        Assert.AreEqual("SP-MIRANTE", casa.RegiaoClimatica);
+        Assert.ThrowsExactly<RegraVioladaException>(() => casa.AtualizarCadastro(" ", novo));
+    }
+
     /// <summary>A casa nasce com a rotina padrão e guarda a rotina combinada com a pessoa (R11).</summary>
     [TestMethod]
     public void GuardaARotinaCombinada()

@@ -32,6 +32,7 @@ GERADORES = {
     "Privacidade__ChaveAes": chave_base64,
     "Privacidade__ChaveIndiceCego": chave_base64,
     "Ops__TokenDoMonitor": lambda: secrets.token_hex(24),
+    "Demo__Senha": lambda: secrets.token_urlsafe(12),
     "SENTINELA_SEGREDO_HEX": lambda: secrets.token_hex(32),
 }
 

@@ -7,7 +7,7 @@ mesmo PR** (§0 do plano).
 |---|---|---|---|
 | Níveis de risco e índice de calor | todos | [`niveis-de-risco.md`](niveis-de-risco.md) + [`indice-de-calor.vetores.json`](indice-de-calor.vetores.json) | `tools/indice-de-calor/vetores.py` |
 | MQTT (AsyncAPI 3.1) | Sentinela ↔ Core | [`mqtt.asyncapi.yaml`](mqtt.asyncapi.yaml) + [`mqtt-assinatura.vetores.json`](mqtt-assinatura.vetores.json) | `npx @asyncapi/cli@6.3.1 validate` e `tools/mqtt-assinatura/vetores.py` |
-| REST do Core | app, painel, monitor → Core | [`core-api.md`](core-api.md) (vira `core-api.openapi.json` na F1.7) | testes de API do Core |
+| REST do Core | app, painel, monitor → Core | [`core-api.openapi.json`](core-api.openapi.json) (fonte da verdade, gerado pelo Core) + [`core-api.md`](core-api.md) (visão geral) | o teste de API falha se divergirem; `make -C services/core-api openapi` regenera |
 | REST do Clima | Core → Clima | [`clima-service.md`](clima-service.md) (vira `clima-service.openapi.json` na F3.4) | teste de contrato no Core (F3.9) |
 | Tempo real | Core → app, painel | [`signalr.md`](signalr.md) | testes de integração do Core |
 
