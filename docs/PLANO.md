@@ -152,7 +152,7 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 |---|---|---|
 | D1 | CitizenTech **Sombra**: calor extremo e idosos que moram sozinhos | equipe, 2026-11-17 |
 | D2 | **Monorepo** público, uma pasta por parte, Ficha no topo do README (o brief pede isso) (ADR-002) | equipe, 2026-11-17 |
-| D3 | **Escopo máximo** nas 8 disciplinas, tudo integrado; "não se preocupar com prazo" | equipe, 2026-11-17 |
+| D3 | **Nível técnico máximo nas 8 disciplinas, tudo integrado** (revisto em 2026-11-18): código, arquitetura, testes e CI no padrão alto; trabalho manual só o que a entrega exige (D18) | equipe, 2026-11-18 |
 | D4 | **Dois backends que conversam:** Core em C#/.NET 10 (disciplina C#) e Clima em Java/Spring (disciplina SOA). Cada um é dono do seu banco (ADR-003) | plano, aceito |
 | D5 | **Cyber dentro do Core**, no projeto `Sombra.Privacidade` (middleware e guardas no backend, como o professor descreveu); dashboard no painel e no app | plano, aceito |
 | D6 | **ML com INMET A701 (2010–2025)**, XGBoost exportado em ONNX e servido pelo Clima | plano, aceito |
@@ -166,6 +166,7 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | D15 | **Repositório público `andrenakarocha/sombra`** com a `main` protegida para todos, inclusive o admin: PR obrigatório (0 aprovações), histórico linear, sem force push. **Um PR por lote**, com **rebase merge** (um commit por checkpoint na `main`). **Quem revisa e faz o merge é o dono do repositório.** Em máquinas com os hooks de segurança, o push é manual do operador e o agente só roda merge, release ou publicação com o ok explícito dele. Os checks do CI viram obrigatórios na F0.12 | equipe, 2026-11-17 (fecha a DA1) |
 | D16 | **Direção de arte "luz filtrada pela folhagem"** (`design/`): tokens com temas claro e escuro, contraste conferido por script (≥ 7:1 no texto principal), Fraunces + Atkinson Hyperlegible Next, risco com cor + forma + texto | equipe, 2026-11-17 (fecha a DA5) |
 | D14 | **Fotos do território fora das entregas** (padronizadas pelo time); uso possível só no pitch, com a placa do carro desfocada. A transcrição vai para o repositório com "a filha" no lugar do nome dela | equipe, 2026-11-17 |
+| D18 | **Corte do trabalho manual que nenhuma entrega exige** (conferido nos enunciados): sem VM no Azure (fecha a DA3: não); F11 só com acessibilidade e uso, sem o cosmético; sem Test Plan pago nem APK; pitch só se sobrar tempo (vale só para o prêmio). Os **5 vídeos obrigatórios** (Cyber, ML ≤ 5, IoT ≤ 4, Mobile ≤ 3, OS ≤ 7) e os prints saem por script de **uma rodada** do `make demo`, cortada por matéria | dono do repositório, 2026-11-18 |
 | D17 | **O app é a referência da API do Cuidador:** onde os schemas Zod do `mobile/` e o Core divergem, o Core se adapta ao app, inclusive na R3 (F6.21–F6.26) | dono do repositório, 2026-11-18 |
 
 As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11), 002 (D2), 003 (D4), 004 (MQTT assinado e sem PII), 005 (D7) e 006 (índice de calor replicado com vetores).
@@ -175,7 +176,6 @@ As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11),
 | # | Decisão | Padrão até lá | Fecha em |
 |---|---|---|---|
 | DA2 | Bairro da Ficha · persona fictícia do sistema | cidade **São Paulo** confirmada (a A701 continua valendo); bairro "a preencher"; persona "Dona Lurdes, 78 anos", inspirada na Dona Cida | F12.1 (não bloqueia nada) |
-| DA3 | Subir a VM pública no Azure | sim, se a F8 fechar com folga | F11.8 |
 | DA4 | Voz do pitch: TTS (Gemini, como no HENRY) ou voz de alguém do time | TTS | F13.3 |
 | DA6 | Alvo do preventivo e do ML com o replay real, que não chega a `PERIGO` (pico de 35,47 °C, `CAUTELA_EXTREMA`; achado da F6.15). Hoje o `AlertaPreventivo` exige previsão de `PERIGO` (R5), então o replay não abriria nenhum | regras atuais (R5 e o alvo da F4.2 em aberto) | F4.2 |
 
@@ -837,7 +837,8 @@ falha documentados.
 ### 8.12 F11 — Polimento nível HENRY
 
 **Objetivo:** o acabamento que diferencia, sem tocar no que já garante a nota. Cada item vem da seção "Nível HENRY" da
-spec. Um checkpoint por superfície.
+spec. Um checkpoint por superfície. **Por D18, só entra o que melhora acessibilidade ou uso de verdade; o cosmético e a
+F11.8 (VM no Azure) saíram.**
 
 - [ ] **F11.1** 🤖 Core: Stryker no domínio, OpenTelemetry, C4 no README, arquivos `.http` da demonstração.
 - [ ] **F11.2** 🤖 Clima: cache por região, métricas Micrometer, página de evidências.
@@ -846,7 +847,7 @@ spec. Um checkpoint por superfície.
 - [ ] **F11.5** 🤖 App: animações com Reanimated, ilustrações, tema escuro, ícone, splash, onboarding.
 - [ ] **F11.6** 🤖 Painel: transições do farol, modo apresentação, mapa por bairro (agregado).
 - [ ] **F11.7** 🤖 Cyber: mapa regra × sink, relatório LGPD gerado, antes e depois lado a lado no dashboard.
-- [ ] **F11.8** 🧑🤖 🔑 VM no Azure com o mesmo `provision.sh` e HTTPS (fecha a DA3) (P13).
+- [ ] ~~**F11.8**~~ fora do escopo (D18): VM no Azure.
 - [ ] **F11.9** 🧑🤖 Revisão visual final: screenshots do painel (390/768/1440) e do app (dois tamanhos), revisados.
   🔎 de cada um: o operador aprova.
 
@@ -870,7 +871,8 @@ spec. Um checkpoint por superfície.
 
 ### 8.14 F13 — Vídeos e pitch 🔑
 
-**Spec:** 10.
+**Spec:** 10. **Por D18:** primeiro os 5 vídeos obrigatórios (F13.4 e F13.6), capturados por script numa rodada só do
+`make demo` e cortados por matéria; o pitch (F13.1–F13.3, F13.5) só se sobrar tempo, porque vale só para o prêmio.
 
 - [ ] **F13.1** 🤖 Pipeline do HENRY copiado para `pitch/`, `kit.css` do Sombra e kit técnico (template dos vídeos de
   disciplina).
@@ -951,7 +953,7 @@ spec. Um checkpoint por superfície.
 | P10 | `@microsoft/signalr` funciona no Expo SDK 58 (Expo Go) | F6.3 | ⬜ |
 | P11 | Vagrant + VirtualBox sobem Ubuntu 24.04 na máquina de desenvolvimento (Arch) | F8.1 | 🟡 2026-11-17 (doctor): VirtualBox 7.2.22 instalado; **Vagrant ausente** e fora dos repositórios oficiais do Arch (só AUR). Alternativa: VBoxManage + imagem cloud do Ubuntu com cloud-init. Decidir na F8.1 |
 | P12 | A API REST do Azure DevOps cria Test Cases com passos e vínculos sem licença de Test Plans | F10.4 | ⬜ |
-| P13 | Há uma conta Azure for Students ativa | F11.8 | ⬜ |
+| P13 | Há uma conta Azure for Students ativa | — | dispensada (D18: sem VM no Azure) |
 | P14 | O pipeline do HENRY (HyperFrames, FFmpeg, Chrome headless, voz Gemini TTS) roda de novo, com cota de TTS | F13.1 | 🟡 rodou em out/2026 no Challenge |
 
 Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior, falta o teste real · ✅ confirmada ·
