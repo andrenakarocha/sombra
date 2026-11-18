@@ -73,7 +73,7 @@ export function ExplicacaoDoRisco({ nome, risco, indiceC }: { nome: string; risc
           <Texto suave>
             {avaliacao.folgaAtePerigoC > 0
               ? `Faltam ${formatarGraus(avaliacao.folgaAtePerigoC)} °C para o perigo.`
-              : 'Já está no perigo para ela.'}
+              : `Já está no perigo para ${nome}.`}
             {avaliacao.padrao !== avaliacao.personalizado && ` Pela régua padrão seria "${INFO_DO_NIVEL[avaliacao.padrao].rotulo}".`}
           </Texto>
         </View>
