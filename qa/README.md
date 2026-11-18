@@ -24,5 +24,5 @@ aponta para o vazio.
 ## Rastreabilidade
 
 Cada caso aponta para os testes que o executam: **MSTest** no Core (`services/core-api`), **Jest** no app (`mobile`) e
-**pytest** no simulador da Sentinela (`tools/sentinela-sim`). São 48 casos automatizados e 2 manuais: a fonte em 200%
-com TalkBack (TC36) e o CPF em campo livre (TC39), que passa a ser automatizado na F2.
+**pytest** no simulador da Sentinela (`tools/sentinela-sim`). São 49 casos automatizados e 1 manual: a fonte em 200%
+com TalkBack (TC36). O CPF em campo livre (TC39) passou a ser automatizado com a F2.
