@@ -53,6 +53,8 @@ services:
       Sentinela__ChaveDeVinculo: ${SENTINELA_CHAVE_DE_VINCULO:?rode make env}
       Privacidade__ChaveAes: ${Privacidade__ChaveAes:?rode make env}
       Privacidade__ChaveIndiceCego: ${Privacidade__ChaveIndiceCego:?rode make env}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      Gemini__Modelo: ${Gemini__Modelo:-}
       Ops__TokenDoMonitor: ${Ops__TokenDoMonitor:-}
       Mqtt__Host: mqtt
       Mqtt__Porta: "1883"

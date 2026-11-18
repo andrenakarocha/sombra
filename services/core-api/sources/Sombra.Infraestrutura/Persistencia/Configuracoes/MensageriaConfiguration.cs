@@ -66,6 +66,15 @@ internal sealed class EventoDeSegurancaConfiguration : IEntityTypeConfiguration<
         builder.Property(e => e.Severidade).HasConversion<string>().HasMaxLength(10);
         builder.Property(e => e.Regra).HasMaxLength(40);
         builder.Property(e => e.Bloqueado).HasDefaultValue(true);
+        builder.Property(e => e.Assinatura).HasMaxLength(64);
+        builder.Property(e => e.TraducaoCidadao).HasMaxLength(300);
+        builder.Property(e => e.TraducaoGestao).HasMaxLength(300);
+        builder.Property(e => e.TraducaoTecnica).HasMaxLength(600);
+        builder.Property(e => e.FonteDaTraducao).HasMaxLength(10);
+        builder.Property(e => e.TraduzidoEm);
+        builder.Ignore(e => e.Traducao);
+        builder.HasIndex(e => e.TraduzidoEm);
+        builder.HasIndex(e => new { e.Assinatura, e.FonteDaTraducao });
         builder.HasIndex(e => e.Momento);
         builder.HasIndex(e => new { e.DomicilioId, e.Momento });
     }

@@ -3398,7 +3398,8 @@
           "bloqueado",
           "domicilioId",
           "correlationId",
-          "detalhe"
+          "detalhe",
+          "traducao"
         ],
         "type": "object",
         "properties": {
@@ -3482,6 +3483,17 @@
           "detalhe": {
             "type": "string",
             "description": "O resumo leg\u00EDvel, sem dado pessoal."
+          },
+          "traducao": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "As tr\u00EAs tradu\u00E7\u00F5es (cidad\u00E3o, gest\u00E3o, sugest\u00E3o t\u00E9cnica) e a fonte; nula enquanto o tradutor n\u00E3o passou.",
+                "$ref": "#/components/schemas/TraducaoDeRisco"
+              }
+            ]
           }
         },
         "description": "Um evento da trilha de seguran\u00E7a, s\u00F3 com metadados (contrato \u0060GET /privacidade/eventos\u0060)."
@@ -4333,7 +4345,7 @@
             "description": "As \u00FAltimas mensagens, da mais recente para a mais antiga."
           }
         },
-        "description": "A privacidade da casa, no formato do app (D17). O farol \u00E9 o Risco Cidad\u00E3o (spec 07 \u00A74: pesos, desfecho e decaimento)\ndos eventos de seguran\u00E7a da casa: as mensagens recusadas das Sentinelas dela e os vazamentos que os guardas barraram\nem rotas dela. As mensagens v\u00EAm de templates; a F2.6 traz a tradu\u00E7\u00E3o da IA, sem mudar o formato."
+        "description": "A privacidade da casa, no formato do app (D17). O farol \u00E9 o Risco Cidad\u00E3o (spec 07 \u00A74: pesos, desfecho e decaimento)\ndos eventos de seguran\u00E7a da casa: as mensagens recusadas das Sentinelas dela e os vazamentos que os guardas barraram\nem rotas dela. A mensagem \u00E9 a tradu\u00E7\u00E3o para o cidad\u00E3o (IA, ou template enquanto a IA n\u00E3o responde ou quando cai no\nfallback); o campo \u0060fonte\u0060 diz qual."
       },
       "ProblemDetails": {
         "type": "object",
@@ -4701,6 +4713,34 @@
           }
         },
         "description": "O token devolvido pelo login."
+      },
+      "TraducaoDeRisco": {
+        "required": [
+          "cidadao",
+          "gestao",
+          "tecnico",
+          "fonte"
+        ],
+        "type": "object",
+        "properties": {
+          "cidadao": {
+            "type": "string",
+            "description": "Para a pessoa de 60\u002B: duas frases, sem jarg\u00E3o, tom calmo, o que aconteceu e o que fazer."
+          },
+          "gestao": {
+            "type": "string",
+            "description": "Para a gest\u00E3o: impacto e risco LGPD em uma linha."
+          },
+          "tecnico": {
+            "type": "string",
+            "description": "Para o time t\u00E9cnico: a sugest\u00E3o de corre\u00E7\u00E3o (qual sink, qual padr\u00E3o usar). \u00C9 a remedia\u00E7\u00E3o."
+          },
+          "fonte": {
+            "type": "string",
+            "description": "string TraducaoDeRisco.FonteIa ou string TraducaoDeRisco.FonteTemplate."
+          }
+        },
+        "description": "As tr\u00EAs tradu\u00E7\u00F5es de um evento de seguran\u00E7a (spec 07 \u00A73)."
       },
       "ValidationProblemDetails": {
         "type": "object",

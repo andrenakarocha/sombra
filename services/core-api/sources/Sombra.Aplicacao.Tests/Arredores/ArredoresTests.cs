@@ -15,6 +15,7 @@ using Sombra.Dominio.Geo;
 using Sombra.Dominio.Pessoas;
 using Sombra.Privacidade.Regras;
 using Sombra.Privacidade.Risco;
+using Sombra.Privacidade.Traducao;
 
 namespace Sombra.Aplicacao.Tests.Arredores;
 
@@ -31,9 +32,9 @@ public sealed class ArredoresTests
     [TestMethod]
     public void FarolEhORiscoCidadaoDosEventosDaCasa()
     {
-        (string, EventoDeRisco)[] antigo = [Mqtt(_agora.AddDays(-8), "MQTT_REPLAY")];
-        (string, EventoDeRisco)[] dois = [Mqtt(_agora.AddHours(-2), "MQTT_REPLAY"), Mqtt(_agora.AddHours(-1), "MQTT_ASSINATURA_INVALIDA")];
-        (string, EventoDeRisco)[] seis = [.. Enumerable.Range(1, 6).Select(h => Mqtt(_agora.AddHours(-h), "OUTRO_TIPO"))];
+        (string, EventoDeRisco, TraducaoDeRisco?)[] antigo = [Mqtt(_agora.AddDays(-8), "MQTT_REPLAY")];
+        (string, EventoDeRisco, TraducaoDeRisco?)[] dois = [Mqtt(_agora.AddHours(-2), "MQTT_REPLAY"), Mqtt(_agora.AddHours(-1), "MQTT_ASSINATURA_INVALIDA")];
+        (string, EventoDeRisco, TraducaoDeRisco?)[] seis = [.. Enumerable.Range(1, 6).Select(h => Mqtt(_agora.AddHours(-h), "OUTRO_TIPO"))];
 
         PrivacidadeDaCasaResposta verde = PrivacidadeDaCasaResposta.De(antigo, _agora);
         PrivacidadeDaCasaResposta amarelo = PrivacidadeDaCasaResposta.De(dois, _agora);
@@ -50,20 +51,34 @@ public sealed class ArredoresTests
         Assert.Contains("Nenhum dado pessoal saiu.", vermelho.Mensagens[0].MensagemCidadao);
     }
 
+    /// <summary>A tradução da IA, quando existe, é a mensagem; a fonte diz de onde veio.</summary>
+    [TestMethod]
+    public void TraducaoDaIaViraAMensagem()
+    {
+        TraducaoDeRisco ia = new("Alguém tentou ver a saúde da casa, e o Sombra não deixou. Está tudo protegido.", "g", "t", TraducaoDeRisco.FonteIa);
+
+        MensagemDePrivacidadeResposta mensagem = PrivacidadeDaCasaResposta.De(
+            [("ACESSO_NEGADO", new EventoDeRisco(_agora.AddMinutes(-1), CategoriaDePii.Saude, SeveridadeDePii.Alta, Bloqueado: true), ia)],
+            _agora).Mensagens.Single();
+
+        Assert.AreEqual(ia.Cidadao, mensagem.MensagemCidadao);
+        Assert.AreEqual("IA", mensagem.Fonte);
+    }
+
     /// <summary>As mensagens dos guardas de privacidade dizem a família do dado, sem o dado e sem jargão.</summary>
     [TestMethod]
     public void MensagensDosGuardasDizemAFamilia()
     {
         PrivacidadeDaCasaResposta privacidade = PrivacidadeDaCasaResposta.De(
-            [("ACESSO_NEGADO", new EventoDeRisco(_agora.AddMinutes(-1), CategoriaDePii.Saude, SeveridadeDePii.Alta, Bloqueado: true))],
+            [("ACESSO_NEGADO", new EventoDeRisco(_agora.AddMinutes(-1), CategoriaDePii.Saude, SeveridadeDePii.Alta, Bloqueado: true), null)],
             _agora);
 
         Assert.AreEqual(FarolDePrivacidade.Amarelo, privacidade.Farol);
         Assert.AreEqual("Alguém tentou ver um dado de saúde da casa sem permissão, e o Sombra bloqueou.", privacidade.Mensagens.Single().MensagemCidadao);
     }
 
-    private static (string, EventoDeRisco) Mqtt(DateTimeOffset momento, string tipo)
-        => (tipo, new EventoDeRisco(momento, CategoriaDePii.Credencial, SeveridadeDePii.Alta, Bloqueado: true));
+    private static (string, EventoDeRisco, TraducaoDeRisco?) Mqtt(DateTimeOffset momento, string tipo)
+        => (tipo, new EventoDeRisco(momento, CategoriaDePii.Credencial, SeveridadeDePii.Alta, Bloqueado: true), null);
 
     /// <summary>Os pontos saem da referência da região da casa; região sem referência dá lista vazia; casa inexistente, 404.</summary>
     /// <returns>O teste.</returns>

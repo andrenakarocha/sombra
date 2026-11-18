@@ -31,6 +31,7 @@ using Sombra.Aplicacao.Cadastro;
 using Sombra.Aplicacao.Portas;
 using Sombra.Infraestrutura;
 using Sombra.Infraestrutura.Autenticacao;
+using Sombra.Infraestrutura.Ia;
 using Sombra.Infraestrutura.Mqtt;
 using Sombra.Infraestrutura.Persistencia;
 using Sombra.Infraestrutura.Seguranca;
@@ -245,6 +246,12 @@ public static class ComposicaoDoCore
         PoliticaDeCampoLivre politica = configuracao.GetValue("Privacidade:CampoLivre", PoliticaDeCampoLivre.Mascarar);
         servicos.AddSingleton(sp => new VarredorDePii(sp.GetRequiredService<MotorDePii>(), politica));
         servicos.AddScoped<ContextoDeTaint>();
+        servicos.AddHttpClient<IModeloDeTraducao, ClienteGemini>(cliente =>
+            {
+                cliente.BaseAddress = ClienteGemini.Endereco;
+                cliente.Timeout = TimeSpan.FromSeconds(30);
+            })
+            .AddHttpMessageHandler<GuardaDeSaidaHttp>();
         servicos.AddHttpClient(AuditoriaController.ClienteLlm, cliente => cliente.BaseAddress = new Uri("http://llm.auditoria.invalid"))
             .AddHttpMessageHandler<GuardaDeSaidaHttp>();
     }

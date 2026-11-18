@@ -2,6 +2,7 @@ using System;
 using Sombra.Privacidade.Regras;
 using Sombra.Privacidade.Risco;
 using Sombra.Privacidade.Sinks;
+using Sombra.Privacidade.Traducao;
 
 namespace Sombra.Infraestrutura.Seguranca;
 
@@ -70,6 +71,24 @@ public sealed class EventoDeSeguranca
     /// <summary>Gets a value indicating whether o Sombra bloqueou (falso só no modo inseguro da demo).</summary>
     public bool Bloqueado { get; private set; } = true;
 
+    /// <summary>Gets a assinatura do evento para o cache da tradução (preenchida ao traduzir).</summary>
+    public string? Assinatura { get; private set; }
+
+    /// <summary>Gets a mensagem para o cidadão.</summary>
+    public string? TraducaoCidadao { get; private set; }
+
+    /// <summary>Gets a linha para a gestão.</summary>
+    public string? TraducaoGestao { get; private set; }
+
+    /// <summary>Gets a sugestão de correção para o time técnico.</summary>
+    public string? TraducaoTecnica { get; private set; }
+
+    /// <summary>Gets de onde veio a tradução: <c>IA</c> ou <c>template</c>.</summary>
+    public string? FonteDaTraducao { get; private set; }
+
+    /// <summary>Gets quando foi traduzido; nulo é a fila do tradutor (o outbox da F2.6).</summary>
+    public DateTimeOffset? TraduzidoEm { get; private set; }
+
     /// <summary>Registra um evento.</summary>
     /// <param name="momento">Quando.</param>
     /// <param name="tipo">O tipo.</param>
@@ -112,10 +131,33 @@ public sealed class EventoDeSeguranca
     /// (credencial, severidade alta; mensagem só malformada, baixa).
     /// </summary>
     /// <returns>O evento de risco.</returns>
-    public EventoDeRisco ParaRisco()
-        => new(
-            Momento,
-            Categoria ?? CategoriaDePii.Credencial,
-            Severidade ?? (Tipo == "MQTT_MENSAGEM_INVALIDA" ? SeveridadeDePii.Baixa : SeveridadeDePii.Alta),
-            Bloqueado);
+    public EventoDeRisco ParaRisco() => new(Momento, CategoriaEfetiva, SeveridadeEfetiva, Bloqueado);
+
+    /// <summary>O evento como a IA pode vê-lo: só metadados, sem casa, correlação nem detalhe.</summary>
+    /// <param name="repeticoes">Quantos eventos iguais nas últimas 24 h.</param>
+    /// <returns>O evento para traduzir.</returns>
+    public EventoParaTraduzir ParaTraduzir(int repeticoes) => new(Tipo, Sink, CategoriaEfetiva, SeveridadeEfetiva, Regra, Origem, Bloqueado, repeticoes);
+
+    /// <summary>Guarda a tradução e tira o evento da fila do tradutor.</summary>
+    /// <param name="assinatura">A assinatura do evento.</param>
+    /// <param name="traducao">As três traduções.</param>
+    /// <param name="momento">Quando.</param>
+    public void RegistrarTraducao(string assinatura, TraducaoDeRisco traducao, DateTimeOffset momento)
+    {
+        ArgumentNullException.ThrowIfNull(traducao);
+        Assinatura = assinatura;
+        TraducaoCidadao = traducao.Cidadao;
+        TraducaoGestao = traducao.Gestao;
+        TraducaoTecnica = traducao.Tecnico;
+        FonteDaTraducao = traducao.Fonte;
+        TraduzidoEm = momento.ToUniversalTime();
+    }
+
+    /// <summary>Gets a tradução guardada, se houver.</summary>
+    public TraducaoDeRisco? Traducao
+        => TraduzidoEm is null ? null : new TraducaoDeRisco(TraducaoCidadao ?? string.Empty, TraducaoGestao ?? string.Empty, TraducaoTecnica ?? string.Empty, FonteDaTraducao ?? TraducaoDeRisco.FonteTemplate);
+
+    private CategoriaDePii CategoriaEfetiva => Categoria ?? CategoriaDePii.Credencial;
+
+    private SeveridadeDePii SeveridadeEfetiva => Severidade ?? (Tipo == "MQTT_MENSAGEM_INVALIDA" ? SeveridadeDePii.Baixa : SeveridadeDePii.Alta);
 }

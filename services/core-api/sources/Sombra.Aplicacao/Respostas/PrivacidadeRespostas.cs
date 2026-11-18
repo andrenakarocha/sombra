@@ -4,6 +4,7 @@ using System.Linq;
 using Sombra.Privacidade.Regras;
 using Sombra.Privacidade.Risco;
 using Sombra.Privacidade.Sinks;
+using Sombra.Privacidade.Traducao;
 
 namespace Sombra.Aplicacao.Respostas;
 
@@ -97,6 +98,7 @@ public sealed record RiscoCidadaoResposta(
 /// <param name="DomicilioId">A casa, quando se sabe.</param>
 /// <param name="CorrelationId">A correlação, para achar o resto nos logs.</param>
 /// <param name="Detalhe">O resumo legível, sem dado pessoal.</param>
+/// <param name="Traducao">As três traduções (cidadão, gestão, sugestão técnica) e a fonte; nula enquanto o tradutor não passou.</param>
 public sealed record EventoDeSegurancaResposta(
     Guid Id,
     DateTimeOffset Momento,
@@ -109,4 +111,5 @@ public sealed record EventoDeSegurancaResposta(
     bool Bloqueado,
     Guid? DomicilioId,
     string? CorrelationId,
-    string Detalhe);
+    string Detalhe,
+    TraducaoDeRisco? Traducao);

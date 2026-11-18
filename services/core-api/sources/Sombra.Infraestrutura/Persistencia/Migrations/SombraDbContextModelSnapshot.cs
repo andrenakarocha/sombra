@@ -470,6 +470,11 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("Assinatura")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("assinatura");
+
                     b.Property<bool>("Bloqueado")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -495,6 +500,11 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                     b.Property<Guid?>("DomicilioId")
                         .HasColumnType("uuid")
                         .HasColumnName("domicilio_id");
+
+                    b.Property<string>("FonteDaTraducao")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("fonte_da_traducao");
 
                     b.Property<DateTimeOffset>("Momento")
                         .HasColumnType("timestamp with time zone")
@@ -527,11 +537,36 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasColumnType("character varying(40)")
                         .HasColumnName("tipo");
 
+                    b.Property<string>("TraducaoCidadao")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("traducao_cidadao");
+
+                    b.Property<string>("TraducaoGestao")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("traducao_gestao");
+
+                    b.Property<string>("TraducaoTecnica")
+                        .HasMaxLength(600)
+                        .HasColumnType("character varying(600)")
+                        .HasColumnName("traducao_tecnica");
+
+                    b.Property<DateTimeOffset?>("TraduzidoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("traduzido_em");
+
                     b.HasKey("Id")
                         .HasName("pk_eventos_de_seguranca");
 
                     b.HasIndex("Momento")
                         .HasDatabaseName("ix_eventos_de_seguranca_momento");
+
+                    b.HasIndex("TraduzidoEm")
+                        .HasDatabaseName("ix_eventos_de_seguranca_traduzido_em");
+
+                    b.HasIndex("Assinatura", "FonteDaTraducao")
+                        .HasDatabaseName("ix_eventos_de_seguranca_assinatura_fonte_da_traducao");
 
                     b.HasIndex("DomicilioId", "Momento")
                         .HasDatabaseName("ix_eventos_de_seguranca_domicilio_id_momento");
