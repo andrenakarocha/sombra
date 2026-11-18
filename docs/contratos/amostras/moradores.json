@@ -1,0 +1,14 @@
+[
+  {
+    "id": "c1a8e2f4-7b3d-4e9a-8f2c-6d5b4a3e2f10",
+    "nome": "Lurdes A.",
+    "idade": 78,
+    "telefone": null,
+    "cpf": "***.757.***-89",
+    "cartaoSus": "*** **** **** 1765",
+    "perfilDeSaude": "[DADO DE SAÚDE PROTEGIDO]",
+    "fatoresDeRisco": [
+      "USO_DE_DIURETICO"
+    ]
+  }
+]

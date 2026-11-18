@@ -58,6 +58,10 @@ jobs:
             core:
               - 'services/core-api/**'
               - 'docs/contratos/indice-de-calor.vetores.json'
+              - 'docs/contratos/core-api.openapi.json'
+              - 'docs/contratos/risco-personalizado.vetores.json'
+              - 'docs/contratos/vinculo-da-sentinela.vetores.json'
+              - 'docs/contratos/amostras/**'
             ambiente:
               - 'compose.yaml'
               - 'infra/compose/**'

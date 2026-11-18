@@ -20,7 +20,7 @@ EF := dotnet tool restore >/dev/null && dotnet ef
 DB_PORTA := $(or $(shell grep -m1 '^DB_PORTA_LOCAL=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-),55432)
 CORE_DB_PASSWORD := $(shell grep -m1 '^CORE_DB_PASSWORD=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-)
 
-.PHONY: help restore build test coverage coverage-report format format-fix quality migration migration-check db-migrate openapi
+.PHONY: help restore build test coverage coverage-report format format-fix quality migration migration-check db-migrate openapi amostras
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-11s %s\n", $$1, $$2}'
@@ -71,3 +71,7 @@ db-migrate: restore ## Aplica as migrações no banco local do make up
 
 openapi: build ## Regenera docs/contratos/core-api.openapi.json a partir da API (o teste confere que não diverge)
 	@$(DOTNET_COM_DOCKER) sh -c 'SOMBRA_ATUALIZAR_OPENAPI=1 dotnet test sources/Sombra.Api.IntegrationTests --no-build --nologo -v quiet --filter SaudeVersaoEDocumentacao'
+
+amostras: build ## Regrava docs/contratos/amostras/ com as respostas reais que o app lê (o teste confere o formato; o Jest do app, os schemas)
+	@$(DOTNET_COM_DOCKER) sh -c 'SOMBRA_ATUALIZAR_AMOSTRAS=1 dotnet test sources/Sombra.Api.IntegrationTests --no-build --nologo -v quiet --filter AmostrasDoAppBatemComOCore'
+

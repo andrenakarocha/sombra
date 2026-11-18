@@ -1,0 +1,10 @@
+{
+  "farol": "AMARELO",
+  "mensagens": [
+    {
+      "momento": "2026-11-18T14:56:30.408187+00:00",
+      "mensagemCidadao": "Chegou uma mensagem com assinatura errada em nome da Sentinela da casa, e o Sombra descartou. Nenhum dado pessoal saiu.",
+      "fonte": "template"
+    }
+  ]
+}

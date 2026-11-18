@@ -739,9 +739,11 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   🔎 as duas respostas passam nos schemas do app, e o formato não muda na F2.5 nem na F3.9 — 2026-11-18 (15 de 15
   respostas do Core real nos schemas do app; uma telemetria adulterada pelo simulador deixa o farol da casa amarelo; a
   referência da casa é a estação A701 da região; 181 testes).
-- [ ] **F6.26** 🤖 Contrato vivo: um teste de integração do Core grava amostras reais em `docs/contratos/amostras/` e o
+- [x] **F6.26** 🤖 Contrato vivo: um teste de integração do Core grava amostras reais em `docs/contratos/amostras/` e o
   Jest do app passa cada uma pelos schemas Zod; README do Core e `core-api.md` em dia.
-  🔎 mudar um campo no Core sem mudar o app deixa o CI vermelho.
+  🔎 mudar um campo no Core sem mudar o app deixa o CI vermelho — 2026-11-18 (17 amostras; renomear `apelidoDaCasa` numa
+  amostra derruba o teste do Core e o Jest do app; `make -C services/core-api amostras` regrava; Core com 182 testes,
+  app com 318).
 - [ ] **F6.7** 🧑🤖 Acessibilidade (checklist da spec) + testes Jest.
   🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do operador.
 - [ ] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
@@ -961,7 +963,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** **F1 concluída** (Core em C#: 140 testes, roteiro de ponta a ponta com o simulador, quality 100/100, README com a rubrica e as evidências). Próximo: **F6.21–F6.26** (o Core no contrato do app, D17) e os 🔎 do app no celular; só depois a F2. Em paralelo: ML (F4).
+**Agora:** **F1 concluída** (Core em C#: 140 testes, roteiro de ponta a ponta com o simulador, quality 100/100, README com a rubrica e as evidências). Próximo: os 🔎 do app no celular (F6.2–F6.5, F6.17, F6.18 e a P10), a F6.7 e a F6.8, que fecham a F6; só depois a F2. O Core já fala o contrato do app (F6.21–F6.26, D17). Em paralelo: ML (F4).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -971,7 +973,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
-| F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16 e F6.19 feitas (284 testes, modo demonstração); F6.21–F6.26 põem o Core no contrato do app (D17) |
+| F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); faltam os 🔎 no celular, a F6.7 e a F6.8 |
 | F7 Painel | ⬜ não iniciada | | | |
 | F8 Infra (OS) | ⬜ não iniciada | | | |
 | F9 Integração | ⬜ não iniciada | | | |
