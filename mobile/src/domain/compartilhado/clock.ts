@@ -40,3 +40,13 @@ const horaEMinuto = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: 
 export function horarioEmSaoPaulo(momento: Date | string): string {
   return horaEMinuto.format(new Date(momento));
 }
+
+// O horário da rotina é o de São Paulo (UTC−3, sem horário de verão desde 2019), seja qual for o fuso do aparelho.
+// Devolve a próxima vez que o relógio de SP marca hora:minuto, e se a de hoje já passou.
+export function proximaOcorrenciaEmSaoPaulo(agora: Date, hora: number, minuto: number) {
+  const OFFSET_MS = -3 * 60 * 60 * 1000;
+  const emSP = new Date(agora.getTime() + OFFSET_MS);
+  const hojeEmSP = Date.UTC(emSP.getUTCFullYear(), emSP.getUTCMonth(), emSP.getUTCDate(), hora, minuto) - OFFSET_MS;
+  const jaPassouHoje = hojeEmSP <= agora.getTime();
+  return { quando: new Date(jaPassouHoje ? hojeEmSP + 24 * 60 * 60 * 1000 : hojeEmSP), jaPassouHoje };
+}

@@ -1,5 +1,7 @@
 // Serviços do aparelho que a aplicação usa sem saber como são feitos.
 
+import type { Lembrete } from '@/domain/rotina/rotina';
+
 import type { OutboxRepository } from './outbox';
 import type {
   AlertaRepository,
@@ -62,4 +64,15 @@ export interface Localizacao {
   atual(): Promise<Coordenadas | null>;
   // Direção do aparelho em graus (bússola); devolve a função que para de ouvir.
   observarDirecao(ouvinte: (graus: number) => void): Promise<() => void>;
+}
+
+// O segredo HMAC de cada Sentinela, no Keychain / Keystore (nunca no SQLite).
+export interface CofreDeSegredos {
+  guardar(deviceId: string, segredo: string): Promise<void>;
+  ler(deviceId: string): Promise<string | null>;
+}
+
+// Lembretes locais da rotina no celular do Modo Idoso: reprograma tudo a cada chamada.
+export interface AgendadorDeLembretes {
+  programar(lembretes: Lembrete[], hoje: Date): Promise<number>;
 }

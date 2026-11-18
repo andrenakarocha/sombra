@@ -1,6 +1,7 @@
 // Composition root: o único lugar que conhece todas as implementações. Testes trocam as portas por fakes.
 
 import { Barramento } from '@/application/barramento';
+import { CasaESentinela } from '@/application/casos-de-uso/casa-e-sentinela';
 import { CentralDeSincronizacao } from '@/application/casos-de-uso/central-de-sincronizacao';
 import { Consultas } from '@/application/casos-de-uso/consultas';
 import { Escritas } from '@/application/casos-de-uso/escritas';
@@ -12,7 +13,9 @@ import { ProjetorDeEventos } from '@/application/eventos/projetor';
 import type { CoreGateway } from '@/application/ports/core-gateway';
 import type { GeradorDeId } from '@/application/ports/outbox';
 import type {
+  AgendadorDeLembretes,
   CanalDeTempoReal,
+  CofreDeSegredos,
   CofreDeSessao,
   Localizacao,
   MonitorDeRede,
@@ -41,6 +44,12 @@ import { passoDoReplay, REPLAY } from './demo/replay-inmet';
 
 const ESPERA_DO_DEGRAU_MS = 8000;
 const HORA_MS = 60 * 60 * 1000;
+
+// Sem cofre do aparelho (testes): guarda em memória.
+function semSegredos(): CofreDeSegredos {
+  const guardados = new Map<string, string>();
+  return { guardar: async (d, s) => void guardados.set(d, s), ler: async (d) => guardados.get(d) ?? null };
+}
 
 // Os mesmos repositórios, presos ao banco ou a uma transação (Unit of Work).
 const repositorios = (db: SqlDatabase): RepositoriosDaUnidade => ({
@@ -74,6 +83,8 @@ export type Adaptadores = {
   ids: GeradorDeId;
   worker?: SincronizacaoEmSegundoPlano;
   localizacao?: Localizacao;
+  segredos?: CofreDeSegredos;
+  agendador?: AgendadorDeLembretes;
   clock?: Clock;
   sorteio?: () => number;
   demo?: CoreDemoGateway;
@@ -103,6 +114,14 @@ export async function montarContainer(a: Adaptadores): Promise<Container & { dem
   return {
     consultas: new Consultas({ ...repos, gateway, unidade, clock }),
     escritas: new Escritas({ ...repos, gateway, motor, unidade, ids: a.ids, clock, barramento }),
+    casaESentinela: new CasaESentinela({
+      gateway,
+      casas: repos.casas,
+      segredos: a.segredos ?? semSegredos(),
+      agendador: a.agendador ?? { programar: async () => 0 },
+      barramento,
+      clock,
+    }),
     sessao: new ServicoDeSessao({
       gateway,
       cofre: a.cofre,

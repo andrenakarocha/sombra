@@ -4,12 +4,14 @@
 import type {
   Alerta,
   ContatoDaRede,
+  DadosDaRotina,
   Domicilio,
   Leitura,
   Morador,
   NovoMorador,
   PontoDeResfriamento,
   PrivacidadeDaCasa,
+  SentinelaVinculada,
 } from '../modelos';
 import type { EnviadorDeOperacoes } from './outbox';
 
@@ -25,4 +27,7 @@ export interface CoreGateway extends EnviadorDeOperacoes {
   pontosDeResfriamento(id: string): Promise<PontoDeResfriamento[]>;
   privacidade(id: string): Promise<PrivacidadeDaCasa>;
   salvarMorador(domicilioId: string, moradorId: string | undefined, dados: Partial<NovoMorador>): Promise<Morador>;
+  rotina(id: string): Promise<DadosDaRotina>;
+  salvarRotina(id: string, rotina: DadosDaRotina): Promise<DadosDaRotina>;
+  vincularSentinela(id: string, deviceId: string, codigo: string): Promise<SentinelaVinculada>;
 }

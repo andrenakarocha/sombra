@@ -662,6 +662,9 @@ Go; o APK via EAS é um extra.
 - [ ] **F6.18** 🤖 Parear a Sentinela por QR (câmera; o segredo HMAC vai para o SecureStore) + Rotina (check-in
   diário e lembrete de água agendados, nunca entre 22h e 7h).
   🔎 testes do parser do QR e dos horários; QR lido no aparelho.
+  ⏸ 2026-11-17: parser, rotina (R11/R12), fuso de SP, vínculo e telas testados; o formato do QR
+  (`sombra://sentinela/vincular?v=1&d=snt-…&c=…`) é proposta do app e precisa ser exibido pela Sentinela (F5);
+  falta ler um QR de verdade no aparelho.
 - [ ] **F6.19** 🤖 Biometria na área da família (protege a PII) + Centro de Privacidade (exportar os dados locais em
   JSON, LGPD art. 18, e apagar tudo do aparelho).
   🔎 testes do bloqueio e do export sem PII inteira.

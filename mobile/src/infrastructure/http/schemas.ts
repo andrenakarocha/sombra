@@ -6,11 +6,13 @@ import { z } from 'zod';
 import type {
   Alerta,
   ContatoDaRede,
+  DadosDaRotina,
   Domicilio,
   Leitura,
   Morador,
   PontoDeResfriamento,
   PrivacidadeDaCasa,
+  SentinelaVinculada,
 } from '@/application/modelos';
 import { NIVEIS } from '@/domain/clima/nivel-de-risco';
 import { FATORES_DE_RISCO } from '@/domain/morador/fator-de-risco';
@@ -92,3 +94,15 @@ export const pagina = <T extends z.ZodType>(item: T) =>
   z.object({ itens: z.array(item), pagina: z.number(), tamanho: z.number(), total: z.number() });
 
 export const LoginSchema = z.object({ token: z.string().min(1) });
+
+const horario = z.string().regex(/^\d\d:\d\d$/);
+
+export const RotinaSchema = z.object({
+  checkInDiario: z.object({ ativo: z.boolean(), horario }),
+  lembreteDeAgua: z.object({ ativo: z.boolean() }),
+}) satisfies z.ZodType<DadosDaRotina>;
+
+export const SentinelaVinculadaSchema = z.object({
+  deviceId: z.string().regex(/^snt-[0-9a-f]{6}$/),
+  segredo: z.string().regex(/^[0-9a-f]{64}$/),
+}) satisfies z.ZodType<SentinelaVinculada>;

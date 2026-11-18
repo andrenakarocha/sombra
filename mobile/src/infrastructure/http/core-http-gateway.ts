@@ -1,7 +1,7 @@
 import type { z } from 'zod';
 
 import { RespostaForaDoContrato } from '@/application/erros';
-import type { NovoMorador } from '@/application/modelos';
+import type { DadosDaRotina, NovoMorador } from '@/application/modelos';
 import type { CoreGateway } from '@/application/ports/core-gateway';
 import type { Operacao } from '@/application/ports/outbox';
 
@@ -16,6 +16,8 @@ import {
   pagina,
   PontoSchema,
   PrivacidadeSchema,
+  RotinaSchema,
+  SentinelaVinculadaSchema,
 } from './schemas';
 
 export class CoreHttpGateway implements CoreGateway {
@@ -78,6 +80,21 @@ export class CoreHttpGateway implements CoreGateway {
     return this.pedir(MoradorSchema, moradorId ? `${base}/${encodeURIComponent(moradorId)}` : base, {
       metodo: moradorId ? 'PUT' : 'POST',
       corpo: dados,
+    });
+  }
+
+  rotina(id: string) {
+    return this.pedir(RotinaSchema, `/domicilios/${encodeURIComponent(id)}/rotina`);
+  }
+
+  salvarRotina(id: string, rotina: DadosDaRotina) {
+    return this.pedir(RotinaSchema, `/domicilios/${encodeURIComponent(id)}/rotina`, { metodo: 'PUT', corpo: rotina });
+  }
+
+  vincularSentinela(id: string, deviceId: string, codigo: string) {
+    return this.pedir(SentinelaVinculadaSchema, `/domicilios/${encodeURIComponent(id)}/sentinelas`, {
+      metodo: 'POST',
+      corpo: { deviceId, codigoDeVinculo: codigo },
     });
   }
 

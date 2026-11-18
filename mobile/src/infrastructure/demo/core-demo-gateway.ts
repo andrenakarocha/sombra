@@ -3,7 +3,7 @@
 // Assim o professor abre o app sem subir o backend (spec 05, "Modo demonstração").
 
 import { ErroDaApi } from '@/application/erros';
-import type { Alerta, Domicilio, Leitura, Morador, NovoMorador } from '@/application/modelos';
+import type { Alerta, DadosDaRotina, Domicilio, Leitura, Morador, NovoMorador } from '@/application/modelos';
 import type { CoreGateway } from '@/application/ports/core-gateway';
 import type { Operacao } from '@/application/ports/outbox';
 import type { CanalDeTempoReal } from '@/application/ports/servicos';
@@ -23,6 +23,7 @@ type Estado = {
   alertas: Map<string, { alerta: AlertaDeCalor; apelido: string }>;
   leituras: Record<string, Leitura[]>;
   moradores: Record<string, Morador[]>;
+  rotinas: Record<string, DadosDaRotina>;
 };
 
 export class CoreDemoGateway implements CoreGateway {
@@ -65,6 +66,7 @@ export class CoreDemoGateway implements CoreGateway {
       alertas,
       leituras: Object.fromEntries(casas.map((c) => [c.id, leituras24h(agora, c.ultimaLeitura!)])),
       moradores: copia(MORADORES),
+      rotinas: {},
     };
     this.aplicadas.clear();
   }
@@ -153,6 +155,24 @@ export class CoreDemoGateway implements CoreGateway {
       if (atual) Object.assign(atual, salvo);
       else lista.push(salvo);
       return salvo;
+    });
+  }
+
+  rotina(id: string) {
+    return this.responder(() => this.estado.rotinas[id] ?? { checkInDiario: { ativo: true, horario: '09:00' }, lembreteDeAgua: { ativo: true } });
+  }
+
+  salvarRotina(id: string, rotina: DadosDaRotina) {
+    return this.responder(() => (this.estado.rotinas[id] = copia(rotina)));
+  }
+
+  // O segredo da demonstração é sorteado aqui e não protege nada: o de verdade nasce no Core.
+  vincularSentinela(id: string, deviceId: string) {
+    return this.responder(() => {
+      const casa = this.casa(id);
+      casa.sentinela = { deviceId, online: false };
+      const segredo = Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+      return { deviceId, segredo };
     });
   }
 

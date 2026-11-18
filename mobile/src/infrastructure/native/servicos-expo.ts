@@ -9,8 +9,17 @@ import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
 import type { GeradorDeId } from '@/application/ports/outbox';
-import type { CanalDeTempoReal, CofreDeSessao, MonitorDeRede, Notificacao, Notificador } from '@/application/ports/servicos';
+import type {
+  AgendadorDeLembretes,
+  CanalDeTempoReal,
+  CofreDeSegredos,
+  CofreDeSessao,
+  MonitorDeRede,
+  Notificacao,
+  Notificador,
+} from '@/application/ports/servicos';
 import { EVENTOS_DO_HUB } from '@/application/eventos/projetor';
+import { proximaOcorrenciaEmSaoPaulo } from '@/domain/compartilhado/clock';
 
 import { API_URL } from '../config';
 
@@ -87,5 +96,39 @@ export const tempoRealSignalR: CanalDeTempoReal = {
       clearTimeout(espera);
       conexao.stop();
     };
+  },
+};
+
+// Um item por Sentinela no Keychain / Keystore; a chave só aceita [A-Za-z0-9._-].
+export const segredosSecureStore: CofreDeSegredos = {
+  guardar: (deviceId, segredo) => SecureStore.setItemAsync(`sombra.sentinela.${deviceId}`, segredo),
+  ler: (deviceId) => SecureStore.getItemAsync(`sombra.sentinela.${deviceId}`),
+};
+
+const PREFIXO_DA_ROTINA = 'sombra.rotina.';
+
+// Check-in diário repete todo dia; água é só para hoje (depende do calor do dia). Os já passados não entram.
+export const agendadorExpo: AgendadorDeLembretes = {
+  async programar(lembretes, hoje) {
+    const agendadas = await Notifications.getAllScheduledNotificationsAsync();
+    for (const n of agendadas) {
+      if (n.identifier.startsWith(PREFIXO_DA_ROTINA)) await Notifications.cancelScheduledNotificationAsync(n.identifier);
+    }
+    let programados = 0;
+    for (const [i, l] of lembretes.entries()) {
+      const [hora, minuto] = l.horario.split(':').map(Number) as [number, number];
+      const { quando, jaPassouHoje } = proximaOcorrenciaEmSaoPaulo(hoje, hora, minuto);
+      if (l.tipo === 'AGUA' && jaPassouHoje) continue;
+      await Notifications.scheduleNotificationAsync({
+        identifier: `${PREFIXO_DA_ROTINA}${i}`,
+        content: { title: l.tipo === 'AGUA' ? 'Hora da água' : 'Bom dia', body: l.texto, data: { canal: 'lembretes' } },
+        trigger:
+          l.tipo === 'CHECK_IN_DIARIO'
+            ? { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: hora, minute: minuto, channelId: 'lembretes' }
+            : { type: Notifications.SchedulableTriggerInputTypes.DATE, date: quando, channelId: 'lembretes' },
+      });
+      programados++;
+    }
+    return programados;
   },
 };

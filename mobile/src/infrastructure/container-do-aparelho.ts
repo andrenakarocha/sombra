@@ -6,7 +6,15 @@ import { ClienteHttp } from './http/cliente-http';
 import { CoreHttpGateway } from './http/core-http-gateway';
 import { localizacaoExpo } from './native/localizacao-expo';
 import { definirTarefa, workerExpo } from './native/segundo-plano';
-import { cofreSecureStore, idsExpoCrypto, notificadorExpo, redeExpo, tempoRealSignalR } from './native/servicos-expo';
+import {
+  agendadorExpo,
+  cofreSecureStore,
+  idsExpoCrypto,
+  notificadorExpo,
+  redeExpo,
+  segredosSecureStore,
+  tempoRealSignalR,
+} from './native/servicos-expo';
 
 let unico: ReturnType<typeof montar> | null = null;
 
@@ -34,6 +42,8 @@ async function montar() {
     ids: idsExpoCrypto,
     worker: workerExpo,
     localizacao: localizacaoExpo,
+    segredos: segredosSecureStore,
+    agendador: agendadorExpo,
   });
   aoSessaoVencida = () => container.sessao.sessaoVencida();
   return container;
