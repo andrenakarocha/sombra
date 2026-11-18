@@ -836,7 +836,7 @@ falha documentados.
   automatizado).
   🔎 cada Feature tem pelo menos 1 negativo — 2026-11-18 (`qa/ferramentas/conferir_especificacao.py`: 50 casos, 22
   positivos e 28 negativos, as quatro técnicas, todo critério coberto e os 102 testes citados existem no repositório;
-  48 automatizados e 2 manuais).
+  48 automatizados e 2 manuais; com a F2, o TC39 também ficou automatizado: 49 e 1).
 - [ ] **F10.4** 🤖 `sincronizar_azure.py` idempotente (REST + PAT).
   🔎 o Boards mostra tudo, com passos e vínculos; uma segunda execução não duplica nada (P12).
 - [ ] **F10.5** 🧑🤖 Prints (Playwright com sessão ou manual), matriz de rastreabilidade e PDF.
@@ -975,7 +975,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** **F1 e F2 concluídas** (Core em C# e o módulo de privacidade: 357 testes, auditoria A1–A8 antes × depois, Semgrep e quality 100/100). Próximo: os 🔎 do app no celular (F6.2–F6.5, F6.17, F6.18 e a P10), a F6.7 e a F6.8, que fecham a F6; o dashboard de risco (F7.3) já tem a API pronta. Em paralelo: ML (F4) e QA (F10.2–F10.3).
+**Agora:** **F1 e F2 concluídas** (Core em C# e o módulo de privacidade: 357 testes, auditoria A1–A8 antes × depois, Semgrep e quality 100/100). Próximo: os 🔎 do app no celular (F6.2–F6.5, F6.17, F6.18 e a P10) e o que é do operador na F6.7 e na F6.8 (vídeo com TalkBack e prints), que fecham a F6; o dashboard de risco (F7.3) já tem a API pronta. Em paralelo: ML (F4) e, no QA, a F10.1 (Azure DevOps, 🔑) para destravar a F10.4.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -985,11 +985,11 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
-| F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); faltam os 🔎 no celular, a F6.7 e a F6.8 |
+| F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ⬜ não iniciada | | | |
 | F8 Infra (OS) | ⬜ não iniciada | | | |
 | F9 Integração | ⬜ não iniciada | | | |
-| F10 QA | ⬜ não iniciada | | | |
+| F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; faltam a F10.1 (Azure, 🔑), a F10.4 e a F10.5 |
 | F11 Polimento | ⬜ não iniciada | | | |
 | F12 Docs e PDFs | ⬜ não iniciada | | | |
 | F13 Vídeos | ⬜ não iniciada | | | |
