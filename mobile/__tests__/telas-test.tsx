@@ -177,7 +177,7 @@ describe('Privacidade e Perto de mim', () => {
     await renderComContainer(<Perto />, container);
     expect(await screen.findByText('Biblioteca do bairro (exemplo)')).toBeOnTheScreen();
     // Aberto ou fechado depende da hora em que o teste roda.
-    expect(screen.getByText(/^800 m · (aberto até 18:00|fechado · abre às 09:00)$/)).toBeOnTheScreen();
+    expect(screen.getByText(/^800 m da casa · (aberto até 18:00|fechado · abre às 09:00)$/)).toBeOnTheScreen();
   });
 });
 

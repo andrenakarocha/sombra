@@ -4,6 +4,7 @@ import { abrirBancoDoAparelho } from './database/expo-sqlite-database';
 import { montarContainer } from './container';
 import { ClienteHttp } from './http/cliente-http';
 import { CoreHttpGateway } from './http/core-http-gateway';
+import { localizacaoExpo } from './native/localizacao-expo';
 import { definirTarefa, workerExpo } from './native/segundo-plano';
 import { cofreSecureStore, idsExpoCrypto, notificadorExpo, redeExpo, tempoRealSignalR } from './native/servicos-expo';
 
@@ -32,6 +33,7 @@ async function montar() {
     rede: redeExpo,
     ids: idsExpoCrypto,
     worker: workerExpo,
+    localizacao: localizacaoExpo,
   });
   aoSessaoVencida = () => container.sessao.sessaoVencida();
   return container;

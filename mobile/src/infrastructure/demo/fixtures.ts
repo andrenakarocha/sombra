@@ -1,4 +1,5 @@
-// Dados fictícios (personas do plano, nenhum dado pessoal real). Telefones no formato "(11) 90000-000X": a ligação
+// Dados fictícios (personas do plano, nenhum dado pessoal real). As coordenadas dos pontos são de exemplo, perto da
+// estação de Santana. Telefones no formato "(11) 90000-000X": a ligação
 // não sai no modo demonstração.
 
 import type {
@@ -116,6 +117,8 @@ export const PONTOS: PontoDeResfriamento[] = [
     horario: { abre: '09:00', fecha: '18:00' },
     acessivel: true,
     fonte: 'dados de exemplo',
+    lat: -23.4935,
+    lon: -46.6249,
   },
   {
     id: 'p2',
@@ -125,6 +128,8 @@ export const PONTOS: PontoDeResfriamento[] = [
     horario: { abre: '08:00', fecha: '17:00' },
     acessivel: true,
     fonte: 'dados de exemplo',
+    lat: -23.5071,
+    lon: -46.6214,
   },
 ];
 

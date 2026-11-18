@@ -657,6 +657,8 @@ Go; o APK via EAS é um extra.
   🔎 o limiar exibido bate com o domínio para cada combinação de fatores — 2026-11-17 (8 combinações × 2 idades).
 - [ ] **F6.17** 🤖 Perto de mim com GPS e bússola: distância (haversine) e uma seta grande até o ponto fresco.
   🔎 testes de distância e rumo; seta conferida no aparelho do operador.
+  ⏸ 2026-11-17: testes de distância, rumo e direção em palavras verdes; falta o operador conferir a seta girando no
+  celular (Expo Go tem localização e bússola).
 - [ ] **F6.18** 🤖 Parear a Sentinela por QR (câmera; o segredo HMAC vai para o SecureStore) + Rotina (check-in
   diário e lembrete de água agendados, nunca entre 22h e 7h).
   🔎 testes do parser do QR e dos horários; QR lido no aparelho.
