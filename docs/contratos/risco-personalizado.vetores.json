@@ -1,0 +1,513 @@
+{
+  "descricao": "Regra R3 do app (D17): cada fator baixa os limiares de CAUTELA_EXTREMA, PERIGO e PERIGO_EXTREMO pela soma das reduções, sem teto, e nenhum fica abaixo do início de ATENCAO; 80 anos ou mais contam como IDADE_AVANCADA mesmo sem marcar. A amostra de 35,47 °C é o pico real de nov/2023 na A701.",
+  "reducaoPorFatorC": {
+    "IDADE_AVANCADA": 2.0,
+    "CARDIOPATIA": 2.5,
+    "USO_DE_DIURETICO": 1.5
+  },
+  "padraoC": {
+    "ATENCAO": 26.67,
+    "CAUTELA_EXTREMA": 32.22,
+    "PERIGO": 39.44,
+    "PERIGO_EXTREMO": 51.67
+  },
+  "vetores": [
+    {
+      "fatoresDeclarados": [],
+      "idade": 79,
+      "fatoresQueValem": [],
+      "reducaoC": 0.0,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 32.22,
+        "PERIGO": 39.44,
+        "PERIGO_EXTREMO": 51.67
+      },
+      "classificacoes": [
+        {
+          "indiceC": 39.43,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 39.44,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "CARDIOPATIA"
+      ],
+      "idade": 79,
+      "fatoresQueValem": [
+        "CARDIOPATIA"
+      ],
+      "reducaoC": 2.5,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 29.72,
+        "PERIGO": 36.94,
+        "PERIGO_EXTREMO": 49.17
+      },
+      "classificacoes": [
+        {
+          "indiceC": 36.93,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 36.94,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "USO_DE_DIURETICO"
+      ],
+      "idade": 79,
+      "fatoresQueValem": [
+        "USO_DE_DIURETICO"
+      ],
+      "reducaoC": 1.5,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 30.72,
+        "PERIGO": 37.94,
+        "PERIGO_EXTREMO": 50.17
+      },
+      "classificacoes": [
+        {
+          "indiceC": 37.93,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 37.94,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "IDADE_AVANCADA"
+      ],
+      "idade": 79,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA"
+      ],
+      "reducaoC": 2.0,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 30.22,
+        "PERIGO": 37.44,
+        "PERIGO_EXTREMO": 49.67
+      },
+      "classificacoes": [
+        {
+          "indiceC": 37.43,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 37.44,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "CARDIOPATIA",
+        "USO_DE_DIURETICO"
+      ],
+      "idade": 79,
+      "fatoresQueValem": [
+        "CARDIOPATIA",
+        "USO_DE_DIURETICO"
+      ],
+      "reducaoC": 4.0,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 28.22,
+        "PERIGO": 35.44,
+        "PERIGO_EXTREMO": 47.67
+      },
+      "classificacoes": [
+        {
+          "indiceC": 35.43,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 35.44,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "PERIGO"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA"
+      ],
+      "idade": 79,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA"
+      ],
+      "reducaoC": 4.5,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 27.72,
+        "PERIGO": 34.94,
+        "PERIGO_EXTREMO": 47.17
+      },
+      "classificacoes": [
+        {
+          "indiceC": 34.93,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 34.94,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "PERIGO"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "IDADE_AVANCADA",
+        "USO_DE_DIURETICO"
+      ],
+      "idade": 79,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "USO_DE_DIURETICO"
+      ],
+      "reducaoC": 3.5,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 28.72,
+        "PERIGO": 35.94,
+        "PERIGO_EXTREMO": 48.17
+      },
+      "classificacoes": [
+        {
+          "indiceC": 35.93,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 35.94,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA",
+        "USO_DE_DIURETICO"
+      ],
+      "idade": 79,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA",
+        "USO_DE_DIURETICO"
+      ],
+      "reducaoC": 6.0,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 26.67,
+        "PERIGO": 33.44,
+        "PERIGO_EXTREMO": 45.67
+      },
+      "classificacoes": [
+        {
+          "indiceC": 33.43,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 33.44,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "PERIGO"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [],
+      "idade": 80,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA"
+      ],
+      "reducaoC": 2.0,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 30.22,
+        "PERIGO": 37.44,
+        "PERIGO_EXTREMO": 49.67
+      },
+      "classificacoes": [
+        {
+          "indiceC": 37.43,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 37.44,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "CARDIOPATIA"
+      ],
+      "idade": 80,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA"
+      ],
+      "reducaoC": 4.5,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 27.72,
+        "PERIGO": 34.94,
+        "PERIGO_EXTREMO": 47.17
+      },
+      "classificacoes": [
+        {
+          "indiceC": 34.93,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 34.94,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "PERIGO"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "USO_DE_DIURETICO"
+      ],
+      "idade": 80,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "USO_DE_DIURETICO"
+      ],
+      "reducaoC": 3.5,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 28.72,
+        "PERIGO": 35.94,
+        "PERIGO_EXTREMO": 48.17
+      },
+      "classificacoes": [
+        {
+          "indiceC": 35.93,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 35.94,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "IDADE_AVANCADA"
+      ],
+      "idade": 80,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA"
+      ],
+      "reducaoC": 2.0,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 30.22,
+        "PERIGO": 37.44,
+        "PERIGO_EXTREMO": 49.67
+      },
+      "classificacoes": [
+        {
+          "indiceC": 37.43,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 37.44,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "CARDIOPATIA",
+        "USO_DE_DIURETICO"
+      ],
+      "idade": 80,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA",
+        "USO_DE_DIURETICO"
+      ],
+      "reducaoC": 6.0,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 26.67,
+        "PERIGO": 33.44,
+        "PERIGO_EXTREMO": 45.67
+      },
+      "classificacoes": [
+        {
+          "indiceC": 33.43,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 33.44,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "PERIGO"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA"
+      ],
+      "idade": 80,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA"
+      ],
+      "reducaoC": 4.5,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 27.72,
+        "PERIGO": 34.94,
+        "PERIGO_EXTREMO": 47.17
+      },
+      "classificacoes": [
+        {
+          "indiceC": 34.93,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 34.94,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "PERIGO"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "IDADE_AVANCADA",
+        "USO_DE_DIURETICO"
+      ],
+      "idade": 80,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "USO_DE_DIURETICO"
+      ],
+      "reducaoC": 3.5,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 28.72,
+        "PERIGO": 35.94,
+        "PERIGO_EXTREMO": 48.17
+      },
+      "classificacoes": [
+        {
+          "indiceC": 35.93,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 35.94,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "CAUTELA_EXTREMA"
+        }
+      ]
+    },
+    {
+      "fatoresDeclarados": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA",
+        "USO_DE_DIURETICO"
+      ],
+      "idade": 80,
+      "fatoresQueValem": [
+        "IDADE_AVANCADA",
+        "CARDIOPATIA",
+        "USO_DE_DIURETICO"
+      ],
+      "reducaoC": 6.0,
+      "limiares": {
+        "ATENCAO": 26.67,
+        "CAUTELA_EXTREMA": 26.67,
+        "PERIGO": 33.44,
+        "PERIGO_EXTREMO": 45.67
+      },
+      "classificacoes": [
+        {
+          "indiceC": 33.43,
+          "nivel": "CAUTELA_EXTREMA"
+        },
+        {
+          "indiceC": 33.44,
+          "nivel": "PERIGO"
+        },
+        {
+          "indiceC": 35.47,
+          "nivel": "PERIGO"
+        }
+      ]
+    }
+  ]
+}

@@ -22,9 +22,9 @@ public sealed class MoradorTests
         Assert.IsTrue(Fabricas.Morador(80).FatoresDeRisco(Fabricas.Hoje).OfType<IdadeAvancada>().Any());
     }
 
-    /// <summary>Cada fator reduz os limites, e a soma nunca passa da redução máxima.</summary>
+    /// <summary>Cada fator reduz os limites pela soma, sem teto, e nenhum limite cai abaixo do início de atenção (R3, D17).</summary>
     [TestMethod]
-    public void FatoresReduzemOsLimitesAteOMaximo()
+    public void FatoresReduzemOsLimitesSemTeto()
     {
         Morador semFatores = Fabricas.Morador(70);
         Morador comDiuretico = Fabricas.Morador(70, 2, new UsoDeDiuretico());
@@ -32,7 +32,9 @@ public sealed class MoradorTests
 
         Assert.AreEqual(LimitesTermicos.Padrao, semFatores.LimitesTermicos(Fabricas.Hoje));
         Assert.AreEqual(LimitesTermicos.Padrao.Perigo - 1.5, comDiuretico.LimitesTermicos(Fabricas.Hoje).Perigo, 1e-9);
-        Assert.AreEqual(LimitesTermicos.ComReducao(LimitesTermicos.ReducaoMaxima), todos.LimitesTermicos(Fabricas.Hoje));
+        Assert.AreEqual(LimitesTermicos.ComReducao(6.0), todos.LimitesTermicos(Fabricas.Hoje));
+        Assert.AreEqual(LimitesTermicos.Padrao.Atencao, todos.LimitesTermicos(Fabricas.Hoje).CautelaExtrema);
+        Assert.AreEqual(33.44, todos.LimitesTermicos(Fabricas.Hoje).Perigo);
     }
 
     /// <summary>Fatores repetidos contam uma vez; a idade avançada declarada (o app deixa marcar, D17) não duplica a da data.</summary>
