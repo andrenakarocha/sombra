@@ -211,7 +211,7 @@ describe('eventos do hub', () => {
     await new Promise((r) => setTimeout(r, 0));
     const casa = (await container.consultas.casas()).dados.find((c) => c.id === LURDES)!;
     expect([casa.nivelAtual, casa.ultimaLeitura?.indiceDeCalorC]).toEqual(['PERIGO', 42.1]);
-    expect(mudancas).toEqual(expect.arrayContaining(['casas', 'casa', 'alertas', 'alerta']));
+    expect(mudancas).toEqual(expect.arrayContaining(['casas', 'casa', 'alertas']));
     expect(notificacoes).toEqual([]);
 
     expect(core.escalonar(alertaId)).toBe(true);

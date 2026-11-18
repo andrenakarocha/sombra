@@ -6,6 +6,7 @@ import { Consultas } from '@/application/casos-de-uso/consultas';
 import { Escritas } from '@/application/casos-de-uso/escritas';
 import { ServicoDeSessao } from '@/application/casos-de-uso/sessao';
 import type { Container } from '@/application/container';
+import { PARADA, reproducaoStore } from '@/application/estado/reproducao';
 import { emDemonstracao } from '@/application/estado/sessao';
 import { ProjetorDeEventos } from '@/application/eventos/projetor';
 import type { CoreGateway } from '@/application/ports/core-gateway';
@@ -35,8 +36,10 @@ import { LeituraRepositorySqlite } from './database/repositorios/leitura-reposit
 import { OutboxRepositorySqlite } from './database/repositorios/outbox-repository';
 import type { SqlDatabase } from './database/sql-database';
 import { CoreDemoGateway } from './demo/core-demo-gateway';
+import { passoDoReplay, REPLAY } from './demo/replay-inmet';
 
 const ESPERA_DO_DEGRAU_MS = 8000;
+const HORA_MS = 60 * 60 * 1000;
 
 // Os mesmos repositórios, presos ao banco ou a uma transação (Unit of Work).
 const repositorios = (db: SqlDatabase): RepositoriosDaUnidade => ({
@@ -88,6 +91,13 @@ export async function montarContainer(a: Adaptadores): Promise<Container & { dem
   motor.aoMudar(() => barramento.publicar({ recurso: 'sincronizacao' }));
   const eventos = new ProjetorDeEventos({ casas: repos.casas, barramento, notificador: a.notificador, clock });
 
+  let replay: ReturnType<typeof setInterval> | null = null;
+  const pararReproducao = () => {
+    if (replay) clearInterval(replay);
+    replay = null;
+    reproducaoStore.setState(PARADA);
+  };
+
   return {
     consultas: new Consultas({ ...repos, gateway, unidade, clock }),
     escritas: new Escritas({ ...repos, gateway, motor, unidade, ids: a.ids, clock, barramento }),
@@ -117,7 +127,36 @@ export async function montarContainer(a: Adaptadores): Promise<Container & { dem
         const alertaId = demo.simularPerigo(leitura);
         setTimeout(() => demo.escalonar(alertaId), ESPERA_DO_DEGRAU_MS);
       },
+      reproduzirOndaReal(intervaloMs = 1500) {
+        pararReproducao();
+        const casa = demo.casaPrincipal;
+        const inicio = clock.now().getTime();
+        let passo = 0;
+        const tocar = () => {
+          const hora = REPLAY.horas[passo];
+          if (!hora) return pararReproducao();
+          // A leitura é real; o horário anda uma hora por passo a partir de agora, para o gráfico e os prazos.
+          const p = passoDoReplay(hora, demo.moradorPrincipal(casa.id), new Date(inicio + passo * HORA_MS));
+          demo.registrarLeitura(casa.id, p.leitura, p.nivelPersonalizado);
+          passo++;
+          reproducaoStore.setState({
+            ativo: true,
+            passo,
+            total: REPLAY.horas.length,
+            momentoOriginal: hora.momento,
+            temperaturaC: hora.temperaturaC,
+            indiceC: p.leitura.indiceDeCalorC,
+            nivelPadrao: p.nivelPadrao,
+            nivelPersonalizado: p.nivelPersonalizado,
+            fonte: REPLAY.estacao,
+          });
+        };
+        tocar();
+        replay = setInterval(tocar, intervaloMs);
+      },
+      pararReproducao,
       async recomecar() {
+        pararReproducao();
         demo.recomecar();
         await apagarDadosLocais(a.db, { inclusivePreferencias: false });
         barramento.publicar({ recurso: 'casas' }, { recurso: 'alertas' }, { recurso: 'sincronizacao' });

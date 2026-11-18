@@ -649,6 +649,10 @@ Go; o APK via EAS é um extra.
   (`ml/dados/brutos`) para um JSON com proveniência (SHA-256); o modo demonstração toca hora a hora com o índice de
   calor calculado no aparelho.
   🔎 o replay chega a `PERIGO` com dados reais do INMET e o card fica vermelho ao vivo.
+  ⏸ 2026-11-17: replay feito e testado (96 h de 12 a 16/11/2023, SHA-256 conferido no CI). **A premissa do 🔎 é falsa
+  para a A701:** o índice de calor real máximo é 35,5 °C (14 e 15/11), ou seja, `CAUTELA_EXTREMA`; nenhuma hora chega a
+  `PERIGO` (39,44 °C) pela régua da NWS. Com o R3, o mesmo pico é `PERIGO` para quem tem cardiopatia e toma diurético.
+  Vale também para o roteiro (§3.4) e o replay do Clima (F3). Espera a decisão do operador; o app mostra os dois níveis.
 - [ ] **F6.16** 🤖 Risco explicável na tela da casa: "por que a Dona Lurdes está em risco" (fatores e limiar).
   🔎 o limiar exibido bate com o domínio para cada combinação de fatores.
 - [ ] **F6.17** 🤖 Perto de mim com GPS e bússola: distância (haversine) e uma seta grande até o ponto fresco.
