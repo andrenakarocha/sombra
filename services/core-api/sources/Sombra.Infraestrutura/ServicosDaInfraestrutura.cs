@@ -10,6 +10,7 @@ using Sombra.Infraestrutura.Persistencia;
 using Sombra.Infraestrutura.Persistencia.Repositorios;
 using Sombra.Infraestrutura.Seguranca;
 using Sombra.Infraestrutura.Workers;
+using Sombra.Privacidade.Repouso;
 
 namespace Sombra.Infraestrutura;
 
@@ -19,10 +20,13 @@ public static class ServicosDaInfraestrutura
     /// <summary>Registra o banco (um contexto por requisição), os repositórios, as consultas, as contas e o relógio.</summary>
     /// <param name="servicos">O contêiner de serviços.</param>
     /// <param name="conexao">A string de conexão do PostgreSQL do Core.</param>
+    /// <param name="cifra">A cifra dos campos sensíveis em repouso, com as chaves do ambiente.</param>
     /// <returns>O mesmo contêiner.</returns>
-    public static IServiceCollection AdicionarInfraestrutura(this IServiceCollection servicos, string conexao)
+    public static IServiceCollection AdicionarInfraestrutura(this IServiceCollection servicos, string conexao, CifraDeCampos cifra)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(conexao);
+        ArgumentNullException.ThrowIfNull(cifra);
+        servicos.AddSingleton(cifra);
         servicos.AddDbContext<SombraDbContext>(opcoes => SombraDbContext.Configurar(opcoes, conexao));
         servicos.AddScoped<IUnitOfWork>(provedor => provedor.GetRequiredService<SombraDbContext>());
         servicos.AddScoped<IDomicilioRepository, DomicilioRepository>();

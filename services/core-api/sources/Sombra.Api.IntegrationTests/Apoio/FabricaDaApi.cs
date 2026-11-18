@@ -94,6 +94,12 @@ internal sealed class FabricaDaApi : WebApplicationFactory<Program>
 
     /// <summary>Gets a chave de vínculo da API de teste, para os testes calcularem o código do QR.</summary>
     internal static byte[] ChaveDeVinculo { get; } = RandomNumberGenerator.GetBytes(32);
+
+    /// <summary>Gets a chave AES dos testes (32 bytes), a mesma no processo inteiro.</summary>
+    internal static byte[] ChaveAes { get; } = RandomNumberGenerator.GetBytes(32);
+
+    /// <summary>Gets a chave do índice cego dos testes.</summary>
+    internal static byte[] ChaveIndiceCego { get; } = RandomNumberGenerator.GetBytes(32);
     private readonly int _loginPorMinuto;
     private readonly ILogEventSink? _log;
     private readonly IReadOnlyDictionary<string, string>? _configuracao;
@@ -139,6 +145,8 @@ internal sealed class FabricaDaApi : WebApplicationFactory<Program>
         builder.UseSetting("ConnectionStrings:Core", _conexao);
         builder.UseSetting("Jwt:Segredo", _segredoDoJwt);
         builder.UseSetting("Sentinela:ChaveDeVinculo", Convert.ToHexString(ChaveDeVinculo));
+        builder.UseSetting("Privacidade:ChaveAes", Convert.ToBase64String(ChaveAes));
+        builder.UseSetting("Privacidade:ChaveIndiceCego", Convert.ToBase64String(ChaveIndiceCego));
         builder.UseSetting("Demo:Senha", SenhaDaDemo);
         builder.UseSetting("Banco:MigrarAoIniciar", "true");
         builder.UseSetting("LimiteDeRequisicoes:LoginPorMinuto", _loginPorMinuto.ToString(CultureInfo.InvariantCulture));

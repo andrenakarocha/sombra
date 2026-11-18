@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -103,6 +104,37 @@ public sealed class PrivacidadeTests
         Assert.IsFalse(log.Eventos.Any(e => Texto(e, "event") == "privacidade.pii_detectada" && Texto(e, "level") == "Warning"));
     }
 
+    /// <summary>
+    /// F2.3: um morador cadastrado pela API fica cifrado no banco (o que um <c>psql</c> veria: prefixo <c>v1:</c>, nenhum
+    /// dígito do CPF, do Cartão SUS ou do telefone, nem o texto de saúde), com o índice cego do CPF, e a API devolve tudo
+    /// mascarado.
+    /// </summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task MoradorFicaCifradoNoBancoEMascaradoNaApi()
+    {
+        await using FabricaDaApi api = new();
+        using HttpClient ana = await api.ClienteDeAsync(Demo.Ana);
+        NovoMoradorDto morador = NovoMorador() with { PerfilDeSaude = "Hipertensão, toma losartana." };
+
+        using HttpResponseMessage criado = await ana.PostAsJsonAsync($"/api/v1/domicilios/{Demo.Lurdes}/moradores", morador, AmbienteDaApi.Json);
+        Guid id = (await criado.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
+        string[] colunas = await ColunasDoMoradorAsync(api, id);
+        JsonElement lido = await ana.GetFromJsonAsync<JsonElement>($"/api/v1/domicilios/{Demo.Lurdes}/moradores/{id}", AmbienteDaApi.Json);
+
+        Assert.AreEqual(HttpStatusCode.Created, criado.StatusCode);
+        Assert.IsTrue(colunas[..5].All(c => c.StartsWith("v1:", StringComparison.Ordinal)), string.Join(" | ", colunas));
+        Assert.AreEqual(64, colunas[5].Length);
+        foreach (string claro in new[] { morador.Cpf, morador.CartaoSus, "97654", "losartana" })
+        {
+            Assert.IsFalse(colunas.Any(c => c.Contains(claro, StringComparison.Ordinal)), $"o banco guardou em claro: {claro}");
+        }
+
+        Assert.AreEqual($"***.{morador.Cpf[3..6]}.***-{morador.Cpf[9..]}", lido.GetProperty("cpf").GetString());
+        Assert.AreEqual($"*** **** **** {morador.CartaoSus[^4..]}", lido.GetProperty("cartaoSus").GetString());
+        Assert.AreEqual("[DADO DE SAÚDE PROTEGIDO]", lido.GetProperty("perfilDeSaude").GetString());
+    }
+
     private static NovoMoradorDto NovoMorador() => new()
     {
         Nome = "Iolanda Teixeira",
@@ -123,6 +155,22 @@ public sealed class PrivacidadeTests
         SombraDbContext db = escopo.ServiceProvider.GetRequiredService<SombraDbContext>();
         Domicilio casa = await db.Domicilios.AsNoTracking().SingleAsync(d => d.Id == Demo.Lurdes);
         return casa.Moradores.Single(m => m.Id == moradorId).ObservacoesDeSaude!;
+    }
+
+    private static async Task<string[]> ColunasDoMoradorAsync(FabricaDaApi api, Guid moradorId)
+    {
+        await using AsyncServiceScope escopo = api.Services.CreateAsyncScope();
+        DbConnection conexao = escopo.ServiceProvider.GetRequiredService<SombraDbContext>().Database.GetDbConnection();
+        await conexao.OpenAsync();
+        await using DbCommand comando = conexao.CreateCommand();
+        comando.CommandText = "SELECT cpf, cartao_sus, telefone, perfil_de_saude, observacoes_de_saude, cpf_indice FROM moradores WHERE id = @id";
+        DbParameter parametro = comando.CreateParameter();
+        parametro.ParameterName = "id";
+        parametro.Value = moradorId;
+        comando.Parameters.Add(parametro);
+        await using DbDataReader leitor = await comando.ExecuteReaderAsync();
+        await leitor.ReadAsync();
+        return [.. Enumerable.Range(0, leitor.FieldCount).Select(leitor.GetString)];
     }
 
     private static async Task<int> QuantosMoradoresAsync(FabricaDaApi api)

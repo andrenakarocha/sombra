@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Npgsql;
 using Sombra.Aplicacao.Portas;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Casas;
@@ -13,6 +16,7 @@ using Sombra.Infraestrutura.Autenticacao;
 using Sombra.Infraestrutura.Mensageria;
 using Sombra.Infraestrutura.Persistencia.Configuracoes;
 using Sombra.Infraestrutura.Seguranca;
+using Sombra.Privacidade.Repouso;
 
 namespace Sombra.Infraestrutura.Persistencia;
 
@@ -20,22 +24,22 @@ namespace Sombra.Infraestrutura.Persistencia;
 public sealed class SombraDbContext : DbContext, IUnitOfWork
 {
     private readonly DespachanteDeFatos? _despachante;
+    private readonly CifraDeCampos _cifra;
 
     /// <summary>Initializes a new instance of the <see cref="SombraDbContext"/> class, sem despachar fatos (migrações e testes).</summary>
     /// <param name="options">As opções, montadas por <see cref="Configurar"/>.</param>
-    public SombraDbContext(DbContextOptions<SombraDbContext> options)
+    /// <param name="cifra">A cifra dos campos sensíveis (chaves do ambiente).</param>
+    public SombraDbContext(DbContextOptions<SombraDbContext> options, CifraDeCampos cifra)
         : base(options)
-    {
-    }
+        => _cifra = cifra ?? throw new ArgumentNullException(nameof(cifra));
 
     /// <summary>Initializes a new instance of the <see cref="SombraDbContext"/> class.</summary>
     /// <param name="options">As opções, montadas por <see cref="Configurar"/>.</param>
+    /// <param name="cifra">A cifra dos campos sensíveis (chaves do ambiente).</param>
     /// <param name="despachante">Quem registra e publica os fatos depois de cada gravação.</param>
-    public SombraDbContext(DbContextOptions<SombraDbContext> options, DespachanteDeFatos despachante)
-        : base(options)
-    {
-        _despachante = despachante ?? throw new ArgumentNullException(nameof(despachante));
-    }
+    public SombraDbContext(DbContextOptions<SombraDbContext> options, CifraDeCampos cifra, DespachanteDeFatos despachante)
+        : this(options, cifra)
+        => _despachante = despachante ?? throw new ArgumentNullException(nameof(despachante));
 
     /// <summary>Gets as casas, com moradores e Sentinelas.</summary>
     public DbSet<Domicilio> Domicilios => Set<Domicilio>();
@@ -66,7 +70,32 @@ public sealed class SombraDbContext : DbContext, IUnitOfWork
     /// <param name="conexao">A string de conexão.</param>
     /// <returns>O mesmo construtor.</returns>
     public static DbContextOptionsBuilder Configurar(DbContextOptionsBuilder builder, string conexao)
-        => builder.UseNpgsql(conexao, npgsql => npgsql.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)).UseSnakeCaseNamingConvention();
+        => builder.UseNpgsql(conexao, npgsql => npgsql.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery))
+            .UseSnakeCaseNamingConvention()
+            .ReplaceService<IModelCacheKeyFactory, ChaveDoModeloPorCifra>();
+
+    /// <summary>Gets a impressão das chaves em uso, que separa o modelo do EF por par de chaves.</summary>
+    internal string ImpressaoDaCifra => _cifra.Impressao;
+
+    /// <summary>Cifra o que estiver em claro no banco (o seed e dados de antes da F2.3). Rode depois das migrações.</summary>
+    /// <param name="cancellationToken">Cancela.</param>
+    /// <returns>Quantas linhas foram cifradas.</returns>
+    public Task<int> CifrarLegadoAsync(CancellationToken cancellationToken)
+        => CifragemDoLegado.CifrarAsync((NpgsqlConnection)Database.GetDbConnection(), _cifra, cancellationToken);
+
+    /// <inheritdoc/>
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        PreencherIndicesCegos();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    /// <inheritdoc/>
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        PreencherIndicesCegos();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
 
     /// <summary>
     /// Grava tudo numa transação (agregados, leituras, check-ins e o outbox dos avisos) e só então despacha os fatos: log e
@@ -98,5 +127,17 @@ public sealed class SombraDbContext : DbContext, IUnitOfWork
 
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-        => modelBuilder.ApplyConfigurationsFromAssembly(typeof(SombraDbContext).Assembly);
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SombraDbContext).Assembly);
+        CamposSensiveis.Configurar(modelBuilder, _cifra);
+    }
+
+    // O índice cego acompanha o CPF em toda gravação: é ele que o índice único (casa, cpf_indice) compara.
+    private void PreencherIndicesCegos()
+    {
+        foreach (EntityEntry<Morador> morador in ChangeTracker.Entries<Morador>().Where(e => e.State is EntityState.Added or EntityState.Modified))
+        {
+            morador.Property<string>(CamposSensiveis.CpfIndice).CurrentValue = _cifra.IndiceCego(morador.Entity.Cpf.Valor, CamposSensiveis.ColunaCpf);
+        }
+    }
 }

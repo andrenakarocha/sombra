@@ -31,6 +31,7 @@ using Sombra.Infraestrutura.Autenticacao;
 using Sombra.Infraestrutura.Mqtt;
 using Sombra.Infraestrutura.Persistencia;
 using Sombra.Privacidade.Deteccao;
+using Sombra.Privacidade.Repouso;
 using Sombra.Privacidade.Taint;
 
 namespace Sombra.Api.Composicao;
@@ -46,7 +47,7 @@ public static class ComposicaoDoCore
 
     /// <summary>Registra os serviços.</summary>
     /// <param name="builder">O construtor da aplicação.</param>
-    /// <exception cref="InvalidOperationException">Sem a conexão do banco ou sem a chave do JWT.</exception>
+    /// <exception cref="InvalidOperationException">Sem a conexão do banco, sem a chave do JWT ou sem as chaves de privacidade.</exception>
     public static void AdicionarCore(this WebApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
@@ -56,7 +57,7 @@ public static class ComposicaoDoCore
             ?? throw new InvalidOperationException("Defina ConnectionStrings__Core (o compose monta a partir do .env).");
         LogDoSombra.Adicionar(builder, VersaoDoBuild.De(configuracao).Commit);
 
-        servicos.AdicionarInfraestrutura(conexao);
+        servicos.AdicionarInfraestrutura(conexao, CifraDeCampos.DeBase64(configuracao["Privacidade:ChaveAes"], configuracao["Privacidade:ChaveIndiceCego"]));
         servicos.AdicionarMensageria();
         servicos.AddSingleton<ITempoReal, TempoRealSignalR>();
         servicos.AddScoped<CadastroDeDomicilios>();
@@ -99,7 +100,10 @@ public static class ComposicaoDoCore
         });
     }
 
-    /// <summary>Aplica as migrações (quando <c>Banco:MigrarAoIniciar</c>) e cria as contas da demo (quando há <c>Demo:Senha</c>).</summary>
+    /// <summary>
+    /// Aplica as migrações e cifra o legado em claro (quando <c>Banco:MigrarAoIniciar</c>) e cria as contas da demo
+    /// (quando há <c>Demo:Senha</c>).
+    /// </summary>
     /// <param name="app">A aplicação.</param>
     /// <returns>A preparação.</returns>
     public static async Task PrepararBancoAsync(this WebApplication app)
@@ -117,6 +121,7 @@ public static class ComposicaoDoCore
         if (migrar)
         {
             await db.Database.MigrateAsync(app.Lifetime.ApplicationStopping);
+            await db.CifrarLegadoAsync(app.Lifetime.ApplicationStopping);
         }
 
         if (!string.IsNullOrEmpty(senhaDaDemo))
