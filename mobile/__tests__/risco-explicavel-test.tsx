@@ -43,7 +43,7 @@ describe('🔎 o limiar exibido bate com o domínio em toda combinação de fato
   it('com os três fatores, explica o piso de 26,67 °C e mostra a diferença para a régua padrão', async () => {
     await render(<ExplicacaoDoRisco nome="Lurdes" risco={RiscoPersonalizado.para([...FATORES_DE_RISCO], 90)} indiceC={34.4} />);
     expect(screen.getByText(/nunca fica abaixo de 26,7 °C/)).toBeOnTheScreen();
-    expect(screen.getByText(/Já está no perigo para ela\. Pela régua padrão seria "Cautela extrema"\./)).toBeOnTheScreen();
+    expect(screen.getByText(/Já está no perigo para Lurdes\. Pela régua padrão seria "Cautela extrema"\./)).toBeOnTheScreen();
   });
 
   it('sem leitura, não inventa o "agora"', async () => {
