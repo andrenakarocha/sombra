@@ -746,6 +746,9 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   app com 318).
 - [ ] **F6.7** 🧑🤖 Acessibilidade (checklist da spec) + testes Jest.
   🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do operador.
+  ⏸ 2026-11-18: checklist da spec no README; faltavam a dica do leitor de tela em interruptores, chips e 16 botões
+  (agora obrigatória no tipo do `Botao`) e o tamanho do texto dentro do app (Normal, Grande, Maior, gravado no
+  aparelho), ambos com teste. Falta o operador gravar o vídeo com TalkBack.
 - [ ] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
   🔎 todos os critérios da rubrica de Mobile com evidência.
   ⏸ 2026-11-18: README com a Ficha, a rubrica com onde está e a evidência de cada critério, a arquitetura, as 13 telas,
