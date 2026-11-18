@@ -28,18 +28,21 @@ public sealed class TradutorDeExcecoes : IExceptionHandler
     private readonly ILogger<TradutorDeExcecoes> _log;
     private readonly GuardaDeSaida _guarda;
     private readonly IObservadorDeVazamentos _observador;
+    private readonly ModoDaPrivacidade _modo;
 
     /// <summary>Initializes a new instance of the <see cref="TradutorDeExcecoes"/> class.</summary>
     /// <param name="problemas">Quem escreve o ProblemDetails.</param>
     /// <param name="log">O log, para as exceções inesperadas.</param>
     /// <param name="guarda">A guarda de saída: a mensagem de uma exceção esperada vai para a resposta sem PII.</param>
     /// <param name="observador">Quem registra a mensagem redigida.</param>
-    public TradutorDeExcecoes(IProblemDetailsService problemas, ILogger<TradutorDeExcecoes> log, GuardaDeSaida guarda, IObservadorDeVazamentos observador)
+    /// <param name="modo">Se redige ou só registra (modo inseguro da auditoria).</param>
+    public TradutorDeExcecoes(IProblemDetailsService problemas, ILogger<TradutorDeExcecoes> log, GuardaDeSaida guarda, IObservadorDeVazamentos observador, ModoDaPrivacidade modo)
     {
         _problemas = problemas ?? throw new ArgumentNullException(nameof(problemas));
         _log = log ?? throw new ArgumentNullException(nameof(log));
         _guarda = guarda ?? throw new ArgumentNullException(nameof(guarda));
         _observador = observador ?? throw new ArgumentNullException(nameof(observador));
+        _modo = modo ?? throw new ArgumentNullException(nameof(modo));
     }
 
     /// <summary>Diz se a exceção é esperada (uma resposta 4xx), e não um defeito para o log de erro.</summary>
@@ -83,10 +86,10 @@ public sealed class TradutorDeExcecoes : IExceptionHandler
         ResultadoDaGuarda resultado = _guarda.Verificar(detalhe, ContextoDeTaint.Atual);
         foreach (AchadoNaSaida a in resultado.Achados)
         {
-            _observador.Registrar(new VazamentoBloqueado(SinkDePii.Excecao, rota, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, http.TraceIdentifier));
+            _observador.Registrar(new VazamentoBloqueado(SinkDePii.Excecao, rota, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, http.TraceIdentifier, Bloqueado: _modo.Bloqueia));
         }
 
-        return resultado.Limpo ? detalhe : resultado.Redigido;
+        return resultado.Limpo || !_modo.Bloqueia ? detalhe : resultado.Redigido;
     }
 
     private static ProblemDetails Problema(int status, string titulo, string? detalhe) => new() { Status = status, Title = titulo, Detail = detalhe };

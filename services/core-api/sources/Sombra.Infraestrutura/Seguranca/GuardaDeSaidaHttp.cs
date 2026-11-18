@@ -18,14 +18,17 @@ public sealed class GuardaDeSaidaHttp : DelegatingHandler
 {
     private readonly GuardaDeSaida _guarda;
     private readonly IObservadorDeVazamentos _observador;
+    private readonly ModoDaPrivacidade _modo;
 
     /// <summary>Initializes a new instance of the <see cref="GuardaDeSaidaHttp"/> class.</summary>
     /// <param name="guarda">A guarda de saída.</param>
     /// <param name="observador">Quem registra o bloqueio.</param>
-    public GuardaDeSaidaHttp(GuardaDeSaida guarda, IObservadorDeVazamentos observador)
+    /// <param name="modo">Se bloqueia ou só registra (modo inseguro da auditoria).</param>
+    public GuardaDeSaidaHttp(GuardaDeSaida guarda, IObservadorDeVazamentos observador, ModoDaPrivacidade modo)
     {
         _guarda = guarda ?? throw new ArgumentNullException(nameof(guarda));
         _observador = observador ?? throw new ArgumentNullException(nameof(observador));
+        _modo = modo ?? throw new ArgumentNullException(nameof(modo));
     }
 
     /// <inheritdoc/>
@@ -41,7 +44,12 @@ public sealed class GuardaDeSaidaHttp : DelegatingHandler
         {
             foreach (AchadoNaSaida a in achados.Distinct())
             {
-                _observador.Registrar(new VazamentoBloqueado(SinkDePii.SaidaExterna, host, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, Correlacao.Atual));
+                _observador.Registrar(new VazamentoBloqueado(SinkDePii.SaidaExterna, host, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, Correlacao.Atual, Bloqueado: _modo.Bloqueia));
+            }
+
+            if (!_modo.Bloqueia)
+            {
+                return await base.SendAsync(request, cancellationToken);
             }
 
             throw new SaidaBloqueadaException(SinkDePii.SaidaExterna, host, string.Join(", ", achados.Select(a => a.RegraId).Distinct()));

@@ -78,7 +78,11 @@ public sealed partial class VazamentosWorker : BackgroundService
     private void Registrar(VazamentoBloqueado evento)
     {
         using IDisposable? escopo = _log.BeginScope(new Dictionary<string, object> { ["CorrelationId"] = evento.CorrelationId ?? "-" });
-        if (evento.Sink is SinkDePii.SaidaExterna or SinkDePii.Mqtt)
+        if (!evento.Bloqueado)
+        {
+            VazamentoPermitido(_log, evento.Sink, evento.Onde, evento.Categoria, evento.RegraId);
+        }
+        else if (evento.Sink is SinkDePii.SaidaExterna or SinkDePii.Mqtt)
         {
             SaidaExternaBloqueada(_log, evento.Sink, evento.Onde, evento.Categoria, evento.RegraId);
         }
@@ -95,6 +99,10 @@ public sealed partial class VazamentosWorker : BackgroundService
     [LoggerMessage(EventId = 4402, EventName = "privacidade.saida_externa_bloqueada", Level = LogLevel.Warning,
         Message = "Saída {sink} para {onde} bloqueada: {categoria} (regra {regra})")]
     private static partial void SaidaExternaBloqueada(ILogger logger, SinkDePii sink, string onde, CategoriaDePii categoria, string regra);
+
+    [LoggerMessage(EventId = 4404, EventName = "privacidade.vazamento_permitido", Level = LogLevel.Error,
+        Message = "Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink {sink} em {onde}: {categoria} (regra {regra})")]
+    private static partial void VazamentoPermitido(ILogger logger, SinkDePii sink, string onde, CategoriaDePii categoria, string regra);
 
     [LoggerMessage(EventId = 4403, EventName = "privacidade.gravacao_falhou", Level = LogLevel.Error,
         Message = "Não foi possível gravar {quantidade} evento(s) de segurança; eles seguem no log")]

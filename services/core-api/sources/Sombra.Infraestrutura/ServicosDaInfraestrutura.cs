@@ -31,6 +31,7 @@ public static class ServicosDaInfraestrutura
         ArgumentNullException.ThrowIfNull(cifra);
         servicos.AddSingleton(cifra);
         servicos.AddSingleton(MotorDePii.Padrao);
+        servicos.TryAddSingleton(ModoDaPrivacidade.Ligada);
         servicos.AddSingleton<GuardaDeSaida>();
         servicos.AddSingleton<FilaDeVazamentos>();
         servicos.AddSingleton<IObservadorDeVazamentos>(provedor => provedor.GetRequiredService<FilaDeVazamentos>());

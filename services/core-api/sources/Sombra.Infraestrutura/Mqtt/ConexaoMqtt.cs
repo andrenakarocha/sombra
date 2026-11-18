@@ -31,18 +31,21 @@ public sealed partial class ConexaoMqtt : IDisposable
     private readonly ILogger<ConexaoMqtt> _log;
     private readonly GuardaDeSaida _guarda;
     private readonly IObservadorDeVazamentos _observador;
+    private readonly ModoDaPrivacidade _modo;
 
     /// <summary>Initializes a new instance of the <see cref="ConexaoMqtt"/> class.</summary>
     /// <param name="configuracao">A configuração (<c>Mqtt:Host</c>, <c>Mqtt:Porta</c>, <c>Mqtt:PrefixoTopico</c>).</param>
     /// <param name="log">O log.</param>
     /// <param name="guarda">A guarda de saída: nada com dado pessoal é publicado.</param>
     /// <param name="observador">Quem registra uma publicação bloqueada.</param>
-    public ConexaoMqtt(IConfiguration configuracao, ILogger<ConexaoMqtt> log, GuardaDeSaida guarda, IObservadorDeVazamentos observador)
+    /// <param name="modo">Se bloqueia ou só registra (modo inseguro da auditoria).</param>
+    public ConexaoMqtt(IConfiguration configuracao, ILogger<ConexaoMqtt> log, GuardaDeSaida guarda, IObservadorDeVazamentos observador, ModoDaPrivacidade modo)
     {
         ArgumentNullException.ThrowIfNull(configuracao);
         _log = log ?? throw new ArgumentNullException(nameof(log));
         _guarda = guarda ?? throw new ArgumentNullException(nameof(guarda));
         _observador = observador ?? throw new ArgumentNullException(nameof(observador));
+        _modo = modo ?? throw new ArgumentNullException(nameof(modo));
         Host = configuracao["Mqtt:Host"] ?? "localhost";
         Porta = configuracao.GetValue("Mqtt:Porta", 1883);
         Prefixo = configuracao["Mqtt:PrefixoTopico"] ?? "sombra/v1";
@@ -127,10 +130,13 @@ public sealed partial class ConexaoMqtt : IDisposable
         {
             foreach (AchadoNaSaida a in guarda.Achados)
             {
-                _observador.Registrar(new VazamentoBloqueado(SinkDePii.Mqtt, topico, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, Correlacao.Atual));
+                _observador.Registrar(new VazamentoBloqueado(SinkDePii.Mqtt, topico, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, Correlacao.Atual, Bloqueado: _modo.Bloqueia));
             }
 
-            throw new SaidaBloqueadaException(SinkDePii.Mqtt, topico, string.Join(", ", guarda.Achados.Select(a => a.RegraId).Distinct()));
+            if (_modo.Bloqueia)
+            {
+                throw new SaidaBloqueadaException(SinkDePii.Mqtt, topico, string.Join(", ", guarda.Achados.Select(a => a.RegraId).Distinct()));
+            }
         }
 
         if (!_cliente.IsConnected)

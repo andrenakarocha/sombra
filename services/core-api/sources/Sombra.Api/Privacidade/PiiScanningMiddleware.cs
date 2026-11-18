@@ -72,7 +72,7 @@ internal sealed class PiiScanningMiddleware
         string rota = (http.GetEndpoint() as RouteEndpoint)?.RoutePattern.RawText ?? "(sem rota)";
         foreach (DeteccaoDePii d in foraDoLugar)
         {
-            _observador.Registrar(new VazamentoBloqueado(SinkDePii.Entrada, rota, d.RegraId, d.Categoria, d.Severidade, PeloTaint: false, http.TraceIdentifier));
+            _observador.Registrar(new VazamentoBloqueado(SinkDePii.Entrada, rota, d.RegraId, d.Categoria, d.Severidade, PeloTaint: false, http.TraceIdentifier, Bloqueado: d.Desfecho != DesfechoDaDeteccao.Registrado));
         }
 
         if (foraDoLugar.Any(d => d.Desfecho == DesfechoDaDeteccao.Recusado))

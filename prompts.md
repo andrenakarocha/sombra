@@ -40,6 +40,25 @@ integrante sabe explicar o que entregou.
 8. *"Escreva testes de arquitetura que barrem dependências erradas entre as camadas e um teste que rode o roteiro da
    Dona Lurdes de ponta a ponta; depois, o README da pasta com a rubrica e as evidências."*
 
+## Privacidade (Cybersecurity)
+
+1. *"Construa o motor de parsing de PII com as regras como dados (um JSON validado na carga), detectores para CPF, Cartão
+   SUS, RG, telefone, e-mail, CEP, saúde e credenciais, e uma tabela de casos positivos, negativos e difíceis com meta de
+   zero falso negativo. Depois, desligue um validador de propósito e mostre que a tabela pega."*
+2. *"Faça o taint em tempo de execução: marque o que entra em cada requisição, mascare o dado pessoal escrito em campo
+   livre antes de gravar e de logar, e prove o cenário A1 com teste de integração."*
+3. *"Cifre a PII em repouso com AES-256-GCM e índice cego HMAC, com a chave do ambiente, e confira no psql que as colunas
+   aparecem cifradas e a API devolve mascarado."*
+4. *"Ponha um guarda em cada sink (log, resposta, saída externa, MQTT e exceções) e escreva endpoints propositalmente
+   vulneráveis para provar os cenários A2 a A7. Rode a suíte toda e corrija os falsos positivos que aparecerem."*
+5. *"Calcule o farol do Risco Cidadão com pesos por família, desfecho e decaimento no tempo, calibrado para a leitura que
+   o app já mostra, e exponha o farol e a trilha de eventos só com metadados."*
+6. *"Traduza cada evento para o cidadão, a gestão e o time técnico com a Gemini, sem PII no prompt (com um teste de
+   propriedade que prove isso), guarda na resposta, cache e fallback em template. Confira a P5 na API real antes de
+   fixar o modelo."*
+7. *"Escreva regras do Semgrep em modo taint com um canário que prove cada regra e um job no CI com SARIF."*
+8. *"Rode os oito cenários da auditoria com o módulo desligado e ligado e gere o relatório antes × depois."*
+
 ## QA (Azure Boards)
 
 1. *"Sou o João. Quero fazer a minha parte do Sombra: o QA, checkpoints F10.2 e F10.3 (features.yaml e

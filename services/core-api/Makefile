@@ -20,7 +20,7 @@ EF := dotnet tool restore >/dev/null && dotnet ef
 DB_PORTA := $(or $(shell grep -m1 '^DB_PORTA_LOCAL=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-),55432)
 CORE_DB_PASSWORD := $(shell grep -m1 '^CORE_DB_PASSWORD=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-)
 
-.PHONY: help restore build test coverage coverage-report format format-fix quality migration migration-check db-migrate openapi amostras pii-relatorio
+.PHONY: help restore build test coverage coverage-report format format-fix quality migration migration-check db-migrate openapi amostras pii-relatorio auditoria
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-11s %s\n", $$1, $$2}'
@@ -80,3 +80,8 @@ pii-relatorio: build ## Roda a tabela do motor de PII e regrava security/privaci
 	@mkdir -p $(RAIZ)/security/privacidade
 	@$(DOTNET) sh -c 'SOMBRA_RELATORIO_PII=/repo/security/privacidade/relatorio-de-acertos.md dotnet test sources/Sombra.Privacidade.Tests --no-build --nologo -v quiet --filter RelatorioDeAcertos'
 	@sed -n '5p' $(RAIZ)/security/privacidade/relatorio-de-acertos.md
+
+auditoria: build ## Auditoria antes × depois (A1–A8, módulo desligado e ligado): regrava security/auditoria/relatorio.md e .json
+	@mkdir -p $(RAIZ)/security/auditoria
+	@$(DOTNET_COM_DOCKER) sh -c 'SOMBRA_RELATORIO_AUDITORIA=/repo/security/auditoria dotnet test sources/Sombra.Api.IntegrationTests --no-build --nologo -v quiet --filter OitoCenariosVazamDesligadoESaoBloqueadosLigado'
+	@sed -n '7p' $(RAIZ)/security/auditoria/relatorio.md

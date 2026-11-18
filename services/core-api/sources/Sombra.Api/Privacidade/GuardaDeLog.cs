@@ -28,16 +28,19 @@ internal sealed class GuardaDeLog : ILogEventSink
     private readonly ILogEventSink _destino;
     private readonly GuardaDeSaida _guarda;
     private readonly IObservadorDeVazamentos _observador;
+    private readonly ModoDaPrivacidade _modo;
 
     /// <summary>Initializes a new instance of the <see cref="GuardaDeLog"/> class.</summary>
     /// <param name="destino">Os sinks de verdade (console e os de teste).</param>
     /// <param name="guarda">A guarda de saída.</param>
     /// <param name="observador">Quem registra o bloqueio.</param>
-    public GuardaDeLog(ILogEventSink destino, GuardaDeSaida guarda, IObservadorDeVazamentos observador)
+    /// <param name="modo">Se redige ou só registra (modo inseguro da auditoria).</param>
+    public GuardaDeLog(ILogEventSink destino, GuardaDeSaida guarda, IObservadorDeVazamentos observador, ModoDaPrivacidade modo)
     {
         _destino = destino;
         _guarda = guarda;
         _observador = observador;
+        _modo = modo;
     }
 
     /// <inheritdoc/>
@@ -60,25 +63,30 @@ internal sealed class GuardaDeLog : ILogEventSink
         ResultadoDaGuarda excecao = _guarda.Verificar(logEvent.Exception?.ToString(), taint);
         achados.AddRange(excecao.Achados);
 
-        if (achados.Count == 0)
+        if (achados.Count == 0 || !_modo.Bloqueia)
         {
             _destino.Emit(logEvent);
-            return;
+            if (achados.Count == 0)
+            {
+                return;
+            }
         }
-
-        _destino.Emit(new LogEvent(
-            logEvent.Timestamp,
-            logEvent.Level,
-            excecao.Limpo ? logEvent.Exception : new ExcecaoRedigida(logEvent.Exception!.GetType().FullName ?? "Exception", excecao.Redigido),
-            template.Limpo ? logEvent.MessageTemplate : new MessageTemplateParser().Parse(template.Redigido),
-            propriedades));
+        else
+        {
+            _destino.Emit(new LogEvent(
+                logEvent.Timestamp,
+                logEvent.Level,
+                excecao.Limpo ? logEvent.Exception : new ExcecaoRedigida(logEvent.Exception!.GetType().FullName ?? "Exception", excecao.Redigido),
+                template.Limpo ? logEvent.MessageTemplate : new MessageTemplateParser().Parse(template.Redigido),
+                propriedades));
+        }
 
         string onde = (logEvent.Properties.GetValueOrDefault("EventId") as StructureValue)?.Properties
             .FirstOrDefault(p => p.Name == "Name")?.Value is ScalarValue { Value: string evento } ? evento : "log";
         string? correlacao = logEvent.Properties.GetValueOrDefault(LogDoSombra.CorrelationId) is ScalarValue { Value: string c } ? c : null;
         foreach (AchadoNaSaida a in achados.Distinct())
         {
-            _observador.Registrar(new VazamentoBloqueado(SinkDePii.Log, onde, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, correlacao));
+            _observador.Registrar(new VazamentoBloqueado(SinkDePii.Log, onde, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, correlacao, Bloqueado: _modo.Bloqueia));
         }
     }
 

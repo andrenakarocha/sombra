@@ -15,6 +15,7 @@ using Sombra.Dominio.Comum;
 using Sombra.Dominio.Sentinelas;
 using Sombra.Infraestrutura.Persistencia;
 using Sombra.Infraestrutura.Seguranca;
+using Sombra.Privacidade.Sinks;
 
 namespace Sombra.Infraestrutura.Mqtt;
 
@@ -61,6 +62,7 @@ public sealed partial class ProcessadorDaSentinela
     private readonly TimeProvider _tempo;
     private readonly ITempoReal _tempoReal;
     private readonly ILogger<ProcessadorDaSentinela> _log;
+    private readonly ModoDaPrivacidade _modo;
 
     /// <summary>Initializes a new instance of the <see cref="ProcessadorDaSentinela"/> class.</summary>
     /// <param name="domicilios">As casas.</param>
@@ -71,7 +73,8 @@ public sealed partial class ProcessadorDaSentinela
     /// <param name="tempo">O tempo real, para a janela anti-replay (o relógio da Sentinela é real).</param>
     /// <param name="tempoReal">O hub.</param>
     /// <param name="log">O log.</param>
-    public ProcessadorDaSentinela(IDomicilioRepository domicilios, RegistrarLeitura registrarLeitura, RegistrarCheckIn registrarCheckIn, SombraDbContext db, IRelogio relogio, TimeProvider tempo, ITempoReal tempoReal, ILogger<ProcessadorDaSentinela> log)
+    /// <param name="modo">Se a assinatura inválida é recusada (sempre, menos no modo inseguro da auditoria, A8).</param>
+    public ProcessadorDaSentinela(IDomicilioRepository domicilios, RegistrarLeitura registrarLeitura, RegistrarCheckIn registrarCheckIn, SombraDbContext db, IRelogio relogio, TimeProvider tempo, ITempoReal tempoReal, ILogger<ProcessadorDaSentinela> log, ModoDaPrivacidade modo)
     {
         _domicilios = domicilios ?? throw new ArgumentNullException(nameof(domicilios));
         _registrarLeitura = registrarLeitura ?? throw new ArgumentNullException(nameof(registrarLeitura));
@@ -81,6 +84,7 @@ public sealed partial class ProcessadorDaSentinela
         _tempo = tempo ?? throw new ArgumentNullException(nameof(tempo));
         _tempoReal = tempoReal ?? throw new ArgumentNullException(nameof(tempoReal));
         _log = log ?? throw new ArgumentNullException(nameof(log));
+        _modo = modo ?? throw new ArgumentNullException(nameof(modo));
     }
 
     /// <summary>Processa uma mensagem.</summary>
@@ -119,8 +123,14 @@ public sealed partial class ProcessadorDaSentinela
 
         if (!AssinaturaMqtt.Conferir(sentinela.SegredoHex, lida.Canonica(mensagem.DeviceId), lida.Sig))
         {
-            AssinaturaInvalida(_log, mensagem.DeviceId, mensagem.Canal, lida.Seq);
-            return await RecusarAsync(mensagem.DeviceId, "MQTT_ASSINATURA_INVALIDA", $"{mensagem.Canal} seq {lida.Seq}", ResultadoDaMensagem.AssinaturaInvalida, cancellationToken);
+            if (_modo.Bloqueia)
+            {
+                AssinaturaInvalida(_log, mensagem.DeviceId, mensagem.Canal, lida.Seq);
+                return await RecusarAsync(mensagem.DeviceId, "MQTT_ASSINATURA_INVALIDA", $"{mensagem.Canal} seq {lida.Seq}", ResultadoDaMensagem.AssinaturaInvalida, cancellationToken);
+            }
+
+            // Modo inseguro da auditoria (A8): a mensagem adulterada entra, e a trilha registra que entrou.
+            _db.EventosDeSeguranca.Add(EventoDeSeguranca.Registrar(_relogio.Agora, "MQTT_ASSINATURA_INVALIDA", mensagem.DeviceId, Correlacao.Atual, $"{mensagem.Canal} seq {lida.Seq} aceita sem proteção", bloqueado: false));
         }
 
         switch (sentinela.ReceberMensagem(lida.Seq, DateTimeOffset.FromUnixTimeSeconds(lida.Ts), _tempo.GetUtcNow()))

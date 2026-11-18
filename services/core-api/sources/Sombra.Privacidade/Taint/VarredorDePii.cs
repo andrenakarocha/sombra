@@ -122,7 +122,12 @@ public sealed class VarredorDePii
             return valor;
         }
 
-        DesfechoDaDeteccao desfecho = _politica == PoliticaDeCampoLivre.Mascarar ? DesfechoDaDeteccao.Mascarado : DesfechoDaDeteccao.Recusado;
+        DesfechoDaDeteccao desfecho = _politica switch
+        {
+            PoliticaDeCampoLivre.Mascarar => DesfechoDaDeteccao.Mascarado,
+            PoliticaDeCampoLivre.Recusar => DesfechoDaDeteccao.Recusado,
+            _ => DesfechoDaDeteccao.Registrado,
+        };
         foreach (OcorrenciaDePii o in achadas)
         {
             DeteccaoDePii deteccao = Deteccao(FonteDePii.Corpo, campo, o, desfecho);
