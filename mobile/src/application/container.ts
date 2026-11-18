@@ -14,6 +14,9 @@ import type { MotorDeSincronizacao } from './sincronizacao/motor';
 
 export type Demonstracao = {
   simularOndaDeCalor(): Promise<void>;
+  // Toca as horas reais do INMET (nov/2023), uma a cada `intervaloMs`; o estado vai para o reproducaoStore.
+  reproduzirOndaReal(intervaloMs?: number): void;
+  pararReproducao(): void;
   recomecar(): Promise<void>;
 };
 

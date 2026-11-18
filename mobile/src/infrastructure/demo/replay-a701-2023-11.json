@@ -1,0 +1,495 @@
+{
+ "fonte": "INMET, Banco de Dados Meteorológicos (dados públicos)",
+ "url": "https://portal.inmet.gov.br/uploads/dadoshistoricos/2023.zip",
+ "arquivoOriginal": "INMET_SE_SP_A701_SAO PAULO - MIRANTE_01-01-2023_A_31-12-2023.CSV",
+ "sha256Csv": "ae52e888aa15f03e64c04cc0400896091d32da1ad4a303fdcb830cead9f78c44",
+ "estacao": "A701 · São Paulo – Mirante de Santana (estação a céu aberto)",
+ "janela": {
+  "de": "2023-11-12T03:00:00Z",
+  "horas": 96
+ },
+ "horasFaltando": 0,
+ "regra": "-9999 ou vazio não é medição: a hora fica de fora",
+ "horas": [
+  {
+   "momento": "2023-11-12T03:00:00Z",
+   "temperaturaC": 26.8,
+   "umidadePct": 42.0
+  },
+  {
+   "momento": "2023-11-12T04:00:00Z",
+   "temperaturaC": 25.9,
+   "umidadePct": 45.0
+  },
+  {
+   "momento": "2023-11-12T05:00:00Z",
+   "temperaturaC": 26.5,
+   "umidadePct": 44.0
+  },
+  {
+   "momento": "2023-11-12T06:00:00Z",
+   "temperaturaC": 25.7,
+   "umidadePct": 48.0
+  },
+  {
+   "momento": "2023-11-12T07:00:00Z",
+   "temperaturaC": 23.4,
+   "umidadePct": 72.0
+  },
+  {
+   "momento": "2023-11-12T08:00:00Z",
+   "temperaturaC": 22.9,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-12T09:00:00Z",
+   "temperaturaC": 24.1,
+   "umidadePct": 73.0
+  },
+  {
+   "momento": "2023-11-12T10:00:00Z",
+   "temperaturaC": 26.1,
+   "umidadePct": 62.0
+  },
+  {
+   "momento": "2023-11-12T11:00:00Z",
+   "temperaturaC": 28.6,
+   "umidadePct": 51.0
+  },
+  {
+   "momento": "2023-11-12T12:00:00Z",
+   "temperaturaC": 30.3,
+   "umidadePct": 35.0
+  },
+  {
+   "momento": "2023-11-12T13:00:00Z",
+   "temperaturaC": 32.2,
+   "umidadePct": 29.0
+  },
+  {
+   "momento": "2023-11-12T14:00:00Z",
+   "temperaturaC": 34.0,
+   "umidadePct": 25.0
+  },
+  {
+   "momento": "2023-11-12T15:00:00Z",
+   "temperaturaC": 34.7,
+   "umidadePct": 22.0
+  },
+  {
+   "momento": "2023-11-12T16:00:00Z",
+   "temperaturaC": 35.1,
+   "umidadePct": 20.0
+  },
+  {
+   "momento": "2023-11-12T17:00:00Z",
+   "temperaturaC": 35.4,
+   "umidadePct": 18.0
+  },
+  {
+   "momento": "2023-11-12T18:00:00Z",
+   "temperaturaC": 36.3,
+   "umidadePct": 19.0
+  },
+  {
+   "momento": "2023-11-12T19:00:00Z",
+   "temperaturaC": 35.8,
+   "umidadePct": 16.0
+  },
+  {
+   "momento": "2023-11-12T20:00:00Z",
+   "temperaturaC": 35.4,
+   "umidadePct": 17.0
+  },
+  {
+   "momento": "2023-11-12T21:00:00Z",
+   "temperaturaC": 34.2,
+   "umidadePct": 19.0
+  },
+  {
+   "momento": "2023-11-12T22:00:00Z",
+   "temperaturaC": 31.5,
+   "umidadePct": 32.0
+  },
+  {
+   "momento": "2023-11-12T23:00:00Z",
+   "temperaturaC": 30.7,
+   "umidadePct": 30.0
+  },
+  {
+   "momento": "2023-11-13T00:00:00Z",
+   "temperaturaC": 29.7,
+   "umidadePct": 36.0
+  },
+  {
+   "momento": "2023-11-13T01:00:00Z",
+   "temperaturaC": 29.1,
+   "umidadePct": 39.0
+  },
+  {
+   "momento": "2023-11-13T02:00:00Z",
+   "temperaturaC": 28.3,
+   "umidadePct": 42.0
+  },
+  {
+   "momento": "2023-11-13T03:00:00Z",
+   "temperaturaC": 27.3,
+   "umidadePct": 45.0
+  },
+  {
+   "momento": "2023-11-13T04:00:00Z",
+   "temperaturaC": 26.6,
+   "umidadePct": 48.0
+  },
+  {
+   "momento": "2023-11-13T05:00:00Z",
+   "temperaturaC": 25.8,
+   "umidadePct": 52.0
+  },
+  {
+   "momento": "2023-11-13T06:00:00Z",
+   "temperaturaC": 25.4,
+   "umidadePct": 55.0
+  },
+  {
+   "momento": "2023-11-13T07:00:00Z",
+   "temperaturaC": 24.7,
+   "umidadePct": 59.0
+  },
+  {
+   "momento": "2023-11-13T08:00:00Z",
+   "temperaturaC": 24.3,
+   "umidadePct": 61.0
+  },
+  {
+   "momento": "2023-11-13T09:00:00Z",
+   "temperaturaC": 24.7,
+   "umidadePct": 61.0
+  },
+  {
+   "momento": "2023-11-13T10:00:00Z",
+   "temperaturaC": 27.2,
+   "umidadePct": 53.0
+  },
+  {
+   "momento": "2023-11-13T11:00:00Z",
+   "temperaturaC": 29.8,
+   "umidadePct": 43.0
+  },
+  {
+   "momento": "2023-11-13T12:00:00Z",
+   "temperaturaC": 33.1,
+   "umidadePct": 35.0
+  },
+  {
+   "momento": "2023-11-13T13:00:00Z",
+   "temperaturaC": 34.8,
+   "umidadePct": 25.0
+  },
+  {
+   "momento": "2023-11-13T14:00:00Z",
+   "temperaturaC": 34.9,
+   "umidadePct": 25.0
+  },
+  {
+   "momento": "2023-11-13T15:00:00Z",
+   "temperaturaC": 36.0,
+   "umidadePct": 24.0
+  },
+  {
+   "momento": "2023-11-13T16:00:00Z",
+   "temperaturaC": 35.7,
+   "umidadePct": 20.0
+  },
+  {
+   "momento": "2023-11-13T17:00:00Z",
+   "temperaturaC": 36.9,
+   "umidadePct": 17.0
+  },
+  {
+   "momento": "2023-11-13T18:00:00Z",
+   "temperaturaC": 36.9,
+   "umidadePct": 18.0
+  },
+  {
+   "momento": "2023-11-13T19:00:00Z",
+   "temperaturaC": 36.3,
+   "umidadePct": 18.0
+  },
+  {
+   "momento": "2023-11-13T20:00:00Z",
+   "temperaturaC": 36.2,
+   "umidadePct": 20.0
+  },
+  {
+   "momento": "2023-11-13T21:00:00Z",
+   "temperaturaC": 35.0,
+   "umidadePct": 20.0
+  },
+  {
+   "momento": "2023-11-13T22:00:00Z",
+   "temperaturaC": 33.4,
+   "umidadePct": 23.0
+  },
+  {
+   "momento": "2023-11-13T23:00:00Z",
+   "temperaturaC": 31.6,
+   "umidadePct": 33.0
+  },
+  {
+   "momento": "2023-11-14T00:00:00Z",
+   "temperaturaC": 24.9,
+   "umidadePct": 75.0
+  },
+  {
+   "momento": "2023-11-14T01:00:00Z",
+   "temperaturaC": 24.5,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-14T02:00:00Z",
+   "temperaturaC": 24.3,
+   "umidadePct": 77.0
+  },
+  {
+   "momento": "2023-11-14T03:00:00Z",
+   "temperaturaC": 24.1,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-14T04:00:00Z",
+   "temperaturaC": 23.4,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-14T05:00:00Z",
+   "temperaturaC": 23.5,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-14T06:00:00Z",
+   "temperaturaC": 23.7,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-14T07:00:00Z",
+   "temperaturaC": 23.5,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-14T08:00:00Z",
+   "temperaturaC": 23.6,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-14T09:00:00Z",
+   "temperaturaC": 23.8,
+   "umidadePct": 76.0
+  },
+  {
+   "momento": "2023-11-14T10:00:00Z",
+   "temperaturaC": 25.9,
+   "umidadePct": 67.0
+  },
+  {
+   "momento": "2023-11-14T11:00:00Z",
+   "temperaturaC": 28.3,
+   "umidadePct": 55.0
+  },
+  {
+   "momento": "2023-11-14T12:00:00Z",
+   "temperaturaC": 31.2,
+   "umidadePct": 44.0
+  },
+  {
+   "momento": "2023-11-14T13:00:00Z",
+   "temperaturaC": 33.4,
+   "umidadePct": 34.0
+  },
+  {
+   "momento": "2023-11-14T14:00:00Z",
+   "temperaturaC": 34.6,
+   "umidadePct": 27.0
+  },
+  {
+   "momento": "2023-11-14T15:00:00Z",
+   "temperaturaC": 35.4,
+   "umidadePct": 24.0
+  },
+  {
+   "momento": "2023-11-14T16:00:00Z",
+   "temperaturaC": 36.2,
+   "umidadePct": 21.0
+  },
+  {
+   "momento": "2023-11-14T17:00:00Z",
+   "temperaturaC": 37.2,
+   "umidadePct": 19.0
+  },
+  {
+   "momento": "2023-11-14T18:00:00Z",
+   "temperaturaC": 36.0,
+   "umidadePct": 21.0
+  },
+  {
+   "momento": "2023-11-14T19:00:00Z",
+   "temperaturaC": 26.8,
+   "umidadePct": 66.0
+  },
+  {
+   "momento": "2023-11-14T20:00:00Z",
+   "temperaturaC": 23.6,
+   "umidadePct": 77.0
+  },
+  {
+   "momento": "2023-11-14T21:00:00Z",
+   "temperaturaC": 24.2,
+   "umidadePct": 72.0
+  },
+  {
+   "momento": "2023-11-14T22:00:00Z",
+   "temperaturaC": 23.0,
+   "umidadePct": 78.0
+  },
+  {
+   "momento": "2023-11-14T23:00:00Z",
+   "temperaturaC": 22.6,
+   "umidadePct": 82.0
+  },
+  {
+   "momento": "2023-11-15T00:00:00Z",
+   "temperaturaC": 22.8,
+   "umidadePct": 78.0
+  },
+  {
+   "momento": "2023-11-15T01:00:00Z",
+   "temperaturaC": 22.4,
+   "umidadePct": 83.0
+  },
+  {
+   "momento": "2023-11-15T02:00:00Z",
+   "temperaturaC": 22.5,
+   "umidadePct": 80.0
+  },
+  {
+   "momento": "2023-11-15T03:00:00Z",
+   "temperaturaC": 22.6,
+   "umidadePct": 77.0
+  },
+  {
+   "momento": "2023-11-15T04:00:00Z",
+   "temperaturaC": 22.2,
+   "umidadePct": 81.0
+  },
+  {
+   "momento": "2023-11-15T05:00:00Z",
+   "temperaturaC": 22.4,
+   "umidadePct": 79.0
+  },
+  {
+   "momento": "2023-11-15T06:00:00Z",
+   "temperaturaC": 22.0,
+   "umidadePct": 80.0
+  },
+  {
+   "momento": "2023-11-15T07:00:00Z",
+   "temperaturaC": 21.8,
+   "umidadePct": 80.0
+  },
+  {
+   "momento": "2023-11-15T08:00:00Z",
+   "temperaturaC": 21.5,
+   "umidadePct": 81.0
+  },
+  {
+   "momento": "2023-11-15T09:00:00Z",
+   "temperaturaC": 22.2,
+   "umidadePct": 79.0
+  },
+  {
+   "momento": "2023-11-15T10:00:00Z",
+   "temperaturaC": 24.2,
+   "umidadePct": 71.0
+  },
+  {
+   "momento": "2023-11-15T11:00:00Z",
+   "temperaturaC": 26.2,
+   "umidadePct": 64.0
+  },
+  {
+   "momento": "2023-11-15T12:00:00Z",
+   "temperaturaC": 27.6,
+   "umidadePct": 59.0
+  },
+  {
+   "momento": "2023-11-15T13:00:00Z",
+   "temperaturaC": 28.3,
+   "umidadePct": 56.0
+  },
+  {
+   "momento": "2023-11-15T14:00:00Z",
+   "temperaturaC": 31.2,
+   "umidadePct": 43.0
+  },
+  {
+   "momento": "2023-11-15T15:00:00Z",
+   "temperaturaC": 32.4,
+   "umidadePct": 41.0
+  },
+  {
+   "momento": "2023-11-15T16:00:00Z",
+   "temperaturaC": 34.5,
+   "umidadePct": 32.0
+  },
+  {
+   "momento": "2023-11-15T17:00:00Z",
+   "temperaturaC": 34.8,
+   "umidadePct": 29.0
+  },
+  {
+   "momento": "2023-11-15T18:00:00Z",
+   "temperaturaC": 35.7,
+   "umidadePct": 29.0
+  },
+  {
+   "momento": "2023-11-15T19:00:00Z",
+   "temperaturaC": 35.6,
+   "umidadePct": 27.0
+  },
+  {
+   "momento": "2023-11-15T20:00:00Z",
+   "temperaturaC": 35.4,
+   "umidadePct": 25.0
+  },
+  {
+   "momento": "2023-11-15T21:00:00Z",
+   "temperaturaC": 33.4,
+   "umidadePct": 28.0
+  },
+  {
+   "momento": "2023-11-15T22:00:00Z",
+   "temperaturaC": 25.9,
+   "umidadePct": 73.0
+  },
+  {
+   "momento": "2023-11-15T23:00:00Z",
+   "temperaturaC": 20.0,
+   "umidadePct": 96.0
+  },
+  {
+   "momento": "2023-11-16T00:00:00Z",
+   "temperaturaC": 21.0,
+   "umidadePct": 96.0
+  },
+  {
+   "momento": "2023-11-16T01:00:00Z",
+   "temperaturaC": 20.9,
+   "umidadePct": 94.0
+  },
+  {
+   "momento": "2023-11-16T02:00:00Z",
+   "temperaturaC": 21.1,
+   "umidadePct": 89.0
+  }
+ ]
+}

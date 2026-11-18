@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useStore } from 'zustand';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,6 +7,7 @@ import { useCasas } from '@/presentation/hooks/consultas';
 import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao';
 import { Botao } from '@/presentation/componentes/Botao';
 import { Texto } from '@/presentation/componentes/Texto';
+import { reproducaoStore } from '@/application/estado/reproducao';
 import { useEmDemonstracao } from '@/presentation/hooks/estado';
 import { useContainer } from '@/presentation/providers/container';
 import { espaco, useTema } from '@/presentation/tema';
@@ -15,6 +17,7 @@ export default function Ajustes() {
   const casas = useCasas().data?.dados ?? [];
   const { sessao, demonstracao } = useContainer();
   const demo = useEmDemonstracao();
+  const replayAtivo = useStore(reproducaoStore, (r) => r.ativo);
 
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: tema.fundo }}>
@@ -48,10 +51,18 @@ export default function Ajustes() {
               Demonstração
             </Texto>
             <Texto suave>
-              A onda de calor do roteiro: a casa da Dona Lurdes vai a Perigo agora e, sem resposta em 8 segundos, chega
+              Dados reais: as 96 horas da onda de calor de 12 a 16 de novembro de 2023 na estação do INMET em Santana,
+              uma hora a cada 1,5 segundo.
+            </Texto>
+            <Botao
+              rotulo={replayAtivo ? 'Parar a onda de calor real' : 'Reproduzir a onda de calor real (INMET, nov/2023)'}
+              aoTocar={() => (replayAtivo ? demonstracao.pararReproducao() : demonstracao.reproduzirOndaReal())}
+            />
+            <Texto suave>
+              Simulação (número inventado): a casa da Dona Lurdes vai a Perigo agora e, sem resposta em 8 segundos, chega
               o lembrete leve.
             </Texto>
-            <Botao rotulo="Simular onda de calor" aoTocar={() => demonstracao.simularOndaDeCalor()} />
+            <Botao rotulo="Simular onda de calor" variante="secundario" aoTocar={() => demonstracao.simularOndaDeCalor()} />
             <Botao rotulo="Recomeçar o exemplo" variante="secundario" aoTocar={() => demonstracao.recomecar()} />
           </View>
         )}

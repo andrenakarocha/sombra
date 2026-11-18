@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCasas } from '@/presentation/hooks/consultas';
 import { mensagemDeErro } from '@/presentation/util/mensagens';
 import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao';
+import { AvisoDoReplay } from '@/presentation/componentes/AvisoDoReplay';
 import { AvisoOffline } from '@/presentation/componentes/AvisoOffline';
 import { CartaoCasa } from '@/presentation/componentes/CartaoCasa';
 import { PilulaDeSincronizacao } from '@/presentation/componentes/PilulaDeSincronizacao';
@@ -25,6 +26,7 @@ export default function Inicio() {
           Suas casas
         </Texto>
         <AvisoDemonstracao />
+        <AvisoDoReplay />
         <PilulaDeSincronizacao />
 
         {casas.data?.origem === 'local' && <AvisoOffline atualizadoEm={casas.data.atualizadoEm} />}

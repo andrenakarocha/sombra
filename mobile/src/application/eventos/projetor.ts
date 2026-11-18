@@ -43,7 +43,8 @@ export class ProjetorDeEventos {
           { momento: String(p.momento), temperaturaC: Number(p.temperaturaC), umidadePct: Number(p.umidadePct), indiceDeCalorC: Number(p.indiceDeCalorC) },
           p.nivel as NivelDeRisco,
         );
-        return barramento.publicar(...daCasa);
+        // O contrato não tem "alerta atualizado": uma leitura nova pode ter subido o nível (e o prazo) do alerta aberto.
+        return barramento.publicar(...daCasa, { recurso: 'alertas' });
       case 'SentinelaStatus':
         await casas.definirSentinelaOnline(domicilioId!, String(p.deviceId), Boolean(p.online));
         return barramento.publicar(...daCasa);
