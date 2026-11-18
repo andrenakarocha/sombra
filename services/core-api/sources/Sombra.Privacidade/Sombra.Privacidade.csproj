@@ -4,4 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 
+  <!-- As regras de PII são dados (spec 07): o motor lê este arquivo, não o código. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Regras\pii-regras.json" LogicalName="pii-regras.json" />
+  </ItemGroup>
+
 </Project>

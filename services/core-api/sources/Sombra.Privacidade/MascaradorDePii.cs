@@ -4,7 +4,7 @@ namespace Sombra.Privacidade;
 
 /// <summary>
 /// As máscaras de PII das respostas e das telas, nos formatos da spec 07. Recebe os dígitos já validados pelos value
-/// objects do domínio. A F2.2 acrescenta o motor de regras (<c>pii-regras.json</c>) e as demais categorias.
+/// objects do domínio. A F2.2 acrescenta as máscaras das demais regras do <c>pii-regras.json</c>.
 /// </summary>
 public static class MascaradorDePii
 {

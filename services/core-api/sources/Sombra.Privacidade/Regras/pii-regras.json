@@ -1,0 +1,97 @@
+{
+  "versao": 1,
+  "regras": [
+    {
+      "id": "cpf",
+      "categoria": "Identificacao",
+      "severidade": "Alta",
+      "chaves": ["cpf", "documento"],
+      "padrao": "(?<!\\d)\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}(?!\\d)",
+      "validador": "cpf",
+      "mascara": "cpf",
+      "baseLegal": "LGPD art. 5º, I"
+    },
+    {
+      "id": "cns",
+      "categoria": "Saude",
+      "severidade": "Alta",
+      "chaves": ["cns", "sus"],
+      "padrao": "(?<!\\d)\\d{3} ?\\d{4} ?\\d{4} ?\\d{4}(?!\\d)",
+      "validador": "cns",
+      "mascara": "cns",
+      "baseLegal": "LGPD art. 5º, II e art. 11"
+    },
+    {
+      "id": "rg",
+      "categoria": "Identificacao",
+      "severidade": "Media",
+      "chaves": ["rg", "identidade"],
+      "padrao": "(?<![\\d.])\\d{1,2}\\.\\d{3}\\.\\d{3}-[0-9Xx](?![\\dXx])",
+      "mascara": "parcial",
+      "baseLegal": "LGPD art. 5º, I"
+    },
+    {
+      "id": "telefone",
+      "categoria": "Contato",
+      "severidade": "Media",
+      "chaves": ["telefone", "celular", "fone", "whatsapp"],
+      "padrao": "(?<![\\d+])(?:\\+?55 ?)?(?:\\(\\d{2}\\)|\\d{2}) ?9?\\d{4}[ -]?\\d{4}(?!\\d)",
+      "validador": "telefone",
+      "mascara": "telefone",
+      "baseLegal": "LGPD art. 5º, I"
+    },
+    {
+      "id": "email",
+      "categoria": "Contato",
+      "severidade": "Media",
+      "chaves": ["email", "mail"],
+      "padrao": "(?<![\\p{L}\\p{N}._%+-])[\\p{L}\\p{N}._%+-]+@[\\p{L}\\p{N}-]+(?:\\.[\\p{L}\\p{N}-]+)+",
+      "mascara": "email",
+      "baseLegal": "LGPD art. 5º, I"
+    },
+    {
+      "id": "cep",
+      "categoria": "Localizacao",
+      "severidade": "Baixa",
+      "chaves": ["cep"],
+      "padrao": "(?<!\\d)\\d{5}-\\d{3}(?!\\d)",
+      "mascara": "parcial",
+      "baseLegal": "LGPD art. 5º, I"
+    },
+    {
+      "id": "saude",
+      "categoria": "Saude",
+      "severidade": "Alta",
+      "chaves": [
+        "laudo", "diagnostico", "cid", "condicao", "condicoes", "doenca", "doencas", "medicamento", "medicamentos",
+        "remedio", "remedios", "exame", "exames", "prontuario", "saude", "alergia", "alergias", "comorbidade",
+        "comorbidades", "tratamento"
+      ],
+      "padrao": "(?i)(?<![\\p{L}\\p{N}])CID(?:-?10)?\\s*[:-]?\\s*[A-Z]\\d{2}(?:\\.\\d{1,2})?(?![\\p{L}\\p{N}])",
+      "termos": [
+        "laudo", "diagnóstico", "prontuário", "atestado médico", "receita médica", "internação", "internado", "internada",
+        "hipertensão", "pressão alta", "diabetes", "diabético", "diabética", "insuficiência cardíaca", "infarto",
+        "arritmia", "avc", "derrame", "alzheimer", "parkinson", "demência", "câncer", "tumor", "dpoc", "asma",
+        "bronquite", "enfisema", "insuficiência renal", "hemodiálise", "osteoporose", "artrose", "depressão",
+        "ansiedade", "esquizofrenia", "hiv", "hepatite", "tuberculose", "marca-passo", "acamado", "acamada",
+        "insulina", "metformina", "glibenclamida", "losartana", "enalapril", "captopril", "atenolol", "propranolol",
+        "anlodipino", "hidroclorotiazida", "furosemida", "sinvastatina", "atorvastatina", "varfarina", "clopidogrel",
+        "omeprazol", "levotiroxina", "donepezila", "levodopa", "sertralina", "fluoxetina", "clonazepam", "rivotril",
+        "hemograma", "hemoglobina glicada", "glicemia", "eletrocardiograma", "ecocardiograma", "tomografia",
+        "ressonância magnética", "colonoscopia"
+      ],
+      "mascara": "saude",
+      "baseLegal": "LGPD art. 5º, II e art. 11"
+    },
+    {
+      "id": "credencial",
+      "categoria": "Credencial",
+      "severidade": "Critica",
+      "chaves": ["senha", "password", "passwd", "token", "secret", "segredo", "apiKey", "authorization", "credencial", "jwt"],
+      "padrao": "eyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}|(?<![\\p{L}\\p{N}])Bearer\\s+[A-Za-z0-9._~+/-]{8,}=*|(?<![A-Za-z0-9+/_=-])[A-Za-z0-9+/_=-]{24,}(?![A-Za-z0-9+/_=-])",
+      "validador": "credencial",
+      "mascara": "removido",
+      "baseLegal": "LGPD art. 46"
+    }
+  ]
+}

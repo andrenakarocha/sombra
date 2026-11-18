@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest" />
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sombra.Privacidade\Sombra.Privacidade.csproj" />
+  </ItemGroup>
+
+  <!-- O mesmo gerador de CPF e Cartão SUS sintéticos dos testes do domínio: nenhum número real. -->
+  <ItemGroup>
+    <Compile Include="..\Sombra.Dominio.Tests\Apoio\DocumentosSinteticos.cs" Link="Apoio\DocumentosSinteticos.cs" />
+  </ItemGroup>
+
+</Project>
