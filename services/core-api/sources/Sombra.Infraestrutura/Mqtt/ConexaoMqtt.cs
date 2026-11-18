@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Protocol;
+using Sombra.Aplicacao.Comum;
+using Sombra.Privacidade.Sinks;
+using Sombra.Privacidade.Taint;
 
 namespace Sombra.Infraestrutura.Mqtt;
 
@@ -25,14 +29,20 @@ public sealed partial class ConexaoMqtt : IDisposable
     private readonly IMqttClient _cliente;
     private readonly MqttClientOptions _opcoes;
     private readonly ILogger<ConexaoMqtt> _log;
+    private readonly GuardaDeSaida _guarda;
+    private readonly IObservadorDeVazamentos _observador;
 
     /// <summary>Initializes a new instance of the <see cref="ConexaoMqtt"/> class.</summary>
     /// <param name="configuracao">A configuração (<c>Mqtt:Host</c>, <c>Mqtt:Porta</c>, <c>Mqtt:PrefixoTopico</c>).</param>
     /// <param name="log">O log.</param>
-    public ConexaoMqtt(IConfiguration configuracao, ILogger<ConexaoMqtt> log)
+    /// <param name="guarda">A guarda de saída: nada com dado pessoal é publicado.</param>
+    /// <param name="observador">Quem registra uma publicação bloqueada.</param>
+    public ConexaoMqtt(IConfiguration configuracao, ILogger<ConexaoMqtt> log, GuardaDeSaida guarda, IObservadorDeVazamentos observador)
     {
         ArgumentNullException.ThrowIfNull(configuracao);
         _log = log ?? throw new ArgumentNullException(nameof(log));
+        _guarda = guarda ?? throw new ArgumentNullException(nameof(guarda));
+        _observador = observador ?? throw new ArgumentNullException(nameof(observador));
         Host = configuracao["Mqtt:Host"] ?? "localhost";
         Porta = configuracao.GetValue("Mqtt:Porta", 1883);
         Prefixo = configuracao["Mqtt:PrefixoTopico"] ?? "sombra/v1";
@@ -108,8 +118,21 @@ public sealed partial class ConexaoMqtt : IDisposable
     /// <param name="cancellationToken">Cancela a publicação.</param>
     /// <returns>A publicação.</returns>
     /// <exception cref="InvalidOperationException">Sem conexão com o broker (o outbox tenta de novo).</exception>
+    /// <exception cref="SaidaBloqueadaException">O conteúdo levava dado pessoal: nada foi publicado (spec 07 §2.3).</exception>
     public async Task PublicarAsync(string topico, string conteudo, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(topico);
+        ResultadoDaGuarda guarda = _guarda.Verificar(conteudo, ContextoDeTaint.Atual);
+        if (!guarda.Limpo)
+        {
+            foreach (AchadoNaSaida a in guarda.Achados)
+            {
+                _observador.Registrar(new VazamentoBloqueado(SinkDePii.Mqtt, topico, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, Correlacao.Atual));
+            }
+
+            throw new SaidaBloqueadaException(SinkDePii.Mqtt, topico, string.Join(", ", guarda.Achados.Select(a => a.RegraId).Distinct()));
+        }
+
         if (!_cliente.IsConnected)
         {
             throw new InvalidOperationException("Sem conexão com o broker MQTT.");

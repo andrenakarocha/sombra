@@ -22,7 +22,7 @@ O Sombra guarda **dados de saúde de idosos** (condições, remédios, Cartão S
 - **Fontes:** corpo, query e headers da requisição (marcados pelo middleware) + campos sensíveis lidos do banco (descriptografados).
 - **Taint como tipo:** `Sensivel<T>` tem `ToString()` que devolve `[PII:CPF]`, e o serializador **recusa** serializar sem `Revelar(finalidade)` explícito em endpoint autorizado. Vazar por descuido vira impossível ou ruidoso.
 - **Guardas de sink** (a "camada de validação antes das saídas" que o professor descreveu):
-  1. **Log:** um `ILoggerProvider` decorador verifica cada evento de log contra o `ContextoDeTaint` e os detectores, então **bloqueia e redige** antes de escrever, e emite `VazamentoBloqueado{sink: Log}`. Cobre o `logger.info(dados_de_saude)` do enunciado.
+  1. **Log:** um decorador dos sinks do Serilog (o provedor de log do Core; o papel do `ILoggerProvider` decorador) verifica cada evento de log contra o `ContextoDeTaint` e os detectores, então **bloqueia e redige** antes de escrever, e emite `VazamentoBloqueado{sink: Log}`. Cobre o `logger.info(dados_de_saude)` do enunciado.
   2. **Resposta HTTP:** `TaintResponseGuardMiddleware` verifica o corpo da resposta. Em resposta **não autenticada** ou **de erro** (stack trace, ProblemDetails, exceção do EF que costuma carregar valores), troca por um erro seguro com `correlationId` e emite o evento. PII só sai em endpoint marcado com `[PermitePii(Categoria, Papel)]`.
   3. **Saída externa:** `DelegatingHandler` no HttpClient (Clima, **LLM**) e guarda no publicador MQTT. **Nem a IA vê o dado:** o prompt nunca contém PII.
   4. **Exceções:** o tratador global sanitiza as mensagens.

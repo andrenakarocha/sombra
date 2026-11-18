@@ -97,8 +97,9 @@ public static partial class Validadores
     }
 
     /// <summary>
-    /// Credencial: JWT e <c>Bearer</c> valem sempre; um token solto só vale com 24 caracteres ou mais, letras e
-    /// dígitos misturados e entropia alta. UUIDs (como o <c>correlationId</c>) não são segredo.
+    /// Credencial: JWT e <c>Bearer</c> valem sempre; um token solto só vale com 24 caracteres ou mais, maiúsculas,
+    /// minúsculas e dígitos misturados e entropia alta (o formato de chaves em base64 e de tokens). Hex puro (UUID, hash,
+    /// ids como o <c>correlationId</c>) não conta pelo conteúdo: um segredo em hex é pego pela chave do campo e pelo taint.
     /// </summary>
     /// <param name="candidato">O texto achado.</param>
     /// <returns><c>true</c> quando parece um segredo.</returns>
@@ -113,7 +114,8 @@ public static partial class Validadores
         return candidato.Length >= TamanhoMinimoDeSegredo
             && !Uuid().IsMatch(candidato)
             && candidato.Count(char.IsAsciiDigit) >= 3
-            && candidato.Count(char.IsAsciiLetter) >= 3
+            && candidato.Any(char.IsAsciiLetterUpper)
+            && candidato.Any(char.IsAsciiLetterLower)
             && Entropia(candidato) >= EntropiaMinimaDeSegredo;
     }
 

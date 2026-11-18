@@ -19,8 +19,8 @@ internal static partial class EventosDaApi
 
     /// <summary>O Core subiu, com a configuração que importa e sem segredos.</summary>
     [LoggerMessage(EventId = 1003, EventName = "servico.iniciado", Level = LogLevel.Information,
-        Message = "Core API iniciada: versão {versao}, ambiente {ambiente}, migrar ao iniciar {migrarAoIniciar}, contas da demo {contasDaDemo}, limite {limitePorMinuto}/min, login {limiteDeLoginPorMinuto}/min, emissor do JWT {emissorDoJwt}")]
-    internal static partial void ServicoIniciado(this ILogger logger, string versao, string ambiente, bool migrarAoIniciar, bool contasDaDemo, int limitePorMinuto, int limiteDeLoginPorMinuto, string emissorDoJwt);
+        Message = "Core API iniciada: versão {versao}, ambiente {ambiente}, migrar ao iniciar {migrarAoIniciar}, contas da demo {contasDaDemo}, limite {limitePorMinuto}/min, login {limiteDeLoginPorMinuto}/min, emissor do JWT {emissor}")]
+    internal static partial void ServicoIniciado(this ILogger logger, string versao, string ambiente, bool migrarAoIniciar, bool contasDaDemo, int limitePorMinuto, int limiteDeLoginPorMinuto, string emissor);
 
     /// <summary>
     /// Um dado pessoal entrou numa requisição (spec 07 §1): família, campo, fonte, regra e o que foi feito, nunca o valor.

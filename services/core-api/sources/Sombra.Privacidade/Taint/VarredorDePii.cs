@@ -139,7 +139,7 @@ public sealed class VarredorDePii
     {
         foreach (OcorrenciaDePii o in _motor.Analisar(normalizado))
         {
-            contexto.MarcarValor(normalizado.Substring(o.Inicio, o.Tamanho));
+            contexto.MarcarValor(normalizado.Substring(o.Inicio, o.Tamanho), o.RegraId, o.Categoria);
         }
     }
 

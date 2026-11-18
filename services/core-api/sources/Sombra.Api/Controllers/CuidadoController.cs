@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sombra.Api.Autenticacao;
+using Sombra.Api.Privacidade;
 using Sombra.Aplicacao.Cadastro;
 using Sombra.Aplicacao.Comum;
 using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Respostas;
+using Sombra.Privacidade.Regras;
 
 namespace Sombra.Api.Controllers;
 
 /// <summary>A rede de cuidado (quem o escalonamento procura) e a rotina combinada com a pessoa.</summary>
 [ApiController]
 [Route("api/v1/domicilios/{id:guid}")]
+[DadosPessoais(CategoriaDePii.Contato)]
+[PermitePii(CategoriaDePii.Contato, Papeis.Cuidador)]
 [Authorize(Roles = Acesso.CuidadorOuAdmin, Policy = CasaDoCuidador.Politica)]
 [Tags("Rede de cuidado e rotina")]
 public sealed class CuidadoController : ControllerBase

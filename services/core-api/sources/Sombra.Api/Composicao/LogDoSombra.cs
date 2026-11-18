@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting;
 using Serilog.Templates;
+using Sombra.Api.Privacidade;
+using Sombra.Privacidade.Sinks;
 
 namespace Sombra.Api.Composicao;
 
@@ -44,12 +47,21 @@ public static class LogDoSombra
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty("Version", versao)
                 .Enrich.WithProperty("Environment", ambiente)
-                .Enrich.With<SemPropriedadesDoAspNet>()
-                .WriteTo.Console(Formato);
-            foreach (ILogEventSink extra in servicos.GetServices<ILogEventSink>())
-            {
-                log.WriteTo.Sink(extra);
-            }
+                .Enrich.With<SemPropriedadesDoAspNet>();
+
+            // Todo sink passa pelo guarda de log do Sombra.Privacidade (F2.4): nenhum evento é escrito antes de ser conferido.
+            GuardaDeSaida guarda = servicos.GetRequiredService<GuardaDeSaida>();
+            IObservadorDeVazamentos observador = servicos.GetRequiredService<IObservadorDeVazamentos>();
+            log.WriteTo.Sink(LoggerSinkConfiguration.Wrap(
+                destino => new GuardaDeLog(destino, guarda, observador),
+                sinks =>
+                {
+                    sinks.Console(Formato);
+                    foreach (ILogEventSink extra in servicos.GetServices<ILogEventSink>())
+                    {
+                        sinks.Sink(extra);
+                    }
+                }));
         });
     }
 }
