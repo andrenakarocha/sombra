@@ -38,3 +38,19 @@ for e in erros:
     print(f"  erro de parse: {e.get("path", "?")}")
 print(f"código do Core: {arquivos} arquivos, {len(achados)} achados, {len(erros)} erros de parse")
 sys.exit(1 if achados or erros else 0)'
+
+# O Code Scanning do GitHub não respeita as supressões do SARIF: um "nosemgrep" justificado (os endpoints
+# propositalmente vulneráveis da auditoria) viraria alerta aberto. O SARIF enviado leva só os achados ativos; os
+# suprimidos ficam no código, com a justificativa, e aparecem aqui.
+python3 -I - "$SARIF" <<'PY'
+import json, sys
+caminho = sys.argv[1]
+sarif = json.load(open(caminho, encoding="utf-8"))
+suprimidos = 0
+for execucao in sarif["runs"]:
+    ativos = [r for r in execucao["results"] if not r.get("suppressions")]
+    suprimidos += len(execucao["results"]) - len(ativos)
+    execucao["results"] = ativos
+json.dump(sarif, open(caminho, "w", encoding="utf-8"))
+print(f"SARIF para o Code Scanning: {suprimidos} achados com nosemgrep justificado ficam de fora")
+PY
