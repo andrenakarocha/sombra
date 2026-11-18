@@ -822,10 +822,10 @@ falha documentados.
 
 - [ ] **F10.1** 🧑 🔑 ⛔ Organização e projeto no Azure DevOps, **professor de QA como Admin**, PAT para o script.
   🔎 o professor aparece em Project Administrators.
-- [ ] **F10.2** 🤖 🤝 `features.yaml` (F01–F12, Como/Quero/Para + Dado/Quando/Então).
-  🔎 revisado pelo operador.
-  ⏸ 2026-11-18: `qa/especificacao/features.yaml` com as 12 Features e 43 critérios de aceite, tirados das regras R1–R14
-  e do contrato de níveis; espera a revisão do operador.
+- [x] **F10.2** 🤖 🤝 `features.yaml` (F01–F12, Como/Quero/Para + Dado/Quando/Então).
+  🔎 revisado pelo operador — 2026-11-18. `qa/especificacao/features.yaml`: 12 Features e 43 critérios de aceite,
+  tirados das regras R1–R14 e do contrato de níveis, com prioridade, valor de negócio e MoSCoW (padrão do backlog da
+  aula).
 - [x] **F10.3** 🤖 🤝 `casos-de-teste.yaml` (40–50, positivos e negativos, técnica de cada um, vínculo com o teste
   automatizado).
   🔎 cada Feature tem pelo menos 1 negativo — 2026-11-18 (`qa/ferramentas/conferir_especificacao.py`: 50 casos, 22
