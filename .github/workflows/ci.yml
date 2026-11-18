@@ -135,10 +135,48 @@ jobs:
         run: npm run lint
       - name: typecheck
         run: npm run typecheck
-      - name: testes
-        run: npm test -- --ci
+      - name: testes com gate de cobertura (95% linhas, statements e funções; 90% branches)
+        run: npm run test:cobertura -- --ci
       - name: expo-doctor
         run: npx expo-doctor
+      - name: bundle Android (Hermes)
+        run: npx expo export --platform android --output-dir dist
+
+  # APK pelo EAS: só em push na main e só se o dono do repositório cadastrou EXPO_TOKEN e EAS_PROJECT_ID (passo 🔑).
+  # Fica fora do ci-ok: uma fila cheia no EAS não pode travar o merge.
+  apk:
+    name: APK (EAS)
+    needs: [mudancas, mobile]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.mudancas.outputs.mobile == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: mobile
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
+    steps:
+      - name: secrets do EAS presentes?
+        id: eas
+        run: |
+          if [ -n "$EXPO_TOKEN" ] && [ -n "$EAS_PROJECT_ID" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "sem EXPO_TOKEN/EAS_PROJECT_ID: build pulado"; fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.eas.outputs.ok == 'true'
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        if: steps.eas.outputs.ok == 'true'
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - name: dependências
+        if: steps.eas.outputs.ok == 'true'
+        run: npm ci
+      - name: build do APK (perfil preview, sem esperar a fila)
+        if: steps.eas.outputs.ok == 'true'
+        run: npx -y eas-cli@27.7.2 build --platform android --profile preview --non-interactive --no-wait
 
   simulador:
     name: simulador da Sentinela
