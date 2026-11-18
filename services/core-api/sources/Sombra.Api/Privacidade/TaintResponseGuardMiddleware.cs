@@ -27,16 +27,19 @@ internal sealed class TaintResponseGuardMiddleware
     private readonly RequestDelegate _proximo;
     private readonly GuardaDeSaida _guarda;
     private readonly IObservadorDeVazamentos _observador;
+    private readonly ModoDaPrivacidade _modo;
 
     /// <summary>Initializes a new instance of the <see cref="TaintResponseGuardMiddleware"/> class.</summary>
     /// <param name="proximo">O resto do pipeline.</param>
     /// <param name="guarda">A guarda de saída.</param>
     /// <param name="observador">Quem registra o bloqueio.</param>
-    public TaintResponseGuardMiddleware(RequestDelegate proximo, GuardaDeSaida guarda, IObservadorDeVazamentos observador)
+    /// <param name="modo">Se bloqueia ou só registra (modo inseguro da auditoria).</param>
+    public TaintResponseGuardMiddleware(RequestDelegate proximo, GuardaDeSaida guarda, IObservadorDeVazamentos observador, ModoDaPrivacidade modo)
     {
         _proximo = proximo;
         _guarda = guarda;
         _observador = observador;
+        _modo = modo;
     }
 
     /// <summary>Guarda a resposta.</summary>
@@ -71,19 +74,22 @@ internal sealed class TaintResponseGuardMiddleware
             : new ResultadoDaGuarda([], string.Empty);
         HashSet<CategoriaDePii> permitidas = [.. endpoint?.Metadata.GetOrderedMetadata<PermitePiiAttribute>().Where(p => p.Vale(http.User)).Select(p => p.Categoria) ?? []];
         IReadOnlyList<AchadoNaSaida> fora = resultado.Fora(permitidas);
-        if (fora.Count == 0)
+        foreach (AchadoNaSaida a in fora.Distinct())
+        {
+            _observador.Registrar(new VazamentoBloqueado(SinkDePii.RespostaHttp, rota, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, http.TraceIdentifier, Bloqueado: _modo.Bloqueia));
+        }
+
+        if (fora.Count == 0 || !_modo.Bloqueia)
         {
             buffer.Position = 0;
             await buffer.CopyToAsync(original, http.RequestAborted);
             return;
         }
 
-        foreach (AchadoNaSaida a in fora.Distinct())
-        {
-            _observador.Registrar(new VazamentoBloqueado(SinkDePii.RespostaHttp, rota, a.RegraId, a.Categoria, a.Severidade, a.PeloTaint, http.TraceIdentifier));
-        }
-
-        int status = http.Response.StatusCode >= StatusCodes.Status400BadRequest ? http.Response.StatusCode : StatusCodes.Status500InternalServerError;
+        // Quem não se identificou recebe 401 sem dado nenhum (A3); um erro mantém o status; um sucesso vira 500.
+        int status = http.User.Identity?.IsAuthenticated != true ? StatusCodes.Status401Unauthorized
+            : http.Response.StatusCode >= StatusCodes.Status400BadRequest ? http.Response.StatusCode
+            : StatusCodes.Status500InternalServerError;
         http.Response.Clear();
         http.Response.StatusCode = status;
         await http.RequestServices.GetRequiredService<IProblemDetailsService>().WriteAsync(new ProblemDetailsContext

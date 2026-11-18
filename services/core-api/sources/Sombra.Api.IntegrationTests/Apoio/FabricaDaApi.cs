@@ -104,14 +104,17 @@ internal sealed class FabricaDaApi : WebApplicationFactory<Program>
     private readonly ILogEventSink? _log;
     private readonly IReadOnlyDictionary<string, string>? _configuracao;
     private readonly Action<IServiceCollection>? _servicos;
+    private readonly string _ambiente;
 
     /// <summary>Initializes a new instance of the <see cref="FabricaDaApi"/> class.</summary>
     /// <param name="loginPorMinuto">O limite de logins por minuto.</param>
     /// <param name="log">Um sink extra para capturar o log, quando o teste confere as linhas.</param>
     /// <param name="configuracao">Configuração a mais (ex.: workers mais rápidos).</param>
     /// <param name="servicos">Troca de serviços (ex.: um relógio controlado pelo teste).</param>
-    internal FabricaDaApi(int loginPorMinuto = 1000, ILogEventSink? log = null, IReadOnlyDictionary<string, string>? configuracao = null, Action<IServiceCollection>? servicos = null)
+    /// <param name="ambiente">O ambiente do host (<c>Demo</c> para o modo inseguro da auditoria).</param>
+    internal FabricaDaApi(int loginPorMinuto = 1000, ILogEventSink? log = null, IReadOnlyDictionary<string, string>? configuracao = null, Action<IServiceCollection>? servicos = null, string ambiente = "Test")
     {
+        _ambiente = ambiente;
         _loginPorMinuto = loginPorMinuto;
         _log = log;
         _configuracao = configuracao;
@@ -141,7 +144,7 @@ internal sealed class FabricaDaApi : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        builder.UseEnvironment("Test");
+        builder.UseEnvironment(_ambiente);
         builder.UseSetting("ConnectionStrings:Core", _conexao);
         builder.UseSetting("Jwt:Segredo", _segredoDoJwt);
         builder.UseSetting("Sentinela:ChaveDeVinculo", Convert.ToHexString(ChaveDeVinculo));

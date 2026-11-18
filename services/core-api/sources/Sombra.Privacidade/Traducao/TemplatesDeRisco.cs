@@ -22,6 +22,7 @@ public static class TemplatesDeRisco
         ["VAZAMENTO_BLOQUEADO"] = "O Sombra impediu que {0} da casa aparecesse onde não devia. Nada saiu.",
         ["SAIDA_EXTERNA_BLOQUEADA"] = "O Sombra impediu que {0} da casa fosse enviado para fora do sistema.",
         ["PII_FORA_DO_LUGAR"] = "Alguém escreveu {0} num campo de texto livre, e o Sombra escondeu antes de guardar.",
+        ["VAZAMENTO_PERMITIDO"] = "Num teste com a proteção desligada, {0} da casa ficou exposto. O responsável pelo sistema já foi avisado.",
     };
 
     /// <summary>A mensagem para o cidadão.</summary>

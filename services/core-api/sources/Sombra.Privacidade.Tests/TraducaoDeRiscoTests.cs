@@ -18,7 +18,7 @@ public sealed class TraducaoDeRiscoTests
     private static readonly string[] _tipos =
     [
         "ACESSO_NEGADO", "VAZAMENTO_BLOQUEADO", "SAIDA_EXTERNA_BLOQUEADA", "PII_FORA_DO_LUGAR",
-        "MQTT_ASSINATURA_INVALIDA", "MQTT_REPLAY", "MQTT_FORA_DA_JANELA", "MQTT_MENSAGEM_INVALIDA", "OUTRO_TIPO",
+        "MQTT_ASSINATURA_INVALIDA", "MQTT_REPLAY", "MQTT_FORA_DA_JANELA", "MQTT_MENSAGEM_INVALIDA", "VAZAMENTO_PERMITIDO", "OUTRO_TIPO",
     ];
 
     private static readonly string[] _camposDoPrompt = ["tipo", "sink", "categoria", "severidade", "regra", "onde", "desfecho", "repeticoesEm24h"];

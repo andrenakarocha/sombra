@@ -538,7 +538,7 @@ verde · roteiro de alerta funcionando com o simulador.
   prova que o prompt nunca tem PII (P5).
 - [x] **F2.7** (2026-11-18) 🤖 Semgrep em modo taint (`security/semgrep/`) + canário + job no CI com SARIF.
   🔎 o Semgrep acha o canário e nenhum vazamento no código real (P6).
-- [ ] **F2.8** 🤖 Auditoria antes × depois (`security/auditoria/rodar-auditoria.sh`; modo inseguro **só** no ambiente
+- [x] **F2.8** (2026-11-18) 🤖 Auditoria antes × depois (`security/auditoria/rodar-auditoria.sh`; modo inseguro **só** no ambiente
   `Demo`) + `relatorio.md` e JSON.
   🔎 os 8 cenários: vazam com o módulo desligado e são bloqueados com ele ligado.
 
@@ -975,13 +975,13 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** **F1 concluída** (Core em C#: 140 testes, roteiro de ponta a ponta com o simulador, quality 100/100, README com a rubrica e as evidências). Próximo: os 🔎 do app no celular (F6.2–F6.5, F6.17, F6.18 e a P10), a F6.7 e a F6.8, que fecham a F6; só depois a F2. O Core já fala o contrato do app (F6.21–F6.26, D17). Em paralelo: ML (F4).
+**Agora:** **F1 e F2 concluídas** (Core em C# e o módulo de privacidade: 357 testes, auditoria A1–A8 antes × depois, Semgrep e quality 100/100). Próximo: os 🔎 do app no celular (F6.2–F6.5, F6.17, F6.18 e a P10), a F6.7 e a F6.8, que fecham a F6; o dashboard de risco (F7.3) já tem a API pronta. Em paralelo: ML (F4) e QA (F10.2–F10.3).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
-| F2 Privacidade (Cyber) | 🟨 em andamento | 2026-11-18 | | F2.1–F2.7 feitas: motor de PII com regras em JSON (8 regras, 58 casos, 0 falso negativo em `make pii-relatorio`); middleware com taint e política de campo livre (A1 como teste de integração); PII cifrada em repouso (AES-256-GCM + índice cego, conferido no `psql`); guardas de log, resposta, saída externa, MQTT e exceções (A2–A7 como testes); eventos gravados e farol do Risco Cidadão (pesos e decaimento) no painel e na casa; tradução da IA nas três audiências (Gemini Flash-Lite, guarda, cache e template); Semgrep em modo taint com canário e SARIF no CI |
+| F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |

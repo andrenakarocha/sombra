@@ -8,4 +8,7 @@ public enum PoliticaDeCampoLivre
 
     /// <summary>Recusa a requisição com 422, dizendo o campo e a família, nunca o valor.</summary>
     Recusar,
+
+    /// <summary>Só registra e deixa passar: o modo inseguro da auditoria (<see cref="Sinks.ModoDaPrivacidade"/>).</summary>
+    Registrar,
 }

@@ -29,6 +29,11 @@ internal static partial class EventosDaApi
     [LoggerMessage(EventId = 1101, EventName = "privacidade.pii_detectada", Message = "PII {categoria} em {campo} ({fonte}, regra {regra}, pela {origem}): {desfecho}")]
     internal static partial void PiiDetectada(this ILogger logger, LogLevel nivel, CategoriaDePii categoria, string campo, FonteDePii fonte, string regra, OrigemDaDeteccao origem, DesfechoDaDeteccao desfecho);
 
+    /// <summary>O módulo de privacidade subiu no modo inseguro da auditoria: detecta e registra, mas não bloqueia.</summary>
+    [LoggerMessage(EventId = 1102, EventName = "privacidade.modo_inseguro", Level = LogLevel.Critical,
+        Message = "Sombra.Privacidade DESLIGADO (Privacidade:Aplicacao=Desligada): os guardas só registram. Só para a auditoria antes × depois, no ambiente Demo")]
+    internal static partial void PrivacidadeDesligada(this ILogger logger);
+
     /// <summary>O Core está parando.</summary>
     [LoggerMessage(EventId = 1004, EventName = "servico.encerrado", Level = LogLevel.Information, Message = "Core API encerrada")]
     internal static partial void ServicoEncerrado(this ILogger logger);

@@ -11,4 +11,7 @@ public enum DesfechoDaDeteccao
 
     /// <summary>Estava fora do lugar e a requisição foi recusada (422).</summary>
     Recusado,
+
+    /// <summary>Estava fora do lugar e passou como veio (modo inseguro da auditoria).</summary>
+    Registrado,
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sombra.Aplicacao.Portas;
 using Sombra.Dominio.Comum;
 using Sombra.Infraestrutura.Mqtt;
 
@@ -76,6 +78,30 @@ public sealed partial class AuditoriaController : ControllerBase
     [HttpPost("eco")]
     public IActionResult Eco(CenarioDeAuditoriaDto dto) => Disponivel ? Ok(dto) : NotFound();
 
+    /// <summary>A3: o perfil de saúde de um morador, sem login (o endpoint de teste esquecido aberto).</summary>
+    /// <param name="domicilioId">A casa.</param>
+    /// <param name="moradorId">O morador.</param>
+    /// <param name="casas">As casas.</param>
+    /// <param name="cancellationToken">Cancela.</param>
+    /// <returns>O perfil, em claro.</returns>
+    [HttpGet("perfil/{domicilioId:guid}/{moradorId:guid}")]
+    public async Task<IActionResult> Perfil(Guid domicilioId, Guid moradorId, [FromServices] IDomicilioRepository casas, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(casas);
+        if (!Disponivel || (await casas.ObterAsync(domicilioId, cancellationToken))?.Moradores.FirstOrDefault(m => m.Id == moradorId) is not { } morador)
+        {
+            return NotFound();
+        }
+
+        return Ok(new { nome = morador.Nome, cpf = morador.Cpf.Valor, observacoesDeSaude = morador.ObservacoesDeSaude });
+    }
+
+    /// <summary>O "provedor de LLM" do cenário A5: devolve o que recebeu, para a auditoria ver se o dado chegou lá.</summary>
+    /// <param name="corpo">O pedido recebido.</param>
+    /// <returns>O eco.</returns>
+    [HttpPost("receptor/v1/gerar")]
+    public IActionResult Receptor([FromBody] JsonElement corpo) => Disponivel ? Ok(new { recebido = corpo }) : NotFound();
+
     /// <summary>A4: o "log de depuração" escreve o Cartão SUS.</summary>
     /// <param name="dto">O cenário.</param>
     /// <returns>204.</returns>
@@ -110,8 +136,13 @@ public sealed partial class AuditoriaController : ControllerBase
 
         // nosemgrep: sombra-pii-para-fora -- vulnerabilidade proposital da auditoria (A5); o Sombra.Privacidade bloqueia em execução
         using HttpResponseMessage resposta = await fabrica.CreateClient(ClienteLlm)
-            .PostAsJsonAsync(new Uri("/v1/gerar", UriKind.Relative), new { prompt = $"Explique o risco do cidadão de CPF {dto.Cpf}." }, cancellationToken);
-        return StatusCode((int)resposta.StatusCode);
+            .PostAsJsonAsync(new Uri("v1/gerar", UriKind.Relative), new { prompt = $"Explique o risco do cidadão de CPF {dto.Cpf}." }, cancellationToken);
+        return new ContentResult
+        {
+            StatusCode = (int)resposta.StatusCode,
+            Content = await resposta.Content.ReadAsStringAsync(cancellationToken),
+            ContentType = "application/json",
+        };
     }
 
     /// <summary>A6: a publicação MQTT leva o telefone.</summary>

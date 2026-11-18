@@ -1,0 +1,279 @@
+[
+  {
+    "id": "A1",
+    "nome": "POST de morador com CPF dentro do texto livre de saúde",
+    "esperado": "mascarado antes de gravar e logar",
+    "desligado": {
+      "modo": "desligado",
+      "requisicao": "POST /api/v1/domicilios/{Lurdes}/moradores {\"nome\":\"Iracema Duarte\",\"idade\":86,\"cpf\":\"30336123779\",\"cartaoSus\":\"730336123724804\",\"perfilDeSaude\":\"Hipertens\\u00E3o. Em caso de urg\\u00EAncia, CPF do filho 60336813201\",\"fatoresDeRisco\":[]}",
+      "status": 201,
+      "resposta": "{\"id\":\"01a1f058-4dc0-727c-83f0-768d62b2b2cf\",\"nome\":\"Iracema Duarte\",\"idade\":86,\"telefone\":null,\"cpf\":\"***.361.***-79\",\"cartaoSus\":\"*** **** **** 4804\",\"perfilDeSaude\":\"[DADO DE SAÚDE PROTEGIDO]\",\"fatoresDeRisco\":[\"IDADE_AVANCADA\"]}",
+      "log": [
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink Entrada em api/v1/domicilios/{id:guid}/moradores: Identificacao (regra cpf)"
+      ],
+      "eventos": [
+        "VAZAMENTO_PERMITIDO · Entrada · Identificacao · regra cpf · vazou"
+      ],
+      "vazou": true,
+      "evidencia": "texto livre gravado no banco (decifrado): Hipertensão. Em caso de urgência, CPF do filho 60336813201"
+    },
+    "ligado": {
+      "modo": "ligado",
+      "requisicao": "POST /api/v1/domicilios/{Lurdes}/moradores {\"nome\":\"Iracema Duarte\",\"idade\":86,\"cpf\":\"30336123779\",\"cartaoSus\":\"730336123724804\",\"perfilDeSaude\":\"Hipertens\\u00E3o. Em caso de urg\\u00EAncia, CPF do filho 60336813201\",\"fatoresDeRisco\":[]}",
+      "status": 201,
+      "resposta": "{\"id\":\"01a1f058-5140-79a5-951e-c359bc5f57a9\",\"nome\":\"Iracema Duarte\",\"idade\":86,\"telefone\":null,\"cpf\":\"***.361.***-79\",\"cartaoSus\":\"*** **** **** 4804\",\"perfilDeSaude\":\"[DADO DE SAÚDE PROTEGIDO]\",\"fatoresDeRisco\":[\"IDADE_AVANCADA\"]}",
+      "log": [
+        "privacidade.vazamento_bloqueado: Vazamento bloqueado no sink Entrada em api/v1/domicilios/{id:guid}/moradores: Identificacao (regra cpf, pelo conteudo)"
+      ],
+      "eventos": [
+        "PII_FORA_DO_LUGAR · Entrada · Identificacao · regra cpf · bloqueado"
+      ],
+      "vazou": false,
+      "evidencia": "texto livre gravado no banco (decifrado): Hipertensão. Em caso de urgência, CPF do filho ***.368.***-01"
+    }
+  },
+  {
+    "id": "A2",
+    "nome": "POST que provoca exceção com o laudo no payload",
+    "esperado": "resposta de erro segura, sem o laudo",
+    "desligado": {
+      "modo": "desligado",
+      "requisicao": "POST /api/v1/auditoria/excecao {\"laudo\":\"Paciente com diabetes, CID E11.9, toma metformina\"}",
+      "status": 422,
+      "resposta": "{\"type\":\"https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/core-api.md#erros\",\"title\":\"Regra de negócio violada\",\"status\":422,\"detail\":\"Laudo recusado: Paciente com diabetes, CID E11.9, toma metformina\",\"regra\":\"A2\",\"correlationId\":\"auditoria-A2-desligado\"}",
+      "log": [
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink Excecao em api/v1/auditoria/excecao: Saude (regra saude)",
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink Excecao em api/v1/auditoria/excecao: Saude (regra saude)",
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink RespostaHttp em (sem rota): Saude (regra saude)",
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink RespostaHttp em (sem rota): Saude (regra saude)"
+      ],
+      "eventos": [
+        "VAZAMENTO_PERMITIDO · Excecao · Saude · regra saude · vazou",
+        "VAZAMENTO_PERMITIDO · RespostaHttp · Saude · regra saude · vazou"
+      ],
+      "vazou": true,
+      "evidencia": "o laudo aparece na mensagem de erro?"
+    },
+    "ligado": {
+      "modo": "ligado",
+      "requisicao": "POST /api/v1/auditoria/excecao {\"laudo\":\"Paciente com diabetes, CID E11.9, toma metformina\"}",
+      "status": 422,
+      "resposta": "{\"type\":\"https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/core-api.md#erros\",\"title\":\"Regra de negócio violada\",\"status\":422,\"detail\":\"[PII:saude] recusado: [PII:saude]\",\"regra\":\"A2\",\"correlationId\":\"auditoria-A2-ligado\"}",
+      "log": [
+        "privacidade.vazamento_bloqueado: Vazamento bloqueado no sink Excecao em api/v1/auditoria/excecao: Saude (regra saude, pelo taint)",
+        "privacidade.vazamento_bloqueado: Vazamento bloqueado no sink Excecao em api/v1/auditoria/excecao: Saude (regra saude, pelo conteudo)"
+      ],
+      "eventos": [
+        "VAZAMENTO_BLOQUEADO · Excecao · Saude · regra saude · bloqueado"
+      ],
+      "vazou": false,
+      "evidencia": "o laudo aparece na mensagem de erro?"
+    }
+  },
+  {
+    "id": "A3",
+    "nome": "GET não autenticado do perfil de saúde",
+    "esperado": "401 sem nenhum dado, evento registrado",
+    "desligado": {
+      "modo": "desligado",
+      "requisicao": "GET /api/v1/auditoria/perfil/{Lurdes}/{moradora} (sem login)",
+      "status": 200,
+      "resposta": "{\"nome\":\"Lurdes A.\",\"cpf\":\"34875763689\",\"observacoesDeSaude\":null}",
+      "log": [
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink RespostaHttp em api/v1/auditoria/perfil/{domicilioId:guid}/{moradorId:guid}: Identificacao (regra cpf)"
+      ],
+      "eventos": [
+        "VAZAMENTO_PERMITIDO · RespostaHttp · Identificacao · regra cpf · vazou"
+      ],
+      "vazou": true,
+      "evidencia": "o CPF da Dona Lurdes aparece na resposta?"
+    },
+    "ligado": {
+      "modo": "ligado",
+      "requisicao": "GET /api/v1/auditoria/perfil/{Lurdes}/{moradora} (sem login)",
+      "status": 401,
+      "resposta": "{\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.2\",\"title\":\"Resposta bloqueada\",\"status\":401,\"detail\":\"A resposta levava dado pessoal e foi bloqueada para proteger o cidadão. Informe o correlationId ao suporte.\",\"correlationId\":\"auditoria-A3-ligado\"}",
+      "log": [
+        "privacidade.vazamento_bloqueado: Vazamento bloqueado no sink RespostaHttp em api/v1/auditoria/perfil/{domicilioId:guid}/{moradorId:guid}: Identificacao (regra cpf, pelo conteudo)"
+      ],
+      "eventos": [
+        "VAZAMENTO_BLOQUEADO · RespostaHttp · Identificacao · regra cpf · bloqueado"
+      ],
+      "vazou": false,
+      "evidencia": "o CPF da Dona Lurdes aparece na resposta?"
+    }
+  },
+  {
+    "id": "A4",
+    "nome": "Endpoint de depuração que loga o Cartão SUS",
+    "esperado": "log redigido e VazamentoBloqueado{Log}",
+    "desligado": {
+      "modo": "desligado",
+      "requisicao": "POST /api/v1/auditoria/log {\"cartaoSus\":\"760336813207526\"}",
+      "status": 204,
+      "resposta": "",
+      "log": [
+        "auditoria.log_de_depuracao: Depuração: cartão 760336813207526",
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink Log em auditoria.log_de_depuracao: Saude (regra cns)"
+      ],
+      "eventos": [
+        "VAZAMENTO_PERMITIDO · Log · Saude · regra cns · vazou"
+      ],
+      "vazou": true,
+      "evidencia": "linha de log: Depuração: cartão 760336813207526"
+    },
+    "ligado": {
+      "modo": "ligado",
+      "requisicao": "POST /api/v1/auditoria/log {\"cartaoSus\":\"760336813207526\"}",
+      "status": 204,
+      "resposta": "",
+      "log": [
+        "auditoria.log_de_depuracao: Depuração: cartão [PII:cns]",
+        "privacidade.vazamento_bloqueado: Vazamento bloqueado no sink Log em auditoria.log_de_depuracao: Saude (regra cns, pelo taint)"
+      ],
+      "eventos": [
+        "VAZAMENTO_BLOQUEADO · Log · Saude · regra cns · bloqueado"
+      ],
+      "vazou": false,
+      "evidencia": "linha de log: Depuração: cartão [PII:cns]"
+    }
+  },
+  {
+    "id": "A5",
+    "nome": "PII no prompt da LLM",
+    "esperado": "bloqueada no handler de saída",
+    "desligado": {
+      "modo": "desligado",
+      "requisicao": "POST /api/v1/auditoria/llm {\"cpf\":\"25151596640\"}",
+      "status": 200,
+      "resposta": "{\"recebido\":{\"prompt\":\"Explique o risco do cidadão de CPF 25151596640.\"}}",
+      "log": [
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink SaidaExterna em localhost: Identificacao (regra cpf)",
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink RespostaHttp em api/v1/auditoria/llm: Identificacao (regra cpf)"
+      ],
+      "eventos": [
+        "VAZAMENTO_PERMITIDO · RespostaHttp · Identificacao · regra cpf · vazou",
+        "VAZAMENTO_PERMITIDO · SaidaExterna · Identificacao · regra cpf · vazou"
+      ],
+      "vazou": true,
+      "evidencia": "o provedor de LLM (eco) recebeu o CPF no prompt?"
+    },
+    "ligado": {
+      "modo": "ligado",
+      "requisicao": "POST /api/v1/auditoria/llm {\"cpf\":\"25151596640\"}",
+      "status": 422,
+      "resposta": "{\"type\":\"https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/core-api.md#erros\",\"title\":\"Saída bloqueada\",\"status\":422,\"detail\":\"O pedido levaria dado pessoal para fora do Sombra e foi bloqueado.\",\"correlationId\":\"auditoria-A5-ligado\"}",
+      "log": [
+        "privacidade.saida_externa_bloqueada: Saída SaidaExterna para localhost bloqueada: Identificacao (regra cpf)"
+      ],
+      "eventos": [
+        "SAIDA_EXTERNA_BLOQUEADA · SaidaExterna · Identificacao · regra cpf · bloqueado"
+      ],
+      "vazou": false,
+      "evidencia": "o provedor de LLM (eco) recebeu o CPF no prompt?"
+    }
+  },
+  {
+    "id": "A6",
+    "nome": "PII publicada no MQTT",
+    "esperado": "bloqueada no publicador",
+    "desligado": {
+      "modo": "desligado",
+      "requisicao": "POST /api/v1/auditoria/mqtt {\"telefone\":\"(11) 97654-3210\"}",
+      "status": 202,
+      "resposta": "",
+      "log": [
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink Mqtt em sombra-teste/d95e86d169b34f56a557a2bb1ab22d66/auditoria/eco: Contato (regra telefone)"
+      ],
+      "eventos": [
+        "VAZAMENTO_PERMITIDO · Mqtt · Contato · regra telefone · vazou"
+      ],
+      "vazou": true,
+      "evidencia": "mensagem no broker: {\"aviso\":\"Ligar para (11) 97654-3210\"}"
+    },
+    "ligado": {
+      "modo": "ligado",
+      "requisicao": "POST /api/v1/auditoria/mqtt {\"telefone\":\"(11) 97654-3210\"}",
+      "status": 422,
+      "resposta": "{\"type\":\"https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/core-api.md#erros\",\"title\":\"Saída bloqueada\",\"status\":422,\"detail\":\"O pedido levaria dado pessoal para fora do Sombra e foi bloqueado.\",\"correlationId\":\"auditoria-A6-ligado\"}",
+      "log": [
+        "privacidade.saida_externa_bloqueada: Saída Mqtt para sombra-teste/e5751a5a33804a83acc5dda947b32036/auditoria/eco bloqueada: Contato (regra telefone)"
+      ],
+      "eventos": [
+        "SAIDA_EXTERNA_BLOQUEADA · Mqtt · Contato · regra telefone · bloqueado"
+      ],
+      "vazou": false,
+      "evidencia": "mensagem no broker: (nada publicado)"
+    }
+  },
+  {
+    "id": "A7",
+    "nome": "Senha na query string",
+    "esperado": "removida do log",
+    "desligado": {
+      "modo": "desligado",
+      "requisicao": "GET /api/v1/auditoria/login?usuario=ana&senha=…",
+      "status": 200,
+      "resposta": "{\"recebido\":true}",
+      "log": [
+        "auditoria.login_pela_url: Login recebido em /api/v1/auditoria/login?usuario=ana&senha=‹senha sintética›",
+        "privacidade.vazamento_permitido: Vazamento NÃO bloqueado (modo inseguro da auditoria) no sink Log em auditoria.login_pela_url: Credencial (regra credencial)"
+      ],
+      "eventos": [
+        "VAZAMENTO_PERMITIDO · Log · Credencial · regra credencial · vazou"
+      ],
+      "vazou": true,
+      "evidencia": "linha de log: Login recebido em /api/v1/auditoria/login?usuario=ana&senha=‹senha sintética›"
+    },
+    "ligado": {
+      "modo": "ligado",
+      "requisicao": "GET /api/v1/auditoria/login?usuario=ana&senha=…",
+      "status": 200,
+      "resposta": "{\"recebido\":true}",
+      "log": [
+        "auditoria.login_pela_url: Login recebido em /api/v1/auditoria/login?usuario=ana&senha=[PII:credencial]",
+        "privacidade.vazamento_bloqueado: Vazamento bloqueado no sink Log em auditoria.login_pela_url: Credencial (regra credencial, pelo taint)"
+      ],
+      "eventos": [
+        "VAZAMENTO_BLOQUEADO · Log · Credencial · regra credencial · bloqueado"
+      ],
+      "vazou": false,
+      "evidencia": "linha de log: Login recebido em /api/v1/auditoria/login?usuario=ana&senha=[PII:credencial]"
+    }
+  },
+  {
+    "id": "A8",
+    "nome": "Telemetria MQTT com HMAC falso",
+    "esperado": "descartada, evento de segurança",
+    "desligado": {
+      "modo": "desligado",
+      "requisicao": "POST /api/v1/sentinelas/snt-7f3a9c/leituras (temperatura alterada depois de assinar)",
+      "status": 202,
+      "resposta": "",
+      "log": [
+        "leitura.registrada: Leitura da Sentinela snt-7f3a9c na casa 0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10: nível Perigo",
+        "alerta.aberto: Alerta 01a1f058-4edd-7c18-8841-adc7dd78f602 (DE_SENTINELA) aberto na casa 0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10 com nível Perigo"
+      ],
+      "eventos": [
+        "MQTT_ASSINATURA_INVALIDA · MQTT · Credencial · regra hmac · vazou"
+      ],
+      "vazou": true,
+      "evidencia": "leituras da casa: 0 → 1"
+    },
+    "ligado": {
+      "modo": "ligado",
+      "requisicao": "POST /api/v1/sentinelas/snt-7f3a9c/leituras (temperatura alterada depois de assinar)",
+      "status": 401,
+      "resposta": "{\"type\":\"https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/core-api.md#erros\",\"title\":\"Telemetria recusada\",\"status\":401,\"detail\":\"Assinatura da Sentinela inválida.\",\"traceId\":\"00-42f006eed56c91355cf73c2754669f33-8afc42504361d72e-00\",\"correlationId\":\"auditoria-A8-ligado\"}",
+      "log": [
+        "mqtt.assinatura_invalida: Assinatura inválida na mensagem telemetria da Sentinela snt-7f3a9c (seq 1): descartada",
+        "seguranca.evento_registrado: Evento de segurança MQTT_ASSINATURA_INVALIDA da origem snt-7f3a9c"
+      ],
+      "eventos": [
+        "MQTT_ASSINATURA_INVALIDA · MQTT · Credencial · regra hmac · bloqueado"
+      ],
+      "vazou": false,
+      "evidencia": "leituras da casa: 0 → 0"
+    }
+  }
+]

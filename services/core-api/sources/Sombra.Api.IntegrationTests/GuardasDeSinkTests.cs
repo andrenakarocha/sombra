@@ -62,7 +62,7 @@ public sealed class GuardasDeSinkTests
         Assert.AreEqual("Saude", Texto(evento, "categoria"));
     }
 
-    /// <summary>Resposta não autenticada que ecoa a entrada: o guarda de resposta troca por um erro seguro.</summary>
+    /// <summary>Resposta não autenticada que ecoa a entrada: o guarda de resposta troca por um 401 seguro, sem dado nenhum.</summary>
     /// <returns>O teste.</returns>
     [TestMethod]
     public async Task RespostaQueEcoaOLaudoEhBloqueada()
@@ -74,7 +74,7 @@ public sealed class GuardasDeSinkTests
         using HttpResponseMessage resposta = await cliente.PostAsJsonAsync("/api/v1/auditoria/eco", new { laudo = Laudo }, AmbienteDaApi.Json);
         JsonElement corpo = await resposta.Content.ReadFromJsonAsync<JsonElement>();
 
-        Assert.AreEqual(HttpStatusCode.InternalServerError, resposta.StatusCode);
+        Assert.AreEqual(HttpStatusCode.Unauthorized, resposta.StatusCode);
         Assert.AreEqual("Resposta bloqueada", corpo.GetProperty("title").GetString());
         Assert.IsTrue(corpo.TryGetProperty("correlationId", out _));
         Assert.DoesNotContain("diabetes", corpo.ToString());
@@ -144,7 +144,7 @@ public sealed class GuardasDeSinkTests
         LogCapturado log = new();
         await using FabricaDaApi api = new(log: log);
         using HttpClient cliente = api.CreateClient();
-        const string senha = "segredo-da-ana-2026";
+        string senha = Convert.ToHexStringLower(System.Security.Cryptography.RandomNumberGenerator.GetBytes(10)); // gerada a cada execução
 
         using HttpResponseMessage resposta = await cliente.GetAsync(new Uri($"/api/v1/auditoria/login?usuario=ana&senha={senha}", UriKind.Relative));
 

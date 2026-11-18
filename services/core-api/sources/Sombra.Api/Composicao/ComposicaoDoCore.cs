@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -38,6 +39,7 @@ using Sombra.Infraestrutura.Seguranca;
 using Sombra.Privacidade.Deteccao;
 using Sombra.Privacidade.Regras;
 using Sombra.Privacidade.Repouso;
+using Sombra.Privacidade.Sinks;
 using Sombra.Privacidade.Taint;
 
 namespace Sombra.Api.Composicao;
@@ -93,7 +95,7 @@ public static class ComposicaoDoCore
         servicos.AddExceptionHandler<TradutorDeExcecoes>();
 
         AdicionarSeguranca(servicos, configuracao);
-        AdicionarPrivacidade(servicos, configuracao);
+        AdicionarPrivacidade(servicos, configuracao, builder.Environment.EnvironmentName);
         AdicionarLimites(servicos, configuracao);
         servicos.AddHealthChecks()
             .AddDbContextCheck<SombraDbContext>("banco", tags: [TagPronto])
@@ -197,6 +199,10 @@ public static class ComposicaoDoCore
             log.ServicoIniciado(versao, app.Environment.EnvironmentName, migrar, contasDaDemo, porMinuto, loginPorMinuto, emissor);
         });
         app.Lifetime.ApplicationStopping.Register(log.ServicoEncerrado);
+        if (!app.Services.GetRequiredService<ModoDaPrivacidade>().Bloqueia)
+        {
+            app.Lifetime.ApplicationStarted.Register(log.PrivacidadeDesligada);
+        }
     }
 
     private static void ConfigurarJson(JsonSerializerOptions json)
@@ -241,9 +247,12 @@ public static class ComposicaoDoCore
         servicos.AddScoped<IAuthorizationHandler, CasaDoCuidadorHandler>();
     }
 
-    private static void AdicionarPrivacidade(IServiceCollection servicos, IConfiguration configuracao)
+    private static void AdicionarPrivacidade(IServiceCollection servicos, IConfiguration configuracao, string ambiente)
     {
-        PoliticaDeCampoLivre politica = configuracao.GetValue("Privacidade:CampoLivre", PoliticaDeCampoLivre.Mascarar);
+        // O modo inseguro (só registra, não bloqueia) é a metade "antes" da auditoria e só sobe no ambiente Demo.
+        ModoDaPrivacidade modo = ModoDaPrivacidade.De(configuracao["Privacidade:Aplicacao"], ambiente);
+        servicos.Replace(ServiceDescriptor.Singleton(modo));
+        PoliticaDeCampoLivre politica = modo.Bloqueia ? configuracao.GetValue("Privacidade:CampoLivre", PoliticaDeCampoLivre.Mascarar) : PoliticaDeCampoLivre.Registrar;
         servicos.AddSingleton(sp => new VarredorDePii(sp.GetRequiredService<MotorDePii>(), politica));
         servicos.AddScoped<ContextoDeTaint>();
         servicos.AddHttpClient<IModeloDeTraducao, ClienteGemini>(cliente =>
@@ -252,7 +261,7 @@ public static class ComposicaoDoCore
                 cliente.Timeout = TimeSpan.FromSeconds(30);
             })
             .AddHttpMessageHandler<GuardaDeSaidaHttp>();
-        servicos.AddHttpClient(AuditoriaController.ClienteLlm, cliente => cliente.BaseAddress = new Uri("http://llm.auditoria.invalid"))
+        servicos.AddHttpClient(AuditoriaController.ClienteLlm, cliente => cliente.BaseAddress = new Uri(configuracao["Auditoria:UrlDoLlm"] ?? "http://llm.auditoria.invalid/"))
             .AddHttpMessageHandler<GuardaDeSaidaHttp>();
     }
 

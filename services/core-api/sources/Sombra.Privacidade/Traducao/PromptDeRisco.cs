@@ -34,7 +34,8 @@ public static partial class PromptDeRisco
           repetida, com horário errado ou incompleta em nome da Sentinela (o aparelho de medir calor da casa), e o Sombra
           descartou. Não envolve dado pessoal. Correção técnica: conferir o segredo HMAC e o relógio do dispositivo; não use
           Sensivel<T> nem [PermitePii] nesse caso.
-        Se "desfecho" for "vazou", o dado saiu de verdade: diga isso com calma e recomende avisar a família e o responsável.
+        - VAZAMENTO_PERMITIDO: um teste de segurança com a proteção desligada deixou o dado sair (o mesmo vale para qualquer
+          evento com "desfecho" igual a "vazou"): diga isso com calma e recomende avisar a família e o responsável.
 
         Responda só com JSON, com três campos em português do Brasil, com a ortografia correta (acentos e cedilha):
         - "cidadao": para a pessoa idosa ou a família. No máximo 2 frases curtas, tom calmo, sem termos técnicos (não use

@@ -25,6 +25,9 @@ public sealed class EventoDeSeguranca
     /// <summary>O tipo de um acesso negado a um endpoint com dado pessoal.</summary>
     public const string AcessoNegado = "ACESSO_NEGADO";
 
+    /// <summary>O tipo de um vazamento que passou: só no modo inseguro da auditoria.</summary>
+    public const string VazamentoPermitido = "VAZAMENTO_PERMITIDO";
+
     private EventoDeSeguranca(Guid id, DateTimeOffset momento, string tipo, string origem, string? correlationId, string detalhe)
     {
         Id = id;
@@ -95,9 +98,10 @@ public sealed class EventoDeSeguranca
     /// <param name="origem">De onde.</param>
     /// <param name="correlationId">A correlação.</param>
     /// <param name="detalhe">O detalhe, sem dado pessoal.</param>
+    /// <param name="bloqueado">Se o Sombra recusou (falso só no modo inseguro da auditoria).</param>
     /// <returns>O evento.</returns>
-    public static EventoDeSeguranca Registrar(DateTimeOffset momento, string tipo, string origem, string? correlationId, string detalhe)
-        => new(Guid.CreateVersion7(), momento.ToUniversalTime(), tipo, origem, correlationId, detalhe);
+    public static EventoDeSeguranca Registrar(DateTimeOffset momento, string tipo, string origem, string? correlationId, string detalhe, bool bloqueado = true)
+        => new(Guid.CreateVersion7(), momento.ToUniversalTime(), tipo, origem, correlationId, detalhe) { Bloqueado = bloqueado };
 
     /// <summary>Registra um vazamento que um guarda bloqueou.</summary>
     /// <param name="vazamento">O evento do guarda, já com momento e casa.</param>
@@ -108,6 +112,7 @@ public sealed class EventoDeSeguranca
         ArgumentNullException.ThrowIfNull(vazamento);
         string tipo = vazamento switch
         {
+            { Bloqueado: false } => VazamentoPermitido,
             { Sink: SinkDePii.Entrada } => PiiForaDoLugar,
             { Sink: SinkDePii.SaidaExterna or SinkDePii.Mqtt } => SaidaExternaBarrada,
             { RegraId: "acesso-negado" } => AcessoNegado,

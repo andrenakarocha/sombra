@@ -52,8 +52,9 @@ public static class LogDoSombra
             // Todo sink passa pelo guarda de log do Sombra.Privacidade (F2.4): nenhum evento é escrito antes de ser conferido.
             GuardaDeSaida guarda = servicos.GetRequiredService<GuardaDeSaida>();
             IObservadorDeVazamentos observador = servicos.GetRequiredService<IObservadorDeVazamentos>();
+            ModoDaPrivacidade modo = servicos.GetRequiredService<ModoDaPrivacidade>();
             log.WriteTo.Sink(LoggerSinkConfiguration.Wrap(
-                destino => new GuardaDeLog(destino, guarda, observador),
+                destino => new GuardaDeLog(destino, guarda, observador, modo),
                 sinks =>
                 {
                     sinks.Console(Formato);
