@@ -5,14 +5,11 @@ namespace Sombra.Dominio.Calor;
 
 /// <summary>
 /// Os limiares de índice de calor (°C) de uma pessoa. O padrão é o da NWS; os fatores de risco do morador reduzem os
-/// limiares a partir de <see cref="NivelDeRisco.CautelaExtrema"/> em até <see cref="ReducaoMaxima"/> °C (regra R3), e o de
-/// <see cref="NivelDeRisco.Atencao"/> nunca muda, o que mantém o piso de 26,67 °C.
+/// limiares a partir de <see cref="NivelDeRisco.CautelaExtrema"/> pela soma das reduções, sem teto (regra R3, a do app:
+/// D17). O de <see cref="NivelDeRisco.Atencao"/> nunca muda, e nenhum fica abaixo dele: o piso de 26,67 °C.
 /// </summary>
 public sealed record LimitesTermicos
 {
-    /// <summary>A maior redução pessoal aceita, em °C.</summary>
-    public const double ReducaoMaxima = 5.0;
-
     private LimitesTermicos(double atencao, double cautelaExtrema, double perigo, double perigoExtremo)
     {
         Atencao = atencao;
@@ -37,17 +34,17 @@ public sealed record LimitesTermicos
     public double PerigoExtremo { get; }
 
     /// <summary>Devolve os limites padrão reduzidos para uma pessoa mais vulnerável ao calor (regra R3).</summary>
-    /// <param name="graus">Quantos °C reduzir, de 0 a <see cref="ReducaoMaxima"/>.</param>
-    /// <returns>Os limites pessoais.</returns>
-    /// <exception cref="RegraVioladaException">Quando a redução é negativa ou maior que o máximo.</exception>
+    /// <param name="graus">Quantos °C reduzir (a soma dos fatores, sem teto).</param>
+    /// <returns>Os limites pessoais, com duas casas, como o app calcula.</returns>
+    /// <exception cref="RegraVioladaException">Quando a redução é negativa ou não é um número.</exception>
     public static LimitesTermicos ComReducao(double graus)
     {
-        if (double.IsNaN(graus) || graus < 0.0 || graus > ReducaoMaxima)
+        if (double.IsNaN(graus) || graus < 0.0)
         {
-            throw new RegraVioladaException("R3", "A redução dos limites térmicos vai de 0 a 5 °C.");
+            throw new RegraVioladaException("R3", "A redução dos limites térmicos não pode ser negativa.");
         }
 
-        return new LimitesTermicos(Padrao.Atencao, Padrao.CautelaExtrema - graus, Padrao.Perigo - graus, Padrao.PerigoExtremo - graus);
+        return new LimitesTermicos(Padrao.Atencao, Baixar(Padrao.CautelaExtrema, graus), Baixar(Padrao.Perigo, graus), Baixar(Padrao.PerigoExtremo, graus));
     }
 
     /// <summary>Classifica um índice de calor por estes limites (intervalo fechado embaixo e aberto em cima).</summary>
@@ -56,11 +53,19 @@ public sealed record LimitesTermicos
     public NivelDeRisco Classificar(IndiceDeCalor indice)
     {
         ArgumentNullException.ThrowIfNull(indice);
-        double c = indice.Celsius;
-        return c >= PerigoExtremo ? NivelDeRisco.PerigoExtremo
+        return Classificar(indice.Celsius);
+    }
+
+    /// <summary>Classifica um valor de índice de calor em °C (o da previsão, ou o dos vetores da R3).</summary>
+    /// <param name="c">O índice de calor, em °C.</param>
+    /// <returns>O nível de risco.</returns>
+    public NivelDeRisco Classificar(double c)
+        => c >= PerigoExtremo ? NivelDeRisco.PerigoExtremo
             : c >= Perigo ? NivelDeRisco.Perigo
             : c >= CautelaExtrema ? NivelDeRisco.CautelaExtrema
             : c >= Atencao ? NivelDeRisco.Atencao
             : NivelDeRisco.Normal;
-    }
+
+    private static double Baixar(double limiar, double graus)
+        => Math.Round(Math.Max(Padrao.Atencao, limiar - graus), 2, MidpointRounding.AwayFromZero);
 }

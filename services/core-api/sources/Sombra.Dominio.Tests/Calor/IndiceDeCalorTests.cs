@@ -64,18 +64,17 @@ public sealed class IndiceDeCalorTests
     public void ReducaoPessoalAntecipaOPerigo()
     {
         IndiceDeCalor indice = IndiceDeCalor.Calcular(Temperatura.Criar(32.0), UmidadeRelativa.Criar(60.0));
-        LimitesTermicos pessoal = LimitesTermicos.ComReducao(LimitesTermicos.ReducaoMaxima);
+        LimitesTermicos pessoal = LimitesTermicos.ComReducao(5.0);
 
         Assert.AreEqual(NivelDeRisco.CautelaExtrema, LimitesTermicos.Padrao.Classificar(indice));
         Assert.AreEqual(NivelDeRisco.Perigo, pessoal.Classificar(indice));
         Assert.AreEqual(LimitesTermicos.Padrao.Atencao, pessoal.Atencao);
     }
 
-    /// <summary>Regra R3: redução negativa ou acima do máximo é recusada.</summary>
+    /// <summary>Regra R3: redução negativa ou que não é número é recusada (não há teto: D17).</summary>
     /// <param name="graus">A redução pedida.</param>
     [TestMethod]
     [DataRow(-0.5)]
-    [DataRow(5.5)]
     [DataRow(double.NaN)]
     public void RecusaReducaoForaDaFaixa(double graus)
         => Assert.AreEqual("R3", Assert.ThrowsExactly<RegraVioladaException>(() => LimitesTermicos.ComReducao(graus)).Regra);

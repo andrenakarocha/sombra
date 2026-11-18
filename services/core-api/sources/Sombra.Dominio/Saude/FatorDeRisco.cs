@@ -4,9 +4,9 @@ using Sombra.Dominio.Comum;
 namespace Sombra.Dominio.Saude;
 
 /// <summary>
-/// O que deixa uma pessoa mais vulnerável ao calor. Cada fator reduz os limites térmicos dela (regra R3); a soma é
-/// limitada em <see cref="Calor.LimitesTermicos.ReducaoMaxima"/>. Os valores são uma calibração do protótipo, não uma
-/// recomendação médica.
+/// O que deixa uma pessoa mais vulnerável ao calor. Cada fator reduz os limites térmicos dela (regra R3, a do app: D17);
+/// a soma não tem teto, e nenhum limite fica abaixo do início de atenção. Os valores são uma calibração do protótipo, não
+/// uma recomendação médica; os vetores ficam em <c>docs/contratos/risco-personalizado.vetores.json</c>.
 /// </summary>
 public abstract record FatorDeRisco
 {
@@ -53,7 +53,7 @@ public sealed record Cardiopatia : FatorDeRisco
     public override string Codigo => "CARDIOPATIA";
 
     /// <inheritdoc/>
-    public override double ReducaoGraus => 2.0;
+    public override double ReducaoGraus => 2.5;
 }
 
 /// <summary>Uso de diurético: aumenta a perda de água e o risco de desidratação.</summary>

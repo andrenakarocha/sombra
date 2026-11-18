@@ -80,11 +80,11 @@ public sealed class Morador
     public IReadOnlyCollection<FatorDeRisco> FatoresDeRisco(DateOnly hoje)
         => Idade(hoje) >= IdadeAvancada.IdadeMinima ? [.. PerfilDeSaude.Fatores.Append(new IdadeAvancada()).Distinct()] : [.. PerfilDeSaude.Fatores];
 
-    /// <summary>Os limites térmicos pessoais (regra R3): o padrão reduzido pelos fatores, até o máximo.</summary>
+    /// <summary>Os limites térmicos pessoais (regra R3): o padrão reduzido pela soma dos fatores, sem teto.</summary>
     /// <param name="hoje">A data de referência.</param>
     /// <returns>Os limites da pessoa.</returns>
     public LimitesTermicos LimitesTermicos(DateOnly hoje)
-        => Calor.LimitesTermicos.ComReducao(Math.Min(FatoresDeRisco(hoje).Sum(f => f.ReducaoGraus), Calor.LimitesTermicos.ReducaoMaxima));
+        => Calor.LimitesTermicos.ComReducao(FatoresDeRisco(hoje).Sum(f => f.ReducaoGraus));
 
     /// <summary>Atualiza os fatores de risco declarados.</summary>
     /// <param name="perfil">O novo perfil.</param>

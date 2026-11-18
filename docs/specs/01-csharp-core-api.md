@@ -39,7 +39,7 @@ services/core-api/
 ## Regras de negócio (no domínio, cada uma com teste)
 - **R1** · CPF e Cartão SUS (CNS) válidos pelo dígito verificador.
 - **R2** · Índice de calor pela regressão de Rothfusz (NOAA), com os vetores de teste compartilhados.
-- **R3** · Limites térmicos **personalizados** pelos fatores de risco do morador (≥ 80 anos, cardiopatia, uso de diurético reduzem o limiar de perigo), com piso de 26,67 °C (início de `ATENCAO`).
+- **R3** · Limites térmicos **personalizados** pelos fatores de risco do morador, na regra do app (D17): ≥ 80 anos −2 °C, cardiopatia −2,5 °C e uso de diurético −1,5 °C baixam os limiares de `CAUTELA_EXTREMA`, `PERIGO` e `PERIGO_EXTREMO` pela soma, sem teto, e nenhum fica abaixo de 26,67 °C (início de `ATENCAO`). A idade avançada também pode ser declarada. Vetores em `docs/contratos/risco-personalizado.vetores.json`, conferidos pelo Core e pelo app.
 - **R4** · Um alerta aberto por domicílio por vez. Novas leituras **atualizam** o alerta em vez de duplicá-lo.
 - **R5** · Máquina de estados do alerta: `Aberto → AguardandoCheckIn → (Confirmado | Escalonado(n)) → Resolvido | Expirado`. Uma transição inválida lança `RegraVioladaException` (vira 422).
 - **R6** · O "estou bem" é pedido a partir de `CAUTELA_EXTREMA`, com prazo por nível (`PERIGO` e acima: 15 min ·

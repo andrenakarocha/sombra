@@ -652,7 +652,7 @@ Go; o APK via EAS é um extra.
 - [x] **F6.10** 🤖 Escalonamento e risco no domínio: máquina de estados do alerta (degraus 0 → 3, prazos por nível,
   regra da noite, D13) e risco personalizado explicável (R3: limiar por fator, contribuição de cada um).
   🔎 testes de toda transição válida e inválida; cada fator explica quanto baixou o limiar — 2026-11-17. As reduções
-  do R3 (≥ 80 anos −2 °C · cardiopatia −2,5 · diurético −1,5) são propostas do app: alinhar com o Core (F1.3).
+  do R3 (≥ 80 anos −2 °C · cardiopatia −2,5 · diurético −1,5) são propostas do app; o Core passou a segui-las na F6.24 (D17).
 - [x] **F6.11** 🤖 Casos de uso, ports, composition root e Zod no contrato: as telas falam só com os casos de uso;
   toda resposta da API passa por um schema Zod antes de entrar no domínio. Com a virada: SQLite como fonte da verdade
   das telas, escritas otimistas com rebase das pendentes sobre cada retrato do servidor, Unit of Work com transações
@@ -728,9 +728,11 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   🔎 check-in feito offline resolve o alerta com o horário do toque; reenviar com a mesma chave não duplica nem vira 422
   — 2026-11-18 (R14 na spec 01; teste de API com PostgreSQL real: a repetição volta com `Idempotency-Replayed`, um alerta
   só, e o reconhecer reenviado volta 200; migração 9; 157 testes).
-- [ ] **F6.24** 🤖 R3 do app no Core: cardiopatia −2,5 °C, sem teto, nenhum limiar abaixo do início de `ATENCAO`;
+- [x] **F6.24** 🤖 R3 do app no Core: cardiopatia −2,5 °C, sem teto, nenhum limiar abaixo do início de `ATENCAO`;
   vetores em `docs/contratos/risco-personalizado.vetores.json`, conferidos pelo Core e pelo app.
-  🔎 os dois lados passam nos mesmos vetores; spec 01 atualizada.
+  🔎 os dois lados passam nos mesmos vetores; spec 01 atualizada — 2026-11-18 (16 casos, 8 combinações × 79 e 80 anos, no
+  Jest do app e no domínio do Core; 173 testes no Core). Para a DA6: com ≥ 80 anos e cardiopatia, o `PERIGO` pessoal começa
+  em 34,94 °C, e o pico real de nov/2023 (35,47 °C) já é perigo para essa pessoa.
 - [ ] **F6.25** 🤖 As rotas que o app já usa: `GET /domicilios/{id}/privacidade` (farol pelos eventos de segurança da
   casa, mensagens por template; a F2.5 troca o cálculo por dentro) e `GET /domicilios/{id}/pontos-de-resfriamento`
   (lista versionada, rotulada como exemplo; a F3.9 passa a buscar no Clima).
