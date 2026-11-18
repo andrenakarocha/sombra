@@ -498,8 +498,11 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
   quality 100/100). O 🔎 achou a R13 (carência depois do "estou bem", na spec 01). O `Demo__EscalaDeTempo` deu lugar a
   `POST /api/v1/demo/relogio/avancar`, porque uma escala quebraria a janela anti-replay das mensagens da Sentinela. O
   monitor de previsão usa o `ClimaSimulado` (`Clima__Simulado__{regiao}`) até a F3.9.
-- [ ] **F1.10** 🤖 Testes de arquitetura (NetArchTest) e teste de integração dos caminhos A e B do roteiro.
-  🔎 `make test` verde; relatório de cobertura gerado.
+- [x] **F1.10** 🤖 Testes de arquitetura (NetArchTest) e teste de integração dos caminhos A e B do roteiro.
+  🔎 `make test` verde; relatório de cobertura gerado — 2026-11-18 (8 regras de arquitetura: o domínio não depende de
+  nada, a aplicação só do domínio, a infraestrutura nunca da API, controllers sem acesso direto ao banco, domínio
+  selado, portas com `I`; o roteiro da Dona Lurdes de ponta a ponta, passos 1 a 5, com Sentinela MQTT assinada, hub e
+  painel; 140 testes; `make coverage-report` gera o HTML: 89,1% das linhas do Core inteiro).
 - [ ] **F1.11** 🤖 README da pasta (Ficha, diagrama de classes em Mermaid, como rodar, comando que cria o banco, link do
   Scalar, integrantes) + `docs/evidencias/` (Scalar, migrações, testes, quality 100/100).
   🔎 todos os itens da tabela de rubrica da spec 01 com evidência.
@@ -843,12 +846,12 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** F1 em andamento: o Core conversa com a Sentinela (F1.1–F1.9: 132 testes, 19 em PostgreSQL e Mosquitto reais; cobertura 91,8%; quality 100/100). Próximo: **F1.10** (testes de arquitetura e integração dos caminhos A e B). Em paralelo: ML (F4) e app (F6).
+**Agora:** F1 em andamento: o Core conversa com a Sentinela e o roteiro inteiro passa de ponta a ponta (F1.1–F1.10: 140 testes; cobertura do domínio 91,8%, do Core 89,1%; quality 100/100). Próximo: **F1.11** (README da pasta e evidências), que fecha a F1. Em paralelo: ML (F4) e app (F6).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
-| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.9 feitas: domínio, casos de uso, EF Core (6 migrações), API v1, logs JSON, MQTT assinado, outbox, workers e SignalR |
+| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.10 feitas: domínio, casos de uso, EF Core (6 migrações), API v1, logs JSON, MQTT assinado, outbox, workers, SignalR, testes de arquitetura e o roteiro de ponta a ponta |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
