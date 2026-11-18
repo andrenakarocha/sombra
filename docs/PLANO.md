@@ -553,9 +553,10 @@ provando o antes e o depois.
   Dockerfile, tratamento de erros e padrão de testes reaproveitados do Orbital Guardian (GS 1).
   🔎 `./mvnw verify` verde — 2026-11-18 (Spring Boot 3.5.16, aviso de compilação é erro, erros em ProblemDetails pt-BR
   com 7 testes; o compose, o `make test-clima` e o job `clima` do CI já usam o serviço real).
-- [ ] **F3.2** 🤖 Domínio com testes: índice de calor (vetores), classificação, `-9999` não é observação, umidade 0–100,
+- [x] **F3.2** 🤖 Domínio com testes: índice de calor (vetores), classificação, `-9999` não é observação, umidade 0–100,
   ponto com `abre < fecha`, região exige estação válida.
-  🔎 testes de domínio verdes, sem banco e sem HTTP.
+  🔎 testes de domínio verdes, sem banco e sem HTTP — 2026-11-18 (66 testes de domínio, os 20 vetores do contrato lidos
+  do próprio JSON, cada regra com o seu código estável; JaCoCo exige 90% das linhas do domínio e está em 91%).
 - [ ] **F3.3** 🤖 Flyway V1 (regiões, estações, observações), V2 (pontos de resfriamento), V3 (evolução), V4 (seed: região
   SP-MIRANTE, A701, observações reais de nov/2023 extraídas da F0.15, pontos públicos com fonte); repositórios e consultas
   (período paginado, proximidade); `ddl-auto=validate`.
