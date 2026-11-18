@@ -20,7 +20,7 @@ EF := dotnet tool restore >/dev/null && dotnet ef
 DB_PORTA := $(or $(shell grep -m1 '^DB_PORTA_LOCAL=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-),55432)
 CORE_DB_PASSWORD := $(shell grep -m1 '^CORE_DB_PASSWORD=' $(RAIZ)/.env 2>/dev/null | cut -d= -f2-)
 
-.PHONY: help restore build test coverage format format-fix quality migration migration-check db-migrate openapi
+.PHONY: help restore build test coverage coverage-report format format-fix quality migration migration-check db-migrate openapi
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-11s %s\n", $$1, $$2}'
@@ -39,6 +39,14 @@ coverage: build ## Cobertura do domínio (mínimo de 90% de linhas)
 	@rm -rf artifacts/coverage
 	@$(DOTNET) dotnet test sources/Sombra.Dominio.Tests --no-build --nologo -v quiet --collect:"XPlat Code Coverage" --results-directory artifacts/coverage >/dev/null
 	@python3 -I scripts/cobertura.py artifacts/coverage Sombra.Dominio 90
+
+coverage-report: build ## Relatório de cobertura de toda a suíte (HTML em artifacts/coverage/relatorio)
+	@rm -rf artifacts/coverage
+	@$(DOTNET_COM_DOCKER) sh -c 'dotnet test Sombra.Core.slnx --no-build --nologo -v quiet --collect:"XPlat Code Coverage" --results-directory artifacts/coverage >/dev/null \
+		&& dotnet tool restore >/dev/null \
+		&& dotnet reportgenerator -reports:"artifacts/coverage/*/coverage.cobertura.xml" -targetdir:artifacts/coverage/relatorio \
+			-reporttypes:"Html;TextSummary" -assemblyfilters:"+Sombra.*;-*Tests" -classfilters:"-*.Migrations.*" -title:"Sombra · Core API" >/dev/null \
+		&& sed -n "1,20p" artifacts/coverage/relatorio/Summary.txt'
 
 format: restore ## Confere formatação e estilo sem mudar nada
 	@$(DOTNET) dotnet format Sombra.Core.slnx --verify-no-changes --no-restore --severity warn
