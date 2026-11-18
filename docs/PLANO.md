@@ -549,9 +549,10 @@ provando o antes e o depois.
 
 **Objetivo:** a autoavaliação do guia do professor em 10/10, com o Core consumindo o serviço. **Spec:** 02.
 
-- [ ] **F3.1** 🤖 Projeto Spring Boot 3.5 / Java 21 com os pacotes `dominio/`, `aplicacao/`, `infraestrutura/` e `api/`,
+- [x] **F3.1** 🤖 Projeto Spring Boot 3.5 / Java 21 com os pacotes `dominio/`, `aplicacao/`, `infraestrutura/` e `api/`,
   Dockerfile, tratamento de erros e padrão de testes reaproveitados do Orbital Guardian (GS 1).
-  🔎 `./mvnw verify` verde.
+  🔎 `./mvnw verify` verde — 2026-11-18 (Spring Boot 3.5.16, aviso de compilação é erro, erros em ProblemDetails pt-BR
+  com 7 testes; o compose, o `make test-clima` e o job `clima` do CI já usam o serviço real).
 - [ ] **F3.2** 🤖 Domínio com testes: índice de calor (vetores), classificação, `-9999` não é observação, umidade 0–100,
   ponto com `abre < fecha`, região exige estação válida.
   🔎 testes de domínio verdes, sem banco e sem HTTP.
@@ -982,7 +983,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
 | F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
-| F3 Clima (SOA) | ⬜ não iniciada | | | |
+| F3 Clima (SOA) | 🟨 em andamento | 2026-11-18 | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |

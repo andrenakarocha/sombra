@@ -29,6 +29,7 @@ jobs:
       mobile: ${{ steps.filtro.outputs.mobile }}
       simulador: ${{ steps.filtro.outputs.simulador }}
       core: ${{ steps.filtro.outputs.core }}
+      clima: ${{ steps.filtro.outputs.clima }}
       ambiente: ${{ steps.filtro.outputs.ambiente }}
       scripts: ${{ steps.filtro.outputs.scripts }}
       workflows: ${{ steps.filtro.outputs.workflows }}
@@ -63,11 +64,15 @@ jobs:
               - 'docs/contratos/risco-personalizado.vetores.json'
               - 'docs/contratos/vinculo-da-sentinela.vetores.json'
               - 'docs/contratos/amostras/**'
+            clima:
+              - 'services/clima-service/**'
+              - 'docs/contratos/indice-de-calor.vetores.json'
             ambiente:
               - 'compose.yaml'
               - 'infra/compose/**'
               - 'Makefile'
               - 'services/core-api/**'
+              - 'services/clima-service/**'
               - 'tools/novo-env.py'
               - '.env.example'
             scripts:
@@ -247,6 +252,24 @@ jobs:
           cat services/core-api/artifacts/code-quality/report.md >> "$GITHUB_STEP_SUMMARY"
           python3 -I -c "import json,sys; r=json.load(open('services/core-api/artifacts/code-quality/report.json')); n=r['score']['final']; print('nota', n); sys.exit(0 if n == 100 else 1)"
 
+  clima:
+    name: Clima Service (Java)
+    needs: mudancas
+    if: needs.mudancas.outputs.clima == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: build (aviso é erro), testes de domínio, API com Testcontainers e arquitetura
+        working-directory: services/clima-service
+        run: ./mvnw -B -ntp verify
+
   semgrep:
     name: Semgrep (taint estático)
     needs: mudancas
@@ -337,7 +360,7 @@ jobs:
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [mudancas, contratos, design, simulador, core, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
+    needs: [mudancas, contratos, design, simulador, core, clima, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
     runs-on: ubuntu-latest
     steps:
       - name: nenhum job falhou nem foi cancelado
