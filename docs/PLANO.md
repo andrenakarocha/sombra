@@ -645,14 +645,16 @@ Go; o APK via EAS é um extra.
   segundo plano (`expo-background-task`, quando o sistema permitir).
   🔎 forçar offline na tela → check-in fica pendente → desligar → enviado — 2026-11-17 (Jest). O worker só roda no
   APK: no Expo Go do Android o TaskManager não existe, e a Central mostra "não disponível" em vez de fingir.
-- [ ] **F6.15** 🤖 Replay da onda de calor **real** de nov/2023: script extrai as horas da A701 dos CSVs versionados
+- [x] **F6.15** 🤖 Replay da onda de calor **real** de nov/2023: script extrai as horas da A701 dos CSVs versionados
   (`ml/dados/brutos`) para um JSON com proveniência (SHA-256); o modo demonstração toca hora a hora com o índice de
   calor calculado no aparelho.
-  🔎 o replay chega a `PERIGO` com dados reais do INMET e o card fica vermelho ao vivo.
-  ⏸ 2026-11-17: replay feito e testado (96 h de 12 a 16/11/2023, SHA-256 conferido no CI). **A premissa do 🔎 é falsa
-  para a A701:** o índice de calor real máximo é 35,5 °C (14 e 15/11), ou seja, `CAUTELA_EXTREMA`; nenhuma hora chega a
-  `PERIGO` (39,44 °C) pela régua da NWS. Com o R3, o mesmo pico é `PERIGO` para quem tem cardiopatia e toma diurético.
-  Vale também para o roteiro (§3.4) e o replay do Clima (F3). Espera a decisão do operador; o app mostra os dois níveis.
+  🔎 o replay real chega ao pico de `CAUTELA_EXTREMA` (laranja) com dados do INMET; o vermelho ao vivo vem do "Simular
+  onda de calor", rotulado como simulação — 2026-11-18 (Jest).
+  Ajuste do 🔎 (decisão do operador, 2026-11-18): a premissa original ("chega a `PERIGO` com dados reais") é falsa para
+  a A701. O índice de calor real máximo é 35,5 °C (14 e 15/11), `CAUTELA_EXTREMA`, e nenhuma hora chega a `PERIGO`
+  (39,44 °C) pela régua da NWS. A Dona Lurdes segue como está, e o app mostra o nível padrão e o personalizado (R3).
+  ⚠ Para o Clima (F3) e o ML (F4): o passo 2 da §3.4 ("o modelo prevê perigo em 24 h" a partir do replay real) depende
+  da mesma premissa. O vermelho do passo 3 vem do Wokwi e não é afetado.
 - [x] **F6.16** 🤖 Risco explicável na tela da casa: "por que a Dona Lurdes está em risco" (fatores e limiar).
   🔎 o limiar exibido bate com o domínio para cada combinação de fatores — 2026-11-17 (8 combinações × 2 idades).
 - [ ] **F6.17** 🤖 Perto de mim com GPS e bússola: distância (haversine) e uma seta grande até o ponto fresco.
