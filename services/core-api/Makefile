@@ -45,7 +45,7 @@ coverage-report: build ## Relatório de cobertura de toda a suíte (HTML em arti
 	@$(DOTNET_COM_DOCKER) sh -c 'dotnet test Sombra.Core.slnx --no-build --nologo -v quiet --collect:"XPlat Code Coverage" --results-directory artifacts/coverage >/dev/null \
 		&& dotnet tool restore >/dev/null \
 		&& dotnet reportgenerator -reports:"artifacts/coverage/*/coverage.cobertura.xml" -targetdir:artifacts/coverage/relatorio \
-			-reporttypes:"Html;TextSummary" -assemblyfilters:"+Sombra.*;-*Tests" -classfilters:"-*.Migrations.*" -title:"Sombra · Core API" >/dev/null \
+			-reporttypes:"Html;TextSummary" -assemblyfilters:"+Sombra.*;-*Tests" -classfilters:"-*.Migrations.*;-Microsoft.*;-System.*" -title:"Sombra · Core API" >/dev/null \
 		&& sed -n "1,20p" artifacts/coverage/relatorio/Summary.txt'
 
 format: restore ## Confere formatação e estilo sem mudar nada
