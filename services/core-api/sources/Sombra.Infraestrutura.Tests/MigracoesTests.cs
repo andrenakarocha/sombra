@@ -24,7 +24,7 @@ public sealed class MigracoesTests
         Func<SombraDbContext> criar = await BancoDeTeste.NovoBancoAsync();
         await using SombraDbContext db = criar();
         DomicilioRepository casas = new(db);
-        string[] esperadas = ["Inicial", "AlertasECheckIns", "RedeDeCuidadoEIndices", "SeedDemo", "Usuarios", "MqttOutboxESeguranca"];
+        string[] esperadas = ["Inicial", "AlertasECheckIns", "RedeDeCuidadoEIndices", "SeedDemo", "Usuarios", "MqttOutboxESeguranca", "LinhaDoTempoETelefoneDoMorador"];
 
         string[] aplicadas = [.. (await db.Database.GetAppliedMigrationsAsync()).Select(m => m[(m.IndexOf('_', StringComparison.Ordinal) + 1)..])];
         Domicilio? lurdes = await casas.ObterAsync(Casas.Lurdes, CancellationToken.None);

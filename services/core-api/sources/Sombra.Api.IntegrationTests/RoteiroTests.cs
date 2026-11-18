@@ -103,7 +103,7 @@ public sealed class RoteiroTests
         Assert.AreEqual("VIZINHO", quemEstaPerto.Texto("destinatario"));
         Assert.Contains("Pode dar uma olhada?", quemEstaPerto.Texto("mensagem"));
         Assert.AreEqual("REDE", redeToda.Texto("destinatario"));
-        Assert.AreEqual(Dominio.Alertas.EstadoDoAlerta.Resolvido, bem.Estado);
+        Assert.AreEqual(EstadoDoAlertaNoApp.Resolvido, bem.Estado);
         Assert.AreEqual("CUIDADOR", resolvido.Texto("resolvidoPor"));
         Assert.AreEqual(1, painel.AlarmesDesnecessariosSemana);
         Assert.AreEqual(0.0, painel.AlertasResolvidosSemUltimoDegrauPct);

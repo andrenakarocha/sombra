@@ -248,6 +248,11 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("perfil_de_saude");
 
+                    b.Property<string>("Telefone")
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)")
+                        .HasColumnName("telefone");
+
                     b.HasKey("Id")
                         .HasName("pk_moradores");
 
@@ -533,6 +538,48 @@ namespace Sombra.Infraestrutura.Persistencia.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_alertas_domicilios_domicilio_id");
+
+                    b.OwnsMany("Sombra.Dominio.Alertas.EventoDaLinhaDoTempo", "LinhaDoTempo", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("AlertaId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("alerta_id");
+
+                            b1.Property<int>("Degrau")
+                                .HasColumnType("integer")
+                                .HasColumnName("degrau");
+
+                            b1.Property<string>("Descricao")
+                                .IsRequired()
+                                .HasMaxLength(120)
+                                .HasColumnType("character varying(120)")
+                                .HasColumnName("descricao");
+
+                            b1.Property<DateTimeOffset>("Momento")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("momento");
+
+                            b1.HasKey("Id")
+                                .HasName("pk_alertas_linha_do_tempo");
+
+                            b1.HasIndex("AlertaId")
+                                .HasDatabaseName("ix_alertas_linha_do_tempo_alerta_id");
+
+                            b1.ToTable("alertas_linha_do_tempo", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("AlertaId")
+                                .HasConstraintName("fk_alertas_linha_do_tempo_alertas_alerta_id");
+                        });
+
+                    b.Navigation("LinhaDoTempo");
                 });
 
             modelBuilder.Entity("Sombra.Dominio.Casas.CheckIn", b =>

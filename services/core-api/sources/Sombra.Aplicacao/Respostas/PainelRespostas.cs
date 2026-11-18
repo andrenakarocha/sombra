@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Sombra.Dominio.Calor;
 
@@ -11,16 +10,6 @@ namespace Sombra.Aplicacao.Respostas;
 /// <param name="Tamanho">O tamanho pedido.</param>
 /// <param name="Total">Quantos itens existem com estes filtros.</param>
 public sealed record Paginado<T>(IReadOnlyList<T> Itens, int Pagina, int Tamanho, int Total);
-
-/// <summary>Uma casa na lista do painel, sem dado pessoal além do apelido e do bairro.</summary>
-/// <param name="Id">O identificador.</param>
-/// <param name="Apelido">Como a família chama a casa.</param>
-/// <param name="Bairro">O bairro.</param>
-/// <param name="Monitorado">Se o monitoramento está ligado.</param>
-/// <param name="NivelAtual">O nível da última leitura, ou normal sem leitura.</param>
-/// <param name="SentinelaOnline">Se a Sentinela falou nos últimos 30 segundos (R9).</param>
-/// <param name="AlertaAberto">Se há algum alerta aberto.</param>
-public sealed record DomicilioResumoResposta(Guid Id, string Apelido, string Bairro, bool Monitorado, NivelDeRisco NivelAtual, bool SentinelaOnline, bool AlertaAberto);
 
 /// <summary>Os números do painel e os indicadores de impacto (contrato <c>GET /painel/resumo</c>).</summary>
 /// <param name="CasasMonitoradas">Quantas casas têm o monitoramento ligado.</param>

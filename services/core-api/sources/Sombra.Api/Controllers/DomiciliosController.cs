@@ -45,15 +45,19 @@ public sealed class DomiciliosController : ControllerBase
     }
 
     /// <summary>Lista as casas.</summary>
-    /// <remarks>O Cuidador vê só as casas dele; Operador e Admin veem todas. Filtra pelo nível da última leitura e pelo bairro.</remarks>
+    /// <remarks>
+    /// Cada casa sai como na tela da casa (última leitura, Sentinela, último check-in e o alerta que aparece), que é o que o
+    /// card do app mostra (D17). O Cuidador vê só as casas dele; Operador e Admin veem todas. Filtra pelo nível da última
+    /// leitura e pelo bairro.
+    /// </remarks>
     /// <param name="filtro">Nível, bairro, página e tamanho.</param>
     /// <param name="cancellationToken">Cancela a requisição.</param>
     /// <returns>Uma página de casas.</returns>
     [HttpGet]
     [Authorize(Roles = Acesso.Todos)]
-    [ProducesResponseType<Paginado<DomicilioResumoResposta>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Paginado<DomicilioDetalheResposta>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public async Task<ActionResult<Paginado<DomicilioResumoResposta>>> Listar([FromQuery] FiltroDeDomiciliosDto filtro, CancellationToken cancellationToken)
+    public async Task<ActionResult<Paginado<DomicilioDetalheResposta>>> Listar([FromQuery] FiltroDeDomiciliosDto filtro, CancellationToken cancellationToken)
     {
         IReadOnlyList<Guid>? casas = User.IsInRole(Papeis.Cuidador) ? await _contas.CasasDoUsuarioAsync(User.Id(), cancellationToken) : null;
         return await _consultas.ListarDomiciliosAsync(filtro, casas, _relogio.Agora, cancellationToken);

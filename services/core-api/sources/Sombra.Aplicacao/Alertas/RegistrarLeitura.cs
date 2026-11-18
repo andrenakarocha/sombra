@@ -60,7 +60,7 @@ public sealed class RegistrarLeitura
 
         AlertaDeCalor? alerta = casa.Monitorado ? await AbrirOuAtualizarAsync(casa, leitura, cancellationToken) : null;
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
-        return new LeituraRegistradaResposta(LeituraResposta.De(leitura), alerta is null ? null : AlertaResposta.De(alerta));
+        return new LeituraRegistradaResposta(LeituraResposta.De(leitura), alerta is null ? null : AlertaResposta.De(alerta, casa.Apelido));
     }
 
     private async Task<AlertaDeCalor?> AbrirOuAtualizarAsync(Domicilio casa, Leitura leitura, CancellationToken cancellationToken)

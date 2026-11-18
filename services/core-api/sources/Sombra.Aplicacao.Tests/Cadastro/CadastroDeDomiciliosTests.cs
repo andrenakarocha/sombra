@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,10 +38,12 @@ public sealed class CadastroDeDomiciliosTests
         MoradorResposta morador = await cadastro.AdicionarMoradorAsync(
             casa.Id,
             new NovoMoradorDto { Nome = "Lurdes A.", DataDeNascimento = new DateOnly(1944, 5, 2), Cpf = cpf, CartaoSus = cns, FatoresDeRisco = ["uso_de_diuretico"] },
+            revelarContatos: true,
             _semCancelar);
-        RedeDeCuidadoResposta rede = await cadastro.DefinirRedeDeCuidadoAsync(
+        IReadOnlyList<ContatoResposta> rede = await cadastro.DefinirRedeDeCuidadoAsync(
             casa.Id,
             new RedeDeCuidadoDto { Contatos = [new ContatoDto { Nome = "Ana", Telefone = "(11) 98765-4321", Papel = PapelDoContato.Familiar }] },
+            revelarContatos: true,
             _semCancelar);
         RotinaResposta rotina = await cadastro.DefinirRotinaAsync(casa.Id, new RotinaDto { HorarioDoCheckInDiario = new TimeOnly(9, 0), LembreteDeAguaAtivo = true }, _semCancelar);
         SentinelaVinculadaResposta sentinela = await cadastro.VincularSentinelaAsync(casa.Id, new NovaSentinelaDto { DeviceId = Cenario.DeviceId }, _semCancelar);
@@ -53,8 +56,9 @@ public sealed class CadastroDeDomiciliosTests
         Assert.AreEqual("[DADO DE SAÚDE PROTEGIDO]", morador.PerfilDeSaude);
         string[] fatoresEsperados = ["IDADE_AVANCADA", "USO_DE_DIURETICO"];
         CollectionAssert.AreEqual(fatoresEsperados, morador.FatoresDeRisco.ToArray());
-        Assert.AreEqual("(11) *****-4321", rede.Contatos.Single().Telefone);
-        Assert.AreEqual(new TimeOnly(9, 0), rotina.HorarioDoCheckInDiario);
+        Assert.AreEqual("(11) 98765-4321", rede.Single().Telefone);
+        Assert.AreEqual($"{casa.Id:N}-1", rede.Single().Id);
+        Assert.AreEqual(new CheckInDiarioResposta(true, "09:00"), rotina.CheckInDiario);
         Assert.IsFalse(sentinela.Online);
         Assert.MatchesRegex("^[0-9a-f]{64}$", sentinela.SegredoHex);
         Assert.IsTrue(monitorada.Monitorado);
@@ -87,7 +91,7 @@ public sealed class CadastroDeDomiciliosTests
 
         Assert.AreEqual(NivelDeRisco.Perigo, visao.NivelAtual);
         Assert.AreEqual(36, visao.UltimaLeitura?.TemperaturaC);
-        Assert.AreEqual("DE_SENTINELA", visao.AlertaAberto?.Tipo);
+        Assert.AreEqual(TipoDoAlertaNoApp.DeSentinela, visao.AlertaAberto?.Tipo);
         Assert.AreEqual(Cenario.Inicio, visao.UltimoCheckIn);
         Assert.IsNotNull(visao.Sentinela);
         Assert.IsTrue(visao.Sentinela.Online);
@@ -103,17 +107,18 @@ public sealed class CadastroDeDomiciliosTests
         Domicilio casa = cenario.CasaMonitorada();
         CadastroDeDomicilios cadastro = cenario.Cadastro();
 
-        MoradorResposta morador = (await cadastro.ListarMoradoresAsync(casa.Id, _semCancelar)).Single();
-        RedeDeCuidadoResposta rede = await cadastro.ObterRedeDeCuidadoAsync(casa.Id, _semCancelar);
+        MoradorResposta morador = (await cadastro.ListarMoradoresAsync(casa.Id, revelarContatos: false, _semCancelar)).Single();
+        IReadOnlyList<ContatoResposta> rede = await cadastro.ObterRedeDeCuidadoAsync(casa.Id, revelarContatos: false, _semCancelar);
         RotinaResposta rotina = await cadastro.ObterRotinaAsync(casa.Id, _semCancelar);
         DomicilioResposta desligada = await cadastro.DesativarMonitoramentoAsync(casa.Id, _semCancelar);
         await cadastro.RemoverMoradorAsync(casa.Id, morador.Id, _semCancelar);
         await cadastro.RemoverAsync(casa.Id, _semCancelar);
 
         Assert.StartsWith("***.", morador.Cpf);
-        CollectionAssert.AreEqual(new[] { PapelDoContato.Familiar, PapelDoContato.Vizinho }, rede.Contatos.Select(c => c.Papel).ToArray());
-        Assert.IsNull(rotina.HorarioDoCheckInDiario);
-        Assert.IsTrue(rotina.LembreteDeAguaAtivo);
+        CollectionAssert.AreEqual(new[] { PapelDoContato.Familiar, PapelDoContato.Vizinho }, rede.Select(c => c.Papel).ToArray());
+        Assert.IsTrue(rede.All(c => c.Telefone.Contains("*****", StringComparison.Ordinal)));
+        Assert.AreEqual(new CheckInDiarioResposta(false, "09:00"), rotina.CheckInDiario);
+        Assert.IsTrue(rotina.LembreteDeAgua.Ativo);
         Assert.IsFalse(desligada.Monitorado);
         Assert.IsEmpty(casa.Moradores);
         Assert.IsEmpty(cenario.Domicilios.Casas);
@@ -131,7 +136,7 @@ public sealed class CadastroDeDomiciliosTests
 
         ValidacaoException vazio = await Assert.ThrowsExactlyAsync<ValidacaoException>(() => cadastro.CadastrarAsync(new NovoDomicilioDto(), _semCancelar));
         ValidacaoException contato = await Assert.ThrowsExactlyAsync<ValidacaoException>(
-            () => cadastro.DefinirRedeDeCuidadoAsync(casa.Id, new RedeDeCuidadoDto { Contatos = [new ContatoDto { Nome = "Ana" }] }, _semCancelar));
+            () => cadastro.DefinirRedeDeCuidadoAsync(casa.Id, new RedeDeCuidadoDto { Contatos = [new ContatoDto { Nome = "Ana" }] }, revelarContatos: true, _semCancelar));
         await Assert.ThrowsExactlyAsync<RecursoNaoEncontradoException>(() => cadastro.ObterAsync(Guid.CreateVersion7(), _semCancelar));
         await Assert.ThrowsExactlyAsync<RecursoNaoEncontradoException>(() => cadastro.RemoverMoradorAsync(casa.Id, Guid.CreateVersion7(), _semCancelar));
         await Assert.ThrowsExactlyAsync<ConflitoException>(() => cadastro.VincularSentinelaAsync(casa.Id, new NovaSentinelaDto { DeviceId = Cenario.DeviceId }, _semCancelar));
@@ -140,8 +145,8 @@ public sealed class CadastroDeDomiciliosTests
         Assert.IsTrue(contato.Erros.ContainsKey("contatos[0].telefone"));
         Assert.IsTrue(contato.Erros.ContainsKey("contatos[0].papel"));
         Assert.AreEqual("R12", (await RegraVioladaAsync(() => cadastro.DefinirRotinaAsync(casa.Id, new RotinaDto { HorarioDoCheckInDiario = new TimeOnly(23, 0), LembreteDeAguaAtivo = true }, _semCancelar))).Regra);
-        Assert.AreEqual("R3", (await RegraVioladaAsync(() => cadastro.AdicionarMoradorAsync(casa.Id, Morador(DocumentosSinteticos.Cpf(2), "DIABETES"), _semCancelar))).Regra);
-        Assert.AreEqual("R1", (await RegraVioladaAsync(() => cadastro.AdicionarMoradorAsync(casa.Id, Morador("123.456.789-00"), _semCancelar))).Regra);
+        Assert.AreEqual("R3", (await RegraVioladaAsync(() => cadastro.AdicionarMoradorAsync(casa.Id, Morador(DocumentosSinteticos.Cpf(2), "DIABETES"), revelarContatos: true, _semCancelar))).Regra);
+        Assert.AreEqual("R1", (await RegraVioladaAsync(() => cadastro.AdicionarMoradorAsync(casa.Id, Morador("123.456.789-00"), revelarContatos: true, _semCancelar))).Regra);
         Assert.AreEqual("R8", (await RegraVioladaAsync(() => cadastro.AtivarMonitoramentoAsync(casa.Id, _semCancelar))).Regra);
     }
 

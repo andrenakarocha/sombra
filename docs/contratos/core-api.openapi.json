@@ -19,7 +19,7 @@
             "in": "query",
             "description": "O estado.",
             "schema": {
-              "$ref": "#/components/schemas/EstadoDoAlerta"
+              "$ref": "#/components/schemas/EstadoDoAlertaNoApp"
             },
             "example": "ESCALONADO"
           },
@@ -365,12 +365,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RedeDeCuidadoResposta"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContatoResposta"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RedeDeCuidadoResposta"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContatoResposta"
+                  }
                 }
               }
             }
@@ -447,12 +453,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RedeDeCuidadoResposta"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContatoResposta"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RedeDeCuidadoResposta"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContatoResposta"
+                  }
                 }
               }
             }
@@ -755,7 +767,7 @@
           "Domic\u00EDlios"
         ],
         "summary": "Lista as casas.",
-        "description": "O Cuidador v\u00EA s\u00F3 as casas dele; Operador e Admin veem todas. Filtra pelo n\u00EDvel da \u00FAltima leitura e pelo bairro.",
+        "description": "Cada casa sai como na tela da casa (\u00FAltima leitura, Sentinela, \u00FAltimo check-in e o alerta que aparece), que \u00E9 o que o\ncard do app mostra (D17). O Cuidador v\u00EA s\u00F3 as casas dele; Operador e Admin veem todas. Filtra pelo n\u00EDvel da \u00FAltima\nleitura e pelo bairro.",
         "parameters": [
           {
             "name": "Nivel",
@@ -812,12 +824,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginadoOfDomicilioResumoResposta"
+                  "$ref": "#/components/schemas/PaginadoOfDomicilioDetalheResposta"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginadoOfDomicilioResumoResposta"
+                  "$ref": "#/components/schemas/PaginadoOfDomicilioDetalheResposta"
                 }
               }
             }
@@ -2486,6 +2498,7 @@
         "required": [
           "id",
           "domicilioId",
+          "apelidoDaCasa",
           "tipo",
           "estado",
           "nivel",
@@ -2493,7 +2506,8 @@
           "abertoEm",
           "prazo",
           "encerradoEm",
-          "mensagemAoMorador"
+          "mensagemAoMorador",
+          "linhaDoTempo"
         ],
         "type": "object",
         "properties": {
@@ -2507,13 +2521,17 @@
             "description": "A casa.",
             "format": "uuid"
           },
-          "tipo": {
+          "apelidoDaCasa": {
             "type": "string",
-            "description": "O tipo: \u0060PREVENTIVO\u0060, \u0060DE_SENTINELA\u0060 ou \u0060PEDIDO_DE_AJUDA\u0060."
+            "description": "Como a fam\u00EDlia chama a casa."
+          },
+          "tipo": {
+            "description": "Preventivo ou da Sentinela.",
+            "$ref": "#/components/schemas/TipoDoAlertaNoApp"
           },
           "estado": {
-            "description": "O estado atual.",
-            "$ref": "#/components/schemas/EstadoDoAlerta"
+            "description": "Onde o alerta est\u00E1, como o app mostra.",
+            "$ref": "#/components/schemas/EstadoDoAlertaNoApp"
           },
           "nivel": {
             "description": "O n\u00EDvel de risco atual.",
@@ -2534,11 +2552,8 @@
             "format": "date-time"
           },
           "prazo": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "O prazo do \u0022estou bem\u0022, quando o tipo pede.",
+            "type": "string",
+            "description": "O prazo do \u0022estou bem\u0022; no preventivo, o fim da validade.",
             "format": "date-time"
           },
           "encerradoEm": {
@@ -2552,9 +2567,16 @@
           "mensagemAoMorador": {
             "type": "string",
             "description": "O texto da tela da Sentinela, sem dado pessoal."
+          },
+          "linhaDoTempo": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventoDaLinhaDoTempoResposta"
+            },
+            "description": "O que aconteceu, na ordem."
           }
         },
-        "description": "Um alerta e onde ele est\u00E1 na m\u00E1quina de estados."
+        "description": "Um alerta, no contrato do app (D17), com a linha do tempo dos degraus."
       },
       "AtualizacaoDeDomicilioDto": {
         "required": [
@@ -2658,6 +2680,24 @@
         },
         "description": "Quanto adiantar o rel\u00F3gio do Core na demonstra\u00E7\u00E3o."
       },
+      "CheckInDiarioResposta": {
+        "required": [
+          "ativo",
+          "horario"
+        ],
+        "type": "object",
+        "properties": {
+          "ativo": {
+            "type": "boolean",
+            "description": "Se o check-in di\u00E1rio est\u00E1 ligado."
+          },
+          "horario": {
+            "type": "string",
+            "description": "O hor\u00E1rio local, \u0060HH:mm\u0060."
+          }
+        },
+        "description": "O check-in di\u00E1rio combinado com a pessoa."
+      },
       "CheckInResposta": {
         "required": [
           "id",
@@ -2745,26 +2785,31 @@
       },
       "ContatoResposta": {
         "required": [
+          "id",
           "nome",
-          "telefone",
-          "papel"
+          "papel",
+          "telefone"
         ],
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifica o contato dentro da casa (a casa e a posi\u00E7\u00E3o na rede)."
+          },
           "nome": {
             "type": "string",
             "description": "O nome ou apelido."
           },
-          "telefone": {
-            "type": "string",
-            "description": "O telefone mascarado."
-          },
           "papel": {
             "description": "O papel no escalonamento.",
             "$ref": "#/components/schemas/PapelDoContato"
+          },
+          "telefone": {
+            "type": "string",
+            "description": "O telefone: inteiro para o Cuidador da casa, que liga dali; mascarado para os outros pap\u00E9is."
           }
         },
-        "description": "Um contato da rede de cuidado, com o telefone mascarado."
+        "description": "Um contato da rede de cuidado, na ordem de escalonamento."
       },
       "DomicilioDetalheResposta": {
         "required": [
@@ -2884,60 +2929,43 @@
         },
         "description": "A casa, sem o endere\u00E7o completo: s\u00F3 o bairro sai da API."
       },
-      "DomicilioResumoResposta": {
+      "EstadoDoAlertaNoApp": {
+        "enum": [
+          "AGUARDANDO_CHECKIN",
+          "ESCALONADO",
+          "RECONHECIDO",
+          "RESOLVIDO"
+        ],
+        "description": "Os estados de um alerta como o app os mostra (D17). O preventivo, que s\u00F3 informa, aparece como esperando resposta,\ncom a validade de 24 h como prazo; o preventivo que passou da validade aparece como resolvido."
+      },
+      "EventoDaLinhaDoTempoResposta": {
         "required": [
-          "id",
-          "apelido",
-          "bairro",
-          "monitorado",
-          "nivelAtual",
-          "sentinelaOnline",
-          "alertaAberto"
+          "momento",
+          "degrau",
+          "descricao"
         ],
         "type": "object",
         "properties": {
-          "id": {
+          "momento": {
             "type": "string",
-            "description": "O identificador.",
-            "format": "uuid"
+            "description": "Quando aconteceu, em UTC.",
+            "format": "date-time"
           },
-          "apelido": {
+          "degrau": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "O degrau do escalonamento naquele momento, de 0 a 3.",
+            "format": "int32"
+          },
+          "descricao": {
             "type": "string",
-            "description": "Como a fam\u00EDlia chama a casa."
-          },
-          "bairro": {
-            "type": "string",
-            "description": "O bairro."
-          },
-          "monitorado": {
-            "type": "boolean",
-            "description": "Se o monitoramento est\u00E1 ligado."
-          },
-          "nivelAtual": {
-            "description": "O n\u00EDvel da \u00FAltima leitura, ou normal sem leitura.",
-            "$ref": "#/components/schemas/NivelDeRisco"
-          },
-          "sentinelaOnline": {
-            "type": "boolean",
-            "description": "Se a Sentinela falou nos \u00FAltimos 30 segundos (R9)."
-          },
-          "alertaAberto": {
-            "type": "boolean",
-            "description": "Se h\u00E1 algum alerta aberto."
+            "description": "O que aconteceu, sem dado pessoal."
           }
         },
-        "description": "Uma casa na lista do painel, sem dado pessoal al\u00E9m do apelido e do bairro."
-      },
-      "EstadoDoAlerta": {
-        "enum": [
-          "INFORMATIVO",
-          "AGUARDANDO_CHECK_IN",
-          "ESCALONADO",
-          "RECONHECIDO",
-          "RESOLVIDO",
-          "EXPIRADO"
-        ],
-        "description": "Os estados de um alerta (regra R5)."
+        "description": "Um passo da linha do tempo do alerta."
       },
       "JsonElement": {},
       "LeituraResposta": {
@@ -2989,6 +3017,19 @@
         },
         "description": "Uma leitura da Sentinela, com o \u00EDndice de calor calculado pelo Core."
       },
+      "LembreteDeAguaResposta": {
+        "required": [
+          "ativo"
+        ],
+        "type": "object",
+        "properties": {
+          "ativo": {
+            "type": "boolean",
+            "description": "Se o lembrete est\u00E1 ligado."
+          }
+        },
+        "description": "O lembrete de \u00E1gua no pico da tarde (R11)."
+      },
       "LoginDto": {
         "required": [
           "email",
@@ -3019,6 +3060,7 @@
           "id",
           "nome",
           "idade",
+          "telefone",
           "cpf",
           "cartaoSus",
           "perfilDeSaude",
@@ -3044,6 +3086,13 @@
             "description": "A idade em anos completos.",
             "format": "int32"
           },
+          "telefone": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "O telefone da pessoa, quando houver."
+          },
           "cpf": {
             "type": "string",
             "description": "O CPF mascarado."
@@ -3067,7 +3116,7 @@
             "description": "Os c\u00F3digos dos fatores que valem hoje, inclusive a idade avan\u00E7ada."
           }
         },
-        "description": "Um morador, com CPF, Cart\u00E3o SUS e sa\u00FAde mascarados (spec 07). Os fatores saem s\u00F3 como c\u00F3digo."
+        "description": "Um morador, com CPF, Cart\u00E3o SUS e sa\u00FAde sempre mascarados (spec 07). O telefone sai inteiro s\u00F3 para o Cuidador da\npr\u00F3pria casa, que precisa ligar. Os fatores saem s\u00F3 como c\u00F3digo."
       },
       "NivelDeRisco": {
         "enum": [
@@ -3341,7 +3390,7 @@
         },
         "description": "Uma p\u00E1gina de resultados (contrato: \u0060itens\u0060, \u0060pagina\u0060, \u0060tamanho\u0060, \u0060total\u0060)."
       },
-      "PaginadoOfDomicilioResumoResposta": {
+      "PaginadoOfDomicilioDetalheResposta": {
         "required": [
           "itens",
           "pagina",
@@ -3353,7 +3402,7 @@
           "itens": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/DomicilioResumoResposta"
+              "$ref": "#/components/schemas/DomicilioDetalheResposta"
             },
             "description": "Os itens desta p\u00E1gina."
           },
@@ -3647,22 +3696,6 @@
         },
         "description": "A rede de cuidado inteira, na ordem em que o escalonamento procura os contatos."
       },
-      "RedeDeCuidadoResposta": {
-        "required": [
-          "contatos"
-        ],
-        "type": "object",
-        "properties": {
-          "contatos": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ContatoResposta"
-            },
-            "description": "Os contatos."
-          }
-        },
-        "description": "A rede de cuidado, na ordem de escalonamento."
-      },
       "RelogioResposta": {
         "required": [
           "agora"
@@ -3709,25 +3742,21 @@
       },
       "RotinaResposta": {
         "required": [
-          "horarioDoCheckInDiario",
-          "lembreteDeAguaAtivo"
+          "checkInDiario",
+          "lembreteDeAgua"
         ],
         "type": "object",
         "properties": {
-          "horarioDoCheckInDiario": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "O hor\u00E1rio local do check-in di\u00E1rio, ou nulo.",
-            "format": "time"
+          "checkInDiario": {
+            "description": "O check-in di\u00E1rio.",
+            "$ref": "#/components/schemas/CheckInDiarioResposta"
           },
-          "lembreteDeAguaAtivo": {
-            "type": "boolean",
-            "description": "Se o lembrete de \u00E1gua est\u00E1 ligado."
+          "lembreteDeAgua": {
+            "description": "O lembrete de \u00E1gua.",
+            "$ref": "#/components/schemas/LembreteDeAguaResposta"
           }
         },
-        "description": "A rotina combinada com a pessoa."
+        "description": "A rotina combinada com a pessoa, no formato do app (D17)."
       },
       "SaudeResposta": {
         "required": [
@@ -3797,6 +3826,13 @@
           "PRECISO_DE_AJUDA"
         ],
         "description": "O que a pessoa disse no check-in."
+      },
+      "TipoDoAlertaNoApp": {
+        "enum": [
+          "PREVENTIVO",
+          "DE_SENTINELA"
+        ],
+        "description": "Os tipos de alerta como o app os mostra (D17): o pedido de ajuda aparece como alerta da Sentinela."
       },
       "TokenResposta": {
         "required": [

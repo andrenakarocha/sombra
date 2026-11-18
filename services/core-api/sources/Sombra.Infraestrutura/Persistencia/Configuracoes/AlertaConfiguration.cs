@@ -35,6 +35,17 @@ internal sealed class AlertaConfiguration : IEntityTypeConfiguration<AlertaDeCal
         builder.Property(a => a.Reconhecimento).HasConversion<string>().HasMaxLength(20);
         builder.Property(a => a.EncerradoEm);
         builder.Ignore(a => a.EventosDeDominio);
+        builder.OwnsMany(a => a.LinhaDoTempo, linha =>
+        {
+            linha.ToTable("alertas_linha_do_tempo");
+            linha.WithOwner().HasForeignKey("AlertaId");
+            linha.Property<int>("Id").UseIdentityByDefaultColumn();
+            linha.HasKey("Id");
+            linha.Property(e => e.Momento);
+            linha.Property(e => e.Degrau);
+            linha.Property(e => e.Descricao).HasMaxLength(120);
+        });
+        builder.Navigation(a => a.LinhaDoTempo).HasField("_linhaDoTempo").UsePropertyAccessMode(PropertyAccessMode.Field);
         builder.HasOne<Domicilio>().WithMany().HasForeignKey(a => a.DomicilioId).OnDelete(DeleteBehavior.Cascade);
         builder.HasIndex(a => new { a.DomicilioId, a.Estado });
         builder.HasIndex(a => new { a.Estado, a.AbertoEm });

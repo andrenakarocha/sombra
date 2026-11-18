@@ -220,6 +220,61 @@ public sealed class AlertasTests
         Assert.IsEmpty(alertas[0].EventosDeDominio);
     }
 
+    /// <summary>D17: cada passo do alerta vira uma linha do tempo em pt-BR, sem pronome e sem dado pessoal, no degrau certo.</summary>
+    [TestMethod]
+    public void LinhaDoTempoContaOAlertaInteiro()
+    {
+        AlertaDeSentinela semResposta = AlertaDeSentinela.Abrir(_casa, Fabricas.Leitura(33, 45, _abertura));
+        semResposta.AtualizarComLeitura(Fabricas.Leitura(36, 60, _abertura.AddMinutes(2)));
+        semResposta.Escalonar(_abertura.AddMinutes(40), Rede());
+        semResposta.Reconhecer(AcaoDoCuidador.EstouIndo, _abertura.AddMinutes(41));
+
+        AlertaDeSentinela respondido = AlertaDeSentinela.Abrir(_casa, Fabricas.Leitura(36, 60, _abertura));
+        respondido.ConfirmarEstouBem(_abertura.AddMinutes(4), OrigemDoCheckIn.App);
+
+        AlertaPreventivo previsao = AlertaPreventivo.Abrir(_casa, NivelDeRisco.Perigo, _abertura);
+        previsao.ExpirarSeVencido(_abertura + AlertaPreventivo.Validade);
+
+        string[] esperado =
+        [
+            "0 A Sentinela lembrou e pediu o \"estou bem\".",
+            "0 O calor piorou: agora é perigo.",
+            "1 Lembrete leve para o primeiro familiar.",
+            "2 \"Quem está perto\": pedido para quem mora perto dar uma olhada.",
+            "3 Alerta para toda a rede de cuidado.",
+            "3 Alguém da família está indo até a casa.",
+        ];
+        CollectionAssert.AreEqual(esperado, semResposta.LinhaDoTempo.Select(e => $"{(int)e.Degrau} {e.Descricao}").ToArray());
+        Assert.IsTrue(semResposta.LinhaDoTempo.Select(e => e.Momento).SequenceEqual(semResposta.LinhaDoTempo.Select(e => e.Momento).Order()));
+        Assert.AreEqual("Apertou \"estou bem\" no celular.", respondido.LinhaDoTempo[^1].Descricao);
+        Assert.AreEqual(_abertura.AddMinutes(4), respondido.LinhaDoTempo[^1].Momento);
+        string[] doPreventivo = ["Previsão de calor perigoso nas próximas 24 horas.", "A previsão de 24 horas terminou."];
+        CollectionAssert.AreEqual(doPreventivo, previsao.LinhaDoTempo.Select(e => e.Descricao).ToArray());
+    }
+
+    /// <summary>O pedido de ajuda conta o que aconteceu, tanto no alerta próprio quanto no alerta da Sentinela.</summary>
+    [TestMethod]
+    public void LinhaDoTempoDoPedidoDeAjuda()
+    {
+        AlertaDePedidoDeAjuda pedido = AlertaDePedidoDeAjuda.Abrir(_casa, NivelDeRisco.Normal, _abertura);
+        AlertaDeSentinela durante = AlertaDeSentinela.Abrir(_casa, Fabricas.Leitura(36, 60, _abertura));
+        durante.PedirAjuda(_abertura.AddMinutes(3));
+        durante.PedirAjuda(_abertura.AddMinutes(5));
+        durante.Reconhecer(AcaoDoCuidador.ElaEstaBem, _abertura.AddMinutes(9));
+
+        string[] doPedido = ["0 Pedido de ajuda pela Sentinela ou pelo app.", "3 Toda a rede de cuidado foi avisada."];
+        CollectionAssert.AreEqual(doPedido, pedido.LinhaDoTempo.Select(e => $"{(int)e.Degrau} {e.Descricao}").ToArray());
+        string[] doDurante =
+        [
+            "A Sentinela lembrou e pediu o \"estou bem\".",
+            "Pedido de ajuda: toda a rede foi avisada.",
+            "Pedido de ajuda: a rede já estava avisada.",
+            "A família confirmou que está tudo bem.",
+        ];
+        CollectionAssert.AreEqual(doDurante, durante.LinhaDoTempo.Select(e => e.Descricao).ToArray());
+        Assert.IsFalse(durante.LinhaDoTempo.Any(e => e.Descricao.Contains(" ela ", StringComparison.OrdinalIgnoreCase)));
+    }
+
     /// <summary>O check-in guarda o instante em UTC.</summary>
     [TestMethod]
     public void CheckInGuardaUtc()

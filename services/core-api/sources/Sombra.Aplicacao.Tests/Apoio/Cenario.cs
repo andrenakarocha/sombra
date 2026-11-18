@@ -62,7 +62,7 @@ internal sealed class Cenario
 
     /// <summary>O caso de uso da resposta do cuidador.</summary>
     /// <returns>O caso de uso.</returns>
-    internal ReconhecerAlerta ReconhecerAlerta() => new(Alertas, Relogio, Notificador, UnidadeDeTrabalho);
+    internal ReconhecerAlerta ReconhecerAlerta() => new(Alertas, Domicilios, Relogio, Notificador, UnidadeDeTrabalho);
 
     /// <summary>O caso de uso da rotina.</summary>
     /// <returns>O caso de uso.</returns>

@@ -6,6 +6,7 @@ using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Portas;
 using Sombra.Aplicacao.Respostas;
 using Sombra.Dominio.Alertas;
+using Sombra.Dominio.Casas;
 
 namespace Sombra.Aplicacao.Alertas;
 
@@ -13,18 +14,21 @@ namespace Sombra.Aplicacao.Alertas;
 public sealed class ReconhecerAlerta
 {
     private readonly IAlertaRepository _alertas;
+    private readonly IDomicilioRepository _domicilios;
     private readonly IRelogio _relogio;
     private readonly IUnitOfWork _unidadeDeTrabalho;
     private readonly Avisos _avisos;
 
     /// <summary>Initializes a new instance of the <see cref="ReconhecerAlerta"/> class.</summary>
     /// <param name="alertas">Os alertas.</param>
+    /// <param name="domicilios">As casas, para o apelido na resposta.</param>
     /// <param name="relogio">O relógio.</param>
     /// <param name="notificador">Quem entrega os avisos.</param>
     /// <param name="unidadeDeTrabalho">A transação.</param>
-    public ReconhecerAlerta(IAlertaRepository alertas, IRelogio relogio, INotificador notificador, IUnitOfWork unidadeDeTrabalho)
+    public ReconhecerAlerta(IAlertaRepository alertas, IDomicilioRepository domicilios, IRelogio relogio, INotificador notificador, IUnitOfWork unidadeDeTrabalho)
     {
         _alertas = alertas ?? throw new ArgumentNullException(nameof(alertas));
+        _domicilios = domicilios ?? throw new ArgumentNullException(nameof(domicilios));
         _relogio = relogio ?? throw new ArgumentNullException(nameof(relogio));
         _unidadeDeTrabalho = unidadeDeTrabalho ?? throw new ArgumentNullException(nameof(unidadeDeTrabalho));
         _avisos = new Avisos(notificador);
@@ -50,6 +54,7 @@ public sealed class ReconhecerAlerta
         }
 
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
-        return AlertaResposta.De(alerta);
+        Domicilio? casa = await _domicilios.ObterAsync(alerta.DomicilioId, cancellationToken);
+        return AlertaResposta.De(alerta, casa?.Apelido ?? string.Empty);
     }
 }

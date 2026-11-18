@@ -74,8 +74,7 @@ public sealed class CadastroDeDomicilios
         Leitura? ultimaLeitura = await _leituras.ObterUltimaAsync(casa.Id, cancellationToken);
         CheckIn? ultimoCheckIn = await _checkIns.ObterUltimoAsync(casa.Id, cancellationToken);
         IReadOnlyList<AlertaDeCalor> abertos = await _alertas.ListarAbertosDaCasaAsync(casa.Id, cancellationToken);
-        AlertaDeCalor? alerta = abertos.FirstOrDefault(a => a is not AlertaPreventivo) ?? (abertos.Count > 0 ? abertos[0] : null);
-        return DomicilioDetalheResposta.De(casa, ultimaLeitura, ultimoCheckIn, alerta, _relogio.Agora);
+        return DomicilioDetalheResposta.De(casa, ultimaLeitura, ultimoCheckIn?.Momento, DomicilioDetalheResposta.AlertaQueAparece(abertos), _relogio.Agora);
     }
 
     /// <summary>Corrige o apelido e o endereço da casa.</summary>
@@ -102,23 +101,25 @@ public sealed class CadastroDeDomicilios
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
     }
 
-    /// <summary>Lista os moradores, com a PII mascarada.</summary>
+    /// <summary>Lista os moradores, com CPF, Cartão SUS e saúde mascarados.</summary>
     /// <param name="id">A casa.</param>
+    /// <param name="revelarContatos">Se quem pede é o Cuidador da casa (telefones inteiros, para ligar).</param>
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>Os moradores.</returns>
-    public async Task<IReadOnlyList<MoradorResposta>> ListarMoradoresAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<MoradorResposta>> ListarMoradoresAsync(Guid id, bool revelarContatos, CancellationToken cancellationToken)
     {
         Domicilio casa = await CasaAsync(id, cancellationToken);
         DateOnly hoje = Hoje;
-        return [.. casa.Moradores.Select(m => MoradorResposta.De(m, hoje))];
+        return [.. casa.Moradores.Select(m => MoradorResposta.De(m, hoje, revelarContatos))];
     }
 
     /// <summary>Cadastra um morador na casa (R1: CPF e Cartão SUS válidos e sem CPF repetido).</summary>
     /// <param name="id">A casa.</param>
     /// <param name="dto">Os dados do morador.</param>
+    /// <param name="revelarContatos">Se quem pede é o Cuidador da casa (telefones inteiros, para ligar).</param>
     /// <param name="cancellationToken">Cancela o caso de uso.</param>
     /// <returns>O morador, com a PII mascarada.</returns>
-    public async Task<MoradorResposta> AdicionarMoradorAsync(Guid id, NovoMoradorDto dto, CancellationToken cancellationToken)
+    public async Task<MoradorResposta> AdicionarMoradorAsync(Guid id, NovoMoradorDto dto, bool revelarContatos, CancellationToken cancellationToken)
     {
         Validacao.Garantir(dto);
         Domicilio casa = await CasaAsync(id, cancellationToken);
@@ -132,30 +133,32 @@ public sealed class CadastroDeDomicilios
             hoje);
         casa.AdicionarMorador(morador);
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
-        return MoradorResposta.De(morador, hoje);
+        return MoradorResposta.De(morador, hoje, revelarContatos);
     }
 
     /// <summary>Um morador, com a PII mascarada.</summary>
     /// <param name="id">A casa.</param>
     /// <param name="moradorId">O morador.</param>
+    /// <param name="revelarContatos">Se quem pede é o Cuidador da casa (telefones inteiros, para ligar).</param>
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>O morador.</returns>
-    public async Task<MoradorResposta> ObterMoradorAsync(Guid id, Guid moradorId, CancellationToken cancellationToken)
-        => MoradorResposta.De(MoradorDa(await CasaAsync(id, cancellationToken), moradorId), Hoje);
+    public async Task<MoradorResposta> ObterMoradorAsync(Guid id, Guid moradorId, bool revelarContatos, CancellationToken cancellationToken)
+        => MoradorResposta.De(MoradorDa(await CasaAsync(id, cancellationToken), moradorId), Hoje, revelarContatos);
 
     /// <summary>Atualiza os fatores de risco declarados de um morador (R3: mudam os limites térmicos da casa).</summary>
     /// <param name="id">A casa.</param>
     /// <param name="moradorId">O morador.</param>
     /// <param name="dto">Os fatores.</param>
+    /// <param name="revelarContatos">Se quem pede é o Cuidador da casa (telefones inteiros, para ligar).</param>
     /// <param name="cancellationToken">Cancela o caso de uso.</param>
     /// <returns>O morador.</returns>
-    public async Task<MoradorResposta> AtualizarPerfilDoMoradorAsync(Guid id, Guid moradorId, PerfilDoMoradorDto dto, CancellationToken cancellationToken)
+    public async Task<MoradorResposta> AtualizarPerfilDoMoradorAsync(Guid id, Guid moradorId, PerfilDoMoradorDto dto, bool revelarContatos, CancellationToken cancellationToken)
     {
         Validacao.Garantir(dto);
         Morador morador = MoradorDa(await CasaAsync(id, cancellationToken), moradorId);
         morador.AtualizarPerfil(PerfilDeSaude.Com(dto.FatoresDeRisco.Select(FatorDeRisco.DoCodigo)));
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
-        return MoradorResposta.De(morador, Hoje);
+        return MoradorResposta.De(morador, Hoje, revelarContatos);
     }
 
     /// <summary>Remove um morador (R8: não remove o último de uma casa monitorada).</summary>
@@ -174,19 +177,21 @@ public sealed class CadastroDeDomicilios
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
     }
 
-    /// <summary>A rede de cuidado, com os telefones mascarados.</summary>
+    /// <summary>A rede de cuidado, na ordem de escalonamento.</summary>
     /// <param name="id">A casa.</param>
+    /// <param name="revelarContatos">Se quem pede é o Cuidador da casa (telefones inteiros, para ligar).</param>
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>A rede.</returns>
-    public async Task<RedeDeCuidadoResposta> ObterRedeDeCuidadoAsync(Guid id, CancellationToken cancellationToken)
-        => RedeDeCuidadoResposta.De((await CasaAsync(id, cancellationToken)).RedeDeCuidado);
+    public async Task<IReadOnlyList<ContatoResposta>> ObterRedeDeCuidadoAsync(Guid id, bool revelarContatos, CancellationToken cancellationToken)
+        => ContatoResposta.DaRede(id, (await CasaAsync(id, cancellationToken)).RedeDeCuidado, revelarContatos);
 
     /// <summary>Substitui a rede de cuidado inteira, na ordem informada (R8).</summary>
     /// <param name="id">A casa.</param>
     /// <param name="dto">Os contatos.</param>
+    /// <param name="revelarContatos">Se quem pede é o Cuidador da casa (telefones inteiros, para ligar).</param>
     /// <param name="cancellationToken">Cancela o caso de uso.</param>
     /// <returns>A rede nova.</returns>
-    public async Task<RedeDeCuidadoResposta> DefinirRedeDeCuidadoAsync(Guid id, RedeDeCuidadoDto dto, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<ContatoResposta>> DefinirRedeDeCuidadoAsync(Guid id, RedeDeCuidadoDto dto, bool revelarContatos, CancellationToken cancellationToken)
     {
         Validacao.Garantir(dto);
         for (int i = 0; i < dto.Contatos.Count; i++)
@@ -197,7 +202,7 @@ public sealed class CadastroDeDomicilios
         Domicilio casa = await CasaAsync(id, cancellationToken);
         casa.DefinirRedeDeCuidado(dto.Contatos.Select(c => new ContatoDeCuidado(c.Nome.Trim(), Telefone.Criar(c.Telefone), c.Papel.GetValueOrDefault())));
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
-        return RedeDeCuidadoResposta.De(casa.RedeDeCuidado);
+        return ContatoResposta.DaRede(casa.Id, casa.RedeDeCuidado, revelarContatos);
     }
 
     /// <summary>A rotina combinada com a pessoa.</summary>

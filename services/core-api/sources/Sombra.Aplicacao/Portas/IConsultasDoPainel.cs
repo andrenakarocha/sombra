@@ -19,7 +19,7 @@ public interface IConsultasDoPainel
     /// <param name="agora">O instante de referência, para saber quem está online.</param>
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>Uma página de casas, por apelido.</returns>
-    Task<Paginado<DomicilioResumoResposta>> ListarDomiciliosAsync(FiltroDeDomiciliosDto filtro, IReadOnlyCollection<Guid>? soEstasCasas, DateTimeOffset agora, CancellationToken cancellationToken);
+    Task<Paginado<DomicilioDetalheResposta>> ListarDomiciliosAsync(FiltroDeDomiciliosDto filtro, IReadOnlyCollection<Guid>? soEstasCasas, DateTimeOffset agora, CancellationToken cancellationToken);
 
     /// <summary>Lista os alertas.</summary>
     /// <param name="filtro">Estado, nível e paginação.</param>

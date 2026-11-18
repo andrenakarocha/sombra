@@ -39,6 +39,9 @@ public sealed class Morador
     /// <summary>Gets os fatores de risco declarados.</summary>
     public PerfilDeSaude PerfilDeSaude { get; private set; }
 
+    /// <summary>Gets o telefone da pessoa, para a família ligar, quando houver.</summary>
+    public Telefone? Telefone { get; private set; }
+
     /// <summary>Cadastra um morador.</summary>
     /// <param name="nome">O nome.</param>
     /// <param name="dataDeNascimento">A data de nascimento.</param>
@@ -89,6 +92,10 @@ public sealed class Morador
     /// <summary>Atualiza os fatores de risco declarados.</summary>
     /// <param name="perfil">O novo perfil.</param>
     public void AtualizarPerfil(PerfilDeSaude perfil) => PerfilDeSaude = perfil ?? throw new ArgumentNullException(nameof(perfil));
+
+    /// <summary>Troca o telefone da pessoa; nulo apaga.</summary>
+    /// <param name="telefone">O novo telefone.</param>
+    public void DefinirTelefone(Telefone? telefone) => Telefone = telefone;
 
     /// <summary>Nunca revela quem é a pessoa.</summary>
     /// <returns>O identificador, sem dado pessoal.</returns>

@@ -710,11 +710,12 @@ Go; o APK via EAS é um extra.
 falhavam nos schemas Zod e o cadastro de morador e a rotina davam 400. O Core se adapta ao app, sem mudar o `mobile/`.
 Roda antes de qualquer outra fase; os commits são `feat(core)`.
 
-- [ ] **F6.21** 🤖 Leituras: a lista de casas devolve o formato do detalhe; o alerta leva `apelidoDaCasa` e a linha do
+- [x] **F6.21** 🤖 Leituras: a lista de casas devolve o formato do detalhe; o alerta leva `apelidoDaCasa` e a linha do
   tempo (persistida, migração nova); os estados saem como o app os conhece (`INFORMATIVO` e `AGUARDANDO_CHECK_IN` →
   `AGUARDANDO_CHECKIN`, `EXPIRADO` → `RESOLVIDO`) e o prazo do preventivo é a validade de 24 h; rede como lista com
   `id`; morador com `telefone`; rotina como `checkInDiario` e `lembreteDeAgua`.
-  🔎 as respostas reais do Core passam nos schemas de `mobile/src/infrastructure/http/schemas.ts`.
+  🔎 as respostas reais do Core passam nos schemas de `mobile/src/infrastructure/http/schemas.ts` — 2026-11-18 (as 8
+  leituras do app, logado como `ana.filha`; telefones inteiros só para o Cuidador da casa, que liga dali; 142 testes).
 - [ ] **F6.22** 🤖 Escritas: morador por `idade` (o Core guarda a data aproximada), com `telefone` e `perfilDeSaude`
   (sempre mascarados na saída), edição completa e `IDADE_AVANCADA` declarável; Cartão SUS obrigatório no cadastro,
   porque a leitura do app sempre espera um; rotina no formato do app; vínculo da Sentinela com o `codigoDeVinculo` do

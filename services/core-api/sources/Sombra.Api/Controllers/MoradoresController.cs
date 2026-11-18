@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sombra.Api.Autenticacao;
 using Sombra.Aplicacao.Cadastro;
+using Sombra.Aplicacao.Comum;
 using Sombra.Aplicacao.Dtos;
 using Sombra.Aplicacao.Respostas;
 
@@ -33,7 +34,7 @@ public sealed class MoradoresController : ControllerBase
     [ProducesResponseType<IReadOnlyList<MoradorResposta>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     public async Task<ActionResult<IReadOnlyList<MoradorResposta>>> Listar(Guid id, CancellationToken cancellationToken)
-        => Ok(await _cadastro.ListarMoradoresAsync(id, cancellationToken));
+        => Ok(await _cadastro.ListarMoradoresAsync(id, User.IsInRole(Papeis.Cuidador), cancellationToken));
 
     /// <summary>Cadastra um morador.</summary>
     /// <remarks>Regra R1: CPF e Cartão SUS válidos pelo dígito verificador, sem CPF repetido na casa. No máximo quatro moradores.</remarks>
@@ -48,7 +49,7 @@ public sealed class MoradoresController : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity, "application/problem+json")]
     public async Task<ActionResult<MoradorResposta>> Cadastrar(Guid id, NovoMoradorDto dto, CancellationToken cancellationToken)
     {
-        MoradorResposta morador = await _cadastro.AdicionarMoradorAsync(id, dto, cancellationToken);
+        MoradorResposta morador = await _cadastro.AdicionarMoradorAsync(id, dto, User.IsInRole(Papeis.Cuidador), cancellationToken);
         return CreatedAtAction(nameof(Obter), new { id, moradorId = morador.Id }, morador);
     }
 
@@ -61,7 +62,7 @@ public sealed class MoradoresController : ControllerBase
     [ProducesResponseType<MoradorResposta>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     public async Task<ActionResult<MoradorResposta>> Obter(Guid id, Guid moradorId, CancellationToken cancellationToken)
-        => await _cadastro.ObterMoradorAsync(id, moradorId, cancellationToken);
+        => await _cadastro.ObterMoradorAsync(id, moradorId, User.IsInRole(Papeis.Cuidador), cancellationToken);
 
     /// <summary>Atualiza os fatores de risco declarados.</summary>
     /// <remarks>Regra R3: os fatores reduzem os limites térmicos da casa. A idade avançada vem da data de nascimento.</remarks>
@@ -76,7 +77,7 @@ public sealed class MoradoresController : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound, "application/problem+json")]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity, "application/problem+json")]
     public async Task<ActionResult<MoradorResposta>> AtualizarPerfil(Guid id, Guid moradorId, PerfilDoMoradorDto dto, CancellationToken cancellationToken)
-        => await _cadastro.AtualizarPerfilDoMoradorAsync(id, moradorId, dto, cancellationToken);
+        => await _cadastro.AtualizarPerfilDoMoradorAsync(id, moradorId, dto, User.IsInRole(Papeis.Cuidador), cancellationToken);
 
     /// <summary>Remove um morador.</summary>
     /// <remarks>Regra R8: o último morador de uma casa monitorada só sai depois de desligar o monitoramento.</remarks>

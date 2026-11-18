@@ -32,6 +32,9 @@ public sealed class AlertaDeSentinela : AlertaDeCalor
     public override string Tipo => "DE_SENTINELA";
 
     /// <inheritdoc/>
+    protected override string DescricaoDaAbertura => "A Sentinela lembrou e pediu o \"estou bem\".";
+
+    /// <inheritdoc/>
     public override string MensagemAoMorador => Degrau >= DegrauDeEscalonamento.LembreteLeve
         ? "Sua família foi avisada. Aperte o botão verde se você está bem."
         : Nivel >= NivelDeRisco.Perigo
@@ -99,6 +102,7 @@ public sealed class AlertaDeSentinela : AlertaDeCalor
             Prazo = novoPrazo;
         }
 
+        Anotar(leitura.Momento, Nivel >= NivelDeRisco.Perigo ? "O calor piorou: agora é perigo." : "O calor piorou.");
         Registrar(new AlertaAgravado(Id, DomicilioId, Nivel, leitura.Momento));
     }
 
@@ -114,8 +118,11 @@ public sealed class AlertaDeSentinela : AlertaDeCalor
         if (Degrau < DegrauDeEscalonamento.AlertaParaARede)
         {
             _ultimoDegrauEm = momento.ToUniversalTime();
-            SubirPara(DegrauDeEscalonamento.AlertaParaARede, momento);
+            SubirPara(DegrauDeEscalonamento.AlertaParaARede, momento, "Pedido de ajuda: toda a rede foi avisada.");
+            return;
         }
+
+        Anotar(momento, "Pedido de ajuda: a rede já estava avisada.");
     }
 
     /// <inheritdoc/>

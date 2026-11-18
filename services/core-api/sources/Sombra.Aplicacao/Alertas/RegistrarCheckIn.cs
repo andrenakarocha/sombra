@@ -64,7 +64,7 @@ public sealed class RegistrarCheckIn
 
         AlertaDeCalor? aberto = await AlertasAbertos.QuePedeRespostaAsync(_alertas, casa.Id, cancellationToken);
         AlertaDeCalor? alerta = checkIn.Situacao == SituacaoDoCheckIn.EstouBem
-            ? ConfirmarEstouBem(aberto, agora)
+            ? ConfirmarEstouBem(aberto, agora, checkIn.Origem)
             : await PedirAjudaAsync(casa, aberto, agora, cancellationToken);
         if (checkIn.Situacao == SituacaoDoCheckIn.EstouBem && alerta is not null)
         {
@@ -72,12 +72,12 @@ public sealed class RegistrarCheckIn
         }
 
         await _unidadeDeTrabalho.SalvarAsync(cancellationToken);
-        return new CheckInResposta(checkIn.Id, checkIn.Momento, checkIn.Origem, checkIn.Situacao, alerta is null ? null : AlertaResposta.De(alerta));
+        return new CheckInResposta(checkIn.Id, checkIn.Momento, checkIn.Origem, checkIn.Situacao, alerta is null ? null : AlertaResposta.De(alerta, casa.Apelido));
     }
 
-    private static AlertaDeCalor? ConfirmarEstouBem(AlertaDeCalor? aberto, DateTimeOffset agora)
+    private static AlertaDeCalor? ConfirmarEstouBem(AlertaDeCalor? aberto, DateTimeOffset agora, OrigemDoCheckIn origem)
     {
-        aberto?.ConfirmarEstouBem(agora);
+        aberto?.ConfirmarEstouBem(agora, origem);
         return aberto;
     }
 
