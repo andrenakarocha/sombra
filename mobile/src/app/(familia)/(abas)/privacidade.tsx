@@ -1,14 +1,14 @@
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useCasas, usePrivacidade } from '@/api/consultas';
-import { mensagemDeErro } from '@/api/mensagens';
-import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
-import { FarolDePrivacidade } from '@/componentes/FarolDePrivacidade';
-import { SeletorDeCasa, useCasaEscolhida } from '@/componentes/SeletorDeCasa';
-import { Texto } from '@/componentes/Texto';
-import { espaco, raio, useTema } from '@/tema';
-import { formatarHora } from '@/util/formato';
+import { useCasas, usePrivacidade } from '@/presentation/hooks/consultas';
+import { mensagemDeErro } from '@/presentation/util/mensagens';
+import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao';
+import { FarolDePrivacidade } from '@/presentation/componentes/FarolDePrivacidade';
+import { SeletorDeCasa, useCasaEscolhida } from '@/presentation/componentes/SeletorDeCasa';
+import { Texto } from '@/presentation/componentes/Texto';
+import { espaco, raio, useTema } from '@/presentation/tema';
+import { formatarHora } from '@/presentation/util/formato';
 
 export default function Privacidade() {
   const tema = useTema();

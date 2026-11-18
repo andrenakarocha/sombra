@@ -19,6 +19,7 @@ const descrever = (erro: unknown) =>
 
 export class MotorDeSincronizacao {
   private emAndamento: Promise<ResumoDaDrenagem> | null = null;
+  private repetir: Promise<ResumoDaDrenagem> | null = null;
   private forcadoOffline = false;
   private readonly ouvintes = new Set<() => void>();
 
@@ -48,8 +49,17 @@ export class MotorDeSincronizacao {
     for (const ouvinte of this.ouvintes) ouvinte();
   }
 
+  // Uma drenagem por vez. Pedir outra durante uma em andamento agenda mais uma rodada logo depois (compartilhada por
+  // todos que pediram): uma operação enfileirada no meio não fica esperando a próxima rede.
   drenar(): Promise<ResumoDaDrenagem> {
-    this.emAndamento ??= this.executar().finally(() => {
+    if (this.emAndamento) {
+      this.repetir ??= this.emAndamento.then(() => {
+        this.repetir = null;
+        return this.drenar();
+      });
+      return this.repetir;
+    }
+    this.emAndamento = this.executar().finally(() => {
       this.emAndamento = null;
     });
     return this.emAndamento;

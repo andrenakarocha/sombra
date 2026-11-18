@@ -40,7 +40,7 @@ design/tokens.py conferir   # sai com 0 só se todos os pares passam
 - **Use só os semânticos** (`--fundo`, `--superficie`, `--texto`, `--marca`, `--risco-perigo-fundo`…). Assim o tema escuro
   funciona sozinho. Os primitivos (`--cor-…`) ficam para casos muito específicos.
 - **Painel** (F7.1): o `@theme` do Tailwind v4 aponta para essas variáveis.
-- **App** (F6.1): o `tokens.py gerar` também escreve `mobile/src/tema/tokens.ts`, com os mesmos nomes e números sem unidade.
+- **App** (F6.1): o `tokens.py gerar` também escreve `mobile/src/presentation/tema/tokens.ts`, com os mesmos nomes e números sem unidade.
 - **Pitch e PDFs** (F13.1, F12.3): o `kit.css` e os HTMLs das entregas importam o `tokens.css`.
 
 ## Tipografia

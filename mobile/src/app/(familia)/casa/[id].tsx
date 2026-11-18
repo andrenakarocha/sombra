@@ -1,41 +1,41 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-native';
 
-import { useCasa, useLeituras24h, useMoradores, useRedeDeCuidado } from '@/api/consultas';
-import { mensagemDeErro } from '@/api/mensagens';
-import { AvisoOffline } from '@/componentes/AvisoOffline';
-import { Botao } from '@/componentes/Botao';
-import { Farol } from '@/componentes/Farol';
-import { GraficoDeCalor } from '@/componentes/GraficoDeCalor';
-import { Texto } from '@/componentes/Texto';
 import { INFO_DO_NIVEL } from '@/domain/clima/nivel-de-risco';
-import { espaco, useTema } from '@/tema';
-import { formatarGraus, formatarHora } from '@/util/formato';
-import { ligar, podeLigar } from '@/util/ligar';
+import { AvisoOffline } from '@/presentation/componentes/AvisoOffline';
+import { Botao } from '@/presentation/componentes/Botao';
+import { Farol } from '@/presentation/componentes/Farol';
+import { GraficoDeCalor } from '@/presentation/componentes/GraficoDeCalor';
+import { Texto } from '@/presentation/componentes/Texto';
+import { usePainelDaCasa } from '@/presentation/hooks/consultas';
+import { espaco, useTema } from '@/presentation/tema';
+import { formatarGraus, formatarHora } from '@/presentation/util/formato';
+import { ligar, podeLigar } from '@/presentation/util/ligar';
+import { mensagemDeErro } from '@/presentation/util/mensagens';
 
 export default function Casa() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const tema = useTema();
-  const casa = useCasa(id);
-  const leituras = useLeituras24h(id);
-  const moradores = useMoradores(id);
-  const rede = useRedeDeCuidado(id);
+  const painel = usePainelDaCasa(id);
 
-  if (casa.isPending) return <ActivityIndicator style={{ margin: espaco[6] }} color={tema.marca} />;
-  if (casa.isError) {
+  if (painel.isPending) return <ActivityIndicator style={{ margin: espaco[6] }} color={tema.marca} />;
+  if (painel.isError) {
     return (
       <Texto accessibilityRole="alert" style={{ margin: espaco[5] }}>
-        {mensagemDeErro(casa.error)}
+        {mensagemDeErro(painel.error)}
       </Texto>
     );
   }
 
-  const c = casa.data.dados;
-  const morador = moradores.data?.[0];
+  const { casa: c, leituras24h, moradores, rede } = painel.data.dados;
+  const morador = moradores[0];
   return (
-    <ScrollView contentContainerStyle={{ padding: espaco[5], gap: espaco[4] }}>
+    <ScrollView
+      contentContainerStyle={{ padding: espaco[5], gap: espaco[4] }}
+      refreshControl={<RefreshControl refreshing={painel.isRefetching} onRefresh={() => void painel.refetch()} />}
+    >
       <Stack.Screen options={{ title: c.apelido }} />
-      {casa.data.origem === 'cache' && <AvisoOffline atualizadoEm={casa.data.atualizadoEm} />}
+      {painel.data.origem === 'local' && <AvisoOffline atualizadoEm={painel.data.atualizadoEm} />}
 
       <Farol nivel={c.nivelAtual} />
       <Texto>{INFO_DO_NIVEL[c.nivelAtual].frase}</Texto>
@@ -52,12 +52,9 @@ export default function Casa() {
         </Texto>
       )}
 
-      {leituras.data && <GraficoDeCalor leituras={leituras.data} nivel={c.nivelAtual} />}
-      {leituras.isError && <Texto suave>O gráfico das últimas 24 horas precisa de conexão.</Texto>}
+      <GraficoDeCalor leituras={leituras24h} nivel={c.nivelAtual} />
 
-      {c.alertaAberto?.tipo === 'PREVENTIVO' && (
-        <Texto forte>Previsão: calor perigoso nas próximas 24 horas.</Texto>
-      )}
+      {c.alertaAberto?.tipo === 'PREVENTIVO' && <Texto forte>Previsão: calor perigoso nas próximas 24 horas.</Texto>}
       {c.alertaAberto && (
         <Botao
           rotulo="Ver o alerta"
@@ -79,8 +76,8 @@ export default function Casa() {
       <Texto variante="subtitulo" accessibilityRole="header" style={{ marginTop: espaco[4] }}>
         Rede de cuidado
       </Texto>
-      {rede.isError && <Texto suave>{mensagemDeErro(rede.error)}</Texto>}
-      {rede.data?.map((contato, i) => (
+      {rede.length === 0 && <Texto suave>Nenhum contato na rede ainda.</Texto>}
+      {rede.map((contato, i) => (
         <View key={contato.id} style={{ flexDirection: 'row', alignItems: 'center', gap: espaco[3], flexWrap: 'wrap' }}>
           <View style={{ flex: 1, minWidth: 160 }}>
             <Texto forte>
@@ -89,12 +86,7 @@ export default function Casa() {
             <Texto suave>{contato.papel === 'VIZINHO' ? 'Quem está perto' : 'Família'}</Texto>
           </View>
           {podeLigar(contato.telefone) && (
-            <Botao
-              rotulo="Ligar"
-              variante="secundario"
-              dica={`Liga para ${contato.nome}`}
-              aoTocar={() => ligar(contato.telefone)}
-            />
+            <Botao rotulo="Ligar" variante="secundario" dica={`Liga para ${contato.nome}`} aoTocar={() => ligar(contato.telefone)} />
           )}
         </View>
       ))}

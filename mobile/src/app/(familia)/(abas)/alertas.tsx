@@ -2,16 +2,16 @@ import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useAlertas } from '@/api/consultas';
-import { mensagemDeErro } from '@/api/mensagens';
+import { useAlertas } from '@/presentation/hooks/consultas';
+import { mensagemDeErro } from '@/presentation/util/mensagens';
 import type { Alerta } from '@/application/modelos';
-import { AvisoDemonstracao } from '@/componentes/AvisoDemonstracao';
-import { AvisoOffline } from '@/componentes/AvisoOffline';
-import { Farol } from '@/componentes/Farol';
-import { Texto } from '@/componentes/Texto';
-import { ativo, ROTULO_DO_ESTADO } from '@/dominio/alerta';
-import { espaco, raio, toque, useTema } from '@/tema';
-import { formatarHora } from '@/util/formato';
+import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao';
+import { AvisoOffline } from '@/presentation/componentes/AvisoOffline';
+import { Farol } from '@/presentation/componentes/Farol';
+import { Texto } from '@/presentation/componentes/Texto';
+import { ativo, ROTULO_DO_ESTADO } from '@/presentation/util/textos-do-alerta';
+import { espaco, raio, toque, useTema } from '@/presentation/tema';
+import { formatarHora } from '@/presentation/util/formato';
 
 export default function Alertas() {
   const tema = useTema();
@@ -31,7 +31,7 @@ export default function Alertas() {
         </Texto>
         <AvisoDemonstracao />
 
-        {alertas.data?.origem === 'cache' && <AvisoOffline atualizadoEm={alertas.data.atualizadoEm} />}
+        {alertas.data?.origem === 'local' && <AvisoOffline atualizadoEm={alertas.data.atualizadoEm} />}
         {alertas.isPending && <ActivityIndicator accessibilityLabel="Carregando os alertas" color={tema.marca} />}
         {alertas.isError && <Texto accessibilityRole="alert">{mensagemDeErro(alertas.error)}</Texto>}
         {alertas.isSuccess && ativos.length === 0 && <Texto suave>Nenhum alerta ativo. Tudo calmo por aqui.</Texto>}

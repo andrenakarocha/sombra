@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { fonte, useTema } from '@/tema';
+import { fonte, useTema } from '@/presentation/tema';
 
 export default function FamiliaLayout() {
   const tema = useTema();

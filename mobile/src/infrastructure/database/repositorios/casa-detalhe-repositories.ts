@@ -21,10 +21,10 @@ export class MoradorRepositorySqlite implements MoradorRepository {
 
   // Só a forma mascarada chega ao banco local: o CPF e o CNS inteiros nunca ficam no aparelho.
   substituirDaCasa(domicilioId: string, moradores: Morador[]) {
-    return this.db.transaction(async () => {
-      await this.db.run('DELETE FROM moradores WHERE domicilio_id = ?', [domicilioId]);
+    return this.db.transaction(async (tx) => {
+      await tx.run('DELETE FROM moradores WHERE domicilio_id = ?', [domicilioId]);
       for (const m of moradores) {
-        await this.db.run(
+        await tx.run(
           `INSERT INTO moradores (id, domicilio_id, nome, idade, telefone, cpf_mascarado, cartao_sus_mascarado,
                                   perfil_de_saude, fatores_de_risco)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -53,10 +53,10 @@ export class RedeRepositorySqlite implements RedeRepository {
   constructor(private readonly db: SqlDatabase) {}
 
   substituirDaCasa(domicilioId: string, contatos: ContatoDaRede[]) {
-    return this.db.transaction(async () => {
-      await this.db.run('DELETE FROM rede_de_cuidado WHERE domicilio_id = ?', [domicilioId]);
+    return this.db.transaction(async (tx) => {
+      await tx.run('DELETE FROM rede_de_cuidado WHERE domicilio_id = ?', [domicilioId]);
       for (const [ordem, c] of contatos.entries()) {
-        await this.db.run(
+        await tx.run(
           'INSERT INTO rede_de_cuidado (domicilio_id, ordem, id, nome, papel, telefone) VALUES (?, ?, ?, ?, ?, ?)',
           [domicilioId, ordem, c.id, c.nome, c.papel, c.telefone],
         );
