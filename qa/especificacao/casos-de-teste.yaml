@@ -1,0 +1,1308 @@
+# Casos de teste do Sombra (F10.3) · caixa-preta, positivos e negativos (spec 09, D9).
+#
+# Cada caso vira um work item "Test Case" no Azure Boards, ligado à Feature por "Tested By". Os passos vão para
+# Microsoft.VSTS.TCM.Steps (ação → resultado esperado).
+#
+# Campos:
+#   tipo         positivo | negativo
+#   tecnica      particao-de-equivalencia | valor-limite | tabela-de-decisao | transicao-de-estados
+#   criterio     o critério de aceite da Feature que o caso verifica (features.yaml)
+#   execucao     automatizado (roda no CI) · manual (passo humano, com evidência no PDF da F10.5)
+#   automatizado os testes que executam o caso: suite (mstest no Core · jest no app · pytest no simulador da
+#                Sentinela), arquivo a partir da raiz do repositório e o nome do teste
+#
+# Nenhum dado pessoal real: CPF e Cartão SUS vêm do gerador sintético dos testes (`DocumentosSinteticos`) e as
+# pessoas são as personas fictícias.
+
+versao: 1
+
+casos:
+  # ── F01 · Monitoramento térmico ──────────────────────────────────────────────────────────────────────────────
+  - id: TC01
+    feature: F01
+    criterio: F01-CA1
+    titulo: Pico de onda de calor é classificado como PERIGO
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que uma leitura típica de onda de calor vira o índice e o nível do contrato.
+    preparacao:
+      - Casa monitorada com uma Sentinela vinculada.
+    entradas: { temperaturaC: 35.0, umidadePct: 50 }
+    passos:
+      - acao: A Sentinela envia a leitura de 35,0 °C e 50% de umidade.
+        esperado: O Core aceita a leitura.
+      - acao: Consultar as leituras da casa.
+        esperado: Índice de calor 40,68 °C (±0,05) e nível PERIGO.
+    resultado_esperado: Índice 40,68 °C, nível PERIGO, igual nas implementações em C#, TypeScript e Python.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Calor/IndiceDeCalorTests.cs
+        teste: 'IndiceDeCalorTests.BateComOsVetoresDoContrato'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/clima-test.ts
+        teste: 'os vetores cobrem os cinco níveis'
+      - suite: pytest
+        arquivo: tools/sentinela-sim/tests/test_contratos.py
+        teste: 'test_indice_de_calor_bate_com_os_vetores'
+
+  - id: TC02
+    feature: F01
+    criterio: F01-CA1
+    titulo: Limites dos níveis são fechados embaixo e abertos em cima
+    tipo: positivo
+    tecnica: valor-limite
+    objetivo: Verificar a fronteira de cada nível, para nenhum índice cair no nível errado.
+    preparacao:
+      - Tabela de níveis do contrato (`docs/contratos/niveis-de-risco.md`).
+    entradas: { indicesC: [26.66, 26.67, 32.21, 32.22, 39.43, 39.44, 51.66, 51.67] }
+    passos:
+      - acao: Classificar 26,66 e 26,67 °C.
+        esperado: NORMAL e ATENCAO.
+      - acao: Classificar 32,21 e 32,22 °C.
+        esperado: ATENCAO e CAUTELA_EXTREMA.
+      - acao: Classificar 39,43 e 39,44 °C.
+        esperado: CAUTELA_EXTREMA e PERIGO.
+      - acao: Classificar 51,66 e 51,67 °C.
+        esperado: PERIGO e PERIGO_EXTREMO.
+    resultado_esperado: Cada limite pertence ao nível de cima.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Calor/IndiceDeCalorTests.cs
+        teste: 'IndiceDeCalorTests.LimitesPadraoSaoOsDoContrato'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/clima-test.ts
+        teste: 'intervalo fechado embaixo e aberto em cima'
+
+  - id: TC03
+    feature: F01
+    criterio: F01-CA3
+    titulo: Leitura fora da faixa física é recusada
+    tipo: negativo
+    tecnica: valor-limite
+    objetivo: Garantir que um sensor com defeito não abra nem feche alerta.
+    preparacao:
+      - Casa monitorada com uma Sentinela vinculada.
+    entradas: { temperaturasC: [60.0, 60.1, -10.1], umidadesPct: [100.1, NaN] }
+    passos:
+      - acao: Enviar 60,0 °C.
+        esperado: Aceita (é o máximo da faixa).
+      - acao: Enviar 60,1 °C, −10,1 °C, umidade 100,1% e umidade vazia (NaN).
+        esperado: Cada uma é recusada pela regra R9.
+      - acao: Consultar as leituras da casa.
+        esperado: Nenhuma das leituras recusadas foi gravada.
+    resultado_esperado: Recusa por R9, sem gravar nada.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Calor/IndiceDeCalorTests.cs
+        teste: 'IndiceDeCalorTests.RecusaLeituraForaDaFaixaFisica'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarLeituraTests.cs
+        teste: 'RegistrarLeituraTests.RecusaEntradasRuinsSemGravar'
+
+  - id: TC04
+    feature: F01
+    criterio: F01-CA4
+    titulo: Telemetria adulterada ou repetida vira evento de segurança
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que ninguém consegue forjar ou reaproveitar uma leitura pelo MQTT.
+    preparacao:
+      - Core e Mosquitto no ar; Sentinela com segredo HMAC.
+    entradas: { mensagens: [assinatura válida, um campo alterado depois de assinar, mesmo seq de novo] }
+    passos:
+      - acao: Publicar uma telemetria assinada corretamente.
+        esperado: A leitura é registrada.
+      - acao: Publicar a mesma mensagem com a temperatura alterada depois da assinatura.
+        esperado: Descartada; evento MQTT_ASSINATURA_INVALIDA.
+      - acao: Publicar de novo a primeira mensagem, com o mesmo seq.
+        esperado: Descartada; evento MQTT_REPLAY.
+    resultado_esperado: Só a mensagem íntegra vira leitura; as outras viram eventos de segurança (R10).
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/MqttTests.cs
+        teste: 'MqttTests.AdulteradoERepetidoViramEventoDeSeguranca'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Infraestrutura.Tests/AssinaturaMqttTests.cs
+        teste: 'AssinaturaMqttTests.BateComOsVetoresDoContrato'
+      - suite: pytest
+        arquivo: tools/sentinela-sim/tests/test_cenarios.py
+        teste: 'test_payload_adulterado_tem_uma_mensagem_alterada'
+
+  - id: TC05
+    feature: F01
+    criterio: F01-CA2
+    titulo: Card da casa fica vermelho ao vivo, sem recarregar
+    tipo: positivo
+    tecnica: transicao-de-estados
+    objetivo: Verificar que a família vê a mudança de nível no momento em que ela acontece.
+    preparacao:
+      - App logado na tela de Início, com a casa em NORMAL.
+    entradas: { evento: LeituraRegistrada, nivel: PERIGO }
+    passos:
+      - acao: A Sentinela manda uma leitura de perigo.
+        esperado: O hub entrega o evento LeituraRegistrada ao app.
+      - acao: Olhar o card da casa, sem puxar para atualizar.
+        esperado: Cor vermelha, ícone ⚠ e o texto "Perigo".
+    resultado_esperado: O card muda de NORMAL para PERIGO ao vivo, com cor, ícone e texto.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: '🔎 o card fica vermelho ao vivo quando a Sentinela manda a leitura de perigo, sem recarregar'
+
+  # ── F02 · Previsão de 24 h ───────────────────────────────────────────────────────────────────────────────────
+  - id: TC06
+    feature: F02
+    criterio: F02-CA1
+    titulo: Previsão de perigo abre um alerta preventivo por casa
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que a previsão do Clima vira um aviso na véspera para cada casa da região.
+    preparacao:
+      - Duas casas monitoradas na mesma região, sem alerta aberto.
+      - Clima respondendo uma previsão de PERIGO nas próximas 24 h.
+    entradas: { previsao: PERIGO, horizonte: 24 h }
+    passos:
+      - acao: O worker de previsão roda.
+        esperado: Abre um alerta PREVENTIVO em cada casa.
+      - acao: Consultar os alertas.
+        esperado: Dois alertas PREVENTIVO, um por casa, com prazo de 24 h.
+    resultado_esperado: Um preventivo por casa, sem duplicar.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/AvaliarPrevisoesTests.cs
+        teste: 'AvaliarPrevisoesTests.PrevisaoDePerigoAbreUmPreventivoPorCasa'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'o preventivo abre em qualquer nível, com prazo informativo de 24 h'
+
+  - id: TC07
+    feature: F02
+    criterio: F02-CA2
+    titulo: Clima fora do ar, ou casa com alerta, não abre preventivo
+    tipo: negativo
+    tecnica: tabela-de-decisao
+    objetivo: Garantir que a falha do Clima não gera alerta falso e que um alerta aberto não é duplicado.
+    preparacao:
+      - Casa A sem alerta; casa B com um alerta de Sentinela aberto.
+    entradas: { combinacoes: [Clima fora do ar × casa A, Clima com PERIGO × casa B] }
+    passos:
+      - acao: Rodar o worker com o Clima fora do ar.
+        esperado: Nenhum alerta novo; o worker não quebra.
+      - acao: Rodar com previsão de PERIGO para a casa B.
+        esperado: Nenhum preventivo novo na casa B.
+    resultado_esperado: Nenhum alerta aberto nas duas combinações.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/AvaliarPrevisoesTests.cs
+        teste: 'AvaliarPrevisoesTests.ClimaForaOuCasaComAlertaNaoAbre'
+
+  - id: TC08
+    feature: F02
+    criterio: F02-CA3
+    titulo: Preventivo vencido expira sem chamar a rede
+    tipo: negativo
+    tecnica: transicao-de-estados
+    objetivo: Verificar que um aviso de previsão nunca vira alarme para a rede.
+    preparacao:
+      - Um alerta PREVENTIVO aberto há 24 h, sem resposta.
+    entradas: { relogio: prazo + 1 min }
+    passos:
+      - acao: O escalonador roda depois do prazo.
+        esperado: O alerta vai para Expirado.
+      - acao: Conferir os avisos da rede.
+        esperado: Nenhum degrau foi disparado.
+    resultado_esperado: Aberto → Expirado, sem escalonar.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/EscalonamentoTests.cs
+        teste: 'EscalonamentoTests.PreventivoVencidoExpira'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Alertas/AlertasTests.cs
+        teste: 'AlertasTests.PreventivoInformaEExpira'
+
+  # ── F03 · Alerta com "estou bem" ─────────────────────────────────────────────────────────────────────────────
+  - id: TC09
+    feature: F03
+    criterio: F03-CA1
+    titulo: Prazo do "estou bem" depende do nível
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que o alerta abre a partir de CAUTELA_EXTREMA, com prazo menor quanto maior o risco.
+    preparacao:
+      - Casa monitorada, sem alerta aberto.
+    entradas: { leituras: ["30,0 °C / 70% → 35,04 °C (CAUTELA_EXTREMA)", "35,0 °C / 50% → 40,68 °C (PERIGO)"] }
+    passos:
+      - acao: Enviar a leitura de CAUTELA_EXTREMA.
+        esperado: Abre o alerta pedindo "estou bem" em 30 min; a Sentinela recebe o comando.
+      - acao: Repetir numa casa nova com a leitura de PERIGO.
+        esperado: Abre o alerta pedindo "estou bem" em 15 min.
+    resultado_esperado: 30 min em CAUTELA_EXTREMA, 15 min em PERIGO (R6).
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Alertas/AlertasTests.cs
+        teste: 'AlertasTests.AbreSoAPartirDeCautelaExtremaComPrazoPorNivel'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarLeituraTests.cs
+        teste: 'RegistrarLeituraTests.CautelaExtremaAbreOAlertaEAvisaASentinela'
+
+  - id: TC10
+    feature: F03
+    criterio: F03-CA1
+    titulo: Abaixo de CAUTELA_EXTREMA não pede "estou bem"
+    tipo: negativo
+    tecnica: valor-limite
+    objetivo: Garantir que a Sentinela não incomoda a pessoa num dia só quente (D13).
+    preparacao:
+      - Casa monitorada, sem alerta aberto.
+    entradas: { leitura: "30,0 °C / 50% → 31,05 °C (ATENCAO)" }
+    passos:
+      - acao: Enviar a leitura de ATENCAO.
+        esperado: A leitura é guardada.
+      - acao: Consultar os alertas da casa.
+        esperado: Nenhum alerta; a Sentinela não pede o botão.
+    resultado_esperado: Só a leitura é guardada; nenhum alerta é aberto.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarLeituraTests.cs
+        teste: 'RegistrarLeituraTests.SemRiscoOuSemMonitoramentoSoGuardaALeitura'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'abaixo de CAUTELA_EXTREMA a Sentinela não pede "estou bem"'
+
+  - id: TC11
+    feature: F03
+    criterio: F03-CA2
+    titulo: Caminho A · "estou bem" encerra o alerta
+    tipo: positivo
+    tecnica: transicao-de-estados
+    objetivo: Verificar o caminho feliz do roteiro (§3.4, passo 4).
+    preparacao:
+      - Alerta em PERIGO aguardando o check-in.
+    entradas: { acao: botão "estou bem" da Sentinela }
+    passos:
+      - acao: A pessoa aperta o botão dentro do prazo.
+        esperado: O Core registra o check-in.
+      - acao: Consultar o alerta.
+        esperado: Resolvido, com o tempo até o check-in na linha do tempo.
+    resultado_esperado: AguardandoCheckIn → Resolvido, com os minutos até o check-in.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/RoteiroTests.cs
+        teste: 'RoteiroTests.CaminhoA'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarCheckInTests.cs
+        teste: 'RegistrarCheckInTests.CaminhoAEstouBemEncerraOAlerta'
+      - suite: pytest
+        arquivo: tools/sentinela-sim/tests/test_cenarios.py
+        teste: 'test_onda_de_calor_chega_a_perigo_e_termina_com_estou_bem'
+
+  - id: TC12
+    feature: F03
+    criterio: F03-CA3
+    titulo: Leitura mais quente atualiza o mesmo alerta
+    tipo: negativo
+    tecnica: transicao-de-estados
+    objetivo: Garantir um alerta por casa por vez (R4).
+    preparacao:
+      - Alerta de CAUTELA_EXTREMA aberto.
+    entradas: { leitura: "35,0 °C / 50% → PERIGO" }
+    passos:
+      - acao: Enviar a leitura de PERIGO.
+        esperado: O alerta existente sobe para PERIGO e o prazo encurta.
+      - acao: Contar os alertas abertos da casa.
+        esperado: Um só.
+    resultado_esperado: Nenhum alerta duplicado; o aberto é atualizado.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarLeituraTests.cs
+        teste: 'RegistrarLeituraTests.LeituraMaisQuenteAtualizaOMesmoAlerta'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'subir de nível encurta o prazo; descer não muda nada'
+
+  - id: TC13
+    feature: F03
+    criterio: F03-CA4
+    titulo: Carência de 1 h depois do "estou bem"
+    tipo: negativo
+    tecnica: tabela-de-decisao
+    objetivo: Evitar que a casa ainda quente peça o botão de novo a cada leitura (R13).
+    preparacao:
+      - A pessoa acabou de resolver um alerta de PERIGO com "estou bem".
+    entradas: { combinacoes: [mesmo nível em 30 min, nível mais alto em 30 min, mesmo nível depois de 1 h] }
+    passos:
+      - acao: Enviar uma leitura de PERIGO 30 min depois.
+        esperado: Nenhum alerta novo.
+      - acao: Enviar uma leitura de PERIGO_EXTREMO 30 min depois.
+        esperado: Abre um alerta novo.
+      - acao: Numa casa nova, enviar PERIGO 1 h depois do "estou bem".
+        esperado: Abre um alerta novo.
+    resultado_esperado: Dentro de 1 h, só um nível mais alto reabre o alerta.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Alertas/AlertasTests.cs
+        teste: 'AlertasTests.CarenciaDepoisDoEstouBem'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarLeituraTests.cs
+        teste: 'RegistrarLeituraTests.CarenciaDepoisDoEstouBem'
+
+  - id: TC14
+    feature: F03
+    criterio: F03-CA2
+    titulo: Alerta resolvido não aceita mais nada
+    tipo: negativo
+    tecnica: transicao-de-estados
+    objetivo: Garantir que uma transição inválida da máquina de estados é recusada (R5).
+    preparacao:
+      - Um alerta já resolvido.
+    entradas: { acoes: [reconhecer, escalonar] }
+    passos:
+      - acao: Reconhecer o alerta resolvido pela API.
+        esperado: 422 com a regra violada.
+      - acao: Rodar o escalonador.
+        esperado: O alerta continua Resolvido.
+    resultado_esperado: Resolvido é estado final; nada muda.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'um alerta resolvido não aceita mais nada'
+      - suite: jest
+        arquivo: mobile/__tests__/caminhos-de-erro-test.tsx
+        teste: 'casa, alerta e reconhecimento inexistentes; reconhecer alerta resolvido; escalonar sem alerta'
+
+  # ── F04 · Escalonamento em degraus ───────────────────────────────────────────────────────────────────────────
+  - id: TC15
+    feature: F04
+    criterio: F04-CA1
+    titulo: Caminho B · sobe os três degraus com a vizinha
+    tipo: positivo
+    tecnica: transicao-de-estados
+    objetivo: Verificar o escalonamento do roteiro (§3.4, passo 5).
+    preparacao:
+      - Alerta em PERIGO sem resposta; rede com a filha (familiar) e a vizinha (papel Vizinho).
+    entradas: { relogio: "avança um prazo por vez" }
+    passos:
+      - acao: Vencer o prazo do "estou bem".
+        esperado: Degrau 1, lembrete leve para a filha.
+      - acao: Vencer o próximo prazo sem reconhecimento.
+        esperado: Degrau 2, "pode dar uma olhada?" para a vizinha.
+      - acao: Vencer o próximo prazo.
+        esperado: Degrau 3, alerta para toda a rede; o OLED mostra "Sua filha foi avisada".
+    resultado_esperado: 0 → 1 → 2 → 3, cada degrau avisando a pessoa certa.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/RoteiroTests.cs
+        teste: 'RoteiroTests.CaminhoB'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Infraestrutura.Tests/FluxoDeAlertaTests.cs
+        teste: 'FluxoDeAlertaTests.CaminhoBAtravessaRequisicoes'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'com perigo e vizinho: 1 família → 2 vizinha → 3 rede, a cada 10 min'
+
+  - id: TC16
+    feature: F04
+    criterio: F04-CA2
+    titulo: CAUTELA_EXTREMA nunca passa do lembrete leve
+    tipo: negativo
+    tecnica: tabela-de-decisao
+    objetivo: Garantir que a família não recebe alarme quando não há perigo (D13).
+    preparacao:
+      - Alerta em CAUTELA_EXTREMA sem resposta.
+    entradas: { nivel: CAUTELA_EXTREMA, prazos_vencidos: 3 }
+    passos:
+      - acao: Vencer o prazo do "estou bem".
+        esperado: Degrau 1, lembrete leve para a filha.
+      - acao: Vencer mais dois prazos.
+        esperado: Continua no degrau 1; vizinha e rede não recebem nada.
+    resultado_esperado: O degrau máximo é 1 sem perigo.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Alertas/AlertasTests.cs
+        teste: 'AlertasTests.EmCautelaExtremaNuncaPassaDoLembreteLeve'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/EscalonamentoTests.cs
+        teste: 'EscalonamentoTests.CautelaExtremaParaNoLembreteLeve'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'sem perigo (CAUTELA_EXTREMA), nunca passa do lembrete leve'
+
+  - id: TC17
+    feature: F04
+    criterio: F04-CA1
+    titulo: Sem vizinha na rede, pula do degrau 1 para o 3
+    tipo: positivo
+    tecnica: tabela-de-decisao
+    objetivo: Verificar que a falta de vizinho não trava o escalonamento.
+    preparacao:
+      - Alerta em PERIGO; rede só com familiares.
+    entradas: { rede: [FAMILIAR] }
+    passos:
+      - acao: Vencer o prazo do "estou bem".
+        esperado: Degrau 1 para a filha.
+      - acao: Vencer o próximo prazo.
+        esperado: Degrau 3, direto para toda a rede.
+    resultado_esperado: 1 → 3, sem o degrau 2.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Alertas/AlertasTests.cs
+        teste: 'AlertasTests.SemVizinhoPulaDoLembreteParaARede'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'sem vizinho, pula do 1 direto para o 3'
+
+  - id: TC18
+    feature: F04
+    criterio: F04-CA3
+    titulo: Reconhecer o alerta para o escalonamento
+    tipo: negativo
+    tecnica: transicao-de-estados
+    objetivo: Garantir que, depois que alguém da rede assume, ninguém mais é chamado.
+    preparacao:
+      - Alerta em PERIGO no degrau 1.
+    entradas: { acao: '"Vou ligar" no app da filha' }
+    passos:
+      - acao: A filha toca "Vou ligar".
+        esperado: O app confirma "a rede de cuidado foi avisada"; a contagem do próximo degrau some.
+      - acao: Vencer os próximos prazos.
+        esperado: O alerta não sobe para o degrau 2.
+    resultado_esperado: Escalonado(1) → reconhecido, sem novos degraus.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/EscalonamentoTests.cs
+        teste: 'EscalonamentoTests.CuidadorParaOuEncerraOEscalonamento'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'depois que alguém reconhece, o escalonamento para'
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: 'lista e detalhe com contagem até o próximo degrau; reconhecer para a contagem'
+
+  - id: TC19
+    feature: F04
+    criterio: F04-CA4
+    titulo: Degraus 1 e 2 chegam como lembrete; o 3 como alarme
+    tipo: positivo
+    tecnica: tabela-de-decisao
+    objetivo: Verificar a política de notificação da família (D13).
+    preparacao:
+      - App da família com notificações permitidas.
+    entradas: { degraus: [0, 1, 2, 3] }
+    passos:
+      - acao: Receber o degrau 0.
+        esperado: Nenhuma notificação para a família.
+      - acao: Receber os degraus 1 e 2.
+        esperado: Notificação de lembrete, sem som de alarme.
+      - acao: Receber o degrau 3.
+        esperado: Notificação de alarme.
+    resultado_esperado: Só o degrau 3 (e o pedido de ajuda) é alarme.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: 'degraus 1 e 2 são lembretes; o 3 é alerta'
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: 'a família não recebe nada no degrau 0; pedido de ajuda é alerta mesmo de noite'
+
+  # ── F05 · Pedido de ajuda ────────────────────────────────────────────────────────────────────────────────────
+  - id: TC20
+    feature: F05
+    criterio: F05-CA1
+    titulo: Pedido de ajuda sem alerta avisa a rede toda
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que o pedido de ajuda chama todo mundo na hora, mesmo num dia sem calor (R7).
+    preparacao:
+      - Casa em NORMAL, sem alerta aberto, rede com três contatos.
+    entradas: { situacao: PRECISO_DE_AJUDA }
+    passos:
+      - acao: Enviar o pedido de ajuda pela API.
+        esperado: 200; abre um alerta já no degrau 3.
+      - acao: Conferir os avisos da rede.
+        esperado: Os três contatos foram avisados.
+    resultado_esperado: Alerta no degrau 3 e a rede inteira avisada.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarCheckInTests.cs
+        teste: 'RegistrarCheckInTests.PedidoDeAjudaSemAlertaAvisaARedeToda'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/ApiTests.cs
+        teste: 'ApiTests.PedidoDeAjudaEARespostaPelaApi'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/alerta-test.ts
+        teste: 'pedido de ajuda vai direto ao degrau 3, mesmo sem perigo'
+
+  - id: TC21
+    feature: F05
+    criterio: F05-CA2
+    titulo: Pedido de ajuda com alerta aberto não abre outro
+    tipo: negativo
+    tecnica: transicao-de-estados
+    objetivo: Garantir um alerta por casa (R4) também no pedido de ajuda.
+    preparacao:
+      - Alerta de Sentinela em PERIGO, no degrau 1.
+    entradas: { situacao: PRECISO_DE_AJUDA }
+    passos:
+      - acao: A pessoa pede ajuda.
+        esperado: O alerta aberto vai ao degrau 3.
+      - acao: Contar os alertas abertos.
+        esperado: Um só.
+    resultado_esperado: O mesmo alerta, agora no degrau 3.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarCheckInTests.cs
+        teste: 'RegistrarCheckInTests.PedidoDeAjudaNoAlertaAbertoNaoAbreOutro'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Alertas/AlertasTests.cs
+        teste: 'AlertasTests.PedidoDeAjudaNoAlertaDeSentinelaVaiAoDegrauTres'
+
+  - id: TC22
+    feature: F05
+    criterio: F05-CA3
+    titulo: Toque rápido em "PRECISO DE AJUDA" não envia nada
+    tipo: negativo
+    tecnica: valor-limite
+    objetivo: Evitar o pedido de ajuda por engano (o botão exige toque longo).
+    preparacao:
+      - Modo Idoso aberto.
+    entradas: { toques: [toque rápido, toque longo] }
+    passos:
+      - acao: Encostar rápido no botão.
+        esperado: Nada acontece.
+      - acao: Segurar o botão.
+        esperado: O pedido é enviado; sem rede, o app oferece ligar para o 192.
+    resultado_esperado: Só o toque longo pede ajuda.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/componentes-test.tsx
+        teste: 'com segurarPorMs, um toque rápido não aciona'
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: 'PRECISO DE AJUDA só com o toque longo; sem rede oferece o 192'
+
+  # ── F06 · Cadastro do morador e da rede ──────────────────────────────────────────────────────────────────────
+  - id: TC23
+    feature: F06
+    criterio: F06-CA1
+    titulo: CPF válido é aceito com ou sem pontuação
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar a classe válida de CPF e a máscara na tela.
+    preparacao:
+      - Formulário do morador aberto no app.
+    entradas: { cpf: "sintético válido, com e sem pontuação (DocumentosSinteticos.Cpf)" }
+    passos:
+      - acao: Digitar o CPF sem pontuação.
+        esperado: O app formata enquanto digita.
+      - acao: Salvar e abrir o cadastro.
+        esperado: CPF mascarado, só com o meio visível.
+    resultado_esperado: Aceito nas duas formas e exibido mascarado.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Pessoas/DocumentosTests.cs
+        teste: 'DocumentosTests.AceitaCpfsValidosComOuSemPontuacao'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/morador-test.ts
+        teste: 'aceita com ou sem pontuação e só mostra o meio'
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: 'cadastra com CPF digitado e mostra tudo mascarado; erro de validação aparece em pt-BR'
+
+  - id: TC24
+    feature: F06
+    criterio: F06-CA2
+    titulo: CPF com dígito verificador errado é recusado
+    tipo: negativo
+    tecnica: valor-limite
+    objetivo: Verificar que o último dígito errado já invalida o CPF (R1).
+    preparacao:
+      - Formulário do morador aberto.
+    entradas: { cpf: "sintético válido com o último dígito somado de 1" }
+    passos:
+      - acao: Enviar o cadastro com o CPF alterado.
+        esperado: 422 com o código do erro.
+      - acao: Ler a mensagem no app.
+        esperado: Mensagem clara em pt-BR; nada é gravado.
+    resultado_esperado: Recusado por R1, com mensagem clara.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Pessoas/DocumentosTests.cs
+        teste: 'DocumentosTests.RecusaCpfComVerificadorErrado'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/ApiTests.cs
+        teste: 'ApiTests.CadastroPelaApiComOsCodigosCertos'
+
+  - id: TC25
+    feature: F06
+    criterio: F06-CA2
+    titulo: Cartão SUS inválido é recusado
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar a classe inválida do CNS (dígito verificador errado, primeiro dígito inválido, tamanho errado).
+    preparacao:
+      - Formulário do morador aberto.
+    entradas: { cns: [sintético com o último dígito errado, sintético começando por 3, sintético com 14 dígitos] }
+    passos:
+      - acao: Enviar cada CNS inválido.
+        esperado: Cada um é recusado com 422.
+    resultado_esperado: Nenhum CNS inválido entra.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Pessoas/DocumentosTests.cs
+        teste: 'DocumentosTests.RecusaCartaoSusInvalido'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Cadastro/CadastroDeDomiciliosTests.cs
+        teste: 'CadastroDeDomiciliosTests.ErrosDeCadastroTemOCodigoCerto'
+
+  - id: TC26
+    feature: F06
+    criterio: F06-CA3
+    titulo: Fatores de risco antecipam o perigo, com piso em 26,67 °C
+    tipo: positivo
+    tecnica: tabela-de-decisao
+    objetivo: Verificar o limite personalizado para cada combinação de fatores (R3).
+    preparacao:
+      - Vetores em `docs/contratos/risco-personalizado.vetores.json`.
+    entradas: { fatores: [nenhum, ≥ 80 anos, cardiopatia, diurético, os três], indiceC: 37.0 }
+    passos:
+      - acao: Avaliar 37,0 °C sem fatores.
+        esperado: CAUTELA_EXTREMA (régua da NWS).
+      - acao: Avaliar 37,0 °C com cardiopatia e diurético (−4 °C).
+        esperado: PERIGO, com o limite em 35,44 °C.
+      - acao: Avaliar com os três fatores.
+        esperado: Nenhum limite abaixo de 26,67 °C, e o app explica o piso.
+    resultado_esperado: Core e app chegam ao mesmo nível em toda combinação.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/RiscoPersonalizadoTests.cs
+        teste: 'RiscoPersonalizadoTests.BateComOsVetoresDoApp'
+      - suite: jest
+        arquivo: mobile/__tests__/domain/risco-vetores-test.ts
+        teste: 'usa as mesmas reduções por fator'
+      - suite: jest
+        arquivo: mobile/__tests__/risco-explicavel-test.tsx
+        teste: 'com os três fatores, explica o piso de 26,67 °C e mostra a diferença para a régua padrão'
+
+  - id: TC27
+    feature: F06
+    criterio: F06-CA4
+    titulo: Monitoramento não liga sem morador ou sem contato
+    tipo: negativo
+    tecnica: tabela-de-decisao
+    objetivo: Garantir que nenhum alerta fique sem ninguém para receber (R8).
+    preparacao:
+      - Casa cadastrada com a Sentinela vinculada.
+    entradas: { combinacoes: [sem morador × com contato, com morador × sem contato, com morador × com contato] }
+    passos:
+      - acao: Ligar o monitoramento sem morador.
+        esperado: Recusado.
+      - acao: Ligar com morador e sem contato.
+        esperado: Recusado.
+      - acao: Ligar com morador e um contato.
+        esperado: Monitoramento ligado.
+    resultado_esperado: Só a combinação completa liga o monitoramento.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/DomicilioTests.cs
+        teste: 'DomicilioTests.MonitoramentoPedeMoradorEContato'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/DomicilioTests.cs
+        teste: 'DomicilioTests.CasaMonitoradaNaoPerdeOMinimo'
+
+  - id: TC28
+    feature: F06
+    criterio: F06-CA1
+    titulo: O mesmo CPF não entra duas vezes na casa
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Evitar morador duplicado, que dividiria o risco em dois cadastros.
+    preparacao:
+      - Casa com um morador cadastrado.
+    entradas: { cpf: "o mesmo CPF sintético do morador existente" }
+    passos:
+      - acao: Cadastrar outro morador com o mesmo CPF.
+        esperado: Recusado.
+      - acao: Trocar o CPF de um morador para o de outro.
+        esperado: Recusado.
+    resultado_esperado: Um CPF por casa.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/DomicilioTests.cs
+        teste: 'DomicilioTests.NaoRepeteCpfNaCasa'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/DomicilioTests.cs
+        teste: 'DomicilioTests.TrocaDeCpfNaoRepeteNaCasa'
+
+  # ── F07 · Pontos de resfriamento ─────────────────────────────────────────────────────────────────────────────
+  - id: TC29
+    feature: F07
+    criterio: F07-CA1
+    titulo: Com GPS, os pontos vêm do mais perto ao mais longe
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar distância, rumo e a seta descrita em palavras.
+    preparacao:
+      - App com permissão de localização e bússola; pontos de exemplo perto da casa.
+    entradas: { posicao: perto da casa de exemplo }
+    passos:
+      - acao: Abrir "Perto de mim".
+        esperado: Lista ordenada pela distância a partir do celular.
+      - acao: Olhar o primeiro ponto.
+        esperado: Seta grande e a direção em palavras ("siga em frente", "vire à direita").
+    resultado_esperado: Ordem crescente de distância e a direção também em texto.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/perto-test.tsx
+        teste: 'com GPS: distância e rumo daqui, do mais perto ao mais longe'
+      - suite: jest
+        arquivo: mobile/__tests__/perto-test.tsx
+        teste: '🔎 com GPS e bússola, a seta grande diz em palavras para onde ir'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Geo/PontoGeograficoTests.cs
+        teste: 'PontoGeograficoTests.HaversineBateComOGrauDeLatitude'
+
+  - id: TC30
+    feature: F07
+    criterio: F07-CA2
+    titulo: Sem permissão de localização, usa a distância da casa
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que a recusa da permissão não deixa a tela vazia.
+    preparacao:
+      - Permissão de localização negada.
+    entradas: { permissao: negada }
+    passos:
+      - acao: Abrir "Perto de mim".
+        esperado: O app explica por que não há seta.
+      - acao: Olhar a lista.
+        esperado: Distâncias a partir da casa, vindas do Core.
+    resultado_esperado: A lista aparece com a distância da casa e uma explicação.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/perto-test.tsx
+        teste: 'sem localização, explica e usa a distância da casa'
+      - suite: jest
+        arquivo: mobile/__tests__/perto-test.tsx
+        teste: 'sem GPS (ou ponto sem coordenadas): a distância do servidor, a partir da casa'
+
+  - id: TC31
+    feature: F07
+    criterio: F07-CA3
+    titulo: Coordenada inválida ou casa sem estação não quebra a busca
+    tipo: negativo
+    tecnica: valor-limite
+    objetivo: Garantir entradas geográficas inválidas recusadas e região sem dados tratada.
+    preparacao:
+      - Uma casa em Campinas, sem estação de referência.
+    entradas: { latitudes: [90.0, 90.1, -90.1], casa: sem referência }
+    passos:
+      - acao: Criar pontos com latitude 90,0, 90,1 e −90,1.
+        esperado: 90,0 aceita; 90,1 e −90,1 recusadas.
+      - acao: Buscar os pontos da casa sem estação.
+        esperado: Lista vazia, sem erro.
+    resultado_esperado: Fora da faixa é recusado; sem estação devolve vazio.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Geo/PontoGeograficoTests.cs
+        teste: 'PontoGeograficoTests.RecusaForaDaFaixa'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Arredores/ArredoresTests.cs
+        teste: 'ArredoresTests.PontosPartemDaEstacaoDaRegiao'
+
+  # ── F08 · Modo Idoso ─────────────────────────────────────────────────────────────────────────────────────────
+  - id: TC32
+    feature: F08
+    criterio: F08-CA1
+    titulo: Celular no Modo Idoso abre só na tela grande
+    tipo: positivo
+    tecnica: transicao-de-estados
+    objetivo: Verificar que a pessoa idosa nunca cai nas telas da família por engano.
+    preparacao:
+      - App em demonstração, na área da família.
+    entradas: { acao: '"Usar neste celular: Casa da Dona Lurdes" em Ajustes' }
+    passos:
+      - acao: Ligar o Modo Idoso em Ajustes.
+        esperado: Só a tela com "ESTOU BEM" e "PRECISO DE AJUDA".
+      - acao: Fechar e abrir o app.
+        esperado: Abre de novo no Modo Idoso.
+      - acao: Segurar "Modo família".
+        esperado: Volta para "Suas casas".
+    resultado_esperado: Família → Idoso → Família, só com o toque longo para sair.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/app-inteiro-test.tsx
+        teste: 'Modo Idoso: o celular passa a abrir só na tela grande, e segurar "Modo família" volta'
+
+  - id: TC33
+    feature: F08
+    criterio: F08-CA2
+    titulo: O app lê a situação em voz alta
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar a voz e a explicação do próximo passo (D13).
+    preparacao:
+      - Modo Idoso com um alerta de PERIGO aberto.
+    entradas: { alerta: PERIGO, prazo: 15 min }
+    passos:
+      - acao: Abrir o Modo Idoso.
+        esperado: A voz diz o nível e o que fazer.
+      - acao: Tocar "Ouvir de novo".
+        esperado: Repete, dizendo que a filha será avisada se ela não responder.
+    resultado_esperado: A situação e a consequência são faladas em pt-BR.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: 'lê a situação em voz alta e diz o que acontece se ela não responder (D13)'
+      - suite: jest
+        arquivo: mobile/__tests__/complementares-test.tsx
+        teste: '"Ouvir de novo", "Voltar" depois de responder, e o 192 (que na demonstração não liga)'
+
+  - id: TC34
+    feature: F08
+    criterio: F08-CA3
+    titulo: "ESTOU BEM em modo avião sai uma vez só, no horário do toque"
+    tipo: negativo
+    tecnica: transicao-de-estados
+    objetivo: Verificar a fila offline e a idempotência do check-in (R14).
+    preparacao:
+      - Alerta aberto; celular em modo avião.
+    entradas: { rede: "offline → online", idempotencyKey: operationId da fila }
+    passos:
+      - acao: Tocar "ESTOU BEM" sem internet.
+        esperado: A tela confirma na hora; o toque fica na fila.
+      - acao: Voltar a rede.
+        esperado: O check-in sai sozinho, uma vez, com o horário do toque.
+      - acao: Reenviar a mesma operação.
+        esperado: O Core devolve a mesma resposta, sem registrar outro check-in.
+    resultado_esperado: Um check-in só, valendo o horário do toque.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: '🔎 ESTOU BEM em modo avião: guardado, e sai sozinho quando a rede volta'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/RegistrarCheckInTests.cs
+        teste: 'RegistrarCheckInTests.CheckInDaFilaOfflineValeNoHorarioDoToque'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/ApiTests.cs
+        teste: 'ApiTests.FilaOfflineNaoRepeteComAMesmaChave'
+
+  - id: TC35
+    feature: F08
+    criterio: F08-CA3
+    titulo: Check-in da fila no futuro ou com mais de 24 h é recusado
+    tipo: negativo
+    tecnica: valor-limite
+    objetivo: Verificar a janela aceita para o horário do toque (R14).
+    preparacao:
+      - Casa monitorada; relógio do Core fixo.
+    entradas: { momentos: [agora + 2 min, agora + 2 min + 1 s, agora − 24 h, agora − 24 h − 1 s] }
+    passos:
+      - acao: Enviar o check-in com o momento no limite de cada janela.
+        esperado: "+2 min e −24 h aceitos."
+      - acao: Enviar 1 s além de cada limite.
+        esperado: Recusados pela regra R14.
+    resultado_esperado: Só a janela de −24 h a +2 min é aceita.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/CheckInTests.cs
+        teste: 'CheckInTests.RecusaForaDaJanela'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/CheckInTests.cs
+        teste: 'CheckInTests.ValeOHorarioDoToque'
+
+  - id: TC36
+    feature: F08
+    criterio: F08-CA4
+    titulo: Fonte em 200% e TalkBack no Modo Idoso
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que a acessibilidade aguenta a configuração mais extrema do aparelho.
+    preparacao:
+      - Celular Android com a fonte do sistema em 200% e o TalkBack ligado.
+    entradas: { fonte: 200%, leitor_de_tela: TalkBack }
+    passos:
+      - acao: Abrir o Modo Idoso.
+        esperado: Nenhum texto cortado nem sobreposto.
+      - acao: Passar o dedo pelos botões.
+        esperado: O TalkBack anuncia "ESTOU BEM" e "PRECISO DE AJUDA" com o papel de botão.
+    resultado_esperado: Tela legível e navegável pelo leitor de tela.
+    execucao: manual
+    automatizado: []
+
+  # ── F09 · Proteção de dados pessoais ─────────────────────────────────────────────────────────────────────────
+  - id: TC37
+    feature: F09
+    criterio: F09-CA1
+    titulo: Documentos e telefone aparecem sempre mascarados
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar as máscaras da spec 07 no Core e no app.
+    preparacao:
+      - Morador cadastrado com CPF, Cartão SUS e telefone sintéticos.
+    entradas: { campos: [cpf, cartaoSus, telefone] }
+    passos:
+      - acao: Consultar o morador pela API.
+        esperado: CPF `***.456.***-00`, CNS `*** **** **** 1234`, telefone `(11) *****-4321` no formato.
+      - acao: Conferir o banco local do celular.
+        esperado: Só a forma mascarada está guardada.
+    resultado_esperado: Nenhum documento inteiro sai do Core nem fica no aparelho.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Cadastro/CadastroDeDomiciliosTests.cs
+        teste: 'CadastroDeDomiciliosTests.MascarasSeguemASpec07'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Pessoas/DocumentosTests.cs
+        teste: 'DocumentosTests.DocumentosNuncaAparecemEmTexto'
+      - suite: jest
+        arquivo: mobile/__tests__/infrastructure/repositorios-test.ts
+        teste: 'morador guarda só a forma mascarada'
+
+  - id: TC38
+    feature: F09
+    criterio: F09-CA2
+    titulo: Log da requisição não carrega dado pessoal
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Garantir que um cadastro com CPF não deixa o CPF no log.
+    preparacao:
+      - Core no ar, com log estruturado em JSON.
+    entradas: { requisicao: cadastro de morador com CPF sintético }
+    passos:
+      - acao: Enviar o cadastro.
+        esperado: Uma linha JSON com o correlationId.
+      - acao: Procurar o CPF e o nome no log.
+        esperado: Não aparecem.
+    resultado_esperado: Log com correlação e sem PII.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/LogTests.cs
+        teste: 'LogTests.RequisicaoGeraUmaLinhaJsonComCorrelacaoESemDadoPessoal'
+      - suite: jest
+        arquivo: mobile/__tests__/infrastructure/http-test.ts
+        teste: 'resposta fora do contrato não entra, e o erro não carrega valor nenhum (pode ser PII)'
+
+  - id: TC39
+    feature: F09
+    criterio: F09-CA3
+    titulo: CPF escrito em "observações" é mascarado
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que PII em campo livre é pega pelo conteúdo, não só pelo nome do campo (spec 07, A1).
+    preparacao:
+      - Core com o PiiScanningMiddleware (F2).
+    entradas: { observacoes: "texto livre com um CPF sintético no meio" }
+    passos:
+      - acao: Enviar o cadastro com o CPF em "observações".
+        esperado: O CPF é mascarado antes de gravar.
+      - acao: Consultar o cadastro e o log.
+        esperado: Só a forma mascarada aparece; um evento PiiDetectada sem o valor.
+    resultado_esperado: Mascarado na consulta e no log.
+    execucao: manual
+    automatizado: []
+    observacao: Automatiza na F2 (Privacidade). Até lá, o caso roda à mão contra a API.
+
+  - id: TC40
+    feature: F09
+    criterio: F09-CA4
+    titulo: Cuidador não vê casa fora da rede dele
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar o controle de acesso por papel e por rede de cuidado.
+    preparacao:
+      - Dois cuidadores, cada um com a sua casa.
+    entradas: { token: cuidador A, casa: da rede do cuidador B }
+    passos:
+      - acao: Chamar a API sem token.
+        esperado: 401.
+      - acao: O cuidador A pede a casa do cuidador B.
+        esperado: 403, e a lista de A não traz a casa de B.
+    resultado_esperado: Cada cuidador vê só as casas da rede dele.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/ApiTests.cs
+        teste: 'ApiTests.CuidadorSoVeAsCasasDele'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/ApiTests.cs
+        teste: 'ApiTests.LoginDevolveTokenEProtegeAsRotas'
+
+  - id: TC41
+    feature: F09
+    criterio: F09-CA5
+    titulo: Exportar e apagar os dados do celular (LGPD, art. 18)
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar os direitos de acesso e eliminação no próprio aparelho.
+    preparacao:
+      - App logado, com casas, fila e preferências guardadas.
+    entradas: { acoes: [exportar, apagar tudo] }
+    passos:
+      - acao: Exportar os dados locais.
+        esperado: Um JSON com o que o celular guarda, sem nenhuma PII inteira.
+      - acao: Apagar tudo e confirmar.
+        esperado: Sai da conta; não sobra casa, fila nem preferência.
+    resultado_esperado: Export sem PII inteira e aparelho limpo depois de apagar.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/bloqueio-e-privacidade-test.tsx
+        teste: '🔎 o export traz o que o celular guarda, sem nenhuma PII inteira'
+      - suite: jest
+        arquivo: mobile/__tests__/bloqueio-e-privacidade-test.tsx
+        teste: 'apagar tudo: sai da conta e não sobra casa, fila nem preferência'
+
+  # ── F10 · Risco Cidadão ──────────────────────────────────────────────────────────────────────────────────────
+  - id: TC42
+    feature: F10
+    criterio: F10-CA1
+    titulo: Farol de privacidade nas fronteiras de 0, 1–2 e 3 eventos
+    tipo: positivo
+    tecnica: valor-limite
+    objetivo: Verificar as faixas do farol e a janela de 7 dias.
+    preparacao:
+      - Eventos de segurança gravados em momentos controlados.
+    entradas: { eventos_na_semana: [0, 2, 3, 6], evento_antigo: 8 dias atrás }
+    passos:
+      - acao: Só um evento de 8 dias atrás.
+        esperado: Verde, sem mensagens.
+      - acao: Dois eventos nas últimas horas.
+        esperado: Amarelo, com a mensagem do mais recente primeiro.
+      - acao: Seis eventos na semana.
+        esperado: Vermelho.
+    resultado_esperado: 0 → verde, 1–2 → amarelo, ≥ 3 → vermelho, só na janela de 7 dias.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Arredores/ArredoresTests.cs
+        teste: 'ArredoresTests.FarolContaOsEventosDaSemana'
+
+  - id: TC43
+    feature: F10
+    criterio: F10-CA2
+    titulo: Farol no app com cor, ícone e texto
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar que o farol não depende só da cor (D12).
+    preparacao:
+      - App logado; Core com o farol da casa em amarelo.
+    entradas: { farol: AMARELO }
+    passos:
+      - acao: Abrir a aba Privacidade.
+        esperado: Farol "Atenção" com ícone, cor e a mensagem traduzida para o cidadão.
+    resultado_esperado: O farol é lido também sem enxergar cor.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/telas-test.tsx
+        teste: 'o farol de privacidade reflete o Core, com texto e não só cor'
+
+  - id: TC44
+    feature: F10
+    criterio: F10-CA3
+    titulo: Erro do Core não vira farol inventado
+    tipo: negativo
+    tecnica: particao-de-equivalencia
+    objetivo: Garantir que o app não mostra "verde" quando não sabe a resposta.
+    preparacao:
+      - Core respondendo erro na rota de privacidade.
+    entradas: { resposta: "500 ProblemDetails" }
+    passos:
+      - acao: Abrir a aba Privacidade.
+        esperado: Mensagem de erro em pt-BR, sem farol.
+    resultado_esperado: Nenhum farol aparece sem dado do Core.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/caminhos-de-erro-test.tsx
+        teste: 'erro do Core no farol'
+
+  # ── F11 · Painel operacional e infra ─────────────────────────────────────────────────────────────────────────
+  - id: TC45
+    feature: F11
+    criterio: F11-CA1
+    titulo: Alerta da VM chega ao painel ao vivo
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar o caminho do monitor da VM até o painel (§3.4, passo 7).
+    preparacao:
+      - Core no ar; painel conectado ao hub como Operador.
+    entradas: { alerta: "CPU 96,4% (limite 90%), severidade CRITICO" }
+    passos:
+      - acao: O monitor faz POST /ops/alertas sem token.
+        esperado: 401.
+      - acao: Repetir com o token do monitor.
+        esperado: 202.
+      - acao: Olhar o painel.
+        esperado: O evento AlertaDeInfra aparece sem recarregar.
+    resultado_esperado: O operador vê o pico de CPU ao vivo.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/MqttTests.cs
+        teste: 'MqttTests.AlertaDaVmChegaAoPainel'
+
+  - id: TC46
+    feature: F11
+    criterio: F11-CA2
+    titulo: Resumo do painel agrega casas por nível
+    tipo: positivo
+    tecnica: particao-de-equivalencia
+    objetivo: Verificar os números do painel contra o banco.
+    preparacao:
+      - Casas em níveis diferentes e alertas abertos e resolvidos.
+    entradas: { casas: [NORMAL, CAUTELA_EXTREMA, PERIGO] }
+    passos:
+      - acao: Chamar GET /painel/resumo.
+        esperado: Contagem por nível e alertas abertos iguais ao banco.
+    resultado_esperado: Resumo correto, calculado no banco.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Infraestrutura.Tests/ConsultasDoPainelTests.cs
+        teste: 'ConsultasDoPainelTests.ResumoDoPainelAgregaNoBanco'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/ApiTests.cs
+        teste: 'ApiTests.SaudeVersaoEDocumentacao'
+
+  - id: TC47
+    feature: F11
+    criterio: F11-CA3
+    titulo: Excesso de tentativas de login responde 429
+    tipo: negativo
+    tecnica: valor-limite
+    objetivo: Verificar o limite de tentativas contra força bruta.
+    preparacao:
+      - Core no ar, sem tentativas anteriores do mesmo cliente.
+    entradas: { tentativas: 3, senha: errada }
+    passos:
+      - acao: Fazer login com a senha errada duas vezes.
+        esperado: 401 nas duas, com "E-mail ou senha não conferem."
+      - acao: Tentar a terceira vez.
+        esperado: 429 com o cabeçalho Retry-After.
+    resultado_esperado: Passou do limite, o Core para de responder ao login.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Api.IntegrationTests/ApiTests.cs
+        teste: 'ApiTests.ExcessoDeLoginDa429'
+
+  # ── F12 · Check-in diário e lembrete de água ─────────────────────────────────────────────────────────────────
+  - id: TC48
+    feature: F12
+    criterio: F12-CA1
+    titulo: Lembrete de água só em dia quente, no pico da tarde
+    tipo: positivo
+    tecnica: tabela-de-decisao
+    objetivo: Verificar o lembrete de água (R11) e o silêncio fora dele.
+    preparacao:
+      - Rotina com o lembrete de água ligado; relógio falso.
+    entradas: { combinacoes: [ATENCAO × 15h00, ATENCAO × 15h45, NORMAL × 15h00, ATENCAO × 23h00] }
+    passos:
+      - acao: Dia em ATENCAO, às 15h00 e às 15h45.
+        esperado: Um lembrete em cada horário, no máximo 2 no dia.
+      - acao: Dia NORMAL às 15h00.
+        esperado: Nenhum lembrete.
+      - acao: Dia em ATENCAO às 23h00.
+        esperado: Nenhum lembrete (noite).
+    resultado_esperado: Só dias ≥ ATENCAO, só no pico da tarde, no máximo 2.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/LembrarRotinaTests.cs
+        teste: 'LembrarRotinaTests.AguaNoPicoDaTardeDeUmDiaQuente'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/LembrarRotinaTests.cs
+        teste: 'LembrarRotinaTests.SemCalorENemDeNoite'
+      - suite: jest
+        arquivo: mobile/__tests__/rotina-e-sentinela-test.tsx
+        teste: 'água só em dia de calor, duas vezes no pico da tarde, em ordem com o check-in'
+
+  - id: TC49
+    feature: F12
+    criterio: F12-CA2
+    titulo: Esquecer o check-in num dia sem risco vira só lembrete leve
+    tipo: negativo
+    tecnica: tabela-de-decisao
+    objetivo: Garantir que um esquecimento nunca vira alarme de emergência (R8, entrevista).
+    preparacao:
+      - Check-in diário às 9h; casa em NORMAL o dia todo.
+    entradas: { checkin: não feito, nivel: NORMAL }
+    passos:
+      - acao: Passar do horário do check-in sem fazer.
+        esperado: Um lembrete leve para a filha.
+      - acao: Conferir alertas e avisos à rede.
+        esperado: Nenhum alerta aberto; vizinha e rede não recebem nada.
+    resultado_esperado: Só o degrau 1, nunca alerta.
+    execucao: automatizado
+    automatizado:
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/LembrarRotinaTests.cs
+        teste: 'LembrarRotinaTests.CheckInDiarioEsquecidoViraSoLembreteLeve'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/RotinaTests.cs
+        teste: 'RotinaTests.CheckInDiarioEsquecido'
+      - suite: pytest
+        arquivo: tools/sentinela-sim/tests/test_cenarios.py
+        teste: 'test_esqueceu_checkin_diario_nunca_sai_do_normal'
+
+  - id: TC50
+    feature: F12
+    criterio: F12-CA3
+    titulo: Horário de check-in entre 22h e 7h é recusado
+    tipo: negativo
+    tecnica: valor-limite
+    objetivo: Verificar a fronteira da noite (R12).
+    preparacao:
+      - Tela de rotina aberta no app.
+    entradas: { horarios: ["06:59", "07:00", "21:59", "22:00"] }
+    passos:
+      - acao: Escolher 06:59 e 22:00.
+        esperado: O app recusa e explica que de noite não há lembrete.
+      - acao: Escolher 07:00 e 21:59.
+        esperado: Aceitos e enviados ao Core.
+    resultado_esperado: Só horários de 07:00 a 21:59.
+    execucao: automatizado
+    automatizado:
+      - suite: jest
+        arquivo: mobile/__tests__/rotina-e-sentinela-test.tsx
+        teste: 'check-in diário só de dia: 22h–7h é recusado'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/RotinaTests.cs
+        teste: 'RotinaTests.NoiteNaoTemLembrete'
