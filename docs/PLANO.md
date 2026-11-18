@@ -464,9 +464,12 @@ arte aprovada · simulador funcionando · dados INMET baixados · `doctor.sh` ve
   🔎 testes dos casos de uso com fakes — 2026-11-17 (22 testes de aplicação + 83 de domínio; cobertura 92,2%; quality
   100/100). Portas extras `ILeituraRepository` e `ICheckInRepository`; a R4 vale para os alertas que pedem resposta (o
   preventivo convive com eles); o pedido de ajuda num alerta de Sentinela aberto leva esse alerta ao degrau 3.
-- [ ] **F1.6** 🤖 Infraestrutura EF Core + Npgsql: configurações, owned types, migrações **Inicial**, **AlertasECheckIns**,
+- [x] **F1.6** 🤖 Infraestrutura EF Core + Npgsql: configurações, owned types, migrações **Inicial**, **AlertasECheckIns**,
   **RedeDeCuidadoEIndices**, **SeedDemo** (personas fictícias); repositórios; consultas LINQ do painel.
-  🔎 `make db-reset` cria do zero; testes de integração dos repositórios com Testcontainers (P4).
+  🔎 `make db-reset` cria do zero; testes de integração dos repositórios com Testcontainers (P4) — 2026-11-17
+  (`db-reset` aplica as 4 migrações e o seed; 8 testes de integração num PostgreSQL 16 real, 113 no total; quality
+  100/100). Endereço e rotina como tipos complexos (o sucessor dos owned types para VOs), rede de cuidado em `jsonb`
+  (guarda a ordem), alertas em TPH; `make migration-check` no CI.
 - [ ] **F1.7** 🤖 API v1: controllers, ProblemDetails, JWT com papéis, rate limiting, `/health/*`, `/version`, OpenAPI +
   Scalar com resumo, tag, exemplo e erros em todo endpoint.
   🔎 o Scalar lista todos os endpoints com os 4xx; testes de API conferem status e corpo.
@@ -806,7 +809,7 @@ spec. Um checkpoint por superfície.
 | P1 | Os vetores do índice de calor seguem a equação oficial da NWS/WPC | F0.6 | ✅ 2026-11-17: fórmula, coeficientes e ajustes transcritos da página da NWS/WPC; 20 vetores conferidos. A página deixa ambígua a saída abaixo de 80 °F; a leitura adotada está no contrato |
 | P2 | Os históricos anuais do INMET (portal de dados históricos) trazem a A701 de 2010 a 2025, horária, com `-9999` para faltante | F0.15 | ✅ 2026-11-17: os 16 anos baixados de `portal.inmet.gov.br/uploads/dadoshistoricos/{ano}.zip`, todos com a A701 e as 7 colunas usadas; 140.256 horas, 893 sem temperatura (0,64%) |
 | P3 | O `Invoke-CodeQuality.ps1` do professor roda no Linux (pwsh) e dá 100 com a estrutura nova | F1.1 | 🟡 deu 100/100 no CP06 (ExpenseHub) |
-| P4 | Testcontainers funciona na máquina de desenvolvimento (Docker) | F1.6 | ⬜ |
+| P4 | Testcontainers funciona na máquina de desenvolvimento (Docker) | F1.6 | ✅ 2026-11-17: Testcontainers 4.17 sobe o `postgres:16-alpine` de dentro do contêiner do SDK (socket do Docker, grupo e rede do host) |
 | P5 | A chave Gemini atual responde, com cota gratuita suficiente para a demo | F2.6 | 🟡 a chave existe no `.env` do HENRY; a cota atual não foi conferida |
 | P6 | O Semgrep CE em modo taint cobre as regras planejadas em C# | F2.7 | ⬜ |
 | P7 | A Open-Meteo dá, sem chave, as variáveis horárias que o modelo usa (temperatura, umidade, pressão, radiação, vento), incluindo horas passadas | F3.5 | ⬜ |
@@ -827,12 +830,12 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** F1 em andamento: domínio e aplicação prontos (F1.1–F1.5: 105 testes, cobertura 92,2%, quality 100/100). Próximo: **F1.6** (EF Core + Npgsql, migrações e repositórios). Em paralelo: ML (F4) e app (F6).
+**Agora:** F1 em andamento: domínio, aplicação e persistência prontos (F1.1–F1.6: 113 testes, 8 deles num PostgreSQL real; cobertura 92,2%; quality 100/100). Próximo: **F1.7** (API v1: controllers, ProblemDetails, JWT, OpenAPI + Scalar). Em paralelo: ML (F4) e app (F6).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
-| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.5 feitas: domínio e casos de uso (quality 100/100, cobertura 92,2%) |
+| F1 Core (C#) | 🟨 em andamento | 2026-11-17 | | F1.1–F1.6 feitas: domínio, casos de uso e EF Core com 4 migrações (quality 100/100, cobertura 92,2%) |
 | F2 Privacidade (Cyber) | ⬜ não iniciada | | | |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |

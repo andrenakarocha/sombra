@@ -42,7 +42,7 @@ public sealed partial class Sentinela
     {
         if (UltimoContato is null || momento > UltimoContato)
         {
-            UltimoContato = momento;
+            UltimoContato = momento.ToUniversalTime();
         }
     }
 

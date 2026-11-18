@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Sombra.Dominio.Calor;
@@ -27,6 +28,16 @@ public sealed partial class Domicilio
         Apelido = apelido;
         Endereco = endereco;
         RegiaoClimatica = regiaoClimatica;
+    }
+
+    /// <summary>
+    /// Reconstitui uma casa gravada (usado pelo EF Core, que não passa tipos complexos pelo construtor e preenche o
+    /// endereço logo depois de criar o objeto).
+    /// </summary>
+    [ExcludeFromCodeCoverage(Justification = "Só o EF Core chama; coberto pelos testes de integração.")]
+    private Domicilio(Guid id, string apelido, string regiaoClimatica)
+        : this(id, apelido, null!, regiaoClimatica)
+    {
     }
 
     /// <summary>Gets o identificador da casa.</summary>
