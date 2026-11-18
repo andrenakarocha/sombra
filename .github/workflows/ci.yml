@@ -50,6 +50,7 @@ jobs:
               - 'mobile/**'
               - 'design/tokens.json'
               - 'docs/contratos/**'
+              - 'ml/dados/brutos/**'
             simulador:
               - 'tools/sentinela-sim/**'
               - 'docs/contratos/**'
@@ -128,6 +129,8 @@ jobs:
           cache-dependency-path: mobile/package-lock.json
       - name: dependências (package-lock.json)
         run: npm ci
+      - name: replay do INMET em dia com o CSV e o manifesto
+        run: python3 -I scripts/extrair_replay_inmet.py --conferir
       - name: lint
         run: npm run lint
       - name: typecheck

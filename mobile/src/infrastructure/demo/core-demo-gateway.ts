@@ -10,6 +10,7 @@ import type { CanalDeTempoReal } from '@/application/ports/servicos';
 import { AlertaDeCalor } from '@/domain/alerta/alerta-de-calor';
 import { type Clock, FixedClock } from '@/domain/compartilhado/clock';
 import { valorOuErro } from '@/domain/compartilhado/result';
+import type { NivelDeRisco } from '@/domain/clima/nivel-de-risco';
 
 import { ALERTAS, CASAS, leituras24h, MORADORES, PONTOS, PRIVACIDADE, REDE } from './fixtures';
 
@@ -193,34 +194,48 @@ export class CoreDemoGateway implements CoreGateway {
     },
   };
 
-  // A onda de calor do roteiro (§3.4 do plano): a primeira casa vai a PERIGO e a Sentinela pede o "estou bem".
-  simularPerigo(leitura: Leitura, nivel: 'PERIGO' | 'PERIGO_EXTREMO' = 'PERIGO') {
-    const casa = this.estado.casas[0]!;
+  moradorPrincipal(casaId: string) {
+    return this.estado.moradores[casaId]?.[0];
+  }
+
+  get casaPrincipal() {
+    return this.estado.casas[0]!;
+  }
+
+  // Como o Core faria ao receber a telemetria: grava, avisa pelo hub e, a partir de CAUTELA_EXTREMA, abre o alerta
+  // (ou sobe o nível do que já está aberto, R4) pela máquina de estados.
+  registrarLeitura(casaId: string, leitura: Leitura, nivel: NivelDeRisco): string | null {
+    const casa = this.casa(casaId);
     casa.nivelAtual = nivel;
     casa.ultimaLeitura = leitura;
-    this.estado.leituras[casa.id] = [...(this.estado.leituras[casa.id] ?? []).slice(1), leitura];
+    this.estado.leituras[casa.id] = [...(this.estado.leituras[casa.id] ?? []), leitura].slice(-96);
     this.emitir('LeituraRegistrada', { domicilioId: casa.id, ...leitura, nivel });
 
     const aberto = casa.alertaAberto && this.estado.alertas.get(casa.alertaAberto.id);
     if (aberto) {
       aberto.alerta = valorOuErro(aberto.alerta.atualizarNivel(nivel, this.clock));
-    } else {
-      const alerta = valorOuErro(
-        AlertaDeCalor.abrir({
-          id: `demo-${this.clock.now().getTime()}`,
-          domicilioId: casa.id,
-          tipo: 'DE_SENTINELA',
-          nivel,
-          temVizinho: (REDE[casa.id] ?? []).some((c) => c.papel === 'VIZINHO'),
-          clock: this.clock,
-        }),
-      );
-      this.estado.alertas.set(alerta.dados.id, { alerta, apelido: casa.apelido });
+      this.resumirAlerta(casa);
+      return aberto.alerta.dados.id;
     }
+    const novo = AlertaDeCalor.abrir({
+      id: `demo-${this.clock.now().getTime()}-${leitura.momento}`,
+      domicilioId: casa.id,
+      tipo: 'DE_SENTINELA',
+      nivel,
+      temVizinho: (REDE[casa.id] ?? []).some((c) => c.papel === 'VIZINHO'),
+      clock: this.clock,
+    });
+    if (!novo.ok) return null; // abaixo de CAUTELA_EXTREMA a Sentinela não pede "estou bem" (R6)
+    this.estado.alertas.set(novo.valor.dados.id, { alerta: novo.valor, apelido: casa.apelido });
     this.resumirAlerta(casa);
-    const d = this.estado.alertas.get(casa.alertaAberto!.id)!.alerta.dados;
+    const d = novo.valor.dados;
     this.emitir('AlertaAberto', { alertaId: d.id, domicilioId: casa.id, tipo: d.tipo, nivel, prazo: d.prazo });
     return d.id;
+  }
+
+  // O botão "Simular onda de calor": uma leitura sintética de perigo na primeira casa (rotulada como simulação).
+  simularPerigo(leitura: Leitura, nivel: 'PERIGO' | 'PERIGO_EXTREMO' = 'PERIGO') {
+    return this.registrarLeitura(this.casaPrincipal.id, leitura, nivel)!;
   }
 
   // Sem resposta: sobe um degrau pela máquina de estados, mesmo antes do prazo (a demonstração não espera 15 min).
