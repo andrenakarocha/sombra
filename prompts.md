@@ -40,4 +40,14 @@ integrante sabe explicar o que entregou.
 8. *"Escreva testes de arquitetura que barrem dependências erradas entre as camadas e um teste que rode o roteiro da
    Dona Lurdes de ponta a ponta; depois, o README da pasta com a rubrica e as evidências."*
 
+## QA (Azure Boards)
+
+1. *"Sou o João. Quero fazer a minha parte do Sombra: o QA, checkpoints F10.2 e F10.3 (features.yaml e
+   casos-de-teste.yaml). Leia o AGENTS.md e o docs/PLANO.md e me guie checkpoint por checkpoint."*
+2. *"Escreva as 12 Features com Como/Quero/Para e critérios Dado/Quando/Então tirados das regras do Core e do contrato
+   de níveis, e de 40 a 50 casos de teste caixa-preta, positivos e negativos, com a técnica de cada um e o teste
+   automatizado que já executa o caso."*
+3. *"Escreva um conferidor que falhe se faltar campo do padrão, se uma Feature ficar sem caso negativo ou se um teste
+   citado não existir no repositório."*
+
 <!-- Cada parte acrescenta aqui os seus prompts principais quando fecha (PLANO §0, regra 16). -->
