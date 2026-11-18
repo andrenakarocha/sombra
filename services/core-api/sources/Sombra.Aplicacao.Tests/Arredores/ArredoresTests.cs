@@ -13,6 +13,8 @@ using Sombra.Aplicacao.Tests.Apoio;
 using Sombra.Dominio.Casas;
 using Sombra.Dominio.Geo;
 using Sombra.Dominio.Pessoas;
+using Sombra.Privacidade.Regras;
+using Sombra.Privacidade.Risco;
 
 namespace Sombra.Aplicacao.Tests.Arredores;
 
@@ -22,13 +24,16 @@ public sealed class ArredoresTests
 {
     private static readonly DateTimeOffset _agora = new(2026, 11, 18, 18, 0, 0, TimeSpan.Zero);
 
-    /// <summary>Nenhum evento na semana é verde; um ou dois é amarelo; três ou mais é vermelho; só as cinco últimas mensagens.</summary>
+    /// <summary>
+    /// O farol é o Risco Cidadão dos eventos da casa: nada recente é verde; uma ou duas mensagens recusadas da Sentinela
+    /// (credencial, alta) é amarelo; seis é vermelho; só as cinco últimas mensagens.
+    /// </summary>
     [TestMethod]
-    public void FarolContaOsEventosDaSemana()
+    public void FarolEhORiscoCidadaoDosEventosDaCasa()
     {
-        (DateTimeOffset, string)[] antigo = [(_agora.AddDays(-8), "MQTT_REPLAY")];
-        (DateTimeOffset, string)[] dois = [(_agora.AddHours(-2), "MQTT_REPLAY"), (_agora.AddHours(-1), "MQTT_ASSINATURA_INVALIDA")];
-        (DateTimeOffset, string)[] seis = [.. Enumerable.Range(1, 6).Select(h => (_agora.AddHours(-h), "OUTRO_TIPO"))];
+        (string, EventoDeRisco)[] antigo = [Mqtt(_agora.AddDays(-8), "MQTT_REPLAY")];
+        (string, EventoDeRisco)[] dois = [Mqtt(_agora.AddHours(-2), "MQTT_REPLAY"), Mqtt(_agora.AddHours(-1), "MQTT_ASSINATURA_INVALIDA")];
+        (string, EventoDeRisco)[] seis = [.. Enumerable.Range(1, 6).Select(h => Mqtt(_agora.AddHours(-h), "OUTRO_TIPO"))];
 
         PrivacidadeDaCasaResposta verde = PrivacidadeDaCasaResposta.De(antigo, _agora);
         PrivacidadeDaCasaResposta amarelo = PrivacidadeDaCasaResposta.De(dois, _agora);
@@ -44,6 +49,21 @@ public sealed class ArredoresTests
         Assert.HasCount(PrivacidadeDaCasaResposta.MaximoDeMensagens, vermelho.Mensagens);
         Assert.Contains("Nenhum dado pessoal saiu.", vermelho.Mensagens[0].MensagemCidadao);
     }
+
+    /// <summary>As mensagens dos guardas de privacidade dizem a família do dado, sem o dado e sem jargão.</summary>
+    [TestMethod]
+    public void MensagensDosGuardasDizemAFamilia()
+    {
+        PrivacidadeDaCasaResposta privacidade = PrivacidadeDaCasaResposta.De(
+            [("ACESSO_NEGADO", new EventoDeRisco(_agora.AddMinutes(-1), CategoriaDePii.Saude, SeveridadeDePii.Alta, Bloqueado: true))],
+            _agora);
+
+        Assert.AreEqual(FarolDePrivacidade.Amarelo, privacidade.Farol);
+        Assert.AreEqual("Alguém tentou ver um dado de saúde da casa sem permissão, e o Sombra bloqueou.", privacidade.Mensagens.Single().MensagemCidadao);
+    }
+
+    private static (string, EventoDeRisco) Mqtt(DateTimeOffset momento, string tipo)
+        => (tipo, new EventoDeRisco(momento, CategoriaDePii.Credencial, SeveridadeDePii.Alta, Bloqueado: true));
 
     /// <summary>Os pontos saem da referência da região da casa; região sem referência dá lista vazia; casa inexistente, 404.</summary>
     /// <returns>O teste.</returns>

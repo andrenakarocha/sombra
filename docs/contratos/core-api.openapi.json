@@ -2073,6 +2073,129 @@
         ]
       }
     },
+    "/api/v1/privacidade/risco-cidadao": {
+      "get": {
+        "tags": [
+          "Privacidade"
+        ],
+        "summary": "O farol de Risco Cidad\u00E3o, global e por fam\u00EDlia.",
+        "description": "Cada evento de seguran\u00E7a dos \u00FAltimos 7 dias vale \u006040 \u00D7 fam\u00EDlia \u00D7 severidade \u00D7 desfecho \u00D7 0,5^(idade/72 h)\u0060; a\nsoma, at\u00E9 100, d\u00E1 a cor: verde \u0026lt; 30 \u2264 amarelo \u0026lt; 70 \u2264 vermelho. Sa\u00FAde e credencial pesam 1, identifica\u00E7\u00E3o\n0,8, contato 0,6, localiza\u00E7\u00E3o 0,4; um vazamento vale tr\u00EAs bloqueios.",
+        "responses": {
+          "200": {
+            "description": "O farol.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiscoCidadaoResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiscoCidadaoResposta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/privacidade/eventos": {
+      "get": {
+        "tags": [
+          "Privacidade"
+        ],
+        "summary": "A trilha de seguran\u00E7a, do mais recente para o mais antigo.",
+        "parameters": [
+          {
+            "name": "Pagina",
+            "in": "query",
+            "description": "A p\u00E1gina, a partir de 1.",
+            "schema": {
+              "maximum": 10000,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            },
+            "example": 1
+          },
+          {
+            "name": "Tamanho",
+            "in": "query",
+            "description": "Quantos itens por p\u00E1gina.",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            },
+            "example": 20
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginadoOfEventoDeSegurancaResposta"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginadoOfEventoDeSegurancaResposta"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sem token, ou token inv\u00E1lido ou vencido."
+          },
+          "403": {
+            "description": "O papel n\u00E3o permite, ou a casa n\u00E3o \u00E9 do Cuidador."
+          },
+          "429": {
+            "description": "Limite de requisi\u00E7\u00F5es por minuto atingido."
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/domicilios/{id}/sentinelas": {
       "get": {
         "tags": [
@@ -2920,6 +3043,16 @@
         },
         "description": "Quanto adiantar o rel\u00F3gio do Core na demonstra\u00E7\u00E3o."
       },
+      "CategoriaDePii": {
+        "enum": [
+          "IDENTIFICACAO",
+          "SAUDE",
+          "CONTATO",
+          "CREDENCIAL",
+          "LOCALIZACAO"
+        ],
+        "description": "A fam\u00EDlia de um dado pessoal, que define o peso dele no risco do cidad\u00E3o (spec 07)."
+      },
       "CheckInDiarioDto": {
         "required": [
           "ativo",
@@ -3001,6 +3134,29 @@
           }
         },
         "description": "O resultado de um check-in: ele, e o alerta que ele encerrou ou abriu."
+      },
+      "ContagemDeEventosResposta": {
+        "required": [
+          "nome",
+          "eventos"
+        ],
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string",
+            "description": "O sink ou a regra."
+          },
+          "eventos": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantos eventos na janela.",
+            "format": "int32"
+          }
+        },
+        "description": "Uma contagem de eventos (por sink ou por regra)."
       },
       "ContatoDto": {
         "required": [
@@ -3228,6 +3384,107 @@
           }
         },
         "description": "Um passo da linha do tempo do alerta."
+      },
+      "EventoDeSegurancaResposta": {
+        "required": [
+          "id",
+          "momento",
+          "tipo",
+          "origem",
+          "sink",
+          "categoria",
+          "severidade",
+          "regra",
+          "bloqueado",
+          "domicilioId",
+          "correlationId",
+          "detalhe"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "O identificador.",
+            "format": "uuid"
+          },
+          "momento": {
+            "type": "string",
+            "description": "Quando.",
+            "format": "date-time"
+          },
+          "tipo": {
+            "type": "string",
+            "description": "O tipo (\u0060ACESSO_NEGADO\u0060, \u0060VAZAMENTO_BLOQUEADO\u0060, \u0060MQTT_REPLAY\u0060...)."
+          },
+          "origem": {
+            "type": "string",
+            "description": "Onde: a rota-modelo, o evento de log, o host, o t\u00F3pico ou a Sentinela."
+          },
+          "sink": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Por onde o dado tentou sair (nos eventos de privacidade).",
+                "$ref": "#/components/schemas/SinkDePii"
+              }
+            ]
+          },
+          "categoria": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "A fam\u00EDlia do dado.",
+                "$ref": "#/components/schemas/CategoriaDePii"
+              }
+            ]
+          },
+          "severidade": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "A severidade da regra.",
+                "$ref": "#/components/schemas/SeveridadeDePii"
+              }
+            ]
+          },
+          "regra": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "A regra que disparou."
+          },
+          "bloqueado": {
+            "type": "boolean",
+            "description": "Se o Sombra bloqueou."
+          },
+          "domicilioId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "A casa, quando se sabe.",
+            "format": "uuid"
+          },
+          "correlationId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "A correla\u00E7\u00E3o, para achar o resto nos logs."
+          },
+          "detalhe": {
+            "type": "string",
+            "description": "O resumo leg\u00EDvel, sem dado pessoal."
+          }
+        },
+        "description": "Um evento da trilha de seguran\u00E7a, s\u00F3 com metadados (contrato \u0060GET /privacidade/eventos\u0060)."
       },
       "FarolDePrivacidade": {
         "enum": [
@@ -3781,6 +4038,52 @@
         },
         "description": "Uma p\u00E1gina de resultados (contrato: \u0060itens\u0060, \u0060pagina\u0060, \u0060tamanho\u0060, \u0060total\u0060)."
       },
+      "PaginadoOfEventoDeSegurancaResposta": {
+        "required": [
+          "itens",
+          "pagina",
+          "tamanho",
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "itens": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventoDeSegurancaResposta"
+            },
+            "description": "Os itens desta p\u00E1gina."
+          },
+          "pagina": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "A p\u00E1gina, a partir de 1.",
+            "format": "int32"
+          },
+          "tamanho": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "O tamanho pedido.",
+            "format": "int32"
+          },
+          "total": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantos itens existem com estes filtros.",
+            "format": "int32"
+          }
+        },
+        "description": "Uma p\u00E1gina de resultados (contrato: \u0060itens\u0060, \u0060pagina\u0060, \u0060tamanho\u0060, \u0060total\u0060)."
+      },
       "PaginadoOfLeituraResposta": {
         "required": [
           "itens",
@@ -4030,7 +4333,7 @@
             "description": "As \u00FAltimas mensagens, da mais recente para a mais antiga."
           }
         },
-        "description": "A privacidade da casa, no formato do app (D17). Por enquanto o farol conta os eventos de seguran\u00E7a das Sentinelas da\ncasa na \u00FAltima semana e as mensagens v\u00EAm de templates; a F2.5 troca o c\u00E1lculo por pesos e decaimento, e a F2.6 traz a\ntradu\u00E7\u00E3o da IA, sem mudar o formato."
+        "description": "A privacidade da casa, no formato do app (D17). O farol \u00E9 o Risco Cidad\u00E3o (spec 07 \u00A74: pesos, desfecho e decaimento)\ndos eventos de seguran\u00E7a da casa: as mensagens recusadas das Sentinelas dela e os vazamentos que os guardas barraram\nem rotas dela. As mensagens v\u00EAm de templates; a F2.6 traz a tradu\u00E7\u00E3o da IA, sem mudar o formato."
       },
       "ProblemDetails": {
         "type": "object",
@@ -4122,6 +4425,107 @@
           }
         },
         "description": "O rel\u00F3gio do Core adiantado depois do avan\u00E7o."
+      },
+      "RiscoCidadaoResposta": {
+        "required": [
+          "pontuacao",
+          "farol",
+          "eventosNaJanela",
+          "porCategoria",
+          "porSink",
+          "topRegras",
+          "calculadoEm"
+        ],
+        "type": "object",
+        "properties": {
+          "pontuacao": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "De 0 a 100.",
+            "format": "double"
+          },
+          "farol": {
+            "description": "A cor global.",
+            "$ref": "#/components/schemas/FarolDePrivacidade"
+          },
+          "eventosNaJanela": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantos eventos entraram na conta.",
+            "format": "int32"
+          },
+          "porCategoria": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RiscoPorCategoriaResposta"
+            },
+            "description": "O farol de cada fam\u00EDlia com evento, da pior para a melhor."
+          },
+          "porSink": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContagemDeEventosResposta"
+            },
+            "description": "Os eventos de privacidade por sink."
+          },
+          "topRegras": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContagemDeEventosResposta"
+            },
+            "description": "As regras que mais dispararam."
+          },
+          "calculadoEm": {
+            "type": "string",
+            "description": "O instante do c\u00E1lculo.",
+            "format": "date-time"
+          }
+        },
+        "description": "O farol executivo de Risco Cidad\u00E3o (contrato \u0060GET /privacidade/risco-cidadao\u0060, spec 07 \u00A74): global e por fam\u00EDlia,\ncom as contagens por sink e as regras que mais dispararam na janela."
+      },
+      "RiscoPorCategoriaResposta": {
+        "required": [
+          "categoria",
+          "pontuacao",
+          "farol",
+          "eventos"
+        ],
+        "type": "object",
+        "properties": {
+          "categoria": {
+            "description": "A fam\u00EDlia.",
+            "$ref": "#/components/schemas/CategoriaDePii"
+          },
+          "pontuacao": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d\u002B)?(?:[eE][\u002B-]?\\d\u002B)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "description": "De 0 a 100.",
+            "format": "double"
+          },
+          "farol": {
+            "description": "A cor.",
+            "$ref": "#/components/schemas/FarolDePrivacidade"
+          },
+          "eventos": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Quantos eventos da fam\u00EDlia na janela.",
+            "format": "int32"
+          }
+        },
+        "description": "O farol de uma fam\u00EDlia de dado."
       },
       "RotinaDto": {
         "required": [
@@ -4234,6 +4638,26 @@
           }
         },
         "description": "A Sentinela rec\u00E9m-vinculada, com o segredo HMAC que assina as mensagens (contrato MQTT). O segredo aparece s\u00F3 nesta\nresposta: grave-o na Sentinela."
+      },
+      "SeveridadeDePii": {
+        "enum": [
+          "BAIXA",
+          "MEDIA",
+          "ALTA",
+          "CRITICA",
+          null
+        ]
+      },
+      "SinkDePii": {
+        "enum": [
+          "LOG",
+          "RESPOSTA_HTTP",
+          "SAIDA_EXTERNA",
+          "MQTT",
+          "EXCECAO",
+          "ENTRADA",
+          null
+        ]
       },
       "SituacaoDoCheckIn": {
         "enum": [
@@ -4385,6 +4809,9 @@
     },
     {
       "name": "Painel"
+    },
+    {
+      "name": "Privacidade"
     },
     {
       "name": "Sentinelas e leituras"

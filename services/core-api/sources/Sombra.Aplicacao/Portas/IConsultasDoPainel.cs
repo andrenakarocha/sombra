@@ -53,4 +53,16 @@ public interface IConsultasDoPainel
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>A privacidade da casa.</returns>
     Task<PrivacidadeDaCasaResposta> PrivacidadeDaCasaAsync(Guid domicilioId, DateTimeOffset agora, CancellationToken cancellationToken);
+
+    /// <summary>O farol executivo de Risco Cidadão: todos os eventos de segurança da janela.</summary>
+    /// <param name="agora">O instante de referência.</param>
+    /// <param name="cancellationToken">Cancela a consulta.</param>
+    /// <returns>O farol global, por família, por sink e as regras que mais dispararam.</returns>
+    Task<RiscoCidadaoResposta> RiscoCidadaoAsync(DateTimeOffset agora, CancellationToken cancellationToken);
+
+    /// <summary>A trilha de segurança, do mais recente para o mais antigo, só com metadados.</summary>
+    /// <param name="filtro">A página.</param>
+    /// <param name="cancellationToken">Cancela a consulta.</param>
+    /// <returns>A página de eventos.</returns>
+    Task<Paginado<EventoDeSegurancaResposta>> ListarEventosDeSegurancaAsync(ConsultaPaginadaDto filtro, CancellationToken cancellationToken);
 }

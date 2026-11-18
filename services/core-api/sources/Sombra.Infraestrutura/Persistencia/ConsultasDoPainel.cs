@@ -13,6 +13,8 @@ using Sombra.Dominio.Calor;
 using Sombra.Dominio.Casas;
 using Sombra.Dominio.Sentinelas;
 using Sombra.Infraestrutura.Persistencia.Configuracoes;
+using Sombra.Infraestrutura.Seguranca;
+using Sombra.Privacidade.Risco;
 
 namespace Sombra.Infraestrutura.Persistencia;
 
@@ -149,11 +151,35 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
             .SelectMany(d => d.Sentinelas.Select(s => s.DeviceId))
             .ToArrayAsync(cancellationToken);
         DateTimeOffset desde = agora - PrivacidadeDaCasaResposta.Janela;
-        var eventos = await _db.EventosDeSeguranca.AsNoTracking()
-            .Where(e => sentinelas.Contains(e.Origem) && e.Momento >= desde)
-            .Select(e => new { e.Momento, e.Tipo })
+        List<EventoDeSeguranca> eventos = await _db.EventosDeSeguranca.AsNoTracking()
+            .Where(e => (e.DomicilioId == domicilioId || sentinelas.Contains(e.Origem)) && e.Momento >= desde)
             .ToListAsync(cancellationToken);
-        return PrivacidadeDaCasaResposta.De(eventos.Select(e => (e.Momento, e.Tipo)), agora);
+        return PrivacidadeDaCasaResposta.De(eventos.Select(e => (e.Tipo, e.ParaRisco())), agora);
+    }
+
+    /// <inheritdoc/>
+    public async Task<RiscoCidadaoResposta> RiscoCidadaoAsync(DateTimeOffset agora, CancellationToken cancellationToken)
+    {
+        DateTimeOffset desde = agora - RiscoCidadao.Janela;
+        List<EventoDeSeguranca> eventos = await _db.EventosDeSeguranca.AsNoTracking().Where(e => e.Momento >= desde).ToListAsync(cancellationToken);
+        return RiscoCidadaoResposta.De([.. eventos.Select(e => (e.ParaRisco(), e.Sink, e.Regra))], agora);
+    }
+
+    /// <inheritdoc/>
+    public async Task<Paginado<EventoDeSegurancaResposta>> ListarEventosDeSegurancaAsync(ConsultaPaginadaDto filtro, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(filtro);
+        int total = await _db.EventosDeSeguranca.CountAsync(cancellationToken);
+        List<EventoDeSeguranca> pagina = await _db.EventosDeSeguranca.AsNoTracking()
+            .OrderByDescending(e => e.Momento).ThenByDescending(e => e.Id)
+            .Skip((filtro.Pagina - 1) * filtro.Tamanho)
+            .Take(filtro.Tamanho)
+            .ToListAsync(cancellationToken);
+        return new(
+            [.. pagina.Select(e => new EventoDeSegurancaResposta(e.Id, e.Momento, e.Tipo, e.Origem, e.Sink, e.Categoria, e.Severidade, e.Regra, e.Bloqueado, e.DomicilioId, e.CorrelationId, e.Detalhe))],
+            filtro.Pagina,
+            filtro.Tamanho,
+            total);
     }
 
     /// <inheritdoc/>

@@ -529,7 +529,7 @@ verde · roteiro de alerta funcionando com o simulador.
 - [x] **F2.4** (2026-11-18) 🤖 `Sensivel<T>` + guardas de sink: log (decorador dos sinks do Serilog, que é o provedor de log do Core), resposta HTTP (middleware),
   saída externa (`DelegatingHandler` + publicador MQTT) e exceções.
   🔎 cenários A2–A7 como testes de integração.
-- [ ] **F2.5** 🤖 Eventos de segurança (outbox), cálculo do `RiscoCidadao` (pesos e decaimento) e endpoints
+- [x] **F2.5** (2026-11-18) 🤖 Eventos de segurança (outbox), cálculo do `RiscoCidadao` (pesos e decaimento) e endpoints
   `/privacidade/eventos`, `/privacidade/risco-cidadao`, `/domicilios/{id}/privacidade`.
   🔎 testes do cálculo do farol.
 - [ ] **F2.6** 🤖 🔑 `TradutorDeRiscoWorker`: prompt sem PII, três audiências (cidadão, gestão, time técnico com sugestão
@@ -981,7 +981,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
-| F2 Privacidade (Cyber) | 🟨 em andamento | 2026-11-18 | | F2.1–F2.4 feitas: motor de PII com regras em JSON (8 regras, 58 casos, 0 falso negativo em `make pii-relatorio`); middleware com taint e política de campo livre (A1 como teste de integração); PII cifrada em repouso (AES-256-GCM + índice cego, conferido no `psql`); guardas de log, resposta, saída externa, MQTT e exceções (A2–A7 como testes) |
+| F2 Privacidade (Cyber) | 🟨 em andamento | 2026-11-18 | | F2.1–F2.5 feitas: motor de PII com regras em JSON (8 regras, 58 casos, 0 falso negativo em `make pii-relatorio`); middleware com taint e política de campo livre (A1 como teste de integração); PII cifrada em repouso (AES-256-GCM + índice cego, conferido no `psql`); guardas de log, resposta, saída externa, MQTT e exceções (A2–A7 como testes); eventos gravados e farol do Risco Cidadão (pesos e decaimento) no painel e na casa |
 | F3 Clima (SOA) | ⬜ não iniciada | | | |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |

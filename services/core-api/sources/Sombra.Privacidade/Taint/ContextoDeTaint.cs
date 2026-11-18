@@ -32,6 +32,9 @@ public sealed class ContextoDeTaint
         set => _atual.Value = value;
     }
 
+    /// <summary>Gets or sets a casa da requisição, quando a rota é de uma casa: os eventos de segurança acendem o farol dela.</summary>
+    public Guid? DomicilioId { get; set; }
+
     /// <summary>Gets as detecções, na ordem em que aconteceram.</summary>
     public IReadOnlyList<DeteccaoDePii> Deteccoes
     {
