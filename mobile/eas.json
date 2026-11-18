@@ -1,0 +1,19 @@
+{
+  "cli": {
+    "version": ">= 27.7.2",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": { "EXPO_PUBLIC_API_URL": "http://192.168.56.10:5080" }
+    },
+    "production-apk": {
+      "android": { "buildType": "apk" }
+    },
+    "production": {
+      "android": { "buildType": "app-bundle" }
+    }
+  }
+}
