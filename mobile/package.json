@@ -59,7 +59,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "test:cobertura": "jest --coverage"
   },
   "private": true,
   "jest": {
@@ -73,6 +74,25 @@
     "moduleNameMapper": {
       "^@test/(.*)$": "<rootDir>/test-utils/$1"
     },
-    "testTimeout": 15000
+    "testTimeout": 30000,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/infrastructure/native/**",
+      "!src/infrastructure/database/expo-sqlite-database.ts",
+      "!src/infrastructure/container-do-aparelho.ts"
+    ],
+    "coverageReporters": [
+      "text-summary",
+      "json-summary",
+      "lcov"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 95,
+        "lines": 95,
+        "functions": 95,
+        "branches": 90
+      }
+    }
   }
 }

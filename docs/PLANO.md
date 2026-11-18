@@ -672,6 +672,10 @@ Go; o APK via EAS é um extra.
 - [ ] **F6.20** 🤖🔑 Qualidade: teste do app inteiro (rotas reais), gate de cobertura ≥ 95% no CI e APK via EAS
   (`eas.json`; o job roda só com `EXPO_TOKEN` nos secrets, pedido ao dono do repositório).
   🔎 CI verde com o gate; APK gerado quando o token existir.
+  ⏸ 2026-11-18: local verde com o gate (284 testes; 97,7% statements · 98,5% linhas · 95,8% funções · 91,3% branches;
+  limite 95/95/95/90), teste do app inteiro com as rotas reais, `expo-doctor` 20/20 e bundle Hermes. Fora da conta, de
+  propósito: os adaptadores nativos (`infrastructure/native`, expo-sqlite, container do aparelho), que só rodam no
+  celular. Falta o CI no PR e, para o APK, o dono do repositório cadastrar `EXPO_TOKEN` e `EAS_PROJECT_ID` (🔑).
 - [ ] **F6.7** 🧑🤖 Acessibilidade (checklist da spec) + testes Jest.
   🔎 checklist marcado com prints; vídeo curto com TalkBack gravado no celular do operador.
 - [ ] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
