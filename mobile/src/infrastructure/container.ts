@@ -1,6 +1,7 @@
 // Composition root: o único lugar que conhece todas as implementações. Testes trocam as portas por fakes.
 
 import { Barramento } from '@/application/barramento';
+import { CentralDeSincronizacao } from '@/application/casos-de-uso/central-de-sincronizacao';
 import { Consultas } from '@/application/casos-de-uso/consultas';
 import { Escritas } from '@/application/casos-de-uso/escritas';
 import { ServicoDeSessao } from '@/application/casos-de-uso/sessao';
@@ -15,6 +16,7 @@ import type {
   MonitorDeRede,
   Notificador,
   RepositoriosDaUnidade,
+  SincronizacaoEmSegundoPlano,
   UnidadeDeTrabalho,
 } from '@/application/ports/servicos';
 import { MotorDeSincronizacao } from '@/application/sincronizacao/motor';
@@ -66,6 +68,7 @@ export type Adaptadores = {
   tempoReal: CanalDeTempoReal;
   rede: MonitorDeRede;
   ids: GeradorDeId;
+  worker?: SincronizacaoEmSegundoPlano;
   clock?: Clock;
   sorteio?: () => number;
   demo?: CoreDemoGateway;
@@ -96,6 +99,12 @@ export async function montarContainer(a: Adaptadores): Promise<Container & { dem
     }),
     eventos,
     sincronizacao: { motor, outbox: repos.outbox },
+    central: new CentralDeSincronizacao({
+      outbox: repos.outbox,
+      motor,
+      worker: a.worker ?? { registrar: async () => 'INDISPONIVEL' },
+      clock,
+    }),
     barramento,
     tempoReal,
     rede: a.rede,

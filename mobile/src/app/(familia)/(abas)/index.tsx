@@ -7,6 +7,7 @@ import { mensagemDeErro } from '@/presentation/util/mensagens';
 import { AvisoDemonstracao } from '@/presentation/componentes/AvisoDemonstracao';
 import { AvisoOffline } from '@/presentation/componentes/AvisoOffline';
 import { CartaoCasa } from '@/presentation/componentes/CartaoCasa';
+import { PilulaDeSincronizacao } from '@/presentation/componentes/PilulaDeSincronizacao';
 import { Texto } from '@/presentation/componentes/Texto';
 import { espaco, useTema } from '@/presentation/tema';
 
@@ -24,6 +25,7 @@ export default function Inicio() {
           Suas casas
         </Texto>
         <AvisoDemonstracao />
+        <PilulaDeSincronizacao />
 
         {casas.data?.origem === 'local' && <AvisoOffline atualizadoEm={casas.data.atualizadoEm} />}
         {casas.isPending && <ActivityIndicator accessibilityLabel="Carregando as casas" color={tema.marca} />}

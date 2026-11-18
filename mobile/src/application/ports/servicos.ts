@@ -47,3 +47,10 @@ export interface CanalDeTempoReal {
 export interface MonitorDeRede {
   aoMudar(ouvinte: (online: boolean) => void): () => void;
 }
+
+// O sistema decide se e quando o worker roda; sem garantia, o app também drena em primeiro plano.
+export type EstadoDoSegundoPlano = 'ATIVO' | 'RESTRITO' | 'INDISPONIVEL';
+
+export interface SincronizacaoEmSegundoPlano {
+  registrar(): Promise<EstadoDoSegundoPlano>;
+}

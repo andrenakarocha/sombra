@@ -28,7 +28,8 @@
       "expo-splash-screen",
       "expo-asset",
       "expo-sqlite",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-background-task"
     ],
     "scheme": "sombra",
     "experiments": {
