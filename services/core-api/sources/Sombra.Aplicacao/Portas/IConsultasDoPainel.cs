@@ -46,4 +46,11 @@ public interface IConsultasDoPainel
     /// <param name="cancellationToken">Cancela a consulta.</param>
     /// <returns>O resumo.</returns>
     Task<PainelResumoResposta> ObterResumoAsync(DateTimeOffset agora, CancellationToken cancellationToken);
+
+    /// <summary>O farol de privacidade da casa e as últimas mensagens, a partir dos eventos de segurança das Sentinelas dela.</summary>
+    /// <param name="domicilioId">A casa.</param>
+    /// <param name="agora">O instante de referência.</param>
+    /// <param name="cancellationToken">Cancela a consulta.</param>
+    /// <returns>A privacidade da casa.</returns>
+    Task<PrivacidadeDaCasaResposta> PrivacidadeDaCasaAsync(Guid domicilioId, DateTimeOffset agora, CancellationToken cancellationToken);
 }

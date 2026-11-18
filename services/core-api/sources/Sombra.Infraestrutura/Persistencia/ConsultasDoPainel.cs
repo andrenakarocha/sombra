@@ -142,6 +142,21 @@ public sealed class ConsultasDoPainel : IConsultasDoPainel
     }
 
     /// <inheritdoc/>
+    public async Task<PrivacidadeDaCasaResposta> PrivacidadeDaCasaAsync(Guid domicilioId, DateTimeOffset agora, CancellationToken cancellationToken)
+    {
+        string[] sentinelas = await _db.Domicilios.AsNoTracking()
+            .Where(d => d.Id == domicilioId)
+            .SelectMany(d => d.Sentinelas.Select(s => s.DeviceId))
+            .ToArrayAsync(cancellationToken);
+        DateTimeOffset desde = agora - PrivacidadeDaCasaResposta.Janela;
+        var eventos = await _db.EventosDeSeguranca.AsNoTracking()
+            .Where(e => sentinelas.Contains(e.Origem) && e.Momento >= desde)
+            .Select(e => new { e.Momento, e.Tipo })
+            .ToListAsync(cancellationToken);
+        return PrivacidadeDaCasaResposta.De(eventos.Select(e => (e.Momento, e.Tipo)), agora);
+    }
+
+    /// <inheritdoc/>
     public async Task<Paginado<LeituraResposta>> ListarLeiturasAsync(Guid domicilioId, FiltroDeLeiturasDto filtro, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(filtro);

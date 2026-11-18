@@ -22,6 +22,7 @@ using Sombra.Api.Autenticacao;
 using Sombra.Api.Erros;
 using Sombra.Api.TempoReal;
 using Sombra.Aplicacao.Alertas;
+using Sombra.Aplicacao.Arredores;
 using Sombra.Aplicacao.Cadastro;
 using Sombra.Aplicacao.Portas;
 using Sombra.Infraestrutura;
@@ -62,6 +63,7 @@ public static class ComposicaoDoCore
         servicos.AddScoped<EscalonarAlertas>();
         servicos.AddScoped<LembrarRotina>();
         servicos.AddScoped<AvaliarPrevisoes>();
+        servicos.AddScoped<PontosDeResfriamentoDaCasa>();
         servicos.AddSignalR().AddJsonProtocol(json => ConfigurarJson(json.PayloadSerializerOptions));
 
         servicos.AddControllers(opcoes =>

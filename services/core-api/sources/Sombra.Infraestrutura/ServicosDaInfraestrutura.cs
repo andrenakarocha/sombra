@@ -40,6 +40,7 @@ public static class ServicosDaInfraestrutura
         servicos.AddScoped<INotificador>(provedor => provedor.GetRequiredService<NotificadorComOutbox>());
         servicos.AddScoped<IHistoricoDeAvisos>(provedor => provedor.GetRequiredService<NotificadorComOutbox>());
         servicos.AddSingleton<IClimaGateway, ClimaSimulado>();
+        servicos.AddSingleton<IPontosDeResfriamento, PontosDeResfriamentoDeExemplo>();
         servicos.AddSingleton<ICodigosDeVinculo, CodigosDeVinculo>();
         servicos.AddScoped<IRegistroDeIdempotencia, RegistroDeIdempotencia>();
         return servicos;

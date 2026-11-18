@@ -60,3 +60,12 @@ public sealed record FiltroDeLeiturasDto : ConsultaPaginadaDto
     [Required(ErrorMessage = "Informe o fim do período.")]
     public DateTimeOffset? Ate { get; init; }
 }
+
+/// <summary>O raio da busca de pontos de resfriamento.</summary>
+public sealed record FiltroDePontosDto
+{
+    /// <summary>Gets o raio, em km.</summary>
+    /// <example>3</example>
+    [Range(0.1, 20.0, ErrorMessage = "O raio vai de 0,1 a 20 km.")]
+    public double RaioKm { get; init; } = 3.0;
+}
