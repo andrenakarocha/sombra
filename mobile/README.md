@@ -76,7 +76,7 @@ sequenceDiagram
 | Alerta | `alerta/[id]` | linha do tempo do escalonamento, "Vou ligar" e "Ela está bem" |
 | Perto de mim | `(abas)/perto` | pontos de resfriamento por distância, com a seta da bússola e a direção em palavras |
 | Privacidade | `(abas)/privacidade` | farol de Risco Cidadão da casa com a mensagem traduzida e o Centro de Privacidade (exportar e apagar os dados do celular) |
-| Ajustes | `(abas)/ajustes` | Modo Idoso neste celular, bloqueio por digital, Central de sincronização e os controles da demonstração |
+| Ajustes | `(abas)/ajustes` | Modo Idoso neste celular, tamanho do texto, bloqueio por digital, Central de sincronização e os controles da demonstração |
 | Morador | `casa/[id]/morador` | cadastro com CPF, Cartão SUS e saúde sempre mascarados |
 | Rotina | `casa/[id]/rotina` | check-in diário e lembrete de água (nunca entre 22h e 7h) |
 | Sentinela | `casa/[id]/sentinela` | vínculo pelo QR (câmera) ou digitando o código |
@@ -89,10 +89,10 @@ Checklist da [spec](../docs/specs/05-mobile-app.md#acessibilidade-checklist-com-
 
 | Item | Situação |
 |---|---|
-| `accessibilityLabel`, `accessibilityRole` e `accessibilityHint` em todo elemento tocável | 🟨 rótulo e papel em todos; a dica está em `Botao`, `BotaoGigante`, nos cards e na pílula, e falta nos interruptores e nos chips de seleção |
+| `accessibilityLabel`, `accessibilityRole` e `accessibilityHint` em todo elemento tocável | ✅ a dica é obrigatória no tipo do `Botao` e do `BotaoGigante`, e um [teste](__tests__/acessibilidade-test.tsx) percorre botões, rádios, caixas e interruptores das telas com formulário |
 | Área de toque ≥ 48 dp (≥ 120 dp no Modo Idoso) | ✅ `toque.minimo` e `toque.idoso` dos tokens de design |
 | Contraste ≥ 4,5:1, com Atkinson Hyperlegible | ✅ [`design/tokens.py conferir`](../design/tokens.py) confere os pares dos dois temas no CI |
-| Respeita a fonte do sistema **+** controle de tamanho no app | 🟨 o texto acompanha a fonte do sistema (o Modo Idoso limita em 1,3× para o número gigante caber); o controle dentro do app ainda não existe |
+| Respeita a fonte do sistema **+** controle de tamanho no app | ✅ o texto acompanha a fonte do sistema e, por cima, o **Tamanho do texto** de Ajustes (Normal, Grande 1,2×, Maior 1,4×), gravado no aparelho. O número gigante fica fora da escala do app para caber na tela |
 | O farol nunca depende só da cor | ✅ cor + ícone + texto em todo nível, também no rótulo do leitor de tela |
 | Testado com TalkBack | ⬜ vídeo curto de evidência (F6.7) |
 | Modo Idoso lê a situação em voz alta e vibra ao confirmar | ✅ `expo-speech` em pt-BR e `expo-haptics` |
@@ -141,12 +141,12 @@ make vinculo DEVICE=snt-abc123      # na raiz: imprime o QR de vínculo para a t
 ```bash
 npm run lint              # ESLint (expo)
 npm run typecheck         # tsc --noEmit, estrito com noUncheckedIndexedAccess
-npm test                  # 318 testes Jest, em 21 suítes
+npm test                  # 325 testes Jest, em 22 suítes
 npm run test:cobertura    # com o gate de 95% (statements, linhas e funções) e 90% (branches)
 npx expo-doctor
 ```
 
-**Cobertura:** 97,6% statements · 98,5% linhas · 95,8% funções · 91,1% branches. Os testes rodam o composition root
+**Cobertura:** 97,7% statements · 98,5% linhas · 95,9% funções · 91,3% branches. Os testes rodam o composition root
 de verdade sobre um SQLite real (`sql.js`), com o gateway de demonstração no lugar do Core e um interruptor de modo
 avião. Ficam **fora da conta, de propósito**, os adaptadores nativos (`infrastructure/native`, `expo-sqlite`, o
 container do aparelho), que só rodam no celular.
