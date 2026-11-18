@@ -75,7 +75,8 @@ describe('replay no modo demonstração', () => {
 
     await act(async () => jest.advanceTimersByTime(20 * 100));
     expect(reproducaoStore.getState().ativo).toBe(false);
-  });
+    // 88 passos renderizados: ~10 s com o cache quente, mais de 30 s numa rodada fria com cobertura (como no CI).
+  }, 90_000);
 
   it('parar e recomeçar zeram o replay', async () => {
     jest.useFakeTimers({ now: AGORA });
