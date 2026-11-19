@@ -30,6 +30,7 @@ jobs:
       simulador: ${{ steps.filtro.outputs.simulador }}
       core: ${{ steps.filtro.outputs.core }}
       clima: ${{ steps.filtro.outputs.clima }}
+      painel: ${{ steps.filtro.outputs.painel }}
       ambiente: ${{ steps.filtro.outputs.ambiente }}
       scripts: ${{ steps.filtro.outputs.scripts }}
       workflows: ${{ steps.filtro.outputs.workflows }}
@@ -71,6 +72,9 @@ jobs:
               - 'docs/contratos/clima-service.openapi.json'
               - 'ml/dados/brutos/**'
               - 'docs/contratos/amostras-clima/**'
+            painel:
+              - 'web/painel/**'
+              - 'design/tokens.css'
             ambiente:
               - 'compose.yaml'
               - 'infra/compose/**'
@@ -275,6 +279,27 @@ jobs:
         working-directory: services/clima-service
         run: ./mvnw -B -ntp verify
 
+  painel:
+    name: Painel web
+    needs: mudancas
+    if: needs.mudancas.outputs.painel == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web/painel
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/painel/package-lock.json
+      - run: npm ci
+      - name: tipos, testes (Vitest) e build
+        run: npm run typecheck && npm test && npm run build
+
   semgrep:
     name: Semgrep (taint estático)
     needs: mudancas
@@ -367,7 +392,7 @@ jobs:
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [mudancas, contratos, design, simulador, core, clima, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
+    needs: [mudancas, contratos, design, simulador, core, clima, painel, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
     runs-on: ubuntu-latest
     steps:
       - name: nenhum job falhou nem foi cancelado

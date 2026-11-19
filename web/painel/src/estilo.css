@@ -1,0 +1,99 @@
+@import "tailwindcss";
+@import "../../../design/tokens.css";
+
+/* Os semânticos da direção de arte (D16) viram utilitários do Tailwind: bg-superficie, text-texto-suave, border-borda…
+   O tema escuro troca as variáveis, então nenhuma classe precisa de dark:. */
+@theme inline {
+  --color-fundo: var(--fundo);
+  --color-superficie: var(--superficie);
+  --color-superficie-alt: var(--superficie-alternativa);
+  --color-texto: var(--texto);
+  --color-texto-suave: var(--texto-suave);
+  --color-borda: var(--borda);
+  --color-marca: var(--marca);
+  --color-marca-suave: var(--marca-suave);
+  --color-sobre-marca: var(--texto-sobre-marca);
+  --color-destaque: var(--destaque);
+  --color-foco: var(--foco);
+
+  --color-normal-fundo: var(--risco-normal-fundo);
+  --color-normal-texto: var(--risco-normal-texto);
+  --color-normal-borda: var(--risco-normal-borda);
+  --color-atencao-fundo: var(--risco-atencao-fundo);
+  --color-atencao-texto: var(--risco-atencao-texto);
+  --color-atencao-borda: var(--risco-atencao-borda);
+  --color-cautela-fundo: var(--risco-cautela-extrema-fundo);
+  --color-cautela-texto: var(--risco-cautela-extrema-texto);
+  --color-cautela-borda: var(--risco-cautela-extrema-borda);
+  --color-perigo-fundo: var(--risco-perigo-fundo);
+  --color-perigo-texto: var(--risco-perigo-texto);
+  --color-perigo-borda: var(--risco-perigo-borda);
+  --color-extremo-fundo: var(--risco-perigo-extremo-fundo);
+  --color-extremo-texto: var(--risco-perigo-extremo-texto);
+  --color-extremo-borda: var(--risco-perigo-extremo-borda);
+
+  --font-display: var(--fonte-display);
+  --font-texto: var(--fonte-texto);
+  --font-mono: var(--fonte-mono);
+
+  --radius-pequeno: var(--raio-pequeno);
+  --radius-medio: var(--raio-medio);
+  --radius-grande: var(--raio-grande);
+}
+
+html {
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: var(--fonte-texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+/* O topo: luz filtrada pela folhagem (D16), a mesma da amostra do design. A textura só aparece aqui. */
+.topo {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 90% at 85% 0%, color-mix(in oklab, var(--cor-ocre-300) 45%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--superficie-alternativa), var(--fundo));
+}
+.folhagem {
+  position: absolute;
+  inset: -12%;
+  width: 124%;
+  height: 124%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.13;
+  mix-blend-mode: multiply;
+  animation: vento 22s ease-in-out infinite alternate;
+}
+.folhagem .noite {
+  display: none;
+}
+@keyframes vento {
+  from { transform: translate3d(0, 0, 0) rotate(0deg) scale(1.02); }
+  to { transform: translate3d(-3%, 2%, 0) rotate(1.2deg) scale(1.07); }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) .folhagem { mix-blend-mode: screen; opacity: 0.07; }
+  :root:not([data-tema="claro"]) .folhagem .dia { display: none; }
+  :root:not([data-tema="claro"]) .folhagem .noite { display: inline; }
+}
+:root[data-tema="escuro"] .folhagem { mix-blend-mode: screen; opacity: 0.07; }
+:root[data-tema="escuro"] .folhagem .dia { display: none; }
+:root[data-tema="escuro"] .folhagem .noite { display: inline; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

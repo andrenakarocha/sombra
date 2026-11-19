@@ -803,8 +803,11 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
 
 **Objetivo:** central do operador + Dashboard Executivo de Risco Cidadão. **Spec:** 06.
 
-- [ ] **F7.1** 🤖 Scaffold Vite, React 19, TS, Tailwind v4 com os tokens, layout e login de operador.
-  🔎 `npm run build` ok.
+- [x] **F7.1** 🤖 Scaffold Vite, React 19, TS, Tailwind v4 com os tokens, layout e login de operador.
+  🔎 `npm run build` ok — 2026-11-18 (Vite 8, React 19.3, Tailwind 4.3 com os semânticos do `design/tokens.css` como
+  utilitários e o tema escuro automático; a folhagem, a marca e os ícones de forma da direção de arte; rota protegida
+  só para Operador e Admin; JWT no sessionStorage; erros com o código curto; um hub SignalR para o painel inteiro; o
+  Vite repassa `/api` e `/hubs` ao Core, sem CORS; login conferido em 1440 e 390 px).
 - [ ] **F7.2** 🤖 Visão geral (KPIs + indicador de impacto), Alertas e Casas (PII mascarada) com SignalR.
   🔎 os KPIs mudam ao vivo com o simulador.
 - [ ] **F7.3** 🤖 Risco Cidadão: farol global e por categoria, feed com as três traduções, série por sink, evidência
@@ -1029,7 +1032,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F4 ML | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado (Matheus): os 6 critérios com evidência no README da pasta; notebook executado; 2 modelos ONNX com paridade 20/20; 75 testes. No teste, 74 de 75 dias de calor avisados, com 7,8 dias de alarme falso por mês; o XGBoost empata com a persistência na PR-AUC. A F9.1 precisa da ressalva do pico (F4.6) |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
-| F7 Painel | ⬜ não iniciada | | | |
+| F7 Painel | 🟨 em andamento | 2026-11-18 | | |
 | F8 Infra (OS) | ⬜ não iniciada | | | |
 | F9 Integração | ⬜ não iniciada | | | |
 | F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; faltam a F10.1 (Azure, 🔑), a F10.4 e a F10.5 |
