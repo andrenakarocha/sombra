@@ -557,10 +557,13 @@ provando o antes e o depois.
   ponto com `abre < fecha`, região exige estação válida.
   🔎 testes de domínio verdes, sem banco e sem HTTP — 2026-11-18 (66 testes de domínio, os 20 vetores do contrato lidos
   do próprio JSON, cada regra com o seu código estável; JaCoCo exige 90% das linhas do domínio e está em 91%).
-- [ ] **F3.3** 🤖 Flyway V1 (regiões, estações, observações), V2 (pontos de resfriamento), V3 (evolução), V4 (seed: região
+- [x] **F3.3** 🤖 Flyway V1 (regiões, estações, observações), V2 (pontos de resfriamento), V3 (evolução), V4 (seed: região
   SP-MIRANTE, A701, observações reais de nov/2023 extraídas da F0.15, pontos públicos com fonte); repositórios e consultas
   (período paginado, proximidade); `ddl-auto=validate`.
-  🔎 `docker compose down -v && up` + migrate num banco vazio; testes de repositório.
+  🔎 `docker compose down -v && up` + migrate num banco vazio; testes de repositório — 2026-11-18 (`sombra_clima`
+  recriado vazio: V1–V4 aplicadas pelo serviço e por `./mvnw flyway:migrate`; seed gerado por script do CSV conferido pelo
+  SHA-256: 637 horas reais, 83 sem dado descartadas, pico 35,47 °C; 9 pontos reais do OpenStreetMap com o horário do OSM;
+  9 testes de repositório no PostgreSQL 16 do Testcontainers, incluindo a paridade do índice de todas as horas).
 - [ ] **F3.4** 🤖 API, DTOs com Bean Validation, erros (400, 404, 422) e springdoc completo (resumo, tag, exemplo, erros).
   🔎 Swagger mostra os 4xx em todos os endpoints.
 - [ ] **F3.5** 🤖 `FonteMeteorologica`: `OpenMeteoClient` agendado e resiliente + `ReplayInmet` (`POST`/`DELETE /replay`).

@@ -33,7 +33,8 @@ db-reset: .env ## Apaga o banco local e recria do zero (bancos e papéis por ser
 	@docker volume rm -f sombra_dados-postgres >/dev/null
 	@$(COMPOSE) up -d --wait db
 	@$(MAKE) -s -C services/core-api db-migrate
-	@echo "banco recriado, com as migrações e o seed do Core"
+	@set -a && . ./.env && set +a && cd services/clima-service && ./mvnw -q -B flyway:migrate
+	@echo "banco recriado, com as migrações e os seeds do Core e do Clima"
 
 contratos: ## Confere os contratos: vetores do índice de calor, assinatura MQTT, código de vínculo, contraste e AsyncAPI
 	@python3 -I tools/indice-de-calor/vetores.py
