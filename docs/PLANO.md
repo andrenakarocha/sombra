@@ -647,8 +647,10 @@ provando o antes e o depois.
   ⏸ 2026-11-19: o circuito está no `iot/sentinela/diagram.json` (ESP32 DevKit, DHT22, OLED I²C, LED RGB com 3 × 220 Ω,
   buzzer e os dois botões, com as teclas V e A) e o firmware compila para o ESP32 com `--warnings all`
   (`make compilar-sentinela`: 80% da flash, 17% da RAM). Falta o operador criar o projeto no Wokwi e colar os arquivos.
-- [ ] **F5.2** 🤖 🤝 Índice de calor (vetores), máquina de estados offline, LED, buzzer e botões.
-  🔎 mexendo no DHT22, os estados mudam conforme a tabela de níveis.
+- [x] **F5.2** 🤖 🤝 Índice de calor (vetores), máquina de estados offline, LED, buzzer e botões.
+  🔎 mexendo no DHT22, os estados mudam conforme a tabela de níveis — 2026-11-19 (no Wokwi, por script: 28 → 30 → 33 →
+  35 °C com 50%, e a OLED e o LED passam por Quente, Cautela extrema e Perigo; `iot/sentinela/evidencias/wokwi-perigo.png`
+  e o vídeo de IoT).
   ⏸ 2026-11-19: coberto no host (`make test-sentinela`, também no CI): os 20 vetores do índice e 14 cenários da máquina
   de estados (luz fixa por nível, 3 bipes, silêncio das 22h às 7h fora do perigo, prazo de 30/15 min, comandos do Core).
   O 🔎 mexendo no DHT22 do Wokwi fica com o operador, junto com a F5.1.
@@ -659,8 +661,13 @@ provando o antes e o depois.
   em `mqtt.assinatura_invalida`, e a repetida, em `mqtt.replay_descartado`; as duas aparecem no dashboard de segurança.
   O `seq` segue a regra do Core para os comandos, `max(último + 1, agora)`, e continua crescente mesmo com a flash
   zerada, o que o Wokwi faz a cada simulação. Evidência em `iot/sentinela/evidencias/`).
-- [ ] **F5.4** 🤖 Comandos do Core no OLED + fila offline de eventos.
-  🔎 roteiro, passos 2–5, com a Sentinela real; um check-in feito offline chega depois.
+- [x] **F5.4** 🤖 Comandos do Core no OLED + fila offline de eventos.
+  🔎 roteiro, passos 2–5, com a Sentinela real; um check-in feito offline chega depois — 2026-11-19 (a Sentinela rodando
+  no Wokwi, ligada ao Core pelo broker público: o alerta abre na casa da Dona Lurdes, 15 min depois o Core escalona para
+  o degrau 1 e a Sentinela aceita o `FAMILIA_AVISADA` e mostra "Sua família foi avisada"; o botão verde resolve o
+  alerta. Para isso, o firmware passou a ressincronizar o NTP a cada minuto: no Wokwi, o relógio atrasava mais de 5 min
+  em 10 min, e a janela anti-replay recusava tudo. Prints em `iot/sentinela/evidencias/`: `wokwi-familia-avisada.png`,
+  `painel-degrau-1.png` e `painel-resolvido.png`).
   ⏸ 2026-11-19: um "estou bem" de 2 min atrás chega depois e o Core aceita; o perigo abre o alerta e o Core publica o
   comando `ALERTA` assinado (`comando.publicado`), e o código do firmware confere o comando do vetor do contrato e recusa
   o adulterado. Às 03h30, o escalonamento publicou o `FAMILIA_AVISADA` no broker público e o código do firmware conferiu
@@ -1033,9 +1040,12 @@ F11.8 (VM no Azure) saíram.**
   🔎 cada número tem link.
 - [ ] **F13.3** 🧑🤖 Roteiro e storyboard do pitch (fecha a DA4).
   🔎 aprovado pelo operador.
-- [ ] **F13.4** 🤖 Capturas em 1080p: Playwright a partir do `make demo`, Wokwi, VM, emulador; fotos do território
+- [x] **F13.4** 🤖 Capturas em 1080p: Playwright a partir do `make demo`, Wokwi, VM, emulador; fotos do território
   (D14) com a placa desfocada.
-  🔎 os clipes cobrem todos os atos.
+  🔎 os clipes cobrem todos os atos — 2026-11-19 (`tools/videos/`: cada vídeo é um roteiro em código; o painel, o Wokwi e
+  o terminal, com a saída real dos comandos, pelo Playwright, e o app pelo `adb screenrecord` no emulador; voz
+  sintética pt-BR, legenda e montagem pelo `ffmpeg`, com a duração conferida contra o limite; as fotos ficaram fora,
+  pela D14).
   ⏸ Plano para 19/11 (o operador tem pouco tempo; gravar o máximo por script, um roteiro de `docs/videos/` por vez):
   painel com o Playwright (`recordVideo` em 1920×1080, seguindo os passos do roteiro); terminal da VM com `vhs` ou
   asciinema (os comandos do `os.md` por `vagrant ssh`); app com `scrcpy --record` no emulador, com o `make sim`
@@ -1047,6 +1057,8 @@ F11.8 (VM no Azure) saíram.**
   🔎 o operador aprova.
 - [ ] **F13.6** 🧑🤖 Vídeos de IoT (≤ 4), Mobile (≤ 3), ML (≤ 5), OS (≤ 7) e Cyber.
   🔎 o operador aprova cada um.
+  ⏸ 2026-11-19: os 5 gravados por script, com voz sintética (decisão do operador): Cyber 2:52, OS 4:02, ML 3:43, IoT
+  2:51 e Mobile 2:06, em `tools/videos/saida/` (fora do Git). Falta a aprovação do operador.
 - [ ] **F13.7** 🧑 🔑 Upload no YouTube como não listado + links nos READMEs.
   🔎 cada link abre numa aba anônima.
 
@@ -1124,7 +1136,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (19/11, madrugada):** **F1, F2, F3, F4, F7 e F8 concluídas** e na `main` (o ML pelo PR #17, a infra e o painel pelo #18). Em PR: a F5 (#19: firmware compilado para o ESP32 e integração com o Core provada pelo broker público) e as entregas (#20: PDF de Cyber, sincronização e PDF de QA, roteiros dos vídeos, guia de defesa e `make checklist`, mais duas correções no Core achadas ao revisar as traduções reais da IA). **Com o operador, para hoje:** o projeto no Wokwi e o link (F5.1), o Azure DevOps com o professor como Admin e o PAT (F10.1, depois `make qa-azure`, `make qa-prints` e `make qa-pdf`), os 🔎 do app no celular, os 5 vídeos (`docs/videos/`), o bairro da Ficha e o envio no Teams (`make checklist` diz o que falta). A F9.1 (o ONNX no Clima) ficou de fora: o modelo prevê CAUTELA_EXTREMA e o campo do contrato é `probabilidadePerigo`; ligar os dois pede um campo novo no contrato do Clima e do Core.
+**Agora (19/11, 15h30):** F1 a F4, F7 e F8 concluídas e na `main`; em PR (#21) os vídeos por script, a correção do relógio da Sentinela, o feed do Risco Cidadão se atualizando com a tradução da IA e o bairro da Ficha (Moema, D20). Os **5 vídeos estão gravados** (`tools/videos/saida/`). **Com o operador:** aprovar e subir os vídeos (YouTube, não listados, e o link no README de cada pasta), o Azure DevOps com o professor como Admin e o PAT (F10.1, depois `make qa-azure`, `make qa-prints` e `make qa-pdf`), o link do Wokwi (`node tools/wokwi/publicar.mjs`) e o envio no Teams.
 
 **Próxima sessão (19/11, último dia), nesta ordem:**
 
@@ -1148,7 +1160,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
 | F3 Clima (SOA) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: autoavaliação 10/10 com evidência por subitem no README da pasta (144 testes, Testcontainers, ArchUnit, contrato OpenAPI conferido); o Core consome o Clima de verdade (risco e pontos, circuito, mesmo `correlationId`) e abre o preventivo a partir do replay real pelo limite pessoal (D19) |
 | F4 ML | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado (Matheus): os 6 critérios com evidência no README da pasta; notebook executado; 2 modelos ONNX com paridade 20/20; 75 testes. No teste, 74 de 75 dias de calor avisados, com 7,8 dias de alarme falso por mês; o XGBoost empata com a persistência na PR-AUC. A F9.1 precisa da ressalva do pico (F4.6) |
-| F5 Sentinela (IoT) | 🟨 em andamento | 2026-11-19 | | firmware compilado para o ESP32 e 47 testes no host; integração com o Core provada pelo broker do compose e pelo público (F5.3 ✔); faltam o projeto no Wokwi, os 🔎 visuais e o link (operador) |
+| F5 Sentinela (IoT) | 🟨 em andamento | 2026-11-19 | | firmware compilado para o ESP32 e 47 testes no host; a Sentinela roda no Wokwi ligada ao Core pelo broker público, do perigo ao escalonamento e ao "estou bem" (F5.2 a F5.4 ✔; o NTP ressincroniza a cada minuto); falta o link público do Wokwi (`node tools/wokwi/publicar.mjs`, operador) |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: as cinco páginas ao vivo pelo hub (o Core passou a emitir o `RiscoCidadaoAtualizado`), E2E verde (6) e 12 testes no Vitest, prints revisados em três larguras; o painel sobe no compose pelo nginx |
 | F8 Infra (OS) | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: a VM vazia vira o `sombra-srv01` com o Sombra inteiro no ar só com scripts (9 etapas idempotentes, validação de 26 pontos), monitor `Type=notify` com watchdog, auditoria JSON e auditd, os 7 testes de falha com print, reprodução do zero provada; o 🔎 da F8.3 (release no GitHub) espera a primeira tag `v*` |
@@ -1156,7 +1168,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; F10.4 e F10.5 prontas por script (`make qa-azure`, `qa-prints`, `qa-pdf`), esperando a F10.1 (Azure, 🔑) |
 | F11 Polimento | 🟨 em andamento | 2026-11-19 | | pela D18, só acessibilidade: o axe no painel (WCAG 2.2 AA, F11.6); a guarda da IA ficou mais rígida (ortografia e coerência) |
 | F12 Docs e PDFs | 🟨 em andamento | 2026-11-19 | | F12.3 feita (PDF de Cyber); F12.1 falta o bairro; F12.2 falta a entrevista (operador); F12.4 guia pronto, falta a sessão com o time |
-| F13 Vídeos | 🟨 em andamento | 2026-11-19 | | os 5 roteiros em `docs/videos/` (com fala e comandos); gravação automática planejada na F13.4; pitch fora pela D18 |
+| F13 Vídeos | 🟨 em andamento | 2026-11-19 | | os 5 vídeos gravados por script (`tools/videos/`, F13.4 ✔): Cyber 2:52, OS 4:02, ML 3:43, IoT 2:51 e Mobile 2:06; faltam a aprovação e o upload (operador); pitch fora pela D18 |
 | F14 Entrega | 🟨 em andamento | 2026-11-19 | | F14.1 feita: `make checklist` (e `ONLINE=1`) lista o que falta em cada uma das 8 tarefas |
 
 Legenda: ⬜ não iniciada · 🟨 em andamento · ✅ concluída · ⛔ bloqueada
