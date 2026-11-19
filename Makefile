@@ -70,7 +70,7 @@ entrega-cyber: ## Gera a entrega de Cyber: security/entrega/cyber.pdf e, à part
 semgrep: ## Taint estático do Core: o canário dispara e o código de produção sai limpo (SARIF em security/semgrep/)
 	@security/semgrep/rodar.sh
 
-test: contratos test-sim test-core test-clima test-mobile test-infra test-sentinela ## Roda todos os testes (cada componente acrescenta os seus)
+test: contratos test-sim test-core test-clima test-mobile test-infra test-sentinela test-qa ## Roda todos os testes (cada componente acrescenta os seus)
 
 test-core: ## Build e testes do Core (C#), na imagem do SDK
 	@$(MAKE) -s -C services/core-api test
