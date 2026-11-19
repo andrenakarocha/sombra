@@ -69,4 +69,23 @@ integrante sabe explicar o que entregou.
 3. *"Escreva um conferidor que falhe se faltar campo do padrão, se uma Feature ficar sem caso negativo ou se um teste
    citado não existir no repositório."*
 
+## Clima Service (SOA e Web Services)
+
+1. *"Monte o Clima Service em Spring Boot 3.5 e Java 21 exatamente nas camadas do guia do professor (domínio, aplicação,
+   infraestrutura e api), com o tratamento de erros em ProblemDetails pt-BR e aviso de compilação como erro."*
+2. *"Escreva o domínio com as regras dentro das entidades: o índice de calor rodando os 20 vetores do contrato, -9999 do
+   INMET não é observação, umidade de 0 a 100, região exige estação válida e ponto que abre antes de fechar, cada regra
+   com um código estável no 422."*
+3. *"Crie as migrações V1 a V4 no Flyway, com a V3 evoluindo o esquema como se a tabela já tivesse linhas, e gere o seed
+   por script a partir do CSV real da A701 conferido pelo SHA-256 e de lugares públicos reais do OpenStreetMap, com o
+   horário do próprio OSM. Prove num PostgreSQL real do Testcontainers."*
+4. *"Documente todos os endpoints no springdoc com resumo, tag, exemplo e os erros com o corpo Problema, e escreva um teste
+   que falhe se um endpoint ficar sem isso ou se o contrato versionado ficar desatualizado."*
+5. *"Ligue a Open-Meteo com timeout e novas tentativas (confira a P7 na API real) e o replay da onda de calor real de
+   nov/2023 num relógio acelerado, testado com um relógio controlado e um servidor HTTP falso."*
+6. *"Faça o previsor por regra (persistência do pico, o baseline do ML) e o /risco-calor, com 503 quando não houver
+   observação recente, e os logs JSON com a correlação do Core."*
+7. *"No Core, troque o stub pelo ClimaClient real com circuit breaker e último risco conhecido, lendo as amostras reais
+   que o próprio Clima grava, sem quebrar os testes nem a nota 100 da pipeline de qualidade."*
+
 <!-- Cada parte acrescenta aqui os seus prompts principais quando fecha (PLANO §0, regra 16). -->

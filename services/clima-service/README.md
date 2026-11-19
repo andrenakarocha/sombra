@@ -73,7 +73,7 @@ Ou `make db-reset`, que apaga o volume e recria os bancos do Core e do Clima. Pa
 cd services/clima-service && ./mvnw verify    # domínio, API (Testcontainers), arquitetura, contrato OpenAPI e cobertura
 ```
 
-![./mvnw verify: 142 testes, cobertura do domínio e BUILD SUCCESS](docs/evidencias/testes.png)
+![./mvnw verify: 144 testes, cobertura do domínio e BUILD SUCCESS](docs/evidencias/testes.png)
 
 | Comando | O que faz |
 |---|---|

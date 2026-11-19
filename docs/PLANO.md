@@ -589,8 +589,15 @@ provando o antes e o depois.
   🔎 autoavaliação do guia preenchida com 10/10 e evidência por subitem — 2026-11-18 (README da pasta com os 22
   subitens → código → print; 8 regras ArchUnit, com a de "entidade não vaza no JSON" conferida por mutação; os 5 prints
   de `docs/evidencias/` saem de `scripts/evidencias.sh` e foram revisados; 142 testes no `./mvnw verify`).
-- [ ] **F3.9** 🤖 No Core: o `ClimaClient` real (HttpClient + resiliência) substitui o stub; teste de contrato.
-  🔎 o `MonitorDePrevisaoWorker` abre alerta preventivo a partir do replay real.
+- [x] **F3.9** 🤖 No Core: o `ClimaClient` real (HttpClient + resiliência) substitui o stub; teste de contrato.
+  🔎 o `MonitorDePrevisaoWorker` abre alerta preventivo a partir do replay real — 2026-11-18, **parcial**: com
+  `Clima__UrlBase` (compose e VM), o risco e os pontos vêm do Clima, com timeout de 3 s, circuito que abre em 3 falhas
+  seguidas por 30 s, último risco conhecido por até 30 min, correlação no header e o guarda de saída; os testes leem as
+  amostras reais que o Clima grava (`docs/contratos/amostras-clima/`). No compose: o worker consultou o Clima
+  (`previsao:6c700f00` nos dois logs), caiu em `clima.indisponivel` quando o Clima ainda subia, e "Perto de mim" trouxe
+  os pontos reais do OSM com o mesmo `correlationId` no Core e no Clima. **O preventivo a partir do replay real não abre**
+  com a R5 de hoje (o pico real é `CAUTELA_EXTREMA`): é a DA6, que fica com o operador. Sem `Clima__UrlBase`, o Core
+  segue no modo offline (testes). Core: 363 testes e `make quality` = 100.
 
 **✅ Aceite F3:** autoavaliação 10/10 com evidência · o Core consome o Clima de verdade.
 
@@ -994,14 +1001,14 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** **F1 e F2 concluídas** (Core em C# e o módulo de privacidade: 357 testes, auditoria A1–A8 antes × depois, Semgrep e quality 100/100). Próximo: os 🔎 do app no celular (F6.2–F6.5, F6.17, F6.18 e a P10) e o que é do operador na F6.7 e na F6.8 (vídeo com TalkBack e prints), que fecham a F6; o dashboard de risco (F7.3) já tem a API pronta. Em paralelo: ML (F4) e, no QA, a F10.1 (Azure DevOps, 🔑) para destravar a F10.4.
+**Agora:** **F1, F2 e F3 concluídas** (Core em C# com 363 testes e quality 100/100; privacidade com a auditoria A1–A8; Clima Service em Java com 144 testes, autoavaliação de SOA 10/10 e o Core consumindo o Clima de verdade). Pendente do operador: a **DA6** (o preventivo a partir do replay real), os 🔎 do app no celular junto com a F9 e o que é do operador na F6.7 e na F6.8. Próximo no caminho principal: **F8 (Infra)**, depois F7 (Painel) e F9 (Integração). Em paralelo: ML (F4, Matheus) e, no QA, a F10.1 (Azure DevOps, 🔑).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
 | F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
-| F3 Clima (SOA) | 🟨 em andamento | 2026-11-18 | | |
+| F3 Clima (SOA) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: autoavaliação 10/10 com evidência por subitem no README da pasta (144 testes, Testcontainers, ArchUnit, contrato OpenAPI conferido); o Core consome o Clima de verdade (risco e pontos, circuito, mesmo `correlationId`). O preventivo a partir do replay real espera a DA6 |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |

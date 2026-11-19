@@ -24,8 +24,8 @@
 | Parte | Pasta | Disciplina | Status |
 |---|---|---|---|
 | Core API: domicílios, alertas, check-ins, escalonamento | [`services/core-api/`](services/core-api/) | C# Software Development | ✅ |
-| Privacidade: PII, taint analysis, IA, farol de Risco Cidadão | [`services/core-api/`](services/core-api/) + [`security/`](security/) | Cybersecurity | 🚧 |
-| Clima Service: risco de calor, previsão de 24 h, pontos de resfriamento | [`services/clima-service/`](services/clima-service/) | SOA e Web Services | 🚧 |
+| Privacidade: PII, taint analysis, IA, farol de Risco Cidadão | [`services/core-api/`](services/core-api/) + [`security/`](security/) | Cybersecurity | ✅ |
+| Clima Service: risco de calor, previsão de 24 h, pontos de resfriamento | [`services/clima-service/`](services/clima-service/) | SOA e Web Services | ✅ |
 | Modelo de previsão de calor perigoso | [`ml/`](ml/) | IA & Machine Learning | 🚧 |
 | Sentinela: ESP32 no Wokwi | [`iot/sentinela/`](iot/sentinela/) | Physical Computing | 🚧 |
 | App da família e Modo Idoso | [`mobile/`](mobile/) | Mobile Development | 🚧 |
