@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela compilar-sentinela integrar-sentinela integrar-sentinela-wokwi demo-wokwi entrega-cyber
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela compilar-sentinela integrar-sentinela integrar-sentinela-wokwi demo-wokwi entrega-cyber test-qa qa-azure
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -47,6 +47,13 @@ lint: ## shellcheck nos scripts, ruff no Python e ESLint + tsc no app
 	@shellcheck tools/*.sh infra/compose/postgres/init/*.sh && echo "shellcheck ok"
 	@cd tools/sentinela-sim && uv run -q ruff check . && uv run -q ruff format --check . >/dev/null && echo "ruff ok"
 	@cd mobile && npm run -s lint && npm run -s typecheck && echo "app ok"
+
+test-qa: ## QA: confere a especificação (Features e Test Cases) e testa a sincronização contra um Azure falso
+	@uv run -q qa/ferramentas/conferir_especificacao.py
+	@uv run -q qa/ferramentas/testar_sincronizacao.py
+
+qa-azure: ## Sobe as Features e os Test Cases para o Azure Boards (AZURE_DEVOPS_ORG, AZURE_DEVOPS_PROJETO e AZURE_DEVOPS_PAT)
+	@uv run -q qa/ferramentas/sincronizar_azure.py
 
 entrega-cyber: ## Gera a entrega de Cyber: security/entrega/cyber.pdf e, à parte, o sombra-codigo.zip (com o make up no ar)
 	@python3 -I security/entrega/gerar.py
