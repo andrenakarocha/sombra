@@ -170,6 +170,7 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | D17 | **O app é a referência da API do Cuidador:** onde os schemas Zod do `mobile/` e o Core divergem, o Core se adapta ao app, inclusive na R3 (F6.21–F6.26) | dono do repositório, 2026-11-18 |
 | D19 | **O preventivo segue o perigo de quem mora na casa** (fecha a DA6): o Core abre o `AlertaPreventivo` quando o nível previsto para a região **ou** o pico previsto do índice de calor (`indiceDeCalorPrevistoC`, do Clima) pelos limites pessoais do morador mais vulnerável (R3) chega a `PERIGO`; a R5 continua exigindo perigo. No replay real de nov/2023 (pico de 35,47 °C), o preventivo abre na Casa do Seu Joaquim (85 anos, cardiopatia: perigo a partir de 34,94 °C) e não na da Dona Lurdes (78 anos, diurético: 37,94 °C). O alvo do ML (F4.2) continua livre | dono do repositório, 2026-11-18 (fecha a DA6) |
 | D20 | **Bairro da Ficha: Moema** (zona sul de São Paulo), o da pessoa entrevistada (fecha a DA2). O clima continua vindo da estação INMET A701 (Mirante de Santana), a de referência da cidade; a persona do sistema segue a Dona Lurdes | operador, 2026-11-19 |
+| D21 | **Voz do pitch: a Charon do Gemini TTS**, a mesma do pitch HENRY (fecha a DA4); os vídeos de disciplina seguem com o Kokoro local | operador, 2026-11-19 |
 
 As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11), 002 (D2), 003 (D4), 004 (MQTT assinado e sem PII), 005 (D7) e 006 (índice de calor replicado com vetores).
 
@@ -177,7 +178,6 @@ As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11),
 
 | # | Decisão | Padrão até lá | Fecha em |
 |---|---|---|---|
-| DA4 | Voz do pitch: TTS (Gemini, como no HENRY) ou voz de alguém do time | TTS | F13.3 |
 
 ### 2.3 Fora do escopo (ideias para depois)
 
@@ -1036,13 +1036,18 @@ F11.8 (VM no Azure) saíram.**
 **Spec:** 10. **Por D18:** primeiro os 5 vídeos obrigatórios (F13.4 e F13.6), capturados por script numa rodada só do
 `make demo` e cortados por matéria; o pitch (F13.1–F13.3, F13.5) só se sobrar tempo, porque vale só para o prêmio.
 
-- [ ] **F13.1** 🤖 Pipeline do HENRY copiado para `pitch/`, `kit.css` do Sombra e kit técnico (template dos vídeos de
+- [x] **F13.1** 🤖 Pipeline do HENRY copiado para `pitch/`, `kit.css` do Sombra e kit técnico (template dos vídeos de
   disciplina).
-  🔎 render de teste de 10 s (P14).
+  🔎 render de teste de 10 s (P14) — 2026-11-19 (o pipeline inteiro do HENRY, com a identidade do Sombra: Fraunces e
+  Atkinson Hyperlegible dos TTF do app, a marca, os ícones de risco e a folhagem do `design/`; os vídeos de disciplina
+  ficaram no `tools/videos/`).
 - [ ] **F13.2** 🤖 Pesquisa com fontes primárias para o ato 1 (calor em SP e saúde da pessoa idosa).
   🔎 cada número tem link.
+  ⏸ 2026-11-19: o ato 1 usa só números do repositório (a série real da A701 e a entrevista), com a fonte de cada um no
+  `pitch/README.md`; a pesquisa externa ficou de fora.
 - [ ] **F13.3** 🧑🤖 Roteiro e storyboard do pitch (fecha a DA4).
   🔎 aprovado pelo operador.
+  ⏸ 2026-11-19: o roteiro em `pitch/shared/roteiro.js` (12 cenas, 5 atos) e a voz pela D21; falta a aprovação.
 - [x] **F13.4** 🤖 Capturas em 1080p: Playwright a partir do `make demo`, Wokwi, VM, emulador; fotos do território
   (D14) com a placa desfocada.
   🔎 os clipes cobrem todos os atos — 2026-11-19 (`tools/videos/`: cada vídeo é um roteiro em código; o painel, o Wokwi e
@@ -1058,6 +1063,8 @@ F11.8 (VM no Azure) saíram.**
   cada tomada de alerta.
 - [ ] **F13.5** 🧑🤖 Render do pitch (≤ 4:00), mix e legendas.
   🔎 o operador aprova.
+  ⏸ 2026-11-19: `pitch/renders/sombra-pitch.mp4`, 3:01 em 1080p, com a voz Charon, a trilha de Kevin MacLeod (CC BY) e
+  legendas; falta a aprovação.
 - [ ] **F13.6** 🧑🤖 Vídeos de IoT (≤ 4), Mobile (≤ 3), ML (≤ 5), OS (≤ 7) e Cyber.
   🔎 o operador aprova cada um.
   ⏸ 2026-11-19: os 5 gravados por script, com voz sintética (decisão do operador): Cyber 2:52, OS 4:02, ML 3:43, IoT

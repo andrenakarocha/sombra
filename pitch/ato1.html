@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="pt-BR" data-resolution="landscape" data-composition-variables='[{"id":"legendas","type":"boolean","label":"Legendas","default":true}]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="kit.css" />
+<style>
+/* s01 · a onda de calor de novembro de 2023 */
+#s01 .left { width: 660px; flex: none; justify-content: center; gap: 18px; }
+#s01 .when { font-size: 104px; line-height: 0.95; }
+#s01 .readout { display: flex; align-items: baseline; gap: 14px; }
+#s01 .readout .num { font-size: 128px; color: var(--ocre300); }
+#s01 .readout .u { font-family: var(--display); font-size: 60px; color: var(--ocre300); }
+#s01 .readout-label { font-family: var(--mono); font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--noite300); }
+#s01 .chart { position: relative; width: 1000px; height: 560px; flex: none; }
+#s01 .chart svg { position: absolute; inset: 0; overflow: visible; }
+#s01 .axis { font-family: var(--mono); font-size: 20px; fill: #B8C2C0; letter-spacing: 0.06em; }
+#s01 .limiar-label { position: absolute; left: 0; font-family: var(--mono); font-size: 21px; color: #F0CF83; letter-spacing: 0.08em; background: rgba(12,22,23,0.9); padding: 6px 12px; border-radius: 8px; white-space: nowrap; }
+#s01 .pico-label { position: absolute; font-family: var(--mono); font-weight: 700; font-size: 24px; letter-spacing: 0.04em; color: var(--areia50); background: rgba(176,79,39,0.92); padding: 10px 16px; border-radius: 10px; white-space: nowrap; }
+#s01 .casa { display: flex; align-items: center; gap: 24px; padding: 24px 30px; }
+#s01 .casa svg { width: 88px; height: 88px; flex: none; }
+#s01 .casa b { display: block; font-family: var(--display); font-weight: 700; font-size: 40px; white-space: nowrap; }
+#s01 .casa span { font-size: 26px; color: var(--areia200); }
+#s01 .agua { align-self: flex-start; font-size: 26px; padding: 12px 24px; }
+/* s02 · escutar */
+#s02 .scene-content { gap: 30px; }
+#s02 .grid { flex: 1 1 0; display: grid; grid-template-columns: 1.15fr 1fr; grid-template-rows: 1fr 1fr; gap: 28px; min-height: 0; }
+#s02 .q { display: flex; flex-direction: column; justify-content: space-between; gap: 18px; padding: 36px 40px; }
+#s02 .q.big { grid-row: 1 / span 2; justify-content: center; gap: 36px; }
+#s02 .q .quote { font-size: 44px; line-height: 1.18; color: var(--areia50); }
+#s02 .q.big .quote { font-size: 70px; line-height: 1.12; }
+#s02 .q .quote .forno { color: var(--telha300); }
+#s02 .q .who { font-family: var(--mono); font-weight: 500; font-size: 21px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sombra300); }
+#s02 .q .aspas { font-family: var(--display); font-size: 140px; line-height: 0.5; color: var(--ocre500); height: 60px; }
+/* s03 · o problema e o Sombra */
+#s03 .scene-content { justify-content: center; gap: 34px; }
+#s03 .st { font-size: 84px; line-height: 1.08; max-width: 1600px; }
+#s03 .st2 { font-size: 64px; line-height: 1.12; max-width: 1500px; }
+#s03b .scene-content { justify-content: center; align-items: center; gap: 30px; text-align: center; }
+#s03b .lockup { display: flex; align-items: center; gap: 46px; }
+#s03b .lockup svg { width: 230px; height: 230px; }
+#s03b .name { font-size: 236px; }
+#s03b .tag { font-family: var(--display); font-style: italic; font-weight: 400; font-size: 62px; color: var(--areia200); }
+#s03b .rule { width: 760px; }
+#s03b .ghost { font-size: 420px; left: -120px; bottom: -110px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="ato1" data-start="0" data-duration="45" data-width="1920" data-height="1080">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="folhas" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0045 0.0068" numOctaves="3" seed="11"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.373  0 0 0 0 0.702  0 0 0 0 0.659  0 0 0 -18 8.6"/>
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+    <symbol id="marca" viewBox="0 0 64 64">
+      <circle cx="42" cy="21" r="11" fill="#D9A441"/>
+      <path d="M14 33.5h36V54a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2z" fill="#1F7A73"/>
+      <path d="M28 56V45.5a4 4 0 0 1 8 0V56z" fill="#0C1617"/>
+      <path d="M7 35 32 15.5 57 35" fill="none" stroke="#B04F27" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-normal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m7.5 12.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-atencao" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5v7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-perigo" viewBox="0 0 24 24"><path d="M12 2.8 22 20.5H2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="i-extremo" viewBox="0 0 24 24"><path d="M8.1 2.5h7.8l5.6 5.6v7.8l-5.6 5.6H8.1l-5.6-5.6V8.1z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 7v6.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.8" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-telefone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4-2 1.3a11 11 0 0 0 7.4 7.4l1.3-2 4 1.6V19a1.7 1.7 0 0 1-1.8 1.7A16.5 16.5 0 0 1 3.3 5.3 1.7 1.7 0 0 1 5 3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 2.5 20 5.6v6.1c0 4.8-3.3 8.4-8 9.8-4.7-1.4-8-5-8-9.8V5.6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+  <div class="bg" data-layout-ignore>
+    <svg class="bg-leaves"><rect width="100%" height="100%" filter="url(#folhas)"/></svg>
+    <div class="bg-glow a"></div><div class="bg-glow b"></div><div class="bg-glow calor"></div>
+  </div>
+
+  <!-- s01 · novembro de 2023 -->
+  <div id="s01" class="scene first">
+    <div class="scene-content">
+      <div class="row grow center">
+        <div class="col left">
+          <div class="overline quente">INMET A701 · Mirante de Santana</div>
+          <div class="display when">Novembro de 2023</div>
+          <div class="col" style="gap:6px">
+            <div class="readout"><span class="num" id="n-hi">24,0</span><span class="u">°C</span></div>
+            <div class="readout-label">índice de calor, medido hora a hora</div>
+          </div>
+          <div class="panel casa">
+            <svg><use href="#marca"/></svg>
+            <div><b>Dona Lurdes, 78 anos</b><span>mora sozinha numa casa que pega sol a tarde inteira</span></div>
+          </div>
+          <div class="chip quente agua">esquece de beber água</div>
+        </div>
+        <div class="chart">
+          <svg viewBox="0 0 1000 560">
+            <line x1="0" y1="540" x2="1000" y2="540" stroke="#25393B" stroke-width="2"/>
+            <line class="limiar" x1="0" y1="154" x2="1000" y2="154" stroke="#D9A441" stroke-width="3" stroke-dasharray="14 12"/>
+            
+            <path class="area" fill="rgba(176,79,39,0.18)" stroke="none"/>
+            <path class="curva" fill="none" stroke="#E08A62" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle class="pico" r="12" fill="#F0705F" stroke="#0C1617" stroke-width="4"/>
+            <text class="axis" x="0" y="530" dy="0">05/11</text>
+            <text class="axis" x="500" y="530" text-anchor="middle">12/11</text>
+            <text class="axis" x="1000" y="530" text-anchor="end">19/11</text>
+          </svg>
+          <div class="pico-label">35,47 °C · 15/11, 15h</div>
+          <div class="limiar-label">cautela extrema · 32,2 °C</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s02 · escutar -->
+  <div id="s02" class="scene">
+    <div class="scene-content">
+      <div class="overline">Escutar · entrevista com quem vive isso</div>
+      <div class="grid">
+        <div class="panel q big a">
+          <div class="aspas">“</div>
+          <div class="quote">Lá pelas três, quatro horas, parece que a casa virou <span class="forno">um forno.</span></div>
+          <div class="who">Uma senhora que mora sozinha · Moema, São Paulo</div>
+        </div>
+        <div class="panel q b">
+          <div class="quote">Passei mal na cozinha. Foi a vizinha quem percebeu.</div>
+          <div class="who">A mesma senhora · no verão passado</div>
+        </div>
+        <div class="panel q c">
+          <div class="quote">Não queria receber um alerta de emergência à toa.</div>
+          <div class="who">A filha, que cuida dela de longe</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s03 · o problema -->
+  <div id="s03" class="scene">
+    <div class="scene-content">
+      <div class="overline">O problema, em uma frase</div>
+      <div class="display st">Em ondas de calor, idosos que moram sozinhos não percebem o perigo dentro de casa.</div>
+      <div class="rule" style="width:520px"></div>
+      <div class="display st2 perigo">E a família só fica sabendo quando já é tarde.</div>
+    </div>
+  </div>
+
+  <!-- s03b · o Sombra -->
+  <div id="s03b" class="scene">
+    <div class="ghost" data-layout-ignore>Sombra</div>
+    <div class="scene-content">
+      <div class="lockup">
+        <svg><use href="#marca"/></svg>
+        <div class="display name">Sombra</div>
+      </div>
+      <div class="rule"></div>
+      <div class="tag">Ninguém enfrenta o calor sozinho.</div>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-top">
+      <div class="hud-brand"><svg><use href="#marca"/></svg><span class="name">Sombra</span><span class="tag">GS 2026.2 · CitizenTech</span></div>
+      <div class="hud-section"></div>
+    </div>
+    <div class="hud-progress"><i></i></div>
+  </div>
+  <div class="captions" id="caps"></div>
+  <div class="veil" id="veil"></div>
+</div>
+<script src="shared/timing.js"></script>
+<script src="shared/kit.js"></script>
+<script>
+// A série real do índice de calor na A701, de 5 a 19/11/2023, de 3 em 3 horas (ml/dados, calculada com a equação da NWS).
+const HI = [18.18, 15.3, 18.53, 22.37, 22.81, 21.86, 17.2, 14.36, 13.78, 13.89, 15.77, 21.82, 25.64, 24.65, 17.77, 15.18, 15.5, 15.47, 16.2, 20.92, 26.53, 27.69, 22.1, 17.9, 17.37, 16.41, 19.28, 26.97, 29.89, 30.66, 28.57, 25.63, 23.38, 20.94, 24.67, 29.72, 31.05, 30.48, 28.77, 27.63, 22.12, 20.67, 21.11, 28.71, 32.67, 29.29, 22.85, 21.66, 21.79, 21.19, 25.11, 30.37, 32.66, 32.27, 30.08, 28.2, 26.82, 25.58, 29.26, 32.52, 33.26, 34.39, 32.08, 28.95, 27.38, 25.43, 29.81, 33.62, 34.86, 34.94, 33.05, 25.4, 24.55, 24.11, 29.32, 33.56, 35.46, 34.34, 24.56, 23.17, 22.93, 22.34, 26.55, 31.65, 34.36, 35.47, 32.21, 21.66, 22.91, 22.13, 25.32, 29.81, 30.6, 30.71, 30.06, 28.39, 25.28, 24.28, 28.67, 33.9, 34.96, 34.0, 32.53, 26.12, 26.12, 27.8, 29.39, 32.12, 33.42, 34.04, 32.36, 29.66, 24.25, 24.14, 23.14, 24.61, 22.85, 20.74, 20.52, 19.67];
+const tl = K.act("ato1");
+K.chrome();
+K.captions();
+
+// ---------- s01 ----------
+{
+  const s = K.scene("s01");
+  const W = 1000, H = 540, MIN = 12, MAX = 38;
+  const x = (i) => (i / (HI.length - 1)) * W;
+  const y = (v) => H - ((v - MIN) / (MAX - MIN)) * H;
+  const d = HI.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(" ");
+  K.$("#s01 .curva").setAttribute("d", d);
+  K.$("#s01 .area").setAttribute("d", `${d} L${W} ${H} L0 ${H} Z`);
+  K.$("#s01 .limiar").setAttribute("y1", y(32.22)); K.$("#s01 .limiar").setAttribute("y2", y(32.22));
+  K.$("#s01 .limiar-label").style.top = (y(32.22) + 14) + "px";
+  const ip = HI.indexOf(Math.max(...HI));
+  const pico = K.$("#s01 .pico"); pico.setAttribute("cx", x(ip)); pico.setAttribute("cy", y(HI[ip]));
+  const lbl = K.$("#s01 .pico-label"); lbl.style.left = (x(ip) - 330) + "px"; lbl.style.top = (y(HI[ip]) - 92) + "px";
+
+  K.in("#s01 .overline", s.at(0.35), "left");
+  K.in("#s01 .when", s.at(0.55), "wipe", { duration: 0.9 });
+  K.in("#s01 .readout, #s01 .readout-label", s.at(1.2), "up", { stagger: 0.12 });
+  K.in("#s01 .chart line:not(.limiar), #s01 .axis", s.at(0.9), "fade", { stagger: 0.08 });
+  // a curva anda junto com "onda de calor"; o leitor acompanha o valor da ponta
+  const t0 = s.w("atravessa") - 0.3, dur = 4.2;
+  K.draw("#s01 .curva", t0, dur, "none");
+  tl.fromTo("#s01 .area", { opacity: 0 }, { opacity: 1, duration: 1.4, ease: "sine.out" }, t0 + 1);
+  const o = { i: 0 }, el = K.$("#n-hi");
+  tl.to(o, { i: ip, duration: dur * (ip / (HI.length - 1)), ease: "none", onUpdate: () => { el.textContent = HI[Math.round(o.i)].toFixed(1).replace(".", ","); } }, t0);
+  K.in("#s01 .limiar, #s01 .limiar-label", t0 + 1.4, "fade");
+  K.in("#s01 .pico", t0 + dur * (ip / (HI.length - 1)), "pop");
+  K.in("#s01 .pico-label", t0 + dur * (ip / (HI.length - 1)) + 0.2, "scale");
+  tl.fromTo(".bg-glow.calor", { opacity: 0 }, { opacity: 1, duration: 4, ease: "sine.inOut" }, t0);
+  K.in("#s01 .casa", s.w("dona") - 0.3, "left");
+  K.in("#s01 .agua", s.w("esquece") - 0.1, "pop");
+  K.cut("s01", "s02", s.end - 0.34, "blur");
+}
+
+// ---------- s02 ----------
+{
+  const s = K.scene("s02");
+  K.in("#s02 .overline", s.at(0.5), "left");
+  K.in("#s02 .q.a", s.w("lá") - 0.4, "up");
+  K.in("#s02 .q.a .aspas", s.w("lá") - 0.2, "scale");
+  K.in("#s02 .q.a .forno", s.w("forno") - 0.1, "fade", { duration: 0.4 });
+  K.in("#s02 .q.b", s.w("dia") - 0.3, "right");
+  K.in("#s02 .q.c", s.w("filha") - 0.3, "tilt");
+  tl.fromTo(".bg-glow.calor", { opacity: 1 }, { opacity: 0.45, duration: 3, ease: "sine.inOut" }, s.at(1));
+  K.cut("s02", "s03", s.end - 0.34, "push");
+}
+
+// ---------- s03 ----------
+{
+  const s = K.scene("s03");
+  K.in("#s03 .overline", s.at(0.45), "left");
+  K.in("#s03 .st", s.at(0.6), "wipe", { duration: 1.1 });
+  K.in("#s03 .rule", s.w("família") - 0.5, "grow");
+  K.in("#s03 .st2", s.w("família") - 0.2, "up");
+  tl.to(".bg-glow.calor", { opacity: 0, duration: 1.2, ease: "sine.inOut" }, s.w("criamos") - 0.6);
+  const cut = s.w("criamos") - 0.2;
+  K.cut("s03", "s03b", cut, "zoom");
+  const b = cut + 0.35;
+  K.in("#s03b .lockup svg", b, "pop");
+  K.in("#s03b .name", b + 0.12, "slam");
+  K.in("#s03b .rule", b + 0.55, "grow", { duration: 1.0 });
+  K.in("#s03b .tag", b + 0.85, "up");
+  K.in("#s03b .ghost", b + 0.2, "fade", { duration: 1.4 });
+  tl.fromTo("#s03b .ghost", { x: 0 }, { x: -120, duration: s.end - b, ease: "none" }, b);
+}
+
+K.finish();
+</script>
+</body>
+</html>

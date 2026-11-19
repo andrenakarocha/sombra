@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="pt-BR" data-resolution="landscape" data-composition-variables='[{"id":"legendas","type":"boolean","label":"Legendas","default":true}]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="kit.css" />
+<style>
+/* s08 · arquitetura */
+#s08 .scene-content { gap: 18px; }
+#s08 .diagram { position: relative; flex: 1 1 0; }
+#s08 .diagram svg.links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+#s08 .node { position: absolute; display: flex; flex-direction: column; gap: 8px; padding: 24px 28px; border-radius: 18px; background: var(--noite900); border: 2px solid var(--noite700); }
+#s08 .node b { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 1; }
+#s08 .node span { font-family: var(--mono); font-weight: 500; font-size: 21px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--noite300); }
+#s08 .node.core { left: 560px; top: 210px; width: 480px; border-color: #1F7A73; background: rgba(11,59,57,0.65); }
+#s08 .node.core b { font-size: 60px; }
+#s08 .node.sent { left: 0; top: 250px; width: 330px; border-color: #8F3B1D; }
+#s08 .node.clima { left: 1270px; top: 0; width: 410px; }
+#s08 .node.app { left: 1270px; top: 300px; width: 410px; }
+#s08 .node.painel { left: 1270px; top: 520px; width: 410px; }
+#s08 .lbl { position: absolute; font-family: var(--mono); font-weight: 700; font-size: 20px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 14px; border-radius: 999px; background: var(--noite950); border: 2px solid var(--noite700); white-space: nowrap; }
+#s08 .lbl.mqtt { left: 330px; top: 196px; color: var(--ocre300); border-color: #8F3B1D; }
+#s08 .lbl.rest { left: 1040px; top: 96px; color: var(--sombra300); }
+#s08 .lbl.ws { left: 1050px; top: 470px; color: var(--sombra300); }
+#s08 .pkt { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--ocre300); box-shadow: 0 0 18px rgba(240,207,131,0.8); left: 330px; top: 336px; opacity: 0; }
+/* s09 · privacidade */
+#s09 .left { width: 820px; flex: none; justify-content: center; gap: 22px; }
+#s09 .pii { display: flex; flex-direction: column; gap: 12px; }
+#s09 .pii div { font-family: var(--mono); font-size: 30px; padding: 14px 22px; border-radius: 12px; background: var(--noite900); border: 2px solid var(--noite700); color: var(--areia200); }
+#s09 .pii div b { color: var(--sombra300); font-weight: 700; margin-right: 14px; }
+#s09 .ia { padding: 24px 28px; gap: 12px; display: flex; flex-direction: column; }
+#s09 .ia p { font-size: 29px; line-height: 1.3; color: var(--areia50); }
+#s09 .right { flex: 1 1 0; justify-content: center; gap: 14px; }
+#s09 .ataques { display: flex; flex-direction: column; gap: 10px; }
+#s09 .atk { display: flex; align-items: center; gap: 18px; padding: 12px 20px; border-radius: 12px; background: var(--noite900); border: 2px solid var(--noite700); }
+#s09 .atk .id { font-family: var(--mono); font-weight: 700; font-size: 22px; color: var(--noite300); width: 44px; }
+#s09 .atk .t { font-size: 26px; flex: 1 1 0; }
+#s09 .atk .st { position: relative; width: 190px; height: 40px; flex: none; }
+#s09 .atk .st .chip { position: absolute; right: 0; top: 0; font-size: 19px; padding: 6px 14px; }
+#s09 .atk .st .chip.b { opacity: 0; }
+#s09 .placar { display: flex; align-items: baseline; gap: 18px; }
+#s09 .placar .num { font-size: 120px; color: var(--verde); }
+#s09 .placar span { font-size: 32px; color: var(--areia200); }
+/* s10 · infraestrutura */
+#s10 .row { flex: 1 1 0; align-items: center; }
+#s10 .term { width: 1120px; height: 540px; flex: none; }
+#s10 .side { flex: 1 1 0; gap: 18px; }
+#s10 .side .chip { align-self: flex-start; font-size: 24px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="ato3" data-start="0" data-duration="47.6" data-width="1920" data-height="1080">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="folhas" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0045 0.0068" numOctaves="3" seed="11"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.373  0 0 0 0 0.702  0 0 0 0 0.659  0 0 0 -18 8.6"/>
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+    <symbol id="marca" viewBox="0 0 64 64">
+      <circle cx="42" cy="21" r="11" fill="#D9A441"/>
+      <path d="M14 33.5h36V54a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2z" fill="#1F7A73"/>
+      <path d="M28 56V45.5a4 4 0 0 1 8 0V56z" fill="#0C1617"/>
+      <path d="M7 35 32 15.5 57 35" fill="none" stroke="#B04F27" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-normal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m7.5 12.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-atencao" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5v7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-perigo" viewBox="0 0 24 24"><path d="M12 2.8 22 20.5H2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="i-extremo" viewBox="0 0 24 24"><path d="M8.1 2.5h7.8l5.6 5.6v7.8l-5.6 5.6H8.1l-5.6-5.6V8.1z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 7v6.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.8" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-telefone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4-2 1.3a11 11 0 0 0 7.4 7.4l1.3-2 4 1.6V19a1.7 1.7 0 0 1-1.8 1.7A16.5 16.5 0 0 1 3.3 5.3 1.7 1.7 0 0 1 5 3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 2.5 20 5.6v6.1c0 4.8-3.3 8.4-8 9.8-4.7-1.4-8-5-8-9.8V5.6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+  <div class="bg" data-layout-ignore>
+    <svg class="bg-leaves"><rect width="100%" height="100%" filter="url(#folhas)"/></svg>
+    <div class="bg-glow a"></div><div class="bg-glow b"></div>
+  </div>
+
+  <!-- s08 · arquitetura -->
+  <div id="s08" class="scene first">
+    <div class="scene-content">
+      <div class="overline">Por dentro · arquitetura orientada a serviços</div>
+      <div class="diagram">
+        <svg class="links" viewBox="0 0 1680 700">
+          <path class="ln l-mqtt" d="M330 336 L560 336" stroke="#E08A62" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path class="ln l-rest" d="M1040 270 C1150 270 1160 90 1270 90" stroke="#5FB3A8" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path class="ln l-app" d="M1040 360 C1150 360 1160 380 1270 380" stroke="#5FB3A8" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="2 14"/>
+          <path class="ln l-painel" d="M1040 400 C1150 400 1160 600 1270 600" stroke="#5FB3A8" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="2 14"/>
+        </svg>
+        <div class="node sent"><b>Sentinela</b><span>ESP32 · na casa</span></div>
+        <div class="node core"><b>Core</b><span>C# · .NET 10 · alertas e rede de cuidado</span><span>EF Core · PostgreSQL</span></div>
+        <div class="node clima"><b>Clima</b><span>Java · Spring · dono do INMET</span></div>
+        <div class="node app"><b>App da família</b><span>Expo · React Native</span></div>
+        <div class="node painel"><b>Painel</b><span>React · operador e gestão</span></div>
+        <div class="lbl mqtt">MQTT · HMAC-SHA256</div>
+        <div class="lbl rest">REST · OpenAPI</div>
+        <div class="lbl ws">SignalR · ao vivo</div>
+        <div class="pkt"></div><div class="pkt"></div><div class="pkt"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s09 · privacidade -->
+  <div id="s09" class="scene">
+    <div class="scene-content">
+      <div class="row grow">
+        <div class="col left">
+          <div class="overline">Cybersecurity · Sombra.Privacidade</div>
+          <div class="display d-sm">Privacidade por padrão</div>
+          <div class="pii">
+            <div class="p1"><b>CPF</b>***.757.***-89</div>
+            <div class="p2"><b>CARTÃO SUS</b>*** **** **** 1765</div>
+            <div class="p3"><b>LAUDO</b>[DADO DE SAÚDE PROTEGIDO]</div>
+          </div>
+          <div class="panel ia">
+            <div class="chip">a IA, para o cidadão · só metadados</div>
+            <p>"Alguém tentou ver as informações da sua casa sem permissão, mas o Sombra bloqueou o acesso. Está tudo seguro."</p>
+          </div>
+        </div>
+        <div class="col right">
+          <div class="overline quente">Auditoria · módulo desligado × ligado</div>
+          <div class="ataques">
+            <div class="atk"><span class="id">A1</span><span class="t">CPF no texto livre de saúde</span><span class="st"><span class="chip perigo a">vazou</span><span class="chip ok b">bloqueado</span></span></div>
+            <div class="atk"><span class="id">A2</span><span class="t">Laudo numa exceção</span><span class="st"><span class="chip perigo a">vazou</span><span class="chip ok b">bloqueado</span></span></div>
+            <div class="atk"><span class="id">A3</span><span class="t">Perfil de saúde sem login</span><span class="st"><span class="chip perigo a">vazou</span><span class="chip ok b">bloqueado</span></span></div>
+            <div class="atk"><span class="id">A4</span><span class="t">Cartão SUS no log</span><span class="st"><span class="chip perigo a">vazou</span><span class="chip ok b">bloqueado</span></span></div>
+            <div class="atk"><span class="id">A5</span><span class="t">Dado pessoal no prompt da IA</span><span class="st"><span class="chip perigo a">vazou</span><span class="chip ok b">bloqueado</span></span></div>
+            <div class="atk"><span class="id">A6</span><span class="t">Dado pessoal no MQTT</span><span class="st"><span class="chip perigo a">vazou</span><span class="chip ok b">bloqueado</span></span></div>
+            <div class="atk"><span class="id">A7</span><span class="t">Senha na URL</span><span class="st"><span class="chip perigo a">vazou</span><span class="chip ok b">bloqueado</span></span></div>
+            <div class="atk"><span class="id">A8</span><span class="t">Telemetria com HMAC falso</span><span class="st"><span class="chip perigo a">vazou</span><span class="chip ok b">bloqueado</span></span></div>
+          </div>
+          <div class="placar"><span class="num" id="n8">0</span><span>de 8 barrados</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s10 · infraestrutura -->
+  <div id="s10" class="scene">
+    <div class="scene-content">
+      <div class="overline">Operating Systems · uma VM Ubuntu vazia</div>
+      <div class="row">
+        <div class="term">
+          <div class="term-bar"><i></i><i></i><i></i><span>vagrant@sombra-srv01: ~</span></div>
+          <div class="term-body"><div class="term-lines">
+            <div class="term-line"><span class="p">$</span> vagrant destroy -f &amp;&amp; vagrant up</div>
+            <div class="term-line"><span class="d">  9 etapas · host, rede, DNS, usuários, banco, aplicação, monitor</span></div>
+            <div class="term-line"><span class="p">$</span> hostnamectl --static</div>
+            <div class="term-line">sombra-srv01</div>
+            <div class="term-line"><span class="p">$</span> dig +short api.sombra.local</div>
+            <div class="term-line">192.168.56.10</div>
+            <div class="term-line"><span class="p">$</span> sudo /vagrant/falhas/01-matar-monitor.sh</div>
+            <div class="term-line"><span class="h">▶</span> monitor ativo com o PID 13378; kill -9 nele</div>
+            <div class="term-line"><span class="ok">✓</span> monitor de volta sozinho: PID 13378 → 14538</div>
+            <div class="term-line"><span class="p">$</span> sudo /vagrant/falhas/06-reboot.sh --conferir</div>
+            <div class="term-line"><span class="ok">✓</span> depois do reboot, os 7 serviços voltaram sozinhos</div>
+          </div></div>
+        </div>
+        <div class="col side">
+          <div class="display d-xs">Só com scripts Bash</div>
+          <div class="chip c1">9 etapas idempotentes</div>
+          <div class="chip c2">DNS próprio · sombra.local</div>
+          <div class="chip c3">monitor systemd com watchdog</div>
+          <div class="chip quente c4">7 testes de falha</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-top">
+      <div class="hud-brand"><svg><use href="#marca"/></svg><span class="name">Sombra</span><span class="tag">GS 2026.2 · CitizenTech</span></div>
+      <div class="hud-section"></div>
+    </div>
+    <div class="hud-progress"><i></i></div>
+  </div>
+  <div class="captions" id="caps"></div>
+  <div class="veil" id="veil"></div>
+</div>
+<script src="shared/timing.js"></script>
+<script src="shared/kit.js"></script>
+<script>
+const tl = K.act("ato3");
+K.chrome();
+K.captions();
+
+// ---------- s08 ----------
+{
+  const s = K.scene("s08");
+  K.in("#s08 .overline", s.at(0.35), "left");
+  K.in("#s08 .node.core", s.w("core") - 0.3, "scale");
+  K.in("#s08 .node.clima", s.w("serviço") - 0.2, "right");
+  K.draw("#s08 .l-rest", s.w("java"), 0.8);
+  K.in("#s08 .lbl.rest", s.w("java") + 0.5, "pop");
+  K.in("#s08 .node.sent", s.w("sentinela") - 0.3, "left");
+  K.draw("#s08 .l-mqtt", s.w("mqtt") - 0.2, 0.6);
+  K.in("#s08 .lbl.mqtt", s.w("mqtt") + 0.2, "pop");
+  // as mensagens assinadas viajando da Sentinela ao Core
+  K.$$("#s08 .pkt").forEach((p, i) => {
+    const t = s.w("assinada") + i * 0.55;
+    tl.fromTo(p, { x: 0, opacity: 0 }, { x: 222, opacity: 1, duration: 0.75, ease: "power1.inOut" }, t);
+    tl.to(p, { opacity: 0, duration: 0.15 }, t + 0.75);
+  });
+  K.in("#s08 .node.app", s.w("app") - 0.3, "right");
+  K.in("#s08 .node.painel", s.w("painel") - 0.2, "right");
+  K.in("#s08 .l-app, #s08 .l-painel", s.w("app"), "fade", { stagger: 0.2 });
+  K.in("#s08 .lbl.ws", s.w("vivo") - 0.3, "pop");
+  K.cut("s08", "s09", s.end - 0.34, "push");
+}
+
+// ---------- s09 ----------
+{
+  const s = K.scene("s09");
+  K.in("#s09 .left .overline", s.at(0.45), "left");
+  K.in("#s09 .left .display", s.at(0.6), "wipe", { duration: 0.9 });
+  K.in("#s09 .p1", s.w("cpf") - 0.2, "left");
+  K.in("#s09 .p2", s.w("cartão") - 0.2, "left");
+  K.in("#s09 .p3", s.w("laudo") - 0.2, "left");
+  K.in("#s09 .right .overline", s.w("oito") - 1.2, "right");
+  K.in("#s09 .atk", s.w("oito") - 1.0, "up", { stagger: 0.08, duration: 0.45 });
+  K.in("#s09 .atk .chip.a", s.w("vazavam") - 0.3, "pop", { stagger: 0.05 });
+  const flip = s.w("barrados") - 0.4;
+  K.$$("#s09 .atk").forEach((row, i) => {
+    tl.to(row.querySelector(".chip.a"), { opacity: 0, y: -12, duration: 0.2, ease: "power2.in" }, flip + i * 0.09);
+    tl.fromTo(row.querySelector(".chip.b"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.28, ease: "power3.out" }, flip + i * 0.09 + 0.12);
+  });
+  K.in("#s09 .placar", flip, "up");
+  K.count("#n8", 0, 8, flip, 0.9, null, "power1.out");
+  K.in("#s09 .ia", s.w("ia") - 0.3, "up");
+  K.cut("s09", "s10", s.end - 0.34, "pushUp");
+}
+
+// ---------- s10 ----------
+{
+  const s = K.scene("s10");
+  K.in("#s10 .overline", s.at(0.4), "left");
+  K.in("#s10 .term", s.at(0.5), "tilt");
+  K.term("#s10 .term-body", s.at(1.0), { per: 0.62, visible: 11 });
+  K.in("#s10 .side .display", s.w("scripts") - 0.3, "wipe", { duration: 0.8 });
+  K.in("#s10 .c1", s.w("rede") - 0.2, "pop");
+  K.in("#s10 .c2", s.w("dns") - 0.2, "pop");
+  K.in("#s10 .c3", s.w("monitor") - 0.2, "pop");
+  K.in("#s10 .c4", s.w("falhas") - 0.2, "pop");
+}
+
+K.finish();
+</script>
+</body>
+</html>
