@@ -48,11 +48,11 @@ class RepositoriosTest {
     JdbcTemplate jdbc;
 
     @Test
-    void asQuatroMigracoesRodamNumBancoVazioEOHibernateSoConfere() {
+    void asMigracoesRodamNumBancoVazioEOHibernateSoConfere() {
         List<String> versoes = jdbc.queryForList(
                 "select version from flyway_schema_history where success order by installed_rank", String.class);
 
-        assertThat(versoes).containsExactly("1", "2", "3", "4");
+        assertThat(versoes).containsExactly("1", "2", "3", "4", "5");
     }
 
     @Test
@@ -63,6 +63,9 @@ class RepositoriosTest {
                 assertThat(e.getCoordenada().distanciaKmAte(MIRANTE)).isLessThan(0.01));
         assertThat(observacoes.count()).isEqualTo(637);
         assertThat(pontos.count()).isEqualTo(9);
+        // V5: nenhuma fonte leva o identificador numérico do OSM (o motor de PII do Core o lê como telefone)
+        assertThat(pontos.findAll()).allSatisfy(p -> assertThat(p.getFonte())
+                .startsWith("OpenStreetMap (ODbL)").doesNotContainPattern("\\d{8,}"));
     }
 
     @Test
