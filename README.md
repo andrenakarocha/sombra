@@ -10,7 +10,7 @@ O andamento de cada parte está no [painel de status do plano](docs/PLANO.md#12-
 | Campo | Conteúdo |
 |---|---|
 | **Nome** | Sombra |
-| **Cidade e bairro** | São Paulo/SP · bairro a preencher. Dados climáticos da estação INMET A701 (Mirante de Santana) |
+| **Cidade e bairro** | São Paulo/SP · Moema (zona sul). Dados climáticos da estação INMET A701 (Mirante de Santana), a de referência da cidade |
 | **Cidadão beneficiado** | Pessoa idosa que mora sozinha e sua rede de cuidado: família, vizinhos e agentes comunitários de saúde |
 | **Problema, em uma frase** | *Em ondas de calor, idosos que moram sozinhos em São Paulo não percebem o perigo dentro de casa, e a família só fica sabendo quando já é tarde.* |
 | **Como funciona** | A Sentinela (ESP32) mede o calor da casa e pede um "estou bem" num botão grande. Um modelo de ML treinado com dados reais do INMET prevê o risco das próximas 24 h. Sem resposta, o Sombra avisa a rede de cuidado em degraus, do lembrete leve ao alerta. Um motor de privacidade protege os dados de saúde e mostra um farol de Risco Cidadão. |

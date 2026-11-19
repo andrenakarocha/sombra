@@ -9,7 +9,7 @@
 | Campo | Conteúdo |
 |---|---|
 | **Nome** | Sombra |
-| **Cidade e bairro** | São Paulo/SP · zona norte (estação INMET A701, Mirante de Santana) |
+| **Cidade e bairro** | São Paulo/SP · Moema (zona sul); clima da estação INMET A701 (Mirante de Santana), a de referência da cidade |
 | **Cidadão beneficiado** | Pessoa idosa que mora sozinha e a rede de cuidado dela: família, vizinhos e agentes comunitários de saúde |
 | **Problema, em uma frase** | *Em ondas de calor, idosos que moram sozinhos em São Paulo não percebem o perigo dentro de casa, e a família só fica sabendo quando já é tarde.* |
 | **Como funciona** | A Sentinela (ESP32) mede o calor da casa e pede um "estou bem". **Este serviço** diz qual é o risco de calor da região agora e nas próximas 24 h e onde fica o lugar fresco mais perto. Sem resposta da pessoa, o Core avisa a rede de cuidado em degraus |

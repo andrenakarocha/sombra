@@ -112,10 +112,10 @@ pioram a desidratação e quase nunca percebe que a casa virou um forno. A famí
 
 ### 1.4 Ficha da CitizenTech (vai no topo do README do repositório)
 
-| Campo | Conteúdo (v0; o bairro e a persona fecham na F12.2, depois da entrevista) |
+| Campo | Conteúdo (o bairro fechou na D20) |
 |---|---|
 | **Nome** | Sombra |
-| **Cidade e bairro** | São Paulo/SP · bairro da pessoa entrevistada. Clima: estação INMET A701 (Mirante de Santana) |
+| **Cidade e bairro** | São Paulo/SP · Moema (zona sul), o bairro da pessoa entrevistada (D20). Clima: estação INMET A701 (Mirante de Santana), a de referência da cidade |
 | **Cidadão beneficiado** | Pessoa idosa que mora sozinha e sua rede de cuidado (família, vizinhos, agentes comunitários de saúde) |
 | **Problema, em uma frase** | *"Em ondas de calor, idosos que moram sozinhos em São Paulo não percebem o perigo dentro de casa, e a família só fica sabendo quando já é tarde."* |
 | **Como funciona** | A Sentinela mede o calor da casa e pede um "estou bem"; o ML prevê o risco das próximas 24 h; sem resposta, o Sombra avisa a rede de cuidado pelo app; um motor de privacidade protege os dados de saúde |
@@ -169,6 +169,7 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | D18 | **Corte do trabalho manual que nenhuma entrega exige** (conferido nos enunciados): sem VM no Azure (fecha a DA3: não); F11 só com acessibilidade e uso, sem o cosmético; sem Test Plan pago nem APK; pitch só se sobrar tempo (vale só para o prêmio). Os **5 vídeos obrigatórios** (Cyber, ML ≤ 5, IoT ≤ 4, Mobile ≤ 3, OS ≤ 7) e os prints saem por script de **uma rodada** do `make demo`, cortada por matéria | dono do repositório, 2026-11-18 |
 | D17 | **O app é a referência da API do Cuidador:** onde os schemas Zod do `mobile/` e o Core divergem, o Core se adapta ao app, inclusive na R3 (F6.21–F6.26) | dono do repositório, 2026-11-18 |
 | D19 | **O preventivo segue o perigo de quem mora na casa** (fecha a DA6): o Core abre o `AlertaPreventivo` quando o nível previsto para a região **ou** o pico previsto do índice de calor (`indiceDeCalorPrevistoC`, do Clima) pelos limites pessoais do morador mais vulnerável (R3) chega a `PERIGO`; a R5 continua exigindo perigo. No replay real de nov/2023 (pico de 35,47 °C), o preventivo abre na Casa do Seu Joaquim (85 anos, cardiopatia: perigo a partir de 34,94 °C) e não na da Dona Lurdes (78 anos, diurético: 37,94 °C). O alvo do ML (F4.2) continua livre | dono do repositório, 2026-11-18 (fecha a DA6) |
+| D20 | **Bairro da Ficha: Moema** (zona sul de São Paulo), o da pessoa entrevistada (fecha a DA2). O clima continua vindo da estação INMET A701 (Mirante de Santana), a de referência da cidade; a persona do sistema segue a Dona Lurdes | operador, 2026-11-19 |
 
 As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11), 002 (D2), 003 (D4), 004 (MQTT assinado e sem PII), 005 (D7) e 006 (índice de calor replicado com vetores).
 
@@ -176,7 +177,6 @@ As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11),
 
 | # | Decisão | Padrão até lá | Fecha em |
 |---|---|---|---|
-| DA2 | Bairro da Ficha · persona fictícia do sistema | cidade **São Paulo** confirmada (a A701 continua valendo); bairro "a preencher"; persona "Dona Lurdes, 78 anos", inspirada na Dona Cida | F12.1 (não bloqueia nada) |
 | DA4 | Voz do pitch: TTS (Gemini, como no HENRY) ou voz de alguém do time | TTS | F13.3 |
 
 ### 2.3 Fora do escopo (ideias para depois)
@@ -1002,7 +1002,7 @@ F11.8 (VM no Azure) saíram.**
   🔎 lido numa aba anônima, sem link quebrado (verificado por script).
   ⏸ 2026-11-19: arquitetura em Mermaid, "como rodar tudo" com as URLs conferidas, o mapa das partes e os integrantes;
   o `make checklist` confere os links relativos dos 54 `.md` (nenhum quebrado; testado com um quebrado de propósito).
-  Falta o bairro na Ficha (da entrevista, F0.16, do operador) e o `prompts.md` ganhar as partes que ainda vão fechar.
+  O bairro entrou na Ficha (Moema, D20); falta o `prompts.md` ganhar as partes que ainda vão fechar.
 - [ ] **F12.2** 🤖 A partir da F0.16: `docs/entrevista.md`, `docs/problema.md`, `docs/rabiscos/` (wireframes, fluxo de
   dados, circuito) e a Ficha final.
   🔎 nenhuma informação que identifique a pessoa.
