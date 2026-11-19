@@ -274,7 +274,7 @@ for (const [i, c] of cenas.entries()) {
     '-filter_complex',
     // recorte: {x, y, w, h} da tela gravada, ampliado para 1080p (o close na OLED do Wokwi, por exemplo);
     // rotulo: um selo no canto, desenhado na montagem (para telas que não são o palco).
-    `[0:v]fps=30,setpts=(PTS-STARTPTS)/${f},fps=30,${c.recorte ? `crop=${c.recorte.w}:${c.recorte.h}:${c.recorte.x}:${c.recorte.y},` : ''}${c.tela === 'celular' ? 'scale=-2:1000:flags=lanczos,pad=iw+16:ih+16:8:8:color=0x142224,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0xF5EEDF' : 'scale=1920:1080:flags=lanczos'},` +
+    `[0:v]fps=30,setpts=(PTS-STARTPTS)/${f},fps=30,${c.recorte ? `crop=${c.recorte.w}:${c.recorte.h}:${c.recorte.x}:${c.recorte.y},` : ''}${c.tela === 'celular' ? 'scale=-2:1040:flags=lanczos,pad=iw+16:ih+16:8:8:color=0x142224,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0xF5EEDF' : 'scale=1920:1080:flags=lanczos'},` +
       `${c.rotulo ? `drawtext=fontfile=/usr/share/fonts/liberation/LiberationSans-Bold.ttf:text='${c.rotulo.replace(/[':]/g, '')}':fontsize=34:fontcolor=white:box=1:boxcolor=0xB04F27:boxborderw=16:x=w-tw-48:y=40,` : ''}tpad=stop_mode=clone:stop_duration=${dur},trim=0:${dur},setpts=PTS-STARTPTS,format=yuv420p,subtitles=${srt}:force_style='${ESTILO}'[v];` +
       `[1:a]aresample=48000,aformat=channel_layouts=stereo,adelay=${atraso}|${atraso},apad,atrim=0:${dur}[a]`,
     '-map', '[v]', '-map', '[a]',
