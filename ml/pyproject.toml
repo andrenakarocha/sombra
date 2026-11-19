@@ -1,0 +1,17 @@
+[project]
+name = "sombra-ml"
+version = "1.0.0"
+description = "Previsão de calor perigoso em 24 h com dados reais do INMET (A701)"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["notebooks", "scripts/baixar_dados.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
