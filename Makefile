@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -51,7 +51,7 @@ lint: ## shellcheck nos scripts, ruff no Python e ESLint + tsc no app
 semgrep: ## Taint estático do Core: o canário dispara e o código de produção sai limpo (SARIF em security/semgrep/)
 	@security/semgrep/rodar.sh
 
-test: contratos test-sim test-core test-clima test-mobile test-infra ## Roda todos os testes (cada componente acrescenta os seus)
+test: contratos test-sim test-core test-clima test-mobile test-infra test-sentinela ## Roda todos os testes (cada componente acrescenta os seus)
 
 test-core: ## Build e testes do Core (C#), na imagem do SDK
 	@$(MAKE) -s -C services/core-api test
@@ -71,6 +71,12 @@ test-infra: ## shellcheck e testes das bibliotecas da VM (log, auditoria, trap, 
 	@find infra -name '*.sh' -not -path 'infra/compose/*' -print0 | xargs -0 shellcheck && echo "shellcheck ok"
 	@docker run --rm -v "$$PWD/infra":/infra:ro ubuntu:24.04 bash -c \
 	  'apt-get update -qq >/dev/null && apt-get install -y -qq jq >/dev/null 2>&1 && /infra/testes/testar-bibliotecas.sh'
+
+TESTAR_SENTINELA := $(or $(TMPDIR),/tmp)/sombra-testar-sentinela
+
+test-sentinela: ## Firmware da Sentinela no host (g++): índice de calor, HMAC, estados e fila, com os vetores do contrato
+	@python3 -I iot/sentinela/testes/gerar_vetores.py iot/sentinela/testes/vetores.h
+	@g++ -std=c++17 -Wall -Wextra -Werror -O1 -o $(TESTAR_SENTINELA) iot/sentinela/testes/testar.cpp && $(TESTAR_SENTINELA)
 
 e2e-painel: ## E2E do painel (Playwright) contra o make up: login, roteiro com o simulador, Risco Cidadão e operação ao vivo
 	@cd web/painel && npx playwright test

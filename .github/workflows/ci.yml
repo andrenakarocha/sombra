@@ -31,6 +31,7 @@ jobs:
       core: ${{ steps.filtro.outputs.core }}
       clima: ${{ steps.filtro.outputs.clima }}
       painel: ${{ steps.filtro.outputs.painel }}
+      sentinela: ${{ steps.filtro.outputs.sentinela }}
       ambiente: ${{ steps.filtro.outputs.ambiente }}
       scripts: ${{ steps.filtro.outputs.scripts }}
       workflows: ${{ steps.filtro.outputs.workflows }}
@@ -75,6 +76,10 @@ jobs:
             painel:
               - 'web/painel/**'
               - 'design/tokens.css'
+            sentinela:
+              - 'iot/**'
+              - 'docs/contratos/indice-de-calor.vetores.json'
+              - 'docs/contratos/mqtt-assinatura.vetores.json'
             ambiente:
               - 'compose.yaml'
               - 'infra/compose/**'
@@ -390,10 +395,22 @@ jobs:
       - name: gitleaks (binário MIT, imagem oficial com versão fixa)
         run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact --verbose --exit-code 1
 
+  sentinela:
+    name: Sentinela (firmware)
+    needs: mudancas
+    if: needs.mudancas.outputs.sentinela == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: o firmware no host (índice de calor, HMAC, estados e fila), com os vetores do contrato e aviso como erro
+        run: make test-sentinela
+
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [mudancas, contratos, design, simulador, core, clima, painel, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
+    needs: [mudancas, contratos, design, simulador, core, clima, painel, sentinela, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
     runs-on: ubuntu-latest
     steps:
       - name: nenhum job falhou nem foi cancelado
