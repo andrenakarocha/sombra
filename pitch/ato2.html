@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pt-BR" data-resolution="landscape" data-composition-variables='[{"id":"legendas","type":"boolean","label":"Legendas","default":true}]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="kit.css" />
+<style>
+/* s04 · a Sentinela */
+#s04 .left { width: 660px; flex: none; justify-content: center; gap: 26px; }
+#s04 .feats { display: flex; flex-direction: column; gap: 18px; }
+#s04 .feat { display: flex; align-items: center; gap: 20px; font-size: 34px; line-height: 1.2; color: var(--areia50); }
+#s04 .feat .n { font-family: var(--mono); font-weight: 700; font-size: 22px; color: var(--ocre300); width: 46px; flex: none; }
+#s04 .feat small { display: block; font-size: 25px; color: var(--noite300); }
+#s04 .video { position: relative; width: 920px; height: 709px; flex: none; padding: 12px; border-radius: 22px; background: var(--noite900); border: 2px solid var(--noite700); box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+#s04 .video-in { width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: #000; }
+#s04 .video video { width: 100%; height: 100%; object-fit: cover; display: block; }
+#s04 .video-tag { position: absolute; left: 34px; bottom: 34px; }
+/* s05 · prever antes */
+#s05 .left { width: 640px; flex: none; justify-content: center; gap: 24px; }
+#s05 .big { display: flex; align-items: baseline; gap: 22px; }
+#s05 .big .num { font-size: 210px; color: var(--sombra300); }
+#s05 .big .de { font-family: var(--display); font-weight: 700; font-size: 84px; color: var(--areia200); }
+#s05 .cap5 { font-size: 34px; line-height: 1.25; color: var(--areia200); max-width: 600px; }
+#s05 .fig { flex: none; width: 1000px; padding: 18px; border-radius: 20px; background: var(--areia50); box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
+#s05 .fig img { display: block; width: 100%; height: auto; border-radius: 8px; }
+#s05 .fig-label { font-family: var(--mono); font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sombra900); margin-top: 12px; }
+/* s06 · um degrau por vez */
+#s06 .left { flex: 1 1 0; justify-content: center; gap: 22px; }
+#s06 .verde { display: flex; align-items: center; gap: 26px; padding: 26px 34px; border-radius: 22px; background: #2B7656; border: 3px solid #5CC08F; align-self: flex-start; }
+#s06 .verde b { font-family: var(--body); font-weight: 700; font-size: 52px; letter-spacing: 0.04em; color: var(--areia50); }
+#s06 .verde svg { width: 60px; height: 60px; color: var(--areia50); }
+#s06 .degraus { display: flex; flex-direction: column; gap: 14px; }
+#s06 .degrau { display: flex; align-items: center; gap: 22px; padding: 20px 28px; border-radius: 16px; background: var(--noite900); border: 2px solid var(--noite700); }
+#s06 .degrau .n { font-family: var(--mono); font-weight: 700; font-size: 22px; letter-spacing: 0.08em; color: var(--noite300); width: 140px; flex: none; text-transform: uppercase; }
+#s06 .degrau b { font-family: var(--body); font-weight: 600; font-size: 36px; }
+#s06 .degrau span { font-size: 26px; color: var(--noite300); margin-left: auto; }
+#s06 .degrau.d1 { border-color: #866409; } #s06 .degrau.d1 .n { color: var(--amarelo); }
+#s06 .degrau.d2 { border-color: #9A4E0E; } #s06 .degrau.d2 .n { color: var(--laranja); }
+#s06 .degrau.d3 { border-color: #B8322A; } #s06 .degrau.d3 .n { color: var(--vermelho-claro); }
+#s06 .alarme { align-self: flex-start; font-size: 26px; padding: 12px 24px; }
+#s06 .alarme svg { width: 28px; height: 28px; }
+/* s07 · a rede de cuidado */
+#s07 .scene-content { gap: 22px; }
+#s07 .phones { flex: 1 1 0; display: flex; justify-content: center; align-items: flex-start; gap: 70px; }
+#s07 .ph { display: flex; flex-direction: column; align-items: center; }
+#s07 .shot { width: 310px; height: 672px; border-radius: 42px; padding: 9px; }
+#s07 .shot .screen { border-radius: 35px; }
+#s07 .ph.idoso .shot { border-color: #5FB3A8; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="ato2" data-start="0" data-duration="58.1" data-width="1920" data-height="1080">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="folhas" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0045 0.0068" numOctaves="3" seed="11"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.373  0 0 0 0 0.702  0 0 0 0 0.659  0 0 0 -18 8.6"/>
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+    <symbol id="marca" viewBox="0 0 64 64">
+      <circle cx="42" cy="21" r="11" fill="#D9A441"/>
+      <path d="M14 33.5h36V54a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2z" fill="#1F7A73"/>
+      <path d="M28 56V45.5a4 4 0 0 1 8 0V56z" fill="#0C1617"/>
+      <path d="M7 35 32 15.5 57 35" fill="none" stroke="#B04F27" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-normal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m7.5 12.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-atencao" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5v7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-perigo" viewBox="0 0 24 24"><path d="M12 2.8 22 20.5H2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="i-extremo" viewBox="0 0 24 24"><path d="M8.1 2.5h7.8l5.6 5.6v7.8l-5.6 5.6H8.1l-5.6-5.6V8.1z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 7v6.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.8" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-telefone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4-2 1.3a11 11 0 0 0 7.4 7.4l1.3-2 4 1.6V19a1.7 1.7 0 0 1-1.8 1.7A16.5 16.5 0 0 1 3.3 5.3 1.7 1.7 0 0 1 5 3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 2.5 20 5.6v6.1c0 4.8-3.3 8.4-8 9.8-4.7-1.4-8-5-8-9.8V5.6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+  <div class="bg" data-layout-ignore>
+    <svg class="bg-leaves"><rect width="100%" height="100%" filter="url(#folhas)"/></svg>
+    <div class="bg-glow a"></div><div class="bg-glow b"></div><div class="bg-glow calor"></div>
+  </div>
+
+  <!-- s04 · a Sentinela -->
+  <div id="s04" class="scene first">
+    <div class="scene-content">
+      <div class="row grow center between">
+        <div class="col left">
+          <div class="overline quente">Na casa · Physical Computing</div>
+          <div class="display d-lg title">A Sentinela</div>
+          <div class="rule" style="width:420px"></div>
+          <div class="feats">
+            <div class="feat f1"><span class="n">01</span><div>ESP32 com DHT22<small>mede o calor de dentro da casa</small></div></div>
+            <div class="feat f2"><span class="n">02</span><div>Índice de calor no aparelho<small>a mesma tabela do Core e do ML</small></div></div>
+            <div class="feat f3"><span class="n">03</span><div>Luz fixa, que nunca pisca<small>o pedido da entrevista</small></div></div>
+            <div class="feat f4"><span class="n">04</span><div>Dois botões grandes<small>"estou bem" e "preciso de ajuda"</small></div></div>
+          </div>
+        </div>
+        <div class="video">
+          <div class="video-in">
+            <video id="v-wokwi" src="assets/wokwi-perigo.mp4" data-start="0" data-duration="15.6" data-media-start="17.5" data-track-index="1" muted playsinline></video>
+          </div>
+          <div class="chip video-tag">simulação real no Wokwi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s05 · prever antes -->
+  <div id="s05" class="scene">
+    <div class="scene-content">
+      <div class="row grow center between">
+        <div class="col left">
+          <div class="overline">IA &amp; ML · 16 anos de dados reais do INMET</div>
+          <div class="display d-md">Prever antes</div>
+          <div class="chips"><span class="chip">XGBoost</span><span class="chip">próximas 24 h</span><span class="chip">ONNX</span></div>
+          <div class="big"><span class="num" id="n74">0</span><span class="de">de 75</span></div>
+          <div class="cap5">dias de calor forte avisados com até 24 h de antecedência, no teste de 2022 a 2025</div>
+        </div>
+        <div class="fig">
+          <img src="assets/ml-replay.png" alt="" />
+          <div class="fig-label">Replay da onda de calor de novembro de 2023, hora a hora</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s06 · um degrau por vez -->
+  <div id="s06" class="scene">
+    <div class="scene-content">
+      <div class="row grow center">
+        <div class="col left">
+          <div class="overline">Quando o perigo chega</div>
+          <div class="verde"><svg><use href="#i-normal"/></svg><b>ESTOU BEM</b></div>
+          <div class="degraus">
+            <div class="degrau d1"><span class="n">Degrau 1</span><b>Um lembrete para ela</b><span>na Sentinela e no Modo Idoso</span></div>
+            <div class="degrau d2"><span class="n">Degrau 2</span><b>A família</b><span>pelo app, com "ligar agora"</span></div>
+            <div class="degrau d3"><span class="n">Degrau 3</span><b>Quem está perto</b><span>a vizinha, a rede de cuidado</span></div>
+          </div>
+          <div class="chip perigo alarme"><svg class="ico"><use href="#i-perigo"/></svg>alarme de verdade, só em perigo</div>
+        </div>
+        <div class="ph">
+          <div class="shot"><div class="screen"><img src="assets/app/05-alerta.png" alt="" /></div></div>
+          <div class="shot-label">A linha do tempo do alerta</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- s07 · a rede de cuidado -->
+  <div id="s07" class="scene">
+    <div class="scene-content">
+      <div class="overline">A rede de cuidado · Mobile</div>
+      <div class="phones">
+        <div class="ph p1"><div class="shot"><div class="screen"><img src="assets/app/02-inicio.png" alt="" /></div></div><div class="shot-label">A filha, ao vivo</div></div>
+        <div class="ph p2"><div class="shot"><div class="screen"><img src="assets/app/03-casa.png" alt="" /></div></div><div class="shot-label">O calor de agora e o prazo</div></div>
+        <div class="ph p3 idoso"><div class="shot"><div class="screen"><img src="assets/app/13-modo-idoso.png" alt="" /></div></div><div class="shot-label">Modo Idoso</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-top">
+      <div class="hud-brand"><svg><use href="#marca"/></svg><span class="name">Sombra</span><span class="tag">GS 2026.2 · CitizenTech</span></div>
+      <div class="hud-section"></div>
+    </div>
+    <div class="hud-progress"><i></i></div>
+  </div>
+  <div class="captions" id="caps"></div>
+  <div class="veil" id="veil"></div>
+</div>
+<script src="shared/timing.js"></script>
+<script src="shared/kit.js"></script>
+<script>
+const tl = K.act("ato2");
+K.chrome();
+K.captions();
+
+// ---------- s04 ----------
+{
+  const s = K.scene("s04");
+  K.in("#s04 .overline", s.at(0.35), "left");
+  K.in("#s04 .title", s.at(0.55), "slam");
+  K.in("#s04 .left .rule", s.at(1.0), "grow");
+  K.in("#s04 .video", s.at(0.4), "tilt");
+  K.in("#s04 .video-tag", s.at(1.4), "pop");
+  K.in("#s04 .f1", s.w("esp32") - 0.2, "left");
+  K.in("#s04 .f2", s.w("calcula") - 0.2, "left");
+  K.in("#s04 .f3", s.w("luz") - 0.2, "left");
+  K.in("#s04 .f4", s.w("botões") - 0.2, "left");
+  K.cut("s04", "s05", s.end - 0.34, "push");
+}
+
+// ---------- s05 ----------
+{
+  const s = K.scene("s05");
+  K.in("#s05 .overline", s.at(0.5), "left");
+  K.in("#s05 .display", s.at(0.65), "wipe", { duration: 0.9 });
+  K.in("#s05 .chip", s.w("modelo") - 0.2, "pop", { stagger: 0.12 });
+  K.in("#s05 .fig", s.w("dezesseis") - 0.3, "right");
+  K.in("#s05 .big", s.w("teste") - 0.4, "up");
+  K.count("#n74", 0, 74, s.w("setenta") - 0.2, 1.3, null, "power2.out");
+  K.in("#s05 .cap5", s.w("dias") - 0.4, "fade");
+  K.cut("s05", "s06", s.end - 0.34, "push");
+}
+
+// ---------- s06 ----------
+{
+  const s = K.scene("s06");
+  K.in("#s06 .overline", s.at(0.45), "left");
+  K.in("#s06 .verde", s.w("verde") - 0.3, "pop");
+  tl.fromTo("#s06 .verde", { boxShadow: "0 0 0 0 rgba(92,192,143,0)" }, { boxShadow: "0 0 0 18px rgba(92,192,143,0.18)", duration: 0.6, ease: "sine.out" }, s.w("verde") + 0.2);
+  K.in("#s06 .ph", s.at(0.6), "tilt");
+  K.in("#s06 .d1", s.w("lembrete") - 0.2, "left");
+  K.in("#s06 .d2", s.w("família") - 0.2, "left");
+  K.in("#s06 .d3", s.w("quem") - 0.2, "left");
+  K.in("#s06 .alarme", s.w("alarme") - 0.2, "scale");
+  tl.fromTo(".bg-glow.calor", { opacity: 0 }, { opacity: 0.6, duration: 2.2, ease: "sine.inOut" }, s.w("perigo", 2) - 1);
+  K.cut("s06", "s07", s.end - 0.34, "blur");
+}
+
+// ---------- s07 ----------
+{
+  const s = K.scene("s07");
+  tl.to(".bg-glow.calor", { opacity: 0, duration: 1.4, ease: "sine.inOut" }, s.at(0.2));
+  K.in("#s07 .overline", s.at(0.45), "left");
+  K.in("#s07 .p1", s.w("app") - 0.4, "up");
+  K.in("#s07 .p2", s.w("prazo") - 0.5, "up", { ease: "expo.out" });
+  K.in("#s07 .p3", s.w("modo") - 0.3, "tilt");
+  tl.fromTo("#s07 .p3 .shot", { boxShadow: "0 0 0 0 rgba(95,179,168,0)" }, { boxShadow: "0 0 60px 6px rgba(95,179,168,0.35)", duration: 0.8, ease: "sine.out" }, s.w("gigante"));
+}
+
+K.finish();
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR" data-resolution="landscape" data-composition-variables='[{"id":"legendas","type":"boolean","label":"Legendas","default":true}]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="kit.css" />
+<style>
+#s12 .scene-content { justify-content: center; align-items: center; text-align: center; gap: 30px; }
+#s12 .lockup { display: flex; align-items: center; gap: 44px; }
+#s12 .lockup svg { width: 200px; height: 200px; }
+#s12 .name { font-size: 210px; }
+#s12 .tag { font-family: var(--display); font-style: italic; font-weight: 400; font-size: 64px; color: var(--areia200); }
+#s12 .rule { width: 680px; }
+#s12 .time { font-family: var(--display); font-weight: 600; font-size: 50px; color: var(--areia50); }
+#s12 .meta { font-family: var(--mono); font-size: 23px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--noite300); line-height: 1.7; }
+#s12 .credito { position: absolute; left: 0; right: 0; bottom: 150px; font-family: var(--mono); font-size: 18px; letter-spacing: 0.08em; color: var(--noite300); text-align: center; }
+#s12 .ghost { font-size: 420px; right: -160px; top: -60px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="ato5" data-start="0" data-duration="12.7" data-width="1920" data-height="1080">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="folhas" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0045 0.0068" numOctaves="3" seed="11"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.373  0 0 0 0 0.702  0 0 0 0 0.659  0 0 0 -18 8.6"/>
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+    <symbol id="marca" viewBox="0 0 64 64">
+      <circle cx="42" cy="21" r="11" fill="#D9A441"/>
+      <path d="M14 33.5h36V54a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2z" fill="#1F7A73"/>
+      <path d="M28 56V45.5a4 4 0 0 1 8 0V56z" fill="#0C1617"/>
+      <path d="M7 35 32 15.5 57 35" fill="none" stroke="#B04F27" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-normal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m7.5 12.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-atencao" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5v7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-perigo" viewBox="0 0 24 24"><path d="M12 2.8 22 20.5H2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="i-extremo" viewBox="0 0 24 24"><path d="M8.1 2.5h7.8l5.6 5.6v7.8l-5.6 5.6H8.1l-5.6-5.6V8.1z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 7v6.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.8" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-telefone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4-2 1.3a11 11 0 0 0 7.4 7.4l1.3-2 4 1.6V19a1.7 1.7 0 0 1-1.8 1.7A16.5 16.5 0 0 1 3.3 5.3 1.7 1.7 0 0 1 5 3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 2.5 20 5.6v6.1c0 4.8-3.3 8.4-8 9.8-4.7-1.4-8-5-8-9.8V5.6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+  <div class="bg" data-layout-ignore>
+    <svg class="bg-leaves"><rect width="100%" height="100%" filter="url(#folhas)"/></svg>
+    <div class="bg-glow a"></div><div class="bg-glow b"></div>
+  </div>
+
+  <div id="s12" class="scene first">
+    <div class="ghost" data-layout-ignore>Sombra</div>
+    <div class="scene-content">
+      <div class="lockup"><svg><use href="#marca"/></svg><div class="display name">Sombra</div></div>
+      <div class="rule"></div>
+      <div class="tag">Ninguém enfrenta o calor sozinho.</div>
+      <div class="time">André · João · Matheus</div>
+      <div class="meta">GS 2026.2 · CitizenTech · Engenharia de Software · FIAP<br>github.com/andrenakarocha/sombra</div>
+    </div>
+    <div class="credito">Música: "Deliberate Thought", Kevin MacLeod (incompetech.com) · CC BY 4.0 · voz sintética</div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-top">
+      <div class="hud-brand"><svg><use href="#marca"/></svg><span class="name">Sombra</span><span class="tag">GS 2026.2 · CitizenTech</span></div>
+      <div class="hud-section"></div>
+    </div>
+    <div class="hud-progress"><i></i></div>
+  </div>
+  <div class="captions" id="caps"></div>
+  <div class="veil" id="veil"></div>
+</div>
+<script src="shared/timing.js"></script>
+<script src="shared/kit.js"></script>
+<script>
+const tl = K.act("ato5");
+K.chrome();
+K.captions();
+{
+  const s = K.scene("s12");
+  K.in("#s12 .lockup svg", s.at(0.4), "pop");
+  K.in("#s12 .name", s.at(0.5), "slam");
+  K.in("#s12 .rule", s.at(1.0), "grow", { duration: 1.0 });
+  K.in("#s12 .tag", s.w("porque") - 0.1, "up");
+  K.in("#s12 .time", s.w("andré") - 0.3, "up", { ease: "expo.out" });
+  K.in("#s12 .meta", s.w("andré") + 0.4, "fade");
+  K.in("#s12 .credito", s.w("andré") + 0.8, "fade");
+  K.in("#s12 .ghost", s.at(0.3), "fade", { duration: 1.6 });
+  tl.fromTo("#s12 .ghost", { x: 0 }, { x: -140, duration: s.dur, ease: "none" }, s.at(0));
+  // o fim: só o último ato apaga, no véu do kit
+}
+K.finish();
+</script>
+</body>
+</html>

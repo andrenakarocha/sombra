@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR" data-resolution="landscape" data-composition-variables='[{"id":"legendas","type":"boolean","label":"Legendas","default":true}]'>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<link rel="stylesheet" href="kit.css" />
+<style>
+/* s11 · o que entregamos */
+#s11 .scene-content { gap: 30px; }
+#s11 .grid { flex: 1 1 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; min-height: 0; }
+#s11 .stat { display: flex; flex-direction: column; justify-content: flex-end; gap: 16px; padding: 34px 32px; border-radius: 20px; background: var(--noite900); border: 2px solid var(--noite700); position: relative; overflow: hidden; }
+#s11 .stat .num { font-size: 150px; color: var(--areia50); }
+#s11 .stat .num small { font-size: 70px; color: var(--areia200); }
+#s11 .stat b { font-family: var(--body); font-weight: 600; font-size: 34px; line-height: 1.15; }
+#s11 .stat > span { font-size: 25px; line-height: 1.3; color: var(--noite300); }
+#s11 .stat .bar { height: 10px; margin-top: 8px; }
+#s11 .stat.s1 { border-color: #12524F; } #s11 .stat.s1 .num { color: var(--sombra300); }
+#s11 .stat.s2 { border-color: #2B7656; } #s11 .stat.s2 .num { color: var(--verde); } #s11 .stat.s2 .bar i { background: var(--verde); }
+#s11 .stat.s3 { border-color: #866409; } #s11 .stat.s3 .num { color: var(--ocre300); } #s11 .stat.s3 .bar i { background: var(--ocre500); }
+#s11 .stat.s4 { border-color: #8F3B1D; } #s11 .stat.s4 .num { color: var(--telha300); } #s11 .stat.s4 .bar i { background: var(--telha300); }
+#s11 .strip { display: flex; gap: 14px; }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="ato4" data-start="0" data-duration="17.9" data-width="1920" data-height="1080">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="folhas" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0045 0.0068" numOctaves="3" seed="11"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.373  0 0 0 0 0.702  0 0 0 0 0.659  0 0 0 -18 8.6"/>
+      <feGaussianBlur stdDeviation="1.4"/>
+    </filter>
+    <symbol id="marca" viewBox="0 0 64 64">
+      <circle cx="42" cy="21" r="11" fill="#D9A441"/>
+      <path d="M14 33.5h36V54a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2z" fill="#1F7A73"/>
+      <path d="M28 56V45.5a4 4 0 0 1 8 0V56z" fill="#0C1617"/>
+      <path d="M7 35 32 15.5 57 35" fill="none" stroke="#B04F27" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-normal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m7.5 12.4 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-atencao" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 6.5v7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-perigo" viewBox="0 0 24 24"><path d="M12 2.8 22 20.5H2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 9v5.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="i-extremo" viewBox="0 0 24 24"><path d="M8.1 2.5h7.8l5.6 5.6v7.8l-5.6 5.6H8.1l-5.6-5.6V8.1z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 7v6.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.8" r="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-telefone" viewBox="0 0 24 24"><path d="M5 3.5h3.2l1.6 4-2 1.3a11 11 0 0 0 7.4 7.4l1.3-2 4 1.6V19a1.7 1.7 0 0 1-1.8 1.7A16.5 16.5 0 0 1 3.3 5.3 1.7 1.7 0 0 1 5 3.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 2.5 20 5.6v6.1c0 4.8-3.3 8.4-8 9.8-4.7-1.4-8-5-8-9.8V5.6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+  <div class="bg" data-layout-ignore>
+    <svg class="bg-leaves"><rect width="100%" height="100%" filter="url(#folhas)"/></svg>
+    <div class="bg-glow a"></div><div class="bg-glow b"></div>
+  </div>
+
+  <div id="s11" class="scene first">
+    <div class="scene-content">
+      <div class="overline">O que entregamos · tudo no repositório</div>
+      <div class="display d-md title">Em números</div>
+      <div class="grid">
+        <div class="stat s1"><div class="num"><span id="n500">0</span><small>+</small></div><b>testes automatizados</b><span>363 no Core e 144 no serviço de clima, além do app, do ML e da Sentinela</span><div class="bar"><i></i></div></div>
+        <div class="stat s2"><div class="num"><span id="n63">0</span><small>/63</small></div><b>casos de dado pessoal</b><span>nenhum falso negativo: CPF, Cartão SUS, saúde, telefone</span><div class="bar"><i></i></div></div>
+        <div class="stat s3"><div class="num"><span id="n50">0</span></div><b>casos de teste</b><span>49 automatizados, em 12 Features do Azure Boards</span><div class="bar"><i></i></div></div>
+        <div class="stat s4"><div class="num"><span id="n7">0</span></div><b>testes de falha</b><span>na VM, cada um com o print da prova</span><div class="bar"><i></i></div></div>
+      </div>
+      <div class="strip">
+        <span class="chip">8 disciplinas</span><span class="chip">1 monorepo</span><span class="chip">CI em cada PR</span><span class="chip quente">dados de clima reais</span><span class="chip">pessoas fictícias</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud">
+    <div class="hud-top">
+      <div class="hud-brand"><svg><use href="#marca"/></svg><span class="name">Sombra</span><span class="tag">GS 2026.2 · CitizenTech</span></div>
+      <div class="hud-section"></div>
+    </div>
+    <div class="hud-progress"><i></i></div>
+  </div>
+  <div class="captions" id="caps"></div>
+  <div class="veil" id="veil"></div>
+</div>
+<script src="shared/timing.js"></script>
+<script src="shared/kit.js"></script>
+<script>
+const tl = K.act("ato4");
+K.chrome();
+K.captions();
+{
+  const s = K.scene("s11");
+  K.in("#s11 .overline", s.at(0.35), "left");
+  K.in("#s11 .title", s.at(0.5), "slam");
+  const marcas = [s.w("quinhentos"), s.w("sessenta"), s.w("cinquenta"), s.w("sete")];
+  const alvos = [["#n500", 500], ["#n63", 63], ["#n50", 50], ["#n7", 7]];
+  const entradas = ["up", "scale", "up", "tilt"];
+  K.$$("#s11 .stat").forEach((el, i) => {
+    const t = marcas[i] - 0.45;
+    K.in(el, t, entradas[i]);
+    K.count(alvos[i][0], 0, alvos[i][1], t + 0.15, 1.1, null, ["power2.out", "expo.out", "power3.out", "power2.out"][i]);
+    tl.fromTo(el.querySelector(".bar i"), { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: "power2.out" }, t + 0.3);
+  });
+  K.in("#s11 .strip .chip", s.w("prova") - 0.6, "pop", { stagger: 0.1 });
+}
+K.finish();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+renders/
+build/
+.env
+audio/amostras*/
+audio/voz/*.wav
