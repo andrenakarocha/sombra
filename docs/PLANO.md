@@ -973,6 +973,9 @@ F11.8 (VM no Azure) saíram.**
 - [ ] **F11.4** 🤖 Sentinela: ícones no OLED, luz que acende e apaga devagar (sem piscar, D13), `wokwi-cli` no CI.
 - [ ] **F11.5** 🤖 App: animações com Reanimated, ilustrações, tema escuro, ícone, splash, onboarding.
 - [ ] **F11.6** 🤖 Painel: transições do farol, modo apresentação, mapa por bairro (agregado).
+  ⏸ 2026-11-19 (pela D18, só a acessibilidade): `e2e/acessibilidade.spec.ts` passa o axe (WCAG 2.2 A e AA) no login e
+  nas cinco páginas, no claro e no escuro, em 1440 e 390 px; achou e corrigiu uma violação séria (a tabela das Casas
+  rolava para os lados no celular sem ser alcançável pelo teclado).
 - [ ] **F11.7** 🤖 Cyber: mapa regra × sink, relatório LGPD gerado, antes e depois lado a lado no dashboard.
 - [ ] ~~**F11.8**~~ fora do escopo (D18): VM no Azure.
 - [ ] **F11.9** 🧑🤖 Revisão visual final: screenshots do painel (390/768/1440) e do app (dois tamanhos), revisados.
