@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Sombra · Cybersecurity</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,600;0,800;1,400&family=Fraunces:opsz,wght,SOFT@9..144,400..800,0..100&display=swap">
+<style>
+/* Gerado por design/tokens.py a partir de design/tokens.json. Não edite à mão. */
+
+:root {
+  --cor-areia-0: #FFFDF8;
+  --cor-areia-50: #FBF7EF;
+  --cor-areia-100: #F5EEDF;
+  --cor-areia-200: #E9DEC8;
+  --cor-areia-300: #D8C9AB;
+  --cor-tinta-900: #142224;
+  --cor-tinta-700: #33464A;
+  --cor-tinta-500: #5E6E70;
+  --cor-sombra-900: #0B3B39;
+  --cor-sombra-700: #12524F;
+  --cor-sombra-500: #1F7A73;
+  --cor-sombra-300: #5FB3A8;
+  --cor-sombra-100: #CFE8E3;
+  --cor-telha-700: #8F3B1D;
+  --cor-telha-500: #B04F27;
+  --cor-telha-300: #E08A62;
+  --cor-ocre-500: #D9A441;
+  --cor-ocre-300: #F0CF83;
+  --cor-noite-950: #0C1617;
+  --cor-noite-900: #122022;
+  --cor-noite-800: #1A2C2E;
+  --cor-noite-700: #25393B;
+  --cor-noite-300: #B8C2C0;
+  --cor-risco-verde: #2B7656;
+  --cor-risco-verde-claro: #5CC08F;
+  --cor-risco-amarelo: #E8C14A;
+  --cor-risco-amarelo-escuro: #866409;
+  --cor-risco-amarelo-claro: #F0C75A;
+  --cor-risco-laranja: #E07B24;
+  --cor-risco-laranja-escuro: #9A4E0E;
+  --cor-risco-laranja-claro: #F59A4E;
+  --cor-risco-vermelho: #B8322A;
+  --cor-risco-vermelho-claro: #F0705F;
+  --cor-risco-vinho: #7A1F2B;
+  --cor-risco-vinho-claro: #E08795;
+  --cor-risco-branco: #FFFFFF;
+  --fonte-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --fonte-texto: 'Atkinson Hyperlegible Next', 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --fonte-mono: 'Atkinson Hyperlegible Mono', ui-monospace, monospace;
+  --tamanho-pequeno: 15px;
+  --tamanho-texto: 18px;
+  --tamanho-subtitulo: 22px;
+  --tamanho-titulo: 28px;
+  --tamanho-titulo-grande: 40px;
+  --tamanho-display: 64px;
+  --tamanho-idoso-texto: 28px;
+  --tamanho-idoso-botao: 34px;
+  --tamanho-idoso-numero: 112px;
+  --espaco-1: 4px;
+  --espaco-2: 8px;
+  --espaco-3: 12px;
+  --espaco-4: 16px;
+  --espaco-5: 24px;
+  --espaco-6: 32px;
+  --espaco-7: 48px;
+  --espaco-8: 64px;
+  --raio-pequeno: 8px;
+  --raio-medio: 16px;
+  --raio-grande: 28px;
+  --raio-pilula: 999px;
+  --toque-minimo: 48px;
+  --toque-idoso: 120px;
+  --duracao-rapida: 150ms;
+  --duracao-media: 260ms;
+  --duracao-lenta: 700ms;
+
+  color-scheme: light dark;
+  --fundo: var(--cor-areia-50);
+  --superficie: var(--cor-areia-0);
+  --superficie-alternativa: var(--cor-areia-100);
+  --borda: var(--cor-areia-300);
+  --texto: var(--cor-tinta-900);
+  --texto-suave: var(--cor-tinta-700);
+  --marca: var(--cor-sombra-700);
+  --texto-sobre-marca: var(--cor-areia-50);
+  --marca-suave: var(--cor-sombra-100);
+  --destaque: var(--cor-telha-500);
+  --foco: var(--cor-telha-500);
+  --folhagem: var(--cor-sombra-900);
+  --risco-normal-fundo: var(--cor-risco-verde);
+  --risco-normal-texto: var(--cor-risco-branco);
+  --risco-normal-borda: var(--cor-risco-verde);
+  --risco-atencao-fundo: var(--cor-risco-amarelo);
+  --risco-atencao-texto: var(--cor-tinta-900);
+  --risco-atencao-borda: var(--cor-risco-amarelo-escuro);
+  --risco-cautela-extrema-fundo: var(--cor-risco-laranja);
+  --risco-cautela-extrema-texto: var(--cor-tinta-900);
+  --risco-cautela-extrema-borda: var(--cor-risco-laranja-escuro);
+  --risco-perigo-fundo: var(--cor-risco-vermelho);
+  --risco-perigo-texto: var(--cor-risco-branco);
+  --risco-perigo-borda: var(--cor-risco-vermelho);
+  --risco-perigo-extremo-fundo: var(--cor-risco-vinho);
+  --risco-perigo-extremo-texto: var(--cor-risco-branco);
+  --risco-perigo-extremo-borda: var(--cor-risco-vinho);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    --fundo: var(--cor-noite-950);
+    --superficie: var(--cor-noite-900);
+    --superficie-alternativa: var(--cor-noite-800);
+    --borda: var(--cor-noite-700);
+    --texto: var(--cor-areia-100);
+    --texto-suave: var(--cor-noite-300);
+    --marca: var(--cor-sombra-300);
+    --texto-sobre-marca: var(--cor-noite-950);
+    --marca-suave: var(--cor-sombra-900);
+    --destaque: var(--cor-telha-300);
+    --foco: var(--cor-ocre-300);
+    --folhagem: var(--cor-noite-950);
+    --risco-normal-fundo: var(--cor-risco-verde-claro);
+    --risco-normal-texto: var(--cor-noite-950);
+    --risco-normal-borda: var(--cor-risco-verde-claro);
+    --risco-atencao-fundo: var(--cor-risco-amarelo-claro);
+    --risco-atencao-texto: var(--cor-noite-950);
+    --risco-atencao-borda: var(--cor-risco-amarelo-claro);
+    --risco-cautela-extrema-fundo: var(--cor-risco-laranja-claro);
+    --risco-cautela-extrema-texto: var(--cor-noite-950);
+    --risco-cautela-extrema-borda: var(--cor-risco-laranja-claro);
+    --risco-perigo-fundo: var(--cor-risco-vermelho-claro);
+    --risco-perigo-texto: var(--cor-noite-950);
+    --risco-perigo-borda: var(--cor-risco-vermelho-claro);
+    --risco-perigo-extremo-fundo: var(--cor-risco-vinho-claro);
+    --risco-perigo-extremo-texto: var(--cor-noite-950);
+    --risco-perigo-extremo-borda: var(--cor-risco-vinho-claro);
+  }
+}
+
+:root[data-tema="escuro"] {
+  --fundo: var(--cor-noite-950);
+  --superficie: var(--cor-noite-900);
+  --superficie-alternativa: var(--cor-noite-800);
+  --borda: var(--cor-noite-700);
+  --texto: var(--cor-areia-100);
+  --texto-suave: var(--cor-noite-300);
+  --marca: var(--cor-sombra-300);
+  --texto-sobre-marca: var(--cor-noite-950);
+  --marca-suave: var(--cor-sombra-900);
+  --destaque: var(--cor-telha-300);
+  --foco: var(--cor-ocre-300);
+  --folhagem: var(--cor-noite-950);
+  --risco-normal-fundo: var(--cor-risco-verde-claro);
+  --risco-normal-texto: var(--cor-noite-950);
+  --risco-normal-borda: var(--cor-risco-verde-claro);
+  --risco-atencao-fundo: var(--cor-risco-amarelo-claro);
+  --risco-atencao-texto: var(--cor-noite-950);
+  --risco-atencao-borda: var(--cor-risco-amarelo-claro);
+  --risco-cautela-extrema-fundo: var(--cor-risco-laranja-claro);
+  --risco-cautela-extrema-texto: var(--cor-noite-950);
+  --risco-cautela-extrema-borda: var(--cor-risco-laranja-claro);
+  --risco-perigo-fundo: var(--cor-risco-vermelho-claro);
+  --risco-perigo-texto: var(--cor-noite-950);
+  --risco-perigo-borda: var(--cor-risco-vermelho-claro);
+  --risco-perigo-extremo-fundo: var(--cor-risco-vinho-claro);
+  --risco-perigo-extremo-texto: var(--cor-noite-950);
+  --risco-perigo-extremo-borda: var(--cor-risco-vinho-claro);
+}
+
+@page { size: A4; margin: 16mm 15mm 18mm; }
+@page :first { margin: 0; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font-family: var(--fonte-texto); font-size: 10.5pt; line-height: 1.5; color: var(--cor-tinta-900); background: #fff; }
+h1, h2, h3 { font-family: var(--fonte-display); color: var(--cor-sombra-900); line-height: 1.15; font-variation-settings: "SOFT" 50; }
+h2 { font-size: 21pt; margin: 0 0 4mm; break-before: page; }
+h2 small { display: block; font-family: var(--fonte-texto); font-size: 10pt; color: var(--cor-telha-700); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 1.5mm; }
+h3 { font-size: 13pt; margin: 6mm 0 2mm; break-after: avoid; }
+p { margin: 0 0 2.5mm; }
+code { font-family: var(--fonte-mono); font-size: .9em; background: var(--cor-areia-100); padding: 0 .25em; border-radius: 3px; }
+ul { margin: 0 0 3mm; padding-left: 5mm; } li { margin-bottom: 1mm; }
+.capa { height: 297mm; padding: 26mm 22mm; background: var(--cor-sombra-900); color: var(--cor-areia-50); display: flex; flex-direction: column; break-after: page; }
+.capa .marca { font-family: var(--fonte-display); font-size: 54pt; font-weight: 700; color: var(--cor-areia-0); margin: 0; }
+.capa .sub { font-size: 15pt; color: var(--cor-sombra-100); margin: 2mm 0 0; max-width: 150mm; }
+.capa h1 { color: var(--cor-ocre-300); font-size: 25pt; margin: 30mm 0 4mm; max-width: 160mm; }
+.capa .pilares { display: flex; gap: 3mm; flex-wrap: wrap; margin: 0; padding: 0; list-style: none; }
+.capa .pilares li { border: 1px solid var(--cor-sombra-300); border-radius: 999px; padding: 1mm 4mm; font-size: 10pt; }
+.capa .rodape { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; font-size: 10.5pt; }
+.capa .rodape h3 { color: var(--cor-ocre-300); font-family: var(--fonte-texto); font-size: 9pt; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 2mm; }
+.capa .rodape ul { list-style: none; padding: 0; } .capa .rodape li span { color: var(--cor-sombra-300); font-family: var(--fonte-mono); margin-left: 2mm; }
+.capa a { color: var(--cor-areia-0); }
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9pt; break-inside: auto; }
+th { text-align: left; background: var(--cor-sombra-900); color: var(--cor-areia-0); font-weight: 600; padding: 1.6mm 2mm; }
+td { padding: 1.4mm 2mm; border-bottom: 1px solid var(--cor-areia-200); vertical-align: top; }
+tr { break-inside: avoid; }
+td.mal { color: var(--cor-risco-vermelho); font-weight: 600; white-space: nowrap; } td.bem { color: var(--cor-risco-verde); font-weight: 600; white-space: nowrap; }
+.rubrica td:first-child { font-weight: 600; white-space: nowrap; }
+figure { margin: 3mm 0 4mm; }
+figure.codigo { break-inside: avoid; border: 1px solid var(--cor-areia-200); border-radius: 6px; overflow: hidden; }
+figure.codigo figcaption { font-size: 8pt; background: var(--cor-areia-100); color: var(--cor-tinta-700); padding: 1.2mm 3mm; }
+figure.codigo figcaption code { background: none; padding: 0; }
+pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; margin: 0; padding: 3mm; font-family: var(--fonte-mono); font-size: 7.6pt; line-height: 1.45; white-space: pre-wrap; background: var(--cor-areia-0); }
+.kw { color: var(--cor-sombra-700); font-weight: 600; } .ti { color: var(--cor-tinta-900); font-weight: 600; } .tx { color: var(--cor-telha-700); }
+.nu { color: #866409; } .co { color: var(--cor-tinta-500); font-style: italic; } .ch { color: var(--cor-sombra-700); }
+figure.print { break-inside: avoid; }
+figure.print .janela { overflow: hidden; border: 1px solid var(--cor-areia-200); border-radius: 6px; }
+figure.print img { display: block; width: 100%; }
+figure.print figcaption, figure.codigo + p.nota { font-size: 8.5pt; color: var(--cor-tinta-500); }
+.lado { display: grid; grid-template-columns: 1.9fr 1fr; gap: 5mm; align-items: start; }
+.destaque { background: var(--cor-sombra-100); border-left: 3px solid var(--cor-sombra-500); padding: 3mm 4mm; border-radius: 0 6px 6px 0; margin: 3mm 0; break-inside: avoid; }
+.numero { font-family: var(--fonte-display); font-size: 20pt; color: var(--cor-sombra-900); font-weight: 700; }
+.numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin: 3mm 0 4mm; }
+.numeros div { border: 1px solid var(--cor-areia-200); border-radius: 6px; padding: 3mm; } .numeros p { margin: 0; font-size: 9pt; color: var(--cor-tinta-700); }
+.traducao { border: 1px solid var(--cor-areia-200); border-radius: 6px; padding: 3mm 4mm; margin-bottom: 3mm; break-inside: avoid; }
+.revisao { font-size: 8.5pt; margin: 0 0 1.5mm; } .revisao.certa { color: var(--cor-risco-verde); }
+.revisao.ressalva { color: #866409; } .revisao.errada { color: var(--cor-risco-vermelho); }
+.nota-recusa { font-size: 8.5pt; color: var(--cor-telha-700); margin: 0 0 1.5mm; }
+.traducao .meta { font-family: var(--fonte-mono); font-size: 8pt; color: var(--cor-tinta-500); }
+.traducao dl { margin: 0; display: grid; grid-template-columns: 26mm 1fr; gap: 1mm 3mm; } .traducao dt { font-weight: 600; color: var(--cor-sombra-700); } .traducao dd { margin: 0; }
+pre.saida { background: var(--cor-noite-900); color: var(--cor-areia-50); border-radius: 6px; font-size: 8pt; }
+</style></head><body>
+
+<section class="capa">
+  <p class="marca">Sombra</p>
+  <p class="sub">Proteção de pessoas idosas que moram sozinhas durante ondas de calor em São Paulo.</p>
+  <h1>Sombra.Privacidade: os dados de saúde de quem é cuidado nunca saem por descuido</h1>
+  <ul class="pilares"><li>Parsing de PII</li><li>Taint Analysis</li><li>IA na remediação</li><li>Dashboard de Risco Cidadão</li></ul>
+  <div class="rodape">
+    <div><h3>Integrantes</h3><ul><li>André Nakamatsu Rocha <span>RM555004</span></li><li>João Marcelo Furtado Romero <span>RM555199</span></li><li>Matheus Rivera Montovaneli <span>RM555499</span></li></ul></div>
+    <div><h3>Entrega</h3><p>Cybersecurity · Prof. Vitor Lasse<br>Global Solution 2026.2 · FIAP<br>Engenharia de Software, 3º ano<br>19 de novembro de 2026</p>
+    <p>Código: <a href="https://github.com/andrenakarocha/sombra">github.com/andrenakarocha/sombra</a><br>e o ZIP <code style="background:none;color:inherit">sombra-codigo.zip</code>, entregue à parte.</p></div>
+  </div>
+</section>
+
+<h2><small>Visão geral</small>O que protegemos e onde está cada critério</h2>
+<p>O Sombra acompanha pessoas idosas que moram sozinhas: uma Sentinela mede o calor de dentro da casa, o Core decide quando
+pedir o "estou bem" e quando avisar a família, e o operador da prefeitura acompanha tudo num painel. Para isso o sistema
+guarda <b>condições de saúde, remédios, CPF, Cartão SUS e telefones</b>, que a LGPD trata como dado pessoal sensível
+(art. 5º, II, e art. 11). O módulo <code>Sombra.Privacidade</code> fica dentro do Core (C#) e garante que esses dados não
+saiam por log, por resposta, por mensagem de erro, para a IA nem pelo broker MQTT, e que cada tentativa vire uma
+explicação clara para quem é afetado.</p>
+<table class="rubrica"><thead><tr><th>Critério</th><th>Pts</th><th>Como o Sombra atende</th><th>Evidência</th></tr></thead><tbody>
+<tr><td>Robustez do motor de PII</td><td>3</td><td>8 regras em JSON (configuráveis sem recompilar), validação de dígito do CPF e do Cartão SUS, detecção por chave e por conteúdo, mascaramento e cifra AES-256-GCM em repouso</td><td>§1 · 63 casos, 0 falso negativo</td></tr>
+<tr><td>Eficácia do Taint Analysis</td><td>3</td><td>taint dinâmico (o dado marcado na entrada e conferido em 6 sinks, com bloqueio) e estático (Semgrep em modo taint, com canário)</td><td>§2 · auditoria A1–A8: 8 de 8 vazam sem o módulo, 8 de 8 bloqueados com ele</td></tr>
+<tr><td>Inovação com IA na remediação</td><td>2</td><td>cada evento vira três traduções (cidadão, gestão, time técnico) por um prompt só com metadados, com guarda na saída da IA e fallback em templates</td><td>§3 · traduções reais do Gemini</td></tr>
+<tr><td>Dashboard Executivo de Risco Cidadão</td><td>2</td><td>farol ponderado por categoria, desfecho e severidade, com decaimento no tempo, ao vivo pelo SignalR</td><td>§4 · prints do painel</td></tr>
+</tbody></table>
+<div class="destaque">Todos os dados deste documento são <b>sintéticos</b>: CPF e Cartão SUS gerados por semente, pessoas fictícias
+do seed. Os trechos de código são cópias dos arquivos do repositório, com o caminho e as linhas, e as tabelas saem dos
+relatórios que os próprios testes geram. Este PDF é refeito por <code>make entrega-cyber</code>.</div>
+
+<h2><small>§1 · 3 pontos</small>Motor de parsing de PII</h2>
+<p><b>Regras como dados.</b> Cada tipo de dado pessoal é uma regra em <code>pii-regras.json</code>, validada contra um schema
+na carga: chaves de campo, padrão, validador, máscara e a base legal. Uma regra nova entra sem recompilar o Core. As 8
+regras de hoje: <code>cpf</code>, <code>cns</code>, <code>rg</code>, <code>telefone</code>, <code>email</code>, <code>cep</code>, <code>saude</code>, <code>credencial</code>.</p>
+<div class="lado">
+<figure class="codigo"><figcaption><code>Sombra.Privacidade/Regras/pii-regras.json</code> · a regra do CPF</figcaption><pre>{
+  <span class="ch">&quot;id&quot;</span>: <span class="tx">&quot;cpf&quot;</span>,
+  <span class="ch">&quot;categoria&quot;</span>: <span class="tx">&quot;Identificacao&quot;</span>,
+  <span class="ch">&quot;severidade&quot;</span>: <span class="tx">&quot;Alta&quot;</span>,
+  <span class="ch">&quot;chaves&quot;</span>: [
+    <span class="tx">&quot;cpf&quot;</span>,
+    <span class="tx">&quot;documento&quot;</span>
+  ],
+  <span class="ch">&quot;padrao&quot;</span>: <span class="tx">&quot;(?&lt;![\\p{L}\\p{N}])\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}(?![\\p{L}\\p{N}])&quot;</span>,
+  <span class="ch">&quot;validador&quot;</span>: <span class="tx">&quot;cpf&quot;</span>,
+  <span class="ch">&quot;mascara&quot;</span>: <span class="tx">&quot;cpf&quot;</span>,
+  <span class="ch">&quot;baseLegal&quot;</span>: <span class="tx">&quot;LGPD art. 5º, I&quot;</span>
+}</pre></figure>
+<div><p><b>Por chave e por conteúdo.</b> O campo <code>documento</code> é PII pelo nome; o mesmo CPF escrito no meio de
+"observações" é PII pelo conteúdo. O <code>PiiScanningMiddleware</code> percorre o JSON de toda requisição e marca os
+valores no <code>ContextoDeTaint</code>, sem nunca logar o valor.</p>
+<p><b>Sem falso alarme.</b> Onze dígitos só são CPF se os dois verificadores baterem (ao lado), e o Cartão SUS passa pela
+validação oficial (soma ponderada múltipla de 11).</p></div>
+</div>
+<figure class="codigo"><figcaption><code>services/core-api/sources/Sombra.Privacidade/Deteccao/Validadores.cs</code> · linhas 55–64 · CPF de verdade, não qualquer número de 11 dígitos</figcaption><pre><span class="kw">public</span> <span class="kw">static</span> <span class="kw">bool</span> <span class="ti">Cpf</span>(<span class="kw">string</span> candidato)
+{
+    <span class="kw">int</span>[] d = <span class="ti">Digitos</span>(candidato);
+    <span class="kw">if</span> (d.<span class="ti">Length</span> != <span class="nu">11</span> || d.<span class="ti">All</span>(x =&gt; x == d[<span class="nu">0</span>]))
+    {
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+
+    <span class="kw">return</span> d[<span class="nu">9</span>] == <span class="ti">VerificadorDoCpf</span>(d, <span class="nu">9</span>) &amp;&amp; d[<span class="nu">10</span>] == <span class="ti">VerificadorDoCpf</span>(d, <span class="nu">10</span>);
+}</pre></figure>
+<figure class="codigo"><figcaption><code>services/core-api/sources/Sombra.Privacidade/Deteccao/Validadores.cs</code> · linhas 144–154</figcaption><pre><span class="kw">private</span> <span class="kw">static</span> <span class="kw">int</span> <span class="ti">VerificadorDoCpf</span>(<span class="kw">int</span>[] d, <span class="kw">int</span> quantidade)
+{
+    <span class="kw">int</span> soma = <span class="nu">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">0</span>; i &lt; quantidade; i++)
+    {
+        soma += d[i] * (quantidade + <span class="nu">1</span> - i);
+    }
+
+    <span class="kw">int</span> resto = soma % <span class="nu">11</span>;
+    <span class="kw">return</span> resto &lt; <span class="nu">2</span> ? <span class="nu">0</span> : <span class="nu">11</span> - resto;
+}</pre></figure>
+<h3>Mascaramento e cifra em repouso</h3>
+<p>A resposta real do cenário A1 da auditoria, com o módulo ligado: o operador vê o necessário, nunca o dado inteiro.</p>
+<figure class="codigo"><figcaption><code>POST /api/v1/domicilios/{{Lurdes}}/moradores → 201</code> · resposta real da auditoria (dados sintéticos)</figcaption><pre>{
+  <span class="ch">&quot;nome&quot;</span>: <span class="tx">&quot;Iracema Duarte&quot;</span>,
+  <span class="ch">&quot;cpf&quot;</span>: <span class="tx">&quot;***.361.***-79&quot;</span>,
+  <span class="ch">&quot;cartaoSus&quot;</span>: <span class="tx">&quot;*** **** **** 4804&quot;</span>,
+  <span class="ch">&quot;perfilDeSaude&quot;</span>: <span class="tx">&quot;[DADO DE SAÚDE PROTEGIDO]&quot;</span>
+}</pre></figure>
+<p>No banco, CPF, Cartão SUS, perfil de saúde e telefones são gravados com <b>AES-256-GCM</b> por value converters do EF
+Core, e o CPF tem um <b>índice cego HMAC</b> para ser buscado sem ser decifrado. As chaves vêm do ambiente, nunca do código
+(<code>Repouso/CifraDeCampos.cs</code>).</p>
+<h3>Relatório de acertos</h3>
+<p><b>63 de 63 casos corretos</b> · falsos negativos: <b>0</b> · falsos positivos: <b>0</b> — positivos, negativos e casos difíceis (CPF com o
+verificador trocado, CID no meio de uma frase, JSON aninhado, unicode). Gerado pelo teste <code>RelatorioDeAcertos</code>.</p>
+<table><thead><tr><th>Regra</th><th>Casos com o dado</th><th>Detectados</th><th>Falsos negativos</th><th>Falsos positivos</th><th>Recall</th></tr></thead><tbody><tr><td><code>cpf</code></td><td>8</td><td>8</td><td>0</td><td>0</td><td>100 %</td></tr><tr><td><code>cns</code></td><td>3</td><td>3</td><td>0</td><td>0</td><td>100 %</td></tr><tr><td><code>rg</code></td><td>3</td><td>3</td><td>0</td><td>0</td><td>100 %</td></tr><tr><td><code>telefone</code></td><td>7</td><td>7</td><td>0</td><td>0</td><td>100 %</td></tr><tr><td><code>email</code></td><td>4</td><td>4</td><td>0</td><td>0</td><td>100 %</td></tr><tr><td><code>cep</code></td><td>2</td><td>2</td><td>0</td><td>0</td><td>100 %</td></tr><tr><td><code>saude</code></td><td>7</td><td>7</td><td>0</td><td>0</td><td>100 %</td></tr><tr><td><code>credencial</code></td><td>4</td><td>4</td><td>0</td><td>0</td><td>100 %</td></tr></tbody></table>
+
+<h2><small>§2 · 3 pontos</small>Taint Analysis: da fonte ao sink, com bloqueio</h2>
+<p><b>Fontes:</b> corpo, query e headers da requisição (marcados pelo middleware) e os campos sensíveis lidos do banco.
+<b>Sinks guardados:</b> log, resposta HTTP, saída externa (Clima e IA), MQTT, exceções e a própria entrada (PII em texto
+livre). Cada guarda confere a saída contra o <code>ContextoDeTaint</code> e os detectores, bloqueia ou redige, e registra um
+<code>VazamentoBloqueado</code> só com metadados.</p>
+<h3>O taint como tipo: vazar por descuido vira erro</h3>
+<figure class="codigo"><figcaption><code>services/core-api/sources/Sombra.Privacidade/Taint/Sensivel.cs</code> · linhas 15–44 · ToString() devolve [PII:SAUDE] e o JSON recusa serializar</figcaption><pre><span class="kw">public</span> <span class="kw">readonly</span> <span class="kw">record</span> <span class="kw">struct</span> <span class="ti">Sensivel</span>&lt;<span class="ti">T</span>&gt;
+{
+    <span class="kw">private</span> <span class="kw">readonly</span> <span class="ti">T</span> _valor;
+
+    <span class="kw">public</span> <span class="ti">Sensivel</span>(<span class="ti">T</span> valor, <span class="ti">CategoriaDePii</span> categoria)
+    {
+        _valor = valor;
+        <span class="ti">Categoria</span> = categoria;
+    }
+
+    <span class="kw">public</span> <span class="ti">CategoriaDePii</span> <span class="ti">Categoria</span> { <span class="kw">get</span>; }
+
+    <span class="kw">public</span> <span class="ti">T</span> <span class="ti">Revelar</span>(<span class="kw">string</span> finalidade)
+    {
+        <span class="ti">ArgumentException</span>.<span class="ti">ThrowIfNullOrWhiteSpace</span>(finalidade);
+        <span class="kw">return</span> _valor;
+    }
+
+    <span class="kw">public</span> <span class="kw">override</span> <span class="kw">string</span> <span class="ti">ToString</span>() =&gt; <span class="tx">$&quot;[PII:{Categoria.ToString().ToUpperInvariant()}]&quot;</span>;
+}</pre></figure>
+<figure class="codigo"><figcaption><code>services/core-api/sources/Sombra.Privacidade/Taint/Sensivel.cs</code> · linhas 57–64</figcaption><pre><span class="kw">private</span> <span class="kw">sealed</span> <span class="kw">class</span> <span class="ti">Recusa</span>&lt;<span class="ti">T</span>&gt; : <span class="ti">JsonConverter</span>&lt;<span class="ti">Sensivel</span>&lt;<span class="ti">T</span>&gt;&gt;
+{
+    <span class="kw">public</span> <span class="kw">override</span> <span class="ti">Sensivel</span>&lt;<span class="ti">T</span>&gt; <span class="ti">Read</span>(ref <span class="ti">Utf8JsonReader</span> reader, <span class="ti">Type</span> typeToConvert, <span class="ti">JsonSerializerOptions</span> options)
+        =&gt; <span class="kw">throw</span> <span class="kw">new</span> <span class="ti">JsonException</span>(<span class="tx">&quot;Sensivel&lt;T&gt; não é lido de JSON.&quot;</span>);
+
+    <span class="kw">public</span> <span class="kw">override</span> void <span class="ti">Write</span>(<span class="ti">Utf8JsonWriter</span> writer, <span class="ti">Sensivel</span>&lt;<span class="ti">T</span>&gt; value, <span class="ti">JsonSerializerOptions</span> options)
+        =&gt; <span class="kw">throw</span> <span class="kw">new</span> <span class="ti">InvalidOperationException</span>(<span class="tx">$&quot;Um dado {value.Categoria} (Sensivel&lt;T&gt;) não sai em JSON: chame Revelar(finalidade) num endpoint [PermitePii].&quot;</span>);
+}</pre></figure>
+<h3>Auditoria do protótipo: antes × depois</h3>
+<p>O mesmo roteiro roda com o módulo <b>desligado</b> (modo inseguro, aceito só no ambiente <code>Demo</code>) e
+<b>ligado</b>, num PostgreSQL real. Teste <code>OitoCenariosVazamDesligadoESaoBloqueadosLigado</code>, relatório em
+<code>security/auditoria/relatorio.md</code>.</p>
+<table><thead><tr><th>#</th><th>Cenário</th><th>Esperado</th><th>Sem o módulo</th><th>Com o módulo</th></tr></thead><tbody><tr><td><b>A1</b></td><td>POST de morador com CPF dentro do texto livre de saúde</td><td>mascarado antes de gravar e logar</td><td class='mal'>201 · vazou</td><td class='bem'>201 · bloqueado</td></tr><tr><td><b>A2</b></td><td>POST que provoca exceção com o laudo no payload</td><td>resposta de erro segura, sem o laudo</td><td class='mal'>422 · vazou</td><td class='bem'>422 · bloqueado</td></tr><tr><td><b>A3</b></td><td>GET não autenticado do perfil de saúde</td><td>401 sem nenhum dado, evento registrado</td><td class='mal'>200 · vazou</td><td class='bem'>401 · bloqueado</td></tr><tr><td><b>A4</b></td><td>Endpoint de depuração que loga o Cartão SUS</td><td>log redigido e VazamentoBloqueado{Log}</td><td class='mal'>204 · vazou</td><td class='bem'>204 · bloqueado</td></tr><tr><td><b>A5</b></td><td>PII no prompt da LLM</td><td>bloqueada no handler de saída</td><td class='mal'>200 · vazou</td><td class='bem'>422 · bloqueado</td></tr><tr><td><b>A6</b></td><td>PII publicada no MQTT</td><td>bloqueada no publicador</td><td class='mal'>202 · vazou</td><td class='bem'>422 · bloqueado</td></tr><tr><td><b>A7</b></td><td>Senha na query string</td><td>removida do log</td><td class='mal'>200 · vazou</td><td class='bem'>200 · bloqueado</td></tr><tr><td><b>A8</b></td><td>Telemetria MQTT com HMAC falso</td><td>descartada, evento de segurança</td><td class='mal'>202 · vazou</td><td class='bem'>401 · bloqueado</td></tr></tbody></table>
+<p class="destaque"><b>A1, na prática:</b> sem o módulo, o CPF escrito no texto livre de saúde chega ao banco
+(<code>texto livre gravado no banco (decifrado): Hipertensão. Em ca…</code>). Com o módulo, o texto é mascarado antes de gravar e de
+logar, e o evento <code>PII_FORA_DO_LUGAR · Entrada · Identificacao · regra cpf · bloqueado</code> vai para o dashboard.</p>
+<h3>Taint estático (Semgrep em modo taint)</h3>
+<p>Complementa o dinâmico no código: fontes (DTOs com CPF, Cartão SUS, laudo, senha e <code>[FromBody]</code>), sinks
+(<code>ILogger.Log*</code>, <code>Console.Write*</code>, <code>Problem(detail:…)</code>) e sanitizers
+(<code>MascaradorDePii.Mascarar</code>, <code>Sensivel&lt;T&gt;</code>). Um arquivo <b>canário</b> com vazamentos de
+propósito prova que a regra pega; o código de produção sai limpo. Roda no CI com SARIF.</p>
+<pre class="saida">$ make semgrep
+canário ok: 8 vazamentos achados, nenhum falso positivo
+código do Core: 213 arquivos, 0 achados, 0 erros de parse
+SARIF para o Code Scanning: 4 achados com nosemgrep justificado ficam de fora</pre>
+
+<h2><small>§3 · 2 pontos</small>IA na remediação: o evento vira explicação, e a IA nunca vê o dado</h2>
+<p>O <code>TradutorDeRiscoWorker</code> lê os eventos de segurança e pede ao Gemini três textos: para o <b>cidadão</b> (até 2
+frases, tom calmo, sem jargão), para a <b>gestão</b> (impacto e artigo da LGPD) e para o <b>time técnico</b> (a correção, que
+é a remediação). O prompt é montado só com metadados: tipo, sink, categoria, severidade, regra, rota sem valores e se foi
+bloqueado.</p>
+<figure class="codigo"><figcaption><code>services/core-api/sources/Sombra.Privacidade/Traducao/PromptDeRisco.cs</code> · linhas 52–67 · o prompt só com metadados</figcaption><pre><span class="kw">public</span> <span class="kw">static</span> <span class="kw">string</span> <span class="ti">Montar</span>(<span class="ti">EventoParaTraduzir</span> evento)
+{
+    <span class="ti">ArgumentNullException</span>.<span class="ti">ThrowIfNull</span>(evento);
+    <span class="kw">string</span> metadados = <span class="ti">JsonSerializer</span>.<span class="ti">Serialize</span>(<span class="kw">new</span>
+    {
+        tipo = evento.<span class="ti">Tipo</span>,
+        sink = evento.<span class="ti">Sink</span>?.<span class="ti">ToString</span>(),
+        categoria = evento.<span class="ti">Categoria</span>.<span class="ti">ToString</span>(),
+        severidade = evento.<span class="ti">Severidade</span>.<span class="ti">ToString</span>(),
+        regra = evento.<span class="ti">Regra</span>,
+        onde = <span class="ti">OndeSeguro</span>(evento.<span class="ti">Onde</span>),
+        desfecho = evento.<span class="ti">Bloqueado</span> ? <span class="tx">&quot;bloqueado&quot;</span> : <span class="tx">&quot;vazou&quot;</span>,
+        repeticoesEm24h = evento.<span class="ti">Repeticoes</span>,
+    });
+    <span class="kw">return</span> <span class="tx">$&quot;Evento de segurança (só metadados): {metadados}&quot;</span>;
+}</pre></figure>
+<p><b>A saída da IA também é guardada:</b> passa pelos mesmos detectores de PII, por uma lista de jargões proibidos para o
+cidadão, por limite de tamanho e de frases. Se reprovar, ou se a IA não responder no tempo, entra um template.</p>
+<figure class="codigo"><figcaption><code>services/core-api/sources/Sombra.Privacidade/Traducao/GuardaDaTraducao.cs</code> · linhas 47–61 · o que reprova uma tradução</figcaption><pre><span class="kw">public</span> <span class="kw">static</span> <span class="kw">bool</span> <span class="ti">Aprovar</span>(<span class="ti">TraducaoDeRisco</span> traducao, <span class="kw">out</span> <span class="kw">string</span> motivo)
+{
+    <span class="ti">ArgumentNullException</span>.<span class="ti">ThrowIfNull</span>(traducao);
+    motivo = (traducao.<span class="ti">Cidadao</span>, traducao.<span class="ti">Gestao</span>, traducao.<span class="ti">Tecnico</span>) <span class="kw">switch</span>
+    {
+        <span class="kw">var</span> (c, g, t) <span class="kw">when</span> <span class="kw">string</span>.<span class="ti">IsNullOrWhiteSpace</span>(c) || <span class="kw">string</span>.<span class="ti">IsNullOrWhiteSpace</span>(g) || <span class="kw">string</span>.<span class="ti">IsNullOrWhiteSpace</span>(t) =&gt; <span class="tx">&quot;campo_vazio&quot;</span>,
+        <span class="kw">var</span> (c, g, t) <span class="kw">when</span> c.<span class="ti">Length</span> &gt; <span class="ti">MaximoCidadao</span> || g.<span class="ti">Length</span> &gt; <span class="ti">MaximoGestao</span> || t.<span class="ti">Length</span> &gt; <span class="ti">MaximoTecnico</span> =&gt; <span class="tx">&quot;longa_demais&quot;</span>,
+        <span class="kw">var</span> (c, g, t) <span class="kw">when</span> !_guarda.<span class="ti">Verificar</span>(c, <span class="kw">null</span>).<span class="ti">Limpo</span> || !_guarda.<span class="ti">Verificar</span>(g, <span class="kw">null</span>).<span class="ti">Limpo</span> || !_guarda.<span class="ti">Verificar</span>(t, <span class="kw">null</span>).<span class="ti">Limpo</span> =&gt; <span class="tx">&quot;dado_pessoal&quot;</span>,
+        <span class="kw">var</span> (c, _, _) <span class="kw">when</span> <span class="ti">FimDeFrase</span>().<span class="ti">Count</span>(c.<span class="ti">Trim</span>()) &gt; <span class="nu">2</span> =&gt; <span class="tx">&quot;cidadao_com_mais_de_duas_frases&quot;</span>,
+        <span class="kw">var</span> (c, _, _) <span class="kw">when</span> <span class="ti">Palavra</span>().<span class="ti">Matches</span>(c.<span class="ti">ToLowerInvariant</span>()).<span class="ti">Any</span>(p =&gt; _jargoes.<span class="ti">Contains</span>(p.<span class="ti">Value</span>)) =&gt; <span class="tx">&quot;jargao_para_o_cidadao&quot;</span>,
+        <span class="kw">var</span> (c, g, _) <span class="kw">when</span> <span class="ti">SemAcento</span>(c) || <span class="ti">SemAcento</span>(g) =&gt; <span class="tx">&quot;sem_acento&quot;</span>,
+        _ =&gt; <span class="kw">string</span>.<span class="ti">Empty</span>,
+    };
+    <span class="kw">return</span> motivo.<span class="ti">Length</span> == <span class="nu">0</span>;
+}</pre></figure>
+<h3>Traduções reais do Gemini, revisadas por nós</h3>
+<div class="traducao"><p class="meta">ACESSO_NEGADO · IDENTIFICACAO
+        · RESPOSTA_HTTP · bloqueado · 2026-11-19 05:36 UTC
+        · fonte: IA</p><p class="revisao certa"><b>Nossa revisão:</b> Fiel ao evento, e a correção técnica é a do prompt (o token e o correlationId). Gerada depois da correção.</p>
+        <dl><dt>Cidadão</dt><dd>Alguém tentou ver as informações da sua casa sem permissão, mas o Sombra bloqueou o acesso. Está tudo seguro e você não precisa fazer nada.</dd>
+        <dt>Gestão</dt><dd>Tentativa de acesso não autorizado a dados pessoais, gerando risco à segurança da informação conforme o art. 46 da LGPD.</dd>
+        <dt>Time técnico</dt><dd>Conferir se o cliente mandou o token; se for ataque, seguir o correlationId na trilha.</dd></dl></div><div class="traducao"><p class="meta">ACESSO_NEGADO · SAUDE
+        · RESPOSTA_HTTP · bloqueado · 2026-11-19 05:36 UTC
+        · fonte: IA</p><p class="revisao certa"><b>Nossa revisão:</b> Fiel ao evento, cita o art. 11 para saúde e a correção certa (o token). Gerada depois da correção.</p>
+        <dl><dt>Cidadão</dt><dd>Tentaram acessar seus dados de saúde sem permissão, mas nossa segurança barrou a tentativa na hora. Você não precisa fazer nada.</dd>
+        <dt>Gestão</dt><dd>Impacto na confidencialidade dos dados de saúde com risco de infração ao art. 11 da LGPD.</dd>
+        <dt>Time técnico</dt><dd>Conferir se o cliente mandou o token na api/v1/domicilios/{id:guid}/moradores e seguir o correlationId na trilha se for ataque.</dd></dl></div><div class="traducao"><p class="meta">MQTT_REPLAY · sem dado pessoal
+        · MQTT · bloqueado · 2026-11-19 05:12 UTC
+        · fonte: IA</p><p class="revisao certa"><b>Nossa revisão:</b> Fiel ao evento nas três audiências, e a correção técnica é a certa (o segredo HMAC e o relógio). A guarda de hoje aprova.</p>
+        <dl><dt>Cidadão</dt><dd>Detectamos uma mensagem repetida vinda do aparelho que mede o calor da sua casa e a bloqueamos por segurança. Você não precisa fazer nada.</dd>
+        <dt>Gestão</dt><dd>Tentativa de reutilização de mensagem do sensor de calor bloqueada com sucesso, mitigando risco de ataque de repetição conforme art. 46 da LGPD.</dd>
+        <dt>Time técnico</dt><dd>Conferir o segredo HMAC e o relógio do dispositivo na origem snt-7f3a9c; não use Sensivel&lt;T&gt; nem [PermitePii] nesse caso.</dd></dl></div>
+<h3>O que a nossa revisão achou, e a guarda agora recusa</h3>
+<p>Ao montar este documento, a gente leu as traduções que o Core tinha gerado e achou erros que a guarda deixava passar:
+um texto sem acento, uma promessa inventada, uma correção técnica errada e um texto com o sentido trocado. Cada um virou
+uma regra da guarda e um teste com o texto real. E a tradução guardada no cache agora passa de novo pela guarda antes de
+ser reaproveitada: foi assim que os eventos novos ganharam as traduções certas acima, em vez de herdar as erradas.</p>
+<div class="traducao"><p class="meta">MQTT_ASSINATURA_INVALIDA · sem dado pessoal
+        · MQTT · bloqueado · 2026-11-19 05:12 UTC
+        · fonte: IA</p><p class="revisao errada"><b>Nossa revisão:</b> Inventa um fato (&quot;nossa equipe já está cuidando disso&quot;) e a correção técnica sugere Sensivel&lt;T&gt; em vez do segredo HMAC. Hoje a guarda recusa (cidadao_promete_o_que_nao_existe) e vale o template.</p>
+        <dl><dt>Cidadão</dt><dd>Identificamos um acesso incorreto no seu dispositivo de segurança. Não é preciso fazer nada, nossa equipe já está cuidando disso para garantir sua proteção.</dd>
+        <dt>Gestão</dt><dd>Impacto na integridade do sistema com risco à segurança da informação, conforme o art. 46 da LGPD.</dd>
+        <dt>Time técnico</dt><dd>A tentativa de assinatura inválida ocorreu no identificador snt-7f3a9c. Recomenda-se validar a autenticação do dispositivo usando o padrão Sensivel&lt;T&gt; e restringir o uso de [PermitePii].</dd></dl></div><div class="traducao"><p class="meta">ACESSO_NEGADO · IDENTIFICACAO
+        · RESPOSTA_HTTP · bloqueado · 2026-11-19 04:12 UTC
+        · fonte: IA</p><p class="revisao errada"><b>Nossa revisão:</b> Sem acento (&quot;identificacao&quot;, &quot;autorizacao&quot;, &quot;informacoes&quot;), embora o prompt peça a ortografia correta. Hoje a guarda recusa (sem_acento).</p>
+        <dl><dt>Cidadão</dt><dd>Tentaram acessar seus dados de identificacao sem autorizacao, mas o sistema bloqueou a tentativa. Fique tranquilo, suas informacoes estao seguras e ninguem precisa fazer nada.</dd>
+        <dt>Gestão</dt><dd>Tentativa de acesso nao autorizado a dados de identificacao bloqueada com sucesso, apresentando baixo risco de vazamento sob o art. 46 da LGPD.</dd>
+        <dt>Time técnico</dt><dd>O dado tentou sair por RespostaHttp. Sugere-se revisar o uso de [PermitePii] apenas para o papel necessario e garantir que o payload contenha apenas metadados.</dd></dl></div><div class="traducao"><p class="meta">ACESSO_NEGADO · SAUDE
+        · RESPOSTA_HTTP · bloqueado · 2026-11-19 04:12 UTC
+        · fonte: IA</p><p class="revisao errada"><b>Nossa revisão:</b> Erra o sentido: alguém sem login tentou ver o dado de saúde e foi barrado, mas o texto diz que o Sombra &quot;tentou enviar&quot;; e a correção não cita o token. Hoje a guarda recusa (cidadao_contradiz_o_evento).</p>
+        <dl><dt>Cidadão</dt><dd>Tentamos enviar uma informação sobre a sua saúde, mas o sistema de segurança impediu para proteger sua privacidade. Não é preciso fazer nada.</dd>
+        <dt>Gestão</dt><dd>Impacto: tentativa de exposição de dados de saúde bloqueada. Risco mitigado conforme a LGPD, art. 11.</dd>
+        <dt>Time técnico</dt><dd>O dado de saúde tentou sair pela RespostaHttp. Sugestão: usar Sensivel&lt;T&gt; e garantir que o payload contenha apenas metadados.</dd></dl></div>
+<figure class="codigo"><figcaption><code>services/core-api/sources/Sombra.Privacidade/Traducao/GuardaDaTraducao.cs</code> · linhas 72–91 · a coerência com o evento</figcaption><pre><span class="kw">public</span> <span class="kw">static</span> <span class="kw">bool</span> <span class="ti">Aprovar</span>(<span class="ti">TraducaoDeRisco</span> traducao, <span class="ti">EventoParaTraduzir</span> evento, <span class="kw">out</span> <span class="kw">string</span> motivo)
+{
+    <span class="ti">ArgumentNullException</span>.<span class="ti">ThrowIfNull</span>(evento);
+    <span class="kw">if</span> (!<span class="ti">Aprovar</span>(traducao, <span class="kw">out</span> motivo))
+    {
+        <span class="kw">return</span> <span class="kw">false</span>;
+    }
+
+    <span class="kw">string</span> cidadao = traducao.<span class="ti">Cidadao</span>.<span class="ti">ToLowerInvariant</span>();
+    <span class="kw">string</span> tecnico = traducao.<span class="ti">Tecnico</span>.<span class="ti">ToLowerInvariant</span>();
+    motivo = evento <span class="kw">switch</span>
+    {
+        _ <span class="kw">when</span> <span class="ti">Palavra</span>().<span class="ti">Matches</span>(cidadao).<span class="ti">Any</span>(p =&gt; p.<span class="ti">Value</span> <span class="kw">is</span> <span class="tx">&quot;equipe&quot;</span>) =&gt; <span class="tx">&quot;cidadao_promete_o_que_nao_existe&quot;</span>,
+        { <span class="ti">Tipo</span>: <span class="kw">var</span> t } <span class="kw">when</span> t.<span class="ti">StartsWith</span>(<span class="tx">&quot;MQTT_&quot;</span>, <span class="ti">StringComparison</span>.<span class="ti">Ordinal</span>) &amp;&amp; !<span class="ti">Cita</span>(tecnico, <span class="tx">&quot;hmac&quot;</span>, <span class="tx">&quot;segredo&quot;</span>, <span class="tx">&quot;relógio&quot;</span>) =&gt; <span class="tx">&quot;tecnico_sem_a_correcao_do_tipo&quot;</span>,
+        { <span class="ti">Regra</span>: <span class="tx">&quot;acesso-negado&quot;</span> } <span class="kw">when</span> !<span class="ti">Cita</span>(tecnico, <span class="tx">&quot;token&quot;</span>, <span class="tx">&quot;login&quot;</span>, <span class="tx">&quot;credencial&quot;</span>, <span class="tx">&quot;correlationid&quot;</span>) =&gt; <span class="tx">&quot;tecnico_sem_a_correcao_do_tipo&quot;</span>,
+        { <span class="ti">Regra</span>: <span class="tx">&quot;acesso-negado&quot;</span> } <span class="kw">when</span> <span class="ti">Palavra</span>().<span class="ti">Matches</span>(cidadao).<span class="ti">Any</span>(p =&gt; p.<span class="ti">Value</span> <span class="kw">is</span> <span class="tx">&quot;enviar&quot;</span> <span class="kw">or</span> <span class="tx">&quot;enviou&quot;</span> <span class="kw">or</span> <span class="tx">&quot;enviamos&quot;</span> <span class="kw">or</span> <span class="tx">&quot;tentamos&quot;</span>) =&gt; <span class="tx">&quot;cidadao_contradiz_o_evento&quot;</span>,
+        _ =&gt; <span class="kw">string</span>.<span class="ti">Empty</span>,
+    };
+    <span class="kw">return</span> motivo.<span class="ti">Length</span> == <span class="nu">0</span>;
+}</pre></figure>
+<h3>Quando a IA não responde</h3>
+<div class="traducao"><p class="meta">ACESSO_NEGADO · IDENTIFICACAO
+        · RESPOSTA_HTTP · bloqueado · 2026-11-19 05:23 UTC
+        · fonte: template</p><p class="nota-recusa">O Gemini respondeu 503 ou passou do limite de 8 s, e o tradutor usou o template, que também passa pela guarda.</p>
+        <dl><dt>Cidadão</dt><dd>Alguém tentou ver um documento da casa sem permissão, e o Sombra bloqueou.</dd>
+        <dt>Gestão</dt><dd>Tentativa de exposição de um documento bloqueada (LGPD art. 46); sem incidente a comunicar.</dd>
+        <dt>Time técnico</dt><dd>Acesso sem credencial a api/v1/domicilios/{id:guid}/moradores: confira se o cliente mandou o token; se for ataque, siga o correlationId na trilha.</dd></dl></div>
+<p class="destaque"><b>O limite, dito com clareza:</b> a guarda confere a forma e uma coerência mínima por tipo de evento
+(o remédio técnico certo, o verbo do texto do cidadão, nenhuma promessa que o sistema não cumpre). Isso não é entender o
+texto. Por isso a tradução nunca anda sozinha: o painel mostra ao lado a evidência técnica do evento (tipo, sink, regra,
+desfecho), e todo tipo de evento tem um template revisado por nós.</p>
+
+<h2><small>§4 · 2 pontos</small>Dashboard Executivo de Risco Cidadão</h2>
+<p>O farol soma os eventos dos últimos 7 dias, ponderados pela <b>categoria</b> (saúde e credencial pesam mais que contato e
+localização), pela <b>severidade</b> e pelo <b>desfecho</b> (um vazamento pesa 3 vezes um bloqueio), com meia-vida de 72 h.
+Verde abaixo de 30, amarelo até 70, vermelho a partir de 70. O painel atualiza ao vivo pelo evento
+<code>RiscoCidadaoAtualizado</code> do SignalR, e o app mostra à família o farol da própria casa.</p>
+<figure class="codigo"><figcaption><code>services/core-api/sources/Sombra.Privacidade/Risco/RiscoCidadao.cs</code> · linhas 79–91 · a pontuação de um evento</figcaption><pre><span class="kw">public</span> <span class="kw">static</span> <span class="kw">double</span> <span class="ti">Pontos</span>(<span class="ti">EventoDeRisco</span> evento, <span class="ti">DateTimeOffset</span> agora)
+{
+    <span class="ti">ArgumentNullException</span>.<span class="ti">ThrowIfNull</span>(evento);
+    <span class="ti">TimeSpan</span> idade = agora - evento.<span class="ti">Momento</span>;
+    <span class="kw">if</span> (idade &lt; <span class="ti">TimeSpan</span>.<span class="ti">Zero</span> || idade &gt; <span class="ti">Janela</span>)
+    {
+        <span class="kw">return</span> <span class="nu">0</span>;
+    }
+
+    <span class="kw">double</span> decaimento = <span class="ti">Math</span>.<span class="ti">Pow</span>(<span class="nu">0.5</span>, idade / <span class="ti">MeiaVida</span>);
+    <span class="kw">return</span> <span class="ti">PontosPorEvento</span> * _pesoDaCategoria[evento.<span class="ti">Categoria</span>] * _pesoDaSeveridade[evento.<span class="ti">Severidade</span>]
+        * (evento.<span class="ti">Bloqueado</span> ? <span class="nu">1</span> : <span class="ti">PesoDoVazamento</span>) * decaimento;
+}</pre></figure>
+<figure class="print"><div class="janela" style="height:118mm"><img src="../../web/painel/docs/evidencias/risco-cidadao-1440.png" alt="O dashboard no painel do operador (1440 px, o topo da página): o farol geral, o farol por categoria e um gráfico por sink nas últimas 24 h. Abaixo deles ficam as regras que mais disparam e o feed com as três traduções."></div><figcaption>O dashboard no painel do operador (1440 px, o topo da página): o farol geral, o farol por categoria e um gráfico por sink nas últimas 24 h. Abaixo deles ficam as regras que mais disparam e o feed com as três traduções.</figcaption></figure>
+<div class="lado">
+<div><h3>Para quem decide</h3>
+<ul><li><b>Farol geral e por categoria</b>, com cor, ícone e texto (nunca só a cor).</li>
+<li><b>Um gráfico pequeno por sink</b> (resposta HTTP, log, saída externa, MQTT, exceção, entrada), na mesma escala, para
+comparar onde o dado tenta sair.</li>
+<li><b>As regras que mais disparam</b>, para priorizar a correção.</li>
+<li><b>O feed</b> com a tradução para o cidadão, para a gestão e para o time técnico, e a evidência técnica sob demanda.</li>
+<li><b>Ao vivo:</b> o Core publica o <code>RiscoCidadaoAtualizado</code> a cada lote de eventos, e o painel recalcula sem
+recarregar.</li></ul></div>
+<figure class="print"><div class="janela" style="height:120mm"><img src="../../web/painel/docs/evidencias/risco-cidadao-390.png" alt="No celular (390 px)."></div><figcaption>No celular (390 px).</figcaption></figure>
+</div>
+
+<h2><small>Reproduzir</small>Como conferir cada evidência</h2>
+<table><thead><tr><th>Comando (na raiz)</th><th>O que prova</th></tr></thead><tbody>
+<tr><td><code>make up</code></td><td>sobe o Sombra inteiro (Core, Clima, banco, broker e painel) com os segredos gerados no <code>.env</code></td></tr>
+<tr><td><code>make -C services/core-api pii-relatorio</code></td><td>refaz o relatório de acertos do motor de PII (§1)</td></tr>
+<tr><td><code>security/auditoria/rodar-auditoria.sh</code></td><td>refaz a auditoria A1–A8, antes e depois (§2)</td></tr>
+<tr><td><code>make semgrep</code></td><td>roda o taint estático: o canário dispara e a produção sai limpa (§2)</td></tr>
+<tr><td><code>make test-core</code></td><td>todos os testes do Core, incluindo os do módulo de privacidade</td></tr>
+<tr><td><code>make entrega-cyber</code></td><td>refaz este PDF e o ZIP do código</td></tr>
+</tbody></table>
+<p>Código: <a href="https://github.com/andrenakarocha/sombra/tree/main/services/core-api/sources/Sombra.Privacidade">services/core-api/sources/Sombra.Privacidade</a> ·
+auditoria e relatórios: <a href="https://github.com/andrenakarocha/sombra/tree/main/security">security/</a> · spec: <code>docs/specs/07-cyber-privacidade.md</code>.</p>
+</body></html>

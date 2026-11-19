@@ -980,9 +980,14 @@ F11.8 (VM no Azure) saíram.**
 - [ ] **F12.2** 🤖 A partir da F0.16: `docs/entrevista.md`, `docs/problema.md`, `docs/rabiscos/` (wireframes, fluxo de
   dados, circuito) e a Ficha final.
   🔎 nenhuma informação que identifique a pessoa.
-- [ ] **F12.3** 🤖 PDF de Cyber (`security/entrega/cyber.html` → PDF): capa com integrantes e uma seção para cada pilar
+- [x] **F12.3** 🤖 PDF de Cyber (`security/entrega/cyber.html` → PDF): capa com integrantes e uma seção para cada pilar
   (Parsing PII, Taint, IA, Dashboard), com prints de código e de evidência. ZIP do código **separado**.
-  🔎 os 4 pilares no PDF; o ZIP abre e compila.
+  🔎 os 4 pilares no PDF; o ZIP abre e compila — 2026-11-19 (`make entrega-cyber`: 13 páginas geradas do repositório,
+  sem texto à mão: os trechos saem dos arquivos com caminho e linhas, as tabelas dos relatórios dos testes, o Semgrep
+  roda de novo e as traduções são eventos reais do Core. Revisar as traduções reais achou três defeitos no Core, e os
+  três foram corrigidos com teste: a guarda aceitava texto sem acento e com o sentido trocado, e o cache reaproveitava
+  tradução antiga sem passar pela guarda. O ZIP é o `git archive` do commit e vai à parte; refazer na hora da entrega,
+  depois dos merges).
 - [ ] **F12.4** 🧑🤖 `docs/defesa/`: guia por parte + perguntas prováveis + sessão de 30 min com o time.
   🔎 cada integrante explicou uma parte que não fez.
 
