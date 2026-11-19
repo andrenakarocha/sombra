@@ -144,6 +144,9 @@ def main() -> int:
     t = "Testing, Compliance & QA"
     arquivos(t, "qa/entrega/qa.pdf")
     integrantes(t, "qa/entrega/qa.pdf")
+    pdf = texto("qa/entrega/qa.pdf")
+    marcar(t, bool(pdf) and "ainda não tirado" not in pdf, "todos os prints do Azure no PDF (make qa-prints e make qa-pdf)")
+    marcar(t, bool(pdf) and "‹" not in pdf, "o link do projeto no Azure e o do pitch no PDF, sem placeholder")
     marcar(t, None, "o professor como Admin no projeto do Azure DevOps (conferir na tela do Azure)")
 
     atual = ""
