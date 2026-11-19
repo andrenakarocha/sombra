@@ -8,6 +8,8 @@
 **Ambiente:** Ubuntu 24.04 (`bento/ubuntu-24.04`) no VirtualBox, criado pelo [`Vagrantfile`](Vagrantfile), que só chama o
 [`provision.sh`](provision.sh). Os mesmos scripts rodam em qualquer Ubuntu 24.04 (`sudo ./provision.sh`).
 
+**Vídeo (até 7 min):** ‹link do YouTube (não listado)› · roteiro em [`docs/videos/os.md`](../docs/videos/os.md)
+
 ## Rubrica → onde está → evidência
 
 | Critério | Pts | Como o Sombra atende | Evidência |

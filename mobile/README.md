@@ -6,6 +6,8 @@
 > SQLite local-first. Disciplina **Mobile Development & IoT** · spec [`05-mobile-app.md`](../docs/specs/05-mobile-app.md)
 > · fase F6 do [plano](../docs/PLANO.md).
 
+**Vídeo (até 3 min):** ‹link do YouTube (não listado)› · roteiro em [`docs/videos/mobile.md`](../docs/videos/mobile.md)
+
 ## Ficha da CitizenTech
 
 | Campo | Conteúdo |
