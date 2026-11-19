@@ -1,0 +1,105 @@
+[ {
+  "id" : "fcdcbb13-a95d-511e-951a-ea03cb9496ed",
+  "nome" : "Biblioteca Municipal Nuto Sant'anna",
+  "tipo" : "BIBLIOTECA",
+  "distanciaKm" : 0.2,
+  "horario" : {
+    "abre" : "09:00",
+    "fecha" : "18:00"
+  },
+  "acessivel" : false,
+  "fonte" : "OpenStreetMap (ODbL), node/4312079136; horário no OSM: Mo-Fr 09:00-18:00; Sa 09:00-16:00",
+  "latitude" : -23.498444,
+  "longitude" : -46.619591
+}, {
+  "id" : "fb2c67fa-a02f-5e11-8366-9e4cd23d73e4",
+  "nome" : "Santana Shopping",
+  "tipo" : "SHOPPING",
+  "distanciaKm" : 0.8,
+  "horario" : {
+    "abre" : "10:00",
+    "fecha" : "20:00"
+  },
+  "acessivel" : false,
+  "fonte" : "OpenStreetMap (ODbL), way/719105499; horário no OSM: Mo-Sa 10:00-20:00",
+  "latitude" : -23.50118,
+  "longitude" : -46.625601
+}, {
+  "id" : "73c6cff7-b9c6-5dfa-9444-763f76a79bd5",
+  "nome" : "Biblioteca de São Paulo",
+  "tipo" : "BIBLIOTECA",
+  "distanciaKm" : 1.3,
+  "horario" : {
+    "abre" : "09:30",
+    "fecha" : "18:30"
+  },
+  "acessivel" : false,
+  "fonte" : "OpenStreetMap (ODbL), way/226745315; horário no OSM: PH,Tu-Su 09:30-18:30; Feb 17 off",
+  "latitude" : -23.507432,
+  "longitude" : -46.623499
+}, {
+  "id" : "83e68f3b-9508-592c-8151-fe02c4a93058",
+  "nome" : "UBS Joaquim Antônio Eirado",
+  "tipo" : "UBS",
+  "distanciaKm" : 1.4,
+  "horario" : {
+    "abre" : "07:00",
+    "fecha" : "19:00"
+  },
+  "acessivel" : false,
+  "fonte" : "OpenStreetMap (ODbL), way/917937965; horário no OSM: Mo-Sa 07:00-19:00",
+  "latitude" : -23.503493,
+  "longitude" : -46.631616
+}, {
+  "id" : "97b4faad-e6a8-539e-9fe3-db0dee8d3619",
+  "nome" : "Biblioteca Pedro Nava",
+  "tipo" : "BIBLIOTECA",
+  "distanciaKm" : 2.0,
+  "horario" : {
+    "abre" : "09:00",
+    "fecha" : "18:00"
+  },
+  "acessivel" : false,
+  "fonte" : "OpenStreetMap (ODbL), way/291412510; horário no OSM: Mo-Fr 09:00-18:00;Sa 09:00-16:00",
+  "latitude" : -23.482549,
+  "longitude" : -46.63249
+}, {
+  "id" : "f9c320b9-b700-5fb0-8bb2-9d24c452ed03",
+  "nome" : "Trimais Place",
+  "tipo" : "SHOPPING",
+  "distanciaKm" : 2.2,
+  "horario" : {
+    "abre" : "10:00",
+    "fecha" : "22:00"
+  },
+  "acessivel" : false,
+  "fonte" : "OpenStreetMap (ODbL), way/1135484967; horário no OSM: Mo-Sa 10:00-22:00; Su,PH 14:00-20:00",
+  "latitude" : -23.47864,
+  "longitude" : -46.609935
+}, {
+  "id" : "21c82469-f53c-5965-a452-d1d7985a573d",
+  "nome" : "Biblioteca Sylvia Orthof",
+  "tipo" : "BIBLIOTECA",
+  "distanciaKm" : 2.3,
+  "horario" : {
+    "abre" : "09:00",
+    "fecha" : "17:00"
+  },
+  "acessivel" : false,
+  "fonte" : "OpenStreetMap (ODbL), way/1468509142; horário no OSM: Mo-Fr 09:00-17:00; Sa 09:00-16:00; Su 09:00-13:00",
+  "latitude" : -23.481622,
+  "longitude" : -46.604223
+}, {
+  "id" : "9255f6bc-e66e-5f6c-9fb3-8d2ad93fa629",
+  "nome" : "SESC Casa Verde",
+  "tipo" : "ESPACO_COMUNITARIO",
+  "distanciaKm" : 2.7,
+  "horario" : {
+    "abre" : "10:00",
+    "fecha" : "18:00"
+  },
+  "acessivel" : true,
+  "fonte" : "OpenStreetMap (ODbL), node/11617810626; horário no OSM: Tu-Su 10:00-18:00",
+  "latitude" : -23.500957,
+  "longitude" : -46.646133
+} ]
