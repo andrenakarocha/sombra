@@ -99,4 +99,10 @@ export const EventoDeSegurancaSchema = z.object({
 export type EventoDeSeguranca = z.infer<typeof EventoDeSegurancaSchema>;
 
 export const VersaoSchema = z.object({ versao: z.string(), commit: z.string(), construidoEm: z.string() });
+
+export const SaudeDoClimaSchema = z.object({
+  status: z.string(),
+  components: z.record(z.string(), z.object({ status: z.string(), details: z.record(z.string(), z.unknown()).optional() })).optional(),
+});
+export const InfoDoClimaSchema = z.object({ servico: z.string().optional(), commit: z.string().optional(), construidoEm: z.string().optional() });
 export const ProntidaoSchema = z.object({ status: z.string(), verificacoes: z.record(z.string(), z.string()) });

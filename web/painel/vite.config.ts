@@ -30,7 +30,8 @@ export default defineConfig({
       '/health': core,
       '/version': core,
       '/hubs': { target: core, ws: true },
-      '/clima': { target: clima, rewrite: (caminho) => caminho.replace(/^\/clima/, '') },
+      // do Clima, só as sondas de saúde: a API dele não tem login e fica fechada para o navegador
+      '/clima/actuator': { target: clima, rewrite: (caminho) => caminho.replace(/^\/clima/, '') },
     },
   },
   test: {

@@ -26,13 +26,16 @@ function novoCorrelationId(): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** Uma chamada ao Core (mesma origem: /api), validada pelo schema; 401 encerra a sessão. */
-export async function pedir<T>(caminho: string, schema: z.ZodType<T>, init: RequestInit = {}): Promise<T> {
+/**
+ * Uma chamada ao Core (mesma origem: /api), validada pelo schema; 401 encerra a sessão. Com {@code semToken}, o JWT não
+ * vai junto (as sondas de saúde do Clima não precisam dele, e ele não deve sair do Core).
+ */
+export async function pedir<T>(caminho: string, schema: z.ZodType<T>, init: RequestInit = {}, semToken = false): Promise<T> {
   const correlationId = novoCorrelationId();
   const headers = new Headers(init.headers);
   headers.set('Accept', 'application/json');
   headers.set('X-Correlation-Id', correlationId);
-  const token = sessao.atual()?.token;
+  const token = semToken ? undefined : sessao.atual()?.token;
   if (token) headers.set('Authorization', `Bearer ${token}`);
   if (init.body && !headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
 
