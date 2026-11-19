@@ -40,7 +40,13 @@ export function Casas() {
       ) : casas.data.itens.length === 0 ? (
         <Vazio>Nenhuma casa com esse filtro.</Vazio>
       ) : (
-        <div className="overflow-x-auto rounded-grande border border-borda bg-superficie">
+        // no celular a tabela rola para os lados: focável, para quem usa teclado também chegar às últimas colunas
+        <div
+          className="overflow-x-auto rounded-grande border border-borda bg-superficie"
+          tabIndex={0}
+          role="region"
+          aria-label="Tabela das casas (role para os lados para ver todas as colunas)"
+        >
           <table className="w-full min-w-[44rem] text-left">
             <caption className="sr-only">Casas acompanhadas, com o nível de risco agora</caption>
             <thead className="border-b border-borda text-sm text-texto-suave">
