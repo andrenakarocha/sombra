@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ErrosDocumentados {
 
-    /** Os status HTTP de erro (400, 404, 409, 422). */
+    /** Os status HTTP de erro (400, 404, 409, 422, 503). */
     int[] value();
 }

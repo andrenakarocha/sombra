@@ -2,6 +2,7 @@ package br.com.fiap.sombra.clima.api;
 
 import br.com.fiap.sombra.clima.aplicacao.RecursoJaExiste;
 import br.com.fiap.sombra.clima.aplicacao.RecursoNaoEncontrado;
+import br.com.fiap.sombra.clima.aplicacao.SemObservacaoRecente;
 import br.com.fiap.sombra.clima.dominio.RegraViolada;
 import java.net.URI;
 import java.util.LinkedHashMap;
@@ -58,6 +59,12 @@ public class Erros extends ResponseEntityExceptionHandler {
     ResponseEntity<Object> jaExiste(RecursoJaExiste e, WebRequest request) {
         ProblemDetail corpo = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
         return handleExceptionInternal(e, corpo, new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(SemObservacaoRecente.class)
+    ResponseEntity<Object> semObservacaoRecente(SemObservacaoRecente e, WebRequest request) {
+        ProblemDetail corpo = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
+        return handleExceptionInternal(e, corpo, new HttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE, request);
     }
 
     @ExceptionHandler(Exception.class)
@@ -126,6 +133,7 @@ public class Erros extends ResponseEntityExceptionHandler {
             case 415 -> "Formato do corpo não suportado";
             case 422 -> "Regra de negócio violada";
             case 500 -> "Erro interno";
+            case 503 -> "Dado climático indisponível";
             default -> HttpStatus.resolve(status.value()) != null
                     ? HttpStatus.valueOf(status.value()).getReasonPhrase()
                     : "Erro";

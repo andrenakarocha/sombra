@@ -574,8 +574,11 @@ provando o antes e o depois.
   gravou as 25 horas de hoje da Open-Meteo e o replay avançou 3 h em 3 s na velocidade 3600; nos testes, o relógio
   controlado avança uma hora de dado por minuto e o replay encerra sozinho no fim dos dados; o cliente tenta 3 vezes com
   espera crescente, pula hora nula ou fora da faixa e converte a radiação de W/m² para kJ/m²; a coleta não duplica hora).
-- [ ] **F3.6** 🤖 `PrevisorDeCalor` com `RegraPrevisorDeCalor` (o ONNX entra na F9.1) e `/risco-calor` completo.
-  🔎 teste de API do risco, com status e corpo.
+- [x] **F3.6** 🤖 `PrevisorDeCalor` com `RegraPrevisorDeCalor` (o ONNX entra na F9.1) e `/risco-calor` completo.
+  🔎 teste de API do risco, com status e corpo — 2026-11-18 (regra = persistência do pico das últimas 24 h, o baseline
+  da F4.3, com probabilidade logística em torno do limiar de PERIGO; no pico real de 15/11/2023 o risco sai
+  `CAUTELA_EXTREMA`, 35,47 °C, p = 0,07, `fonteDados: replay-inmet`; sem observação nas últimas 3 h, 503; o campo novo
+  `indiceDeCalorPrevistoC` deixa a DA6 resolvível no Core pelo limiar pessoal da R3).
 - [ ] **F3.7** 🤖 Logs JSON (§6) aceitando o `X-Correlation-Id` do Core + actuator health.
   🔎 uma chamada do Core aparece nos dois logs com o mesmo `correlationId`.
 - [ ] **F3.8** 🤖 Testes de API (MockMvc + Testcontainers) + ArchUnit + README (Ficha, como rodar, comando do banco,

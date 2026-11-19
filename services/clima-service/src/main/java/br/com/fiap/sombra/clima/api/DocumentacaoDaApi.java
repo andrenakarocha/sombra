@@ -39,7 +39,8 @@ public class DocumentacaoDaApi {
             400, "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)",
             404, "Recurso não encontrado",
             409, "Já existe um recurso com o mesmo identificador",
-            422, "Regra de negócio violada (o código estável vem em `regra`)");
+            422, "Regra de negócio violada (o código estável vem em `regra`)",
+            503, "Sem observação recente da estação: o consumidor segue com o último risco conhecido");
 
     private static final Map<Integer, Map<String, Object>> EXEMPLOS = Map.of(
             400, Map.of("title", "Requisição inválida", "status", 400, "detail", "Um ou mais campos são inválidos.",
@@ -49,7 +50,9 @@ public class DocumentacaoDaApi {
             409, Map.of("title", "Conflito", "status", 409, "detail", "Região climática 'SP-MIRANTE' já existe."),
             422, Map.of("title", "Regra de negócio violada", "status", 422,
                     "detail", "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
-                    "regra", "OBSERVACAO_FALTANTE"));
+                    "regra", "OBSERVACAO_FALTANTE"),
+            503, Map.of("title", "Dado climático indisponível", "status", 503,
+                    "detail", "A estação A701 da região SP-MIRANTE não tem observação nas últimas 3 horas."));
 
     @Bean
     OpenAPI contratoDoClima() {
