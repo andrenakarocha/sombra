@@ -564,8 +564,11 @@ provando o antes e o depois.
   recriado vazio: V1–V4 aplicadas pelo serviço e por `./mvnw flyway:migrate`; seed gerado por script do CSV conferido pelo
   SHA-256: 637 horas reais, 83 sem dado descartadas, pico 35,47 °C; 9 pontos reais do OpenStreetMap com o horário do OSM;
   9 testes de repositório no PostgreSQL 16 do Testcontainers, incluindo a paridade do índice de todas as horas).
-- [ ] **F3.4** 🤖 API, DTOs com Bean Validation, erros (400, 404, 422) e springdoc completo (resumo, tag, exemplo, erros).
-  🔎 Swagger mostra os 4xx em todos os endpoints.
+- [x] **F3.4** 🤖 API, DTOs com Bean Validation, erros (400, 404, 422) e springdoc completo (resumo, tag, exemplo, erros).
+  🔎 Swagger mostra os 4xx em todos os endpoints — 2026-11-18 (13 operações, cada uma com resumo, tag, exemplo e os 4xx
+  com o corpo `Problema`; o `ContratoOpenApiTest` confere isso e o `docs/contratos/clima-service.openapi.json`
+  versionado; 31 testes de API com status e corpo no PostgreSQL real; o teste pegou e a F3.4 corrigiu o horário
+  deslocado pelo fuso da JVM).
 - [ ] **F3.5** 🤖 `FonteMeteorologica`: `OpenMeteoClient` agendado e resiliente + `ReplayInmet` (`POST`/`DELETE /replay`).
   🔎 o replay de nov/2023 avança hora a hora; o modo ao vivo traz dado atual (P7).
 - [ ] **F3.6** 🤖 `PrevisorDeCalor` com `RegraPrevisorDeCalor` (o ONNX entra na F9.1) e `/risco-calor` completo.

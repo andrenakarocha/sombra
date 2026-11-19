@@ -1,0 +1,1617 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "contact" : {
+      "name" : "Sombra · GS 2026.2 FIAP",
+      "url" : "https://github.com/andrenakarocha/sombra"
+    },
+    "description" : "O dono do conhecimento climático do Sombra: regiões, estações do INMET, observações horárias, risco de calor agora e em 24 h e pontos de resfriamento perto de casa. O Core é o único cliente. Erros em ProblemDetails (RFC 9457), tempo em ISO-8601 UTC e o header `X-Correlation-Id` aceito e devolvido. Não guarda dado pessoal.",
+    "license" : {
+      "name" : "MIT",
+      "url" : "https://github.com/andrenakarocha/sombra/blob/main/LICENSE"
+    },
+    "title" : "Sombra · Clima Service",
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8081",
+    "description" : "ambiente local (make up)"
+  } ],
+  "tags" : [ {
+    "description" : "A área atendida por uma estação de referência (CRUD)",
+    "name" : "Regiões climáticas"
+  }, {
+    "description" : "Medições horárias das estações do INMET",
+    "name" : "Observações"
+  }, {
+    "description" : "O nível de risco agora e a previsão de 24 h",
+    "name" : "Risco de calor"
+  }, {
+    "description" : "Lugares públicos e frescos (CRUD e busca por proximidade)",
+    "name" : "Pontos de resfriamento"
+  }, {
+    "description" : "Toca a onda de calor real de nov/2023 acelerada, para a demonstração",
+    "name" : "Replay (demonstração)"
+  } ],
+  "paths" : {
+    "/api/v1/estacoes/{codigo}/observacoes" : {
+      "get" : {
+        "description" : "Período [de, ate) de no máximo 31 dias (regra PERIODO_INVALIDO), paginado.",
+        "operationId" : "noPeriodo",
+        "parameters" : [ {
+          "example" : "A701",
+          "in" : "path",
+          "name" : "codigo",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "example" : "2023-11-15T00:00:00Z",
+          "in" : "query",
+          "name" : "de",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "example" : "2023-11-16T00:00:00Z",
+          "in" : "query",
+          "name" : "ate",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "example" : 1,
+          "in" : "query",
+          "name" : "pagina",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 1,
+            "minimum" : 1
+          }
+        }, {
+          "example" : 24,
+          "in" : "query",
+          "name" : "tamanho",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20,
+            "maximum" : 100,
+            "minimum" : 1
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaginaObservacao"
+                }
+              }
+            },
+            "description" : "A página de observações"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
+                      "regra" : "OBSERVACAO_FALTANTE",
+                      "status" : 422,
+                      "title" : "Regra de negócio violada",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Regra de negócio violada (o código estável vem em `regra`)"
+          }
+        },
+        "summary" : "Lista as observações de uma estação num período, da mais recente para a mais antiga",
+        "tags" : [ "Observações" ]
+      },
+      "post" : {
+        "description" : "Calcula o índice de calor e o nível. Recusa o -9999 do INMET (OBSERVACAO_FALTANTE), umidade fora de 0–100 % e a mesma hora duas vezes.",
+        "operationId" : "registrar",
+        "parameters" : [ {
+          "example" : "A701",
+          "in" : "path",
+          "name" : "codigo",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovaObservacao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Observacao"
+                }
+              }
+            },
+            "description" : "Observação registrada"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          },
+          "409" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-MIRANTE' já existe.",
+                      "status" : 409,
+                      "title" : "Conflito",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Já existe um recurso com o mesmo identificador"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
+                      "regra" : "OBSERVACAO_FALTANTE",
+                      "status" : 422,
+                      "title" : "Regra de negócio violada",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Regra de negócio violada (o código estável vem em `regra`)"
+          }
+        },
+        "summary" : "Registra a observação de uma hora numa estação",
+        "tags" : [ "Observações" ]
+      }
+    },
+    "/api/v1/pontos-de-resfriamento" : {
+      "get" : {
+        "description" : "Ordenados pelo nome, paginados.",
+        "operationId" : "listar_1",
+        "parameters" : [ {
+          "example" : 1,
+          "in" : "query",
+          "name" : "pagina",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 1,
+            "minimum" : 1
+          }
+        }, {
+          "example" : 20,
+          "in" : "query",
+          "name" : "tamanho",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20,
+            "maximum" : 100,
+            "minimum" : 1
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaginaPontoDeResfriamento"
+                }
+              }
+            },
+            "description" : "A página de pontos"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          }
+        },
+        "summary" : "Lista os pontos de resfriamento",
+        "tags" : [ "Pontos de resfriamento" ]
+      },
+      "post" : {
+        "description" : "Abre antes de fechar (HORARIO_INVALIDO), coordenada válida (COORDENADA_INVALIDA) e sempre com a fonte.",
+        "operationId" : "criar_1",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DadosDoPonto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PontoDeResfriamento"
+                }
+              }
+            },
+            "description" : "Ponto cadastrado"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
+                      "regra" : "OBSERVACAO_FALTANTE",
+                      "status" : 422,
+                      "title" : "Regra de negócio violada",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Regra de negócio violada (o código estável vem em `regra`)"
+          }
+        },
+        "summary" : "Cadastra um ponto de resfriamento",
+        "tags" : [ "Pontos de resfriamento" ]
+      }
+    },
+    "/api/v1/pontos-de-resfriamento/proximos" : {
+      "get" : {
+        "description" : "Distância de haversine em km. Raio maior que 0 e no máximo 20 km (regra RAIO_INVALIDO).",
+        "operationId" : "proximos",
+        "parameters" : [ {
+          "example" : -23.4964,
+          "in" : "query",
+          "name" : "lat",
+          "required" : true,
+          "schema" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        }, {
+          "example" : -46.62,
+          "in" : "query",
+          "name" : "lon",
+          "required" : true,
+          "schema" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        }, {
+          "example" : 2,
+          "in" : "query",
+          "name" : "raioKm",
+          "required" : false,
+          "schema" : {
+            "type" : "number",
+            "format" : "double",
+            "default" : 2.0
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PontoProximo"
+                  }
+                }
+              }
+            },
+            "description" : "Os pontos dentro do raio"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
+                      "regra" : "OBSERVACAO_FALTANTE",
+                      "status" : 422,
+                      "title" : "Regra de negócio violada",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Regra de negócio violada (o código estável vem em `regra`)"
+          }
+        },
+        "summary" : "Busca os pontos dentro de um raio, do mais perto ao mais longe",
+        "tags" : [ "Pontos de resfriamento" ]
+      }
+    },
+    "/api/v1/pontos-de-resfriamento/{id}" : {
+      "delete" : {
+        "operationId" : "remover_1",
+        "parameters" : [ {
+          "example" : "fcdcbb13-a95d-511e-951a-ea03cb9496ed",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Ponto removido"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          }
+        },
+        "summary" : "Remove um ponto de resfriamento",
+        "tags" : [ "Pontos de resfriamento" ]
+      },
+      "get" : {
+        "operationId" : "obter_1",
+        "parameters" : [ {
+          "example" : "fcdcbb13-a95d-511e-951a-ea03cb9496ed",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PontoDeResfriamento"
+                }
+              }
+            },
+            "description" : "O ponto"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          }
+        },
+        "summary" : "Consulta um ponto de resfriamento",
+        "tags" : [ "Pontos de resfriamento" ]
+      },
+      "put" : {
+        "operationId" : "atualizar_1",
+        "parameters" : [ {
+          "example" : "fcdcbb13-a95d-511e-951a-ea03cb9496ed",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DadosDoPonto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PontoDeResfriamento"
+                }
+              }
+            },
+            "description" : "Ponto editado"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
+                      "regra" : "OBSERVACAO_FALTANTE",
+                      "status" : 422,
+                      "title" : "Regra de negócio violada",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Regra de negócio violada (o código estável vem em `regra`)"
+          }
+        },
+        "summary" : "Edita um ponto de resfriamento",
+        "tags" : [ "Pontos de resfriamento" ]
+      }
+    },
+    "/api/v1/regioes" : {
+      "get" : {
+        "description" : "Ordenadas pelo código, paginadas.",
+        "operationId" : "listar",
+        "parameters" : [ {
+          "example" : 1,
+          "in" : "query",
+          "name" : "pagina",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 1,
+            "minimum" : 1
+          }
+        }, {
+          "example" : 20,
+          "in" : "query",
+          "name" : "tamanho",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20,
+            "maximum" : 100,
+            "minimum" : 1
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaginaRegiao"
+                }
+              }
+            },
+            "description" : "A página de regiões"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          }
+        },
+        "summary" : "Lista as regiões climáticas",
+        "tags" : [ "Regiões climáticas" ]
+      },
+      "post" : {
+        "description" : "A estação de referência precisa existir (regra REGIAO_SEM_ESTACAO).",
+        "operationId" : "criar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovaRegiao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Regiao"
+                }
+              }
+            },
+            "description" : "Região cadastrada"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "409" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-MIRANTE' já existe.",
+                      "status" : 409,
+                      "title" : "Conflito",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Já existe um recurso com o mesmo identificador"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
+                      "regra" : "OBSERVACAO_FALTANTE",
+                      "status" : 422,
+                      "title" : "Regra de negócio violada",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Regra de negócio violada (o código estável vem em `regra`)"
+          }
+        },
+        "summary" : "Cadastra uma região climática",
+        "tags" : [ "Regiões climáticas" ]
+      }
+    },
+    "/api/v1/regioes/{codigo}" : {
+      "delete" : {
+        "description" : "As observações ficam com a estação. O Core passa a receber 404 para essa região e a trata como desconhecida.",
+        "operationId" : "remover",
+        "parameters" : [ {
+          "example" : "SP-MIRANTE",
+          "in" : "path",
+          "name" : "codigo",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "Região removida"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          }
+        },
+        "summary" : "Remove uma região climática",
+        "tags" : [ "Regiões climáticas" ]
+      },
+      "get" : {
+        "operationId" : "obter",
+        "parameters" : [ {
+          "example" : "SP-MIRANTE",
+          "in" : "path",
+          "name" : "codigo",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Regiao"
+                }
+              }
+            },
+            "description" : "A região"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          }
+        },
+        "summary" : "Consulta uma região climática pelo código",
+        "tags" : [ "Regiões climáticas" ]
+      },
+      "put" : {
+        "operationId" : "atualizar",
+        "parameters" : [ {
+          "example" : "SP-MIRANTE",
+          "in" : "path",
+          "name" : "codigo",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/EdicaoDeRegiao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Regiao"
+                }
+              }
+            },
+            "description" : "Região editada"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
+                      "regra" : "OBSERVACAO_FALTANTE",
+                      "status" : 422,
+                      "title" : "Regra de negócio violada",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Regra de negócio violada (o código estável vem em `regra`)"
+          }
+        },
+        "summary" : "Edita o nome e a estação de referência de uma região",
+        "tags" : [ "Regiões climáticas" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "DadosDoPonto" : {
+        "type" : "object",
+        "description" : "Um ponto de resfriamento na criação ou na edição",
+        "properties" : {
+          "acessivel" : {
+            "type" : "boolean",
+            "description" : "true só quando a fonte confirma a acessibilidade",
+            "example" : false
+          },
+          "fonte" : {
+            "type" : "string",
+            "example" : "OpenStreetMap (ODbL), node/4312079136",
+            "maxLength" : 200,
+            "minLength" : 0
+          },
+          "horario" : {
+            "$ref" : "#/components/schemas/Horario"
+          },
+          "latitude" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : -23.498444
+          },
+          "longitude" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : -46.619591
+          },
+          "nome" : {
+            "type" : "string",
+            "example" : "Biblioteca Municipal Nuto Sant'anna",
+            "maxLength" : 120,
+            "minLength" : 0
+          },
+          "tipo" : {
+            "type" : "string",
+            "enum" : [ "BIBLIOTECA", "CENTRO_DE_CONVIVENCIA", "UBS", "CEU", "SHOPPING", "ESPACO_COMUNITARIO" ],
+            "example" : "BIBLIOTECA"
+          }
+        },
+        "required" : [ "acessivel", "fonte", "horario", "latitude", "longitude", "nome", "tipo" ]
+      },
+      "EdicaoDeRegiao" : {
+        "type" : "object",
+        "description" : "Os campos editáveis de uma região climática",
+        "properties" : {
+          "estacao" : {
+            "type" : "string",
+            "example" : "A701",
+            "maxLength" : 8,
+            "minLength" : 0
+          },
+          "nome" : {
+            "type" : "string",
+            "example" : "Zona Norte de São Paulo (Mirante de Santana)",
+            "maxLength" : 80,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "estacao", "nome" ]
+      },
+      "Estacao" : {
+        "type" : "object",
+        "description" : "Uma estação meteorológica automática do INMET",
+        "properties" : {
+          "altitudeM" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 785.64
+          },
+          "codigo" : {
+            "type" : "string",
+            "example" : "A701"
+          },
+          "latitude" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : -23.496389
+          },
+          "longitude" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : -46.62
+          },
+          "nome" : {
+            "type" : "string",
+            "example" : "São Paulo – Mirante de Santana"
+          }
+        }
+      },
+      "Horario" : {
+        "type" : "object",
+        "description" : "Horário de funcionamento, no fuso de São Paulo",
+        "properties" : {
+          "abre" : {
+            "type" : "string",
+            "example" : "09:00",
+            "pattern" : "^\\d\\d:\\d\\d$"
+          },
+          "fecha" : {
+            "type" : "string",
+            "example" : "18:00",
+            "pattern" : "^\\d\\d:\\d\\d$"
+          }
+        },
+        "required" : [ "abre", "fecha" ]
+      },
+      "NovaObservacao" : {
+        "type" : "object",
+        "description" : "O que a estação mediu numa hora. -9999 (dado faltante do INMET) é recusado com 422.",
+        "properties" : {
+          "observadaEm" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "Hora da medição, em UTC",
+            "example" : "2023-11-15T18:00:00Z"
+          },
+          "precipitacaoMm" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Precipitação na hora, mm",
+            "example" : 0
+          },
+          "pressaoHpa" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Pressão ao nível da estação, hPa",
+            "example" : 919.6
+          },
+          "radiacaoKjM2" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Radiação global na hora, kJ/m²",
+            "example" : 2741.9
+          },
+          "temperaturaC" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Temperatura do ar, °C",
+            "example" : 35.7
+          },
+          "umidadePct" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Umidade relativa, %",
+            "example" : 29
+          },
+          "ventoMs" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Velocidade do vento, m/s",
+            "example" : 1.8
+          }
+        },
+        "required" : [ "observadaEm", "temperaturaC", "umidadePct" ]
+      },
+      "NovaRegiao" : {
+        "type" : "object",
+        "description" : "Uma região climática nova",
+        "properties" : {
+          "codigo" : {
+            "type" : "string",
+            "description" : "UF, hífen e o nome, em maiúsculas",
+            "example" : "SP-MIRANTE",
+            "maxLength" : 40,
+            "minLength" : 0
+          },
+          "estacao" : {
+            "type" : "string",
+            "description" : "Código da estação do INMET de referência",
+            "example" : "A701",
+            "maxLength" : 8,
+            "minLength" : 0
+          },
+          "nome" : {
+            "type" : "string",
+            "example" : "Zona Norte de São Paulo (Mirante de Santana)",
+            "maxLength" : 80,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "codigo", "estacao", "nome" ]
+      },
+      "Observacao" : {
+        "type" : "object",
+        "description" : "Uma observação horária, com o índice de calor e o nível calculados pelo Clima",
+        "properties" : {
+          "estacao" : {
+            "type" : "string",
+            "example" : "A701"
+          },
+          "fonte" : {
+            "type" : "string",
+            "enum" : [ "INMET", "OPEN_METEO" ],
+            "example" : "INMET"
+          },
+          "indiceDeCalorC" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 35.47
+          },
+          "nivel" : {
+            "type" : "string",
+            "enum" : [ "NORMAL", "ATENCAO", "CAUTELA_EXTREMA", "PERIGO", "PERIGO_EXTREMO" ],
+            "example" : "CAUTELA_EXTREMA"
+          },
+          "observadaEm" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2023-11-15T18:00:00Z"
+          },
+          "precipitacaoMm" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 0
+          },
+          "pressaoHpa" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 919.6
+          },
+          "radiacaoKjM2" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 2741.9
+          },
+          "temperaturaC" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 35.7
+          },
+          "umidadePct" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 29
+          },
+          "ventoMs" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 1.8
+          }
+        }
+      },
+      "PaginaObservacao" : {
+        "type" : "object",
+        "properties" : {
+          "itens" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Observacao"
+            }
+          },
+          "pagina" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          },
+          "tamanho" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 20
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64",
+            "example" : 57
+          }
+        }
+      },
+      "PaginaPontoDeResfriamento" : {
+        "type" : "object",
+        "properties" : {
+          "itens" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PontoDeResfriamento"
+            }
+          },
+          "pagina" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          },
+          "tamanho" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 20
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64",
+            "example" : 57
+          }
+        }
+      },
+      "PaginaRegiao" : {
+        "type" : "object",
+        "properties" : {
+          "itens" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Regiao"
+            }
+          },
+          "pagina" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          },
+          "tamanho" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 20
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64",
+            "example" : 57
+          }
+        }
+      },
+      "PontoDeResfriamento" : {
+        "type" : "object",
+        "description" : "Um lugar público e fresco para o pico do calor",
+        "properties" : {
+          "acessivel" : {
+            "type" : "boolean",
+            "example" : false
+          },
+          "fonte" : {
+            "type" : "string",
+            "example" : "OpenStreetMap (ODbL), node/4312079136; horário no OSM: Mo-Fr 09:00-18:00; Sa 09:00-16:00"
+          },
+          "horario" : {
+            "$ref" : "#/components/schemas/Horario"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "fcdcbb13-a95d-511e-951a-ea03cb9496ed"
+          },
+          "latitude" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : -23.498444
+          },
+          "longitude" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : -46.619591
+          },
+          "nome" : {
+            "type" : "string",
+            "example" : "Biblioteca Municipal Nuto Sant'anna"
+          },
+          "tipo" : {
+            "type" : "string",
+            "enum" : [ "BIBLIOTECA", "CENTRO_DE_CONVIVENCIA", "UBS", "CEU", "SHOPPING", "ESPACO_COMUNITARIO" ],
+            "example" : "BIBLIOTECA"
+          }
+        }
+      },
+      "PontoProximo" : {
+        "type" : "object",
+        "description" : "Um ponto de resfriamento e a distância até a origem da busca",
+        "properties" : {
+          "acessivel" : {
+            "type" : "boolean",
+            "example" : false
+          },
+          "distanciaKm" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Distância em km, com uma casa",
+            "example" : 0.2
+          },
+          "fonte" : {
+            "type" : "string",
+            "example" : "OpenStreetMap (ODbL), node/4312079136; horário no OSM: Mo-Fr 09:00-18:00; Sa 09:00-16:00"
+          },
+          "horario" : {
+            "$ref" : "#/components/schemas/Horario"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "fcdcbb13-a95d-511e-951a-ea03cb9496ed"
+          },
+          "latitude" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : -23.498444
+          },
+          "longitude" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : -46.619591
+          },
+          "nome" : {
+            "type" : "string",
+            "example" : "Biblioteca Municipal Nuto Sant'anna"
+          },
+          "tipo" : {
+            "type" : "string",
+            "enum" : [ "BIBLIOTECA", "CENTRO_DE_CONVIVENCIA", "UBS", "CEU", "SHOPPING", "ESPACO_COMUNITARIO" ],
+            "example" : "BIBLIOTECA"
+          }
+        }
+      },
+      "Problema" : {
+        "description" : "Erro no formato ProblemDetails (RFC 9457), sempre em pt-BR e sem dado interno",
+        "properties" : {
+          "correlationId" : {
+            "type" : "string",
+            "description" : "Para cruzar com o log (§3 da observabilidade)",
+            "example" : "4f1c2b7e9a0d4e6f"
+          },
+          "detail" : {
+            "type" : "string",
+            "example" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação."
+          },
+          "errors" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "description" : "Erros por campo ou parâmetro (só no 400)",
+              "items" : {
+                "type" : "string",
+                "description" : "Erros por campo ou parâmetro (só no 400)"
+              }
+            },
+            "description" : "Erros por campo ou parâmetro (só no 400)"
+          },
+          "instance" : {
+            "type" : "string",
+            "example" : "/api/v1/estacoes/A701/observacoes"
+          },
+          "regra" : {
+            "type" : "string",
+            "description" : "Código estável da regra violada (só no 422)",
+            "example" : "OBSERVACAO_FALTANTE"
+          },
+          "status" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 422
+          },
+          "title" : {
+            "type" : "string",
+            "example" : "Regra de negócio violada"
+          },
+          "type" : {
+            "type" : "string",
+            "example" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+          }
+        }
+      },
+      "Regiao" : {
+        "type" : "object",
+        "description" : "Uma região climática e a sua estação de referência",
+        "properties" : {
+          "codigo" : {
+            "type" : "string",
+            "example" : "SP-MIRANTE"
+          },
+          "estacao" : {
+            "$ref" : "#/components/schemas/Estacao"
+          },
+          "nome" : {
+            "type" : "string",
+            "example" : "Zona Norte de São Paulo (Mirante de Santana)"
+          }
+        }
+      }
+    }
+  }
+}
