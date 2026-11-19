@@ -1,0 +1,88 @@
+{
+  "fonte": "OpenStreetMap, © colaboradores do OpenStreetMap, licença ODbL (https://www.openstreetmap.org/copyright)",
+  "consulta": "Overpass API, raio de 3,5 km da estação A701 (-23.4964, -46.6200): amenity library/community_centre/clinic e shop=mall",
+  "dadosDoOsmEm": "2026-11-19T00:02:41Z",
+  "pontos": [
+    {
+      "osm": "node/11617810626",
+      "tipo": "ESPACO_COMUNITARIO",
+      "nome": "SESC Casa Verde",
+      "lat": -23.500957,
+      "lon": -46.646133,
+      "opening_hours": "Tu-Su 10:00-18:00",
+      "wheelchair": "yes"
+    },
+    {
+      "osm": "node/4312079136",
+      "tipo": "BIBLIOTECA",
+      "nome": "Biblioteca Municipal Nuto Sant'anna",
+      "lat": -23.498444,
+      "lon": -46.619591,
+      "opening_hours": "Mo-Fr 09:00-18:00; Sa 09:00-16:00",
+      "wheelchair": null
+    },
+    {
+      "osm": "way/1135484967",
+      "tipo": "SHOPPING",
+      "nome": "Trimais Place",
+      "lat": -23.47864,
+      "lon": -46.609935,
+      "opening_hours": "Mo-Sa 10:00-22:00; Su,PH 14:00-20:00",
+      "wheelchair": null
+    },
+    {
+      "osm": "way/1468509142",
+      "tipo": "BIBLIOTECA",
+      "nome": "Biblioteca Sylvia Orthof",
+      "lat": -23.481622,
+      "lon": -46.604223,
+      "opening_hours": "Mo-Fr 09:00-17:00; Sa 09:00-16:00; Su 09:00-13:00",
+      "wheelchair": null
+    },
+    {
+      "osm": "way/226745315",
+      "tipo": "BIBLIOTECA",
+      "nome": "Biblioteca de São Paulo",
+      "lat": -23.507432,
+      "lon": -46.623499,
+      "opening_hours": "PH,Tu-Su 09:30-18:30; Feb 17 off",
+      "wheelchair": null
+    },
+    {
+      "osm": "way/291412510",
+      "tipo": "BIBLIOTECA",
+      "nome": "Biblioteca Pedro Nava",
+      "lat": -23.482549,
+      "lon": -46.63249,
+      "opening_hours": "Mo-Fr 09:00-18:00;Sa 09:00-16:00",
+      "wheelchair": null
+    },
+    {
+      "osm": "way/719105499",
+      "tipo": "SHOPPING",
+      "nome": "Santana Shopping",
+      "lat": -23.50118,
+      "lon": -46.625601,
+      "opening_hours": "Mo-Sa 10:00-20:00",
+      "wheelchair": null
+    },
+    {
+      "osm": "way/917937965",
+      "tipo": "UBS",
+      "nome": "UBS Joaquim Antônio Eirado",
+      "lat": -23.503493,
+      "lon": -46.631616,
+      "opening_hours": "Mo-Sa 07:00-19:00",
+      "wheelchair": null
+    },
+    {
+      "osm": "way/930792292",
+      "tipo": "UBS",
+      "nome": "UBS - Luiz Paulo Gnecco",
+      "lat": -23.500237,
+      "lon": -46.590496,
+      "opening_hours": "Mo-Sa 07:00-19:00",
+      "wheelchair": null
+    }
+  ]
+}
