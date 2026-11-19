@@ -199,6 +199,7 @@ jobs:
     steps:
       - name: secrets do EAS presentes?
         id: eas
+        working-directory: . # roda antes do checkout, quando mobile/ ainda não existe
         run: |
           if [ -n "$EXPO_TOKEN" ] && [ -n "$EAS_PROJECT_ID" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "sem EXPO_TOKEN/EAS_PROJECT_ID: build pulado"; fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
