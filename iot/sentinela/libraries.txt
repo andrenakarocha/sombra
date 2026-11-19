@@ -1,0 +1,6 @@
+# Bibliotecas do projeto no Wokwi (o editor instala estas)
+DHT sensor library for ESPx
+PubSubClient
+ArduinoJson
+Adafruit SSD1306
+Adafruit GFX Library

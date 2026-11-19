@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "author": "Sombra · GS 2026.2 FIAP",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht1", "top": -96, "left": -134.4, "attrs": { "temperature": "28", "humidity": "55" } },
+    { "type": "board-ssd1306", "id": "oled1", "top": -102.36, "left": 115.43, "attrs": { "i2cAddress": "0x3c" } },
+    { "type": "wokwi-rgb-led", "id": "rgb1", "top": 147.2, "left": 216, "attrs": { "common": "cathode" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 91.2, "left": 172.8, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": 91.2, "left": 192, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r3", "top": 91.2, "left": 211.2, "rotate": 90, "attrs": { "value": "220" } },
+    { "type": "wokwi-buzzer", "id": "bz1", "top": 175.2, "left": -134.4, "attrs": { "volume": "0.2" } },
+    { "type": "wokwi-pushbutton", "id": "verde", "top": 268.8, "left": 28.8, "attrs": { "color": "green", "key": "v" } },
+    { "type": "wokwi-pushbutton", "id": "vermelho", "top": 268.8, "left": 134.4, "attrs": { "color": "red", "key": "a" } }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "esp:3V3", "dht1:VCC", "red", [] ],
+    [ "esp:GND.1", "dht1:GND", "black", [] ],
+    [ "esp:D15", "dht1:SDA", "green", [] ],
+    [ "esp:3V3", "oled1:VCC", "red", [] ],
+    [ "esp:GND.2", "oled1:GND", "black", [] ],
+    [ "esp:D21", "oled1:SDA", "blue", [] ],
+    [ "esp:D22", "oled1:SCL", "purple", [] ],
+    [ "esp:D25", "r1:1", "red", [] ],
+    [ "r1:2", "rgb1:R", "red", [] ],
+    [ "esp:D26", "r2:1", "green", [] ],
+    [ "r2:2", "rgb1:G", "green", [] ],
+    [ "esp:D27", "r3:1", "blue", [] ],
+    [ "r3:2", "rgb1:B", "blue", [] ],
+    [ "rgb1:COM", "esp:GND.1", "black", [] ],
+    [ "esp:D4", "bz1:2", "orange", [] ],
+    [ "bz1:1", "esp:GND.2", "black", [] ],
+    [ "esp:D18", "verde:1.l", "green", [] ],
+    [ "verde:2.l", "esp:GND.1", "black", [] ],
+    [ "esp:D19", "vermelho:1.l", "red", [] ],
+    [ "vermelho:2.l", "esp:GND.2", "black", [] ]
+  ],
+  "dependencies": {}
+}
