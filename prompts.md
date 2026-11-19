@@ -103,4 +103,26 @@ integrante sabe explicar o que entregou.
 6. *"Exporte os modelos para ONNX com o contrato das features e amostras de paridade, inclusive as janelas brutas para o teste
    em Java, e confira no replay de novembro de 2023 o que muda para o preventivo do Seu Joaquim."*
 
+## Painel do operador
+
+1. *"Monte o painel em Vite, React 19, Tailwind 4 e TanStack Router e Query, com os tokens do `design/` como fonte única
+   das cores, e cada resposta do Core conferida por um schema zod: o que vier fora do contrato vira um erro amigável com
+   o código curto da correlação, nunca uma tela quebrada."*
+2. *"Uma conexão só com o hub do SignalR, que invalida as consultas certas a cada evento, e as cinco páginas ao vivo:
+   visão geral, alertas com a linha do tempo, casas sem dado pessoal na tela, saúde da infraestrutura e o dashboard de
+   Risco Cidadão com o farol e um gráfico pequeno por sink."*
+3. *"Escreva o roteiro da demo em Playwright contra o Core de verdade, respeitando o limite de login, e gere os prints em
+   três larguras. Se o Core não emitir um evento que o painel espera, corrija o Core e prove com teste."*
+
+## Infraestrutura Linux (Operating Systems)
+
+1. *"Provisione uma VM Ubuntu 24.04 vazia só com Bash, em etapas idempotentes e numeradas: hostname, IP estático pelo
+   netplan, uma zona DNS própria no dnsmasq, usuário de serviço sem shell e sudoers mínimo. Uma segunda execução não pode
+   mudar nada, e cada etapa registra em JSON o que fez, quando, quem e o resultado."*
+2. *"Instale o banco com um papel por serviço e `pg_hba` fechado, segredos gerados na VM e nunca no log, os artefatos
+   conferidos pelo SHA256SUMS e os serviços como units systemd endurecidas atrás do nginx."*
+3. *"Escreva o monitor de CPU, memória, disco e serviços como serviço `Type=notify` com watchdog, alertando no log, no
+   journal e no painel do Core, e sete scripts de falha que só saem com 0 se a recuperação ou o registro aconteceu."*
+4. *"Prove a reprodutibilidade: destrua a VM, crie de novo, provisione uma segunda vez e registre os logs das duas."*
+
 <!-- Cada parte acrescenta aqui os seus prompts principais quando fecha (PLANO §0, regra 16). -->
