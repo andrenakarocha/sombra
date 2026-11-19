@@ -814,9 +814,14 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   apareceu sem recarregar; o feed mostrou as leituras, o "estou bem" e a resolução, com o apelido da casa. Casas sem dado
   pessoal: o Core nem entrega moradores ao papel Operador. 8 testes no Vitest, um deles com o evento do hub mudando os
   KPIs; conferido em 1440 e 390 px).
-- [ ] **F7.3** 🤖 Risco Cidadão: farol global e por categoria, feed com as três traduções, série por sink, evidência
+- [x] **F7.3** 🤖 Risco Cidadão: farol global e por categoria, feed com as três traduções, série por sink, evidência
   técnica. Fecha o pilar "Dashboard" do Cyber.
-  🔎 rodando a auditoria (F2.8), o farol muda ao vivo.
+  🔎 rodando a auditoria (F2.8), o farol muda ao vivo — 2026-11-18 (a auditoria da F2.8 roda num Core descartável, então
+  o 🔎 usou o cenário de controle de acesso contra o Core do compose: com a página aberta, 6 pedidos sem login aos dados
+  de saúde de uma moradora levaram o farol de 51 para 63 eventos sem recarregar. Para isso o Core passou a emitir o
+  `RiscoCidadaoAtualizado` do contrato do hub, que ninguém emitia (`fix(core)`, com teste ouvindo o hub). Série por sink
+  em small multiples num matiz só, com tabela (vermelho, âmbar e verde são do farol); o evento de integridade sem sink
+  ganhou rótulo próprio; resposta fora do contrato vira erro com código curto; conferido em 1440 e 390 px).
 - [ ] **F7.4** 🤖 Operação: saúde e versão dos serviços, alertas de infra recebidos em `/ops/alertas`.
   🔎 um `POST` manual em `/ops/alertas` aparece na tela.
 - [ ] **F7.5** 🤖 Vitest + Playwright E2E do roteiro com o simulador.

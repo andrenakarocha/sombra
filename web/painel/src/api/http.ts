@@ -54,5 +54,10 @@ export async function pedir<T>(caminho: string, schema: z.ZodType<T>, init: Requ
       corpo.correlationId ?? resposta.headers.get('X-Correlation-Id') ?? correlationId,
     );
   }
-  return schema.parse(await resposta.json());
+  const lido = schema.safeParse(await resposta.json());
+  if (!lido.success) {
+    console.error('resposta fora do contrato', caminho, lido.error.issues);
+    throw new ErroDaApi(resposta.status, 'O Core respondeu fora do contrato. Informe o código ao suporte.', correlationId);
+  }
+  return lido.data;
 }
