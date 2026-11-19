@@ -8,7 +8,8 @@ namespace Sombra.Privacidade.Traducao;
 
 /// <summary>
 /// A guarda na saída da IA (spec 07 §3): a tradução passa pelos mesmos detectores de PII, por uma lista de jargões
-/// proibidos para o cidadão e por limites de tamanho. Reprovou, o tradutor usa o template.
+/// proibidos para o cidadão, por limites de tamanho e pela ortografia do texto do cidadão e da gestão (palavra que exige
+/// acento escrita sem ele). Reprovou, o tradutor usa o template.
 /// </summary>
 public static partial class GuardaDaTraducao
 {
@@ -29,6 +30,16 @@ public static partial class GuardaDaTraducao
         "hmac", "lgpd", "api", "json", "stack", "sensivel", "mascaradordepii", "permitepii",
     ];
 
+    // Palavras que só existem com acento: escritas sem ele, a IA ignorou a ortografia que o prompt pede. Nenhuma é outra
+    // palavra válida sem o acento. Vale para o texto do cidadão e o da gestão, que são prosa; a sugestão técnica cita
+    // identificadores (a regra "saude", Privacidade__Aplicacao) e fica de fora.
+    private static readonly string[] _semAcento =
+    [
+        "nao", "voce", "voces", "estao", "entao", "sao", "ninguem", "tambem", "ate", "possivel", "saude", "seguranca",
+        "informacao", "informacoes", "protecao", "autorizacao", "identificacao", "familia", "codigo", "servico", "conexao",
+        "numero", "endereco", "usuario", "horario", "relogio", "exposicao", "violacao", "correcao", "validacao",
+    ];
+
     /// <summary>Confere uma tradução da IA.</summary>
     /// <param name="traducao">A tradução.</param>
     /// <param name="motivo">Por que reprovou, sem o texto (vai para o log).</param>
@@ -43,10 +54,13 @@ public static partial class GuardaDaTraducao
             var (c, g, t) when !_guarda.Verificar(c, null).Limpo || !_guarda.Verificar(g, null).Limpo || !_guarda.Verificar(t, null).Limpo => "dado_pessoal",
             var (c, _, _) when FimDeFrase().Count(c.Trim()) > 2 => "cidadao_com_mais_de_duas_frases",
             var (c, _, _) when Palavra().Matches(c.ToLowerInvariant()).Any(p => _jargoes.Contains(p.Value)) => "jargao_para_o_cidadao",
+            var (c, g, _) when SemAcento(c) || SemAcento(g) => "sem_acento",
             _ => string.Empty,
         };
         return motivo.Length == 0;
     }
+
+    private static bool SemAcento(string texto) => Palavra().Matches(texto.ToLowerInvariant()).Any(p => _semAcento.Contains(p.Value));
 
     // Uma frase termina em pontuação seguida de espaço ou do fim: "art. 11" no meio não conta, nem os pontos de um número.
     [GeneratedRegex(@"[.!?]+(?=\s|$)", RegexOptions.CultureInvariant)]
