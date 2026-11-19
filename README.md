@@ -26,13 +26,13 @@ O andamento de cada parte está no [painel de status do plano](docs/PLANO.md#12-
 | Core API: domicílios, alertas, check-ins, escalonamento | [`services/core-api/`](services/core-api/) | C# Software Development | ✅ |
 | Privacidade: PII, taint analysis, IA, farol de Risco Cidadão | [`services/core-api/`](services/core-api/) + [`security/`](security/) | Cybersecurity | ✅ |
 | Clima Service: risco de calor, previsão de 24 h, pontos de resfriamento | [`services/clima-service/`](services/clima-service/) | SOA e Web Services | ✅ |
-| Modelo de previsão de calor perigoso | [`ml/`](ml/) | IA & Machine Learning | 🚧 |
-| Sentinela: ESP32 no Wokwi | [`iot/sentinela/`](iot/sentinela/) | Physical Computing | 🚧 |
-| App da família e Modo Idoso | [`mobile/`](mobile/) | Mobile Development | 🚧 |
+| Modelo de previsão de calor perigoso | [`ml/`](ml/) | IA & Machine Learning | ✅ |
+| Sentinela: ESP32 no Wokwi | [`iot/sentinela/`](iot/sentinela/) | Physical Computing | ✅ |
+| App da família e Modo Idoso | [`mobile/`](mobile/) | Mobile Development | ✅ |
 | Painel do operador e Dashboard de Risco Cidadão | [`web/painel/`](web/painel/) | (Cyber, OS e pitch) | ✅ |
 | Infraestrutura Linux provisionada por scripts | [`infra/`](infra/) | Operating Systems | ✅ |
-| Features e Test Cases no Azure Boards | [`qa/`](qa/) | Testing, Compliance & QA | 🚧 |
-| Vídeo pitch | [`pitch/`](pitch/) | (prêmio melhor GS) | 🚧 |
+| Features e Test Cases no Azure Boards | [`qa/`](qa/) | Testing, Compliance & QA | ✅ |
+| Vídeo pitch | [`pitch/`](pitch/) · https://youtu.be/g6WIFJjfmk8 | (prêmio melhor GS) | ✅ |
 
 ## Arquitetura
 
