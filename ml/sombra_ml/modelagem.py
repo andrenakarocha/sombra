@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+import xgboost as xgb
 from sklearn.base import clone
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
@@ -13,7 +14,7 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-from sklearn.model_selection import TimeSeriesSplit
+from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -23,6 +24,10 @@ from sombra_ml.features import HORIZONTE_HORAS, NOMES_DAS_FEATURES
 INICIO_TESTE = pd.Timestamp("2022-01-01", tz=FUSO_LOCAL)
 AMOSTRAS_POR_HORIZONTE = 4  # uma amostra a cada 6 h: 4 amostras cobrem as 24 h do alvo
 SEMENTE = 42
+
+# Os 3 hiperparâmetros da busca. A regularização abaixo é fixa e foi comparada antes, também só na validação do treino.
+GRADE = {"max_depth": [3, 5, 7], "learning_rate": [0.03, 0.1], "n_estimators": [200, 500]}
+REGULARIZACAO = {"subsample": 0.8, "colsample_bytree": 0.6, "min_child_weight": 10}
 
 
 def dividir_temporal(amostras: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -77,3 +82,38 @@ def metricas(y: np.ndarray, pontuacao: np.ndarray, limiar: float, probabilidade:
         "pr_auc": float(average_precision_score(y, pontuacao)),
         "brier": float(brier_score_loss(y, pontuacao)) if probabilidade else float("nan"),
     }
+
+
+def novo_xgboost(**parametros) -> xgb.XGBClassifier:
+    """Sem peso de classe: a saída precisa continuar sendo uma probabilidade; o desbalanceamento vai para o limiar."""
+    base = {**REGULARIZACAO, "tree_method": "hist", "eval_metric": "logloss", "random_state": SEMENTE, "n_jobs": -1}
+    return xgb.XGBClassifier(**{**base, **parametros})
+
+
+def buscar_hiperparametros(X: np.ndarray, y: np.ndarray, grade: dict | None = None) -> GridSearchCV:
+    """GridSearchCV só no treino, com a validação temporal, otimizando a área sob a curva precisão-recall."""
+    busca = GridSearchCV(
+        novo_xgboost(),
+        grade or GRADE,
+        scoring="average_precision",
+        cv=validacao_temporal(),
+        return_train_score=True,
+    )
+    return busca.fit(X, y)
+
+
+def tabela_da_busca(busca: GridSearchCV) -> pd.DataFrame:
+    """Uma linha por combinação, da melhor para a pior, com o desvio entre as dobras e a distância treino-validação."""
+    r = pd.DataFrame(busca.cv_results_)
+    tabela = pd.DataFrame(
+        {
+            "max_depth": r["param_max_depth"].astype(int),
+            "learning_rate": r["param_learning_rate"].astype(float),
+            "n_estimators": r["param_n_estimators"].astype(int),
+            "pr_auc_validacao": r["mean_test_score"],
+            "desvio_validacao": r["std_test_score"],
+            "pr_auc_treino": r["mean_train_score"],
+        }
+    )
+    tabela["diferenca"] = tabela["pr_auc_treino"] - tabela["pr_auc_validacao"]
+    return tabela.sort_values("pr_auc_validacao", ascending=False).reset_index(drop=True)
