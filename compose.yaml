@@ -1,5 +1,4 @@
 # Sombra · ambiente local (make up). Tudo só em 127.0.0.1.
-# O painel ainda é placeholder: ele é trocado pelo serviço real na F7.1.
 name: sombra
 
 services:
@@ -102,16 +101,18 @@ services:
       retries: 20
 
   painel:
-    # placeholder até a F7.1
-    image: nginx:1-alpine
-    environment:
-      SERVICO: painel
-      PORTA: "5173"
-      FASE: F7.1
-    volumes:
-      - ./infra/compose/placeholder:/etc/nginx/templates:ro
+    # o painel web: o nginx serve o build e repassa /api e /hubs ao Core (e só as sondas do Clima)
+    build:
+      context: web/painel
+      additional_contexts:
+        design: ./design
+      args:
+        COMMIT: ${SOMBRA_COMMIT:-dev}
+    image: sombra-painel:local
     ports:
       - "127.0.0.1:5173:5173"
+    depends_on:
+      core: { condition: service_healthy }
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:5173/healthz >/dev/null"]
       interval: 3s

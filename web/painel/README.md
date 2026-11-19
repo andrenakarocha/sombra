@@ -12,3 +12,24 @@ npm run dev        # http://localhost:5173, com o Core do make up em :5080 (o Vi
 npm run build      # tipos + build em dist/
 npm test           # Vitest
 ```
+
+## E2E e evidências
+
+Com o ambiente no ar (`make up`, que já sobe o painel em `http://localhost:5173` pelo nginx):
+
+```bash
+make e2e-painel          # Playwright: login, recusa da família, roteiro com o simulador, casas sem PII,
+                         # Risco Cidadão e operação mudando ao vivo
+make evidencias-painel   # regrava docs/evidencias/ com as cinco páginas em 1440, 768 e 390 px
+```
+
+O E2E faz um login do operador pela API e reaproveita o token: o Core limita o login a 5 por minuto (proteção contra
+força bruta). As credenciais da demo vêm do `.env` da raiz, nunca do código.
+
+| Página | Evidência |
+|---|---|
+| Visão geral (KPIs, indicador de impacto, feed ao vivo) | [1440](docs/evidencias/visao-geral-1440.png) · [768](docs/evidencias/visao-geral-768.png) · [390](docs/evidencias/visao-geral-390.png) |
+| Alertas (filtros e linha do tempo dos degraus) | [1440](docs/evidencias/alertas-1440.png) · [768](docs/evidencias/alertas-768.png) · [390](docs/evidencias/alertas-390.png) |
+| Casas (sem dado pessoal) | [1440](docs/evidencias/casas-1440.png) · [768](docs/evidencias/casas-768.png) · [390](docs/evidencias/casas-390.png) |
+| Risco Cidadão (Dashboard Executivo do Cyber) | [1440](docs/evidencias/risco-cidadao-1440.png) · [768](docs/evidencias/risco-cidadao-768.png) · [390](docs/evidencias/risco-cidadao-390.png) |
+| Operação (saúde, versões, alertas da VM) | [1440](docs/evidencias/operacao-1440.png) · [768](docs/evidencias/operacao-768.png) · [390](docs/evidencias/operacao-390.png) |

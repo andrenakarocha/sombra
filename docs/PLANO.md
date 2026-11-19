@@ -827,8 +827,12 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   monitor voltou 202 e o alerta crítico de CPU apareceu na hora, pelo hub; Core com banco e broker, Clima com banco e o
   previsor, e as versões, conferidos a cada 15 s; do Clima o navegador só alcança as sondas `/clima/actuator/*`, e o JWT
   do operador não vai para ele).
-- [ ] **F7.5** 🤖 Vitest + Playwright E2E do roteiro com o simulador.
-  🔎 E2E verde.
+- [x] **F7.5** 🤖 Vitest + Playwright E2E do roteiro com o simulador.
+  🔎 E2E verde — 2026-11-19 (`make e2e-painel`: 6 testes contra o `make up`, com o painel já servido pelo nginx do compose
+  (proxy de `/api` e `/hubs` ao Core; do Clima só as sondas): login, a família recusada, o roteiro com o simulador, casas
+  sem PII, o farol e a operação ao vivo. O E2E respeita o limite de 5 logins por minuto do Core e a carência de alerta da
+  D13. 12 testes no Vitest; os 15 prints das cinco páginas em 1440, 768 e 390 px saem de `make evidencias-painel` e
+  foram revisados; na revisão, o preventivo deixou de aparecer como "aguardando o estou bem" (ele não pede resposta, R5)).
 
 **✅ Aceite F7:** as cinco páginas funcionando ao vivo · E2E verde · screenshots revisados (§0.13).
 
@@ -1044,7 +1048,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F4 ML | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado (Matheus): os 6 critérios com evidência no README da pasta; notebook executado; 2 modelos ONNX com paridade 20/20; 75 testes. No teste, 74 de 75 dias de calor avisados, com 7,8 dias de alarme falso por mês; o XGBoost empata com a persistência na PR-AUC. A F9.1 precisa da ressalva do pico (F4.6) |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
-| F7 Painel | 🟨 em andamento | 2026-11-18 | | |
+| F7 Painel | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: as cinco páginas ao vivo pelo hub (o Core passou a emitir o `RiscoCidadaoAtualizado`), E2E verde (6) e 12 testes no Vitest, prints revisados em três larguras; o painel sobe no compose pelo nginx |
 | F8 Infra (OS) | ⬜ não iniciada | | | |
 | F9 Integração | ⬜ não iniciada | | | |
 | F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; faltam a F10.1 (Azure, 🔑), a F10.4 e a F10.5 |

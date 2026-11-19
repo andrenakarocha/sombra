@@ -27,6 +27,15 @@ export const ESTADO_DO_ALERTA: Record<string, string> = {
   EXPIRADO: 'Expirado',
 };
 
+/**
+ * O estado para quem lê o painel. O Core fala o estado do app (D17), e lá o preventivo aparece como AGUARDANDO_CHECKIN;
+ * mas o preventivo não pede resposta (R5), então aqui ele é o aviso da véspera.
+ */
+export function rotuloDoEstado(tipo: string, estado: string): string {
+  if (tipo === 'PREVENTIVO' && estado === 'AGUARDANDO_CHECKIN') return 'Aviso da véspera (não pede resposta)';
+  return ESTADO_DO_ALERTA[estado] ?? estado;
+}
+
 export const DEGRAU: Record<number, string> = {
   0: 'Sentinela',
   1: 'Família',
