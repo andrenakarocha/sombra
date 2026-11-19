@@ -5,7 +5,8 @@ public class RecursoJaExiste extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
+    /** @param recurso o nome do recurso em minúsculas (ex.: "região climática") */
     public RecursoJaExiste(String recurso, Object identificador) {
-        super(recurso + " '" + identificador + "' já existe.");
+        super("Já existe " + recurso + " '" + identificador + "'.");
     }
 }

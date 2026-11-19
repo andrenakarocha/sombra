@@ -58,7 +58,7 @@ public class ReplayController {
         static final ReplaySaida DESLIGADO = new ReplaySaida(false, null, null, null, null, null);
     }
 
-    @Operation(summary = "Liga o replay de uma onda de calor real do INMET (modo de demonstração)",
+    @Operation(operationId = "iniciarReplay", summary = "Liga o replay de uma onda de calor real do INMET (modo de demonstração)",
             description = "Toca as horas reais gravadas no seed (A701, nov/2023) num relógio acelerado. Enquanto durar, "
                     + "o risco da região sai com fonteDados = replay-inmet. Um replay ativo é trocado pelo novo.")
     @ApiResponse(responseCode = "200", description = "Replay ligado")
@@ -69,7 +69,7 @@ public class ReplayController {
         return ReplaySaida.de(replay.iniciar(pedido.regiao(), pedido.inicio().toInstant(), velocidade));
     }
 
-    @Operation(summary = "Mostra o estado do replay", description = "Com o replay desligado, responde ativo = false.")
+    @Operation(operationId = "estadoDoReplay", summary = "Mostra o estado do replay", description = "Com o replay desligado, responde ativo = false.")
     @ApiResponse(responseCode = "200", description = "O estado do replay")
     @ErrosDocumentados({400})
     @GetMapping
@@ -77,7 +77,7 @@ public class ReplayController {
         return replay.estado().map(ReplaySaida::de).orElse(ReplaySaida.DESLIGADO);
     }
 
-    @Operation(summary = "Desliga o replay", description = "Idempotente: desligar sem replay ativo também responde 204.")
+    @Operation(operationId = "encerrarReplay", summary = "Desliga o replay", description = "Idempotente: desligar sem replay ativo também responde 204.")
     @ApiResponse(responseCode = "204", description = "Replay desligado")
     @ErrosDocumentados({400})
     @DeleteMapping

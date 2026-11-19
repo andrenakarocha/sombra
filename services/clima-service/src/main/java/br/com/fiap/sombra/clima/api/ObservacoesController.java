@@ -35,7 +35,7 @@ public class ObservacoesController {
         this.registro = registro;
     }
 
-    @Operation(summary = "Registra a observação de uma hora numa estação",
+    @Operation(operationId = "registrarObservacao", summary = "Registra a observação de uma hora numa estação",
             description = "Calcula o índice de calor e o nível. Recusa o -9999 do INMET (OBSERVACAO_FALTANTE), umidade fora de 0–100 % e a mesma hora duas vezes.")
     @ApiResponse(responseCode = "201", description = "Observação registrada")
     @ErrosDocumentados({400, 404, 409, 422})
@@ -48,7 +48,7 @@ public class ObservacoesController {
                 FonteDaObservacao.INMET)));
     }
 
-    @Operation(summary = "Lista as observações de uma estação num período, da mais recente para a mais antiga",
+    @Operation(operationId = "listarObservacoes", summary = "Lista as observações de uma estação num período, da mais recente para a mais antiga",
             description = "Período [de, ate) de no máximo 31 dias (regra PERIODO_INVALIDO), paginado.")
     @ApiResponse(responseCode = "200", description = "A página de observações")
     @ErrosDocumentados({400, 404, 422})

@@ -33,7 +33,7 @@ public class CadastroDePontos {
 
     @Transactional(readOnly = true)
     public PontoDeResfriamento obter(UUID id) {
-        return pontos.findById(id).orElseThrow(() -> new RecursoNaoEncontrado("Ponto de resfriamento", id));
+        return pontos.findById(id).orElseThrow(() -> new RecursoNaoEncontrado("ponto de resfriamento", id));
     }
 
     @Transactional
