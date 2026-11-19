@@ -1,0 +1,3 @@
+canário ok: 8 vazamentos achados, nenhum falso positivo
+código do Core: 213 arquivos, 0 achados, 0 erros de parse
+SARIF para o Code Scanning: 4 achados com nosemgrep justificado ficam de fora

@@ -1,0 +1,104 @@
+{
+  "ia": [
+    {
+      "momento": "2026-11-19T05:36:17.139721+00:00",
+      "tipo": "ACESSO_NEGADO",
+      "categoria": "IDENTIFICACAO",
+      "sink": "RESPOSTA_HTTP",
+      "regra": "acesso-negado",
+      "bloqueado": true,
+      "traducao": {
+        "cidadao": "Alguém tentou ver as informações da sua casa sem permissão, mas o Sombra bloqueou o acesso. Está tudo seguro e você não precisa fazer nada.",
+        "gestao": "Tentativa de acesso não autorizado a dados pessoais, gerando risco à segurança da informação conforme o art. 46 da LGPD.",
+        "tecnico": "Conferir se o cliente mandou o token; se for ataque, seguir o correlationId na trilha.",
+        "fonte": "IA"
+      }
+    },
+    {
+      "momento": "2026-11-19T05:36:17.139592+00:00",
+      "tipo": "ACESSO_NEGADO",
+      "categoria": "SAUDE",
+      "sink": "RESPOSTA_HTTP",
+      "regra": "acesso-negado",
+      "bloqueado": true,
+      "traducao": {
+        "cidadao": "Tentaram acessar seus dados de saúde sem permissão, mas nossa segurança barrou a tentativa na hora. Você não precisa fazer nada.",
+        "gestao": "Impacto na confidencialidade dos dados de saúde com risco de infração ao art. 11 da LGPD.",
+        "tecnico": "Conferir se o cliente mandou o token na api/v1/domicilios/{id:guid}/moradores e seguir o correlationId na trilha se for ataque.",
+        "fonte": "IA"
+      }
+    },
+    {
+      "momento": "2026-11-19T05:12:35.052697+00:00",
+      "tipo": "MQTT_REPLAY",
+      "categoria": null,
+      "sink": null,
+      "regra": null,
+      "bloqueado": true,
+      "traducao": {
+        "cidadao": "Detectamos uma mensagem repetida vinda do aparelho que mede o calor da sua casa e a bloqueamos por segurança. Você não precisa fazer nada.",
+        "gestao": "Tentativa de reutilização de mensagem do sensor de calor bloqueada com sucesso, mitigando risco de ataque de repetição conforme art. 46 da LGPD.",
+        "tecnico": "Conferir o segredo HMAC e o relógio do dispositivo na origem snt-7f3a9c; não use Sensivel<T> nem [PermitePii] nesse caso.",
+        "fonte": "IA"
+      }
+    }
+  ],
+  "erros": [
+    {
+      "momento": "2026-11-19T05:12:34.509262+00:00",
+      "tipo": "MQTT_ASSINATURA_INVALIDA",
+      "categoria": null,
+      "sink": null,
+      "regra": null,
+      "bloqueado": true,
+      "traducao": {
+        "cidadao": "Identificamos um acesso incorreto no seu dispositivo de segurança. Não é preciso fazer nada, nossa equipe já está cuidando disso para garantir sua proteção.",
+        "gestao": "Impacto na integridade do sistema com risco à segurança da informação, conforme o art. 46 da LGPD.",
+        "tecnico": "A tentativa de assinatura inválida ocorreu no identificador snt-7f3a9c. Recomenda-se validar a autenticação do dispositivo usando o padrão Sensivel<T> e restringir o uso de [PermitePii].",
+        "fonte": "IA"
+      }
+    },
+    {
+      "momento": "2026-11-19T04:12:19.028245+00:00",
+      "tipo": "ACESSO_NEGADO",
+      "categoria": "IDENTIFICACAO",
+      "sink": "RESPOSTA_HTTP",
+      "regra": "acesso-negado",
+      "bloqueado": true,
+      "traducao": {
+        "cidadao": "Tentaram acessar seus dados de identificacao sem autorizacao, mas o sistema bloqueou a tentativa. Fique tranquilo, suas informacoes estao seguras e ninguem precisa fazer nada.",
+        "gestao": "Tentativa de acesso nao autorizado a dados de identificacao bloqueada com sucesso, apresentando baixo risco de vazamento sob o art. 46 da LGPD.",
+        "tecnico": "O dado tentou sair por RespostaHttp. Sugere-se revisar o uso de [PermitePii] apenas para o papel necessario e garantir que o payload contenha apenas metadados.",
+        "fonte": "IA"
+      }
+    },
+    {
+      "momento": "2026-11-19T04:12:19.028237+00:00",
+      "tipo": "ACESSO_NEGADO",
+      "categoria": "SAUDE",
+      "sink": "RESPOSTA_HTTP",
+      "regra": "acesso-negado",
+      "bloqueado": true,
+      "traducao": {
+        "cidadao": "Tentamos enviar uma informação sobre a sua saúde, mas o sistema de segurança impediu para proteger sua privacidade. Não é preciso fazer nada.",
+        "gestao": "Impacto: tentativa de exposição de dados de saúde bloqueada. Risco mitigado conforme a LGPD, art. 11.",
+        "tecnico": "O dado de saúde tentou sair pela RespostaHttp. Sugestão: usar Sensivel<T> e garantir que o payload contenha apenas metadados.",
+        "fonte": "IA"
+      }
+    }
+  ],
+  "template": {
+    "momento": "2026-11-19T05:23:24.179973+00:00",
+    "tipo": "ACESSO_NEGADO",
+    "categoria": "IDENTIFICACAO",
+    "sink": "RESPOSTA_HTTP",
+    "regra": "acesso-negado",
+    "bloqueado": true,
+    "traducao": {
+      "cidadao": "Alguém tentou ver um documento da casa sem permissão, e o Sombra bloqueou.",
+      "gestao": "Tentativa de exposição de um documento bloqueada (LGPD art. 46); sem incidente a comunicar.",
+      "tecnico": "Acesso sem credencial a api/v1/domicilios/{id:guid}/moradores: confira se o cliente mandou o token; se for ataque, siga o correlationId na trilha.",
+      "fonte": "template"
+    }
+  }
+}
