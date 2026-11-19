@@ -75,7 +75,8 @@ public sealed class TraducaoDeRiscoTests
         }
     }
 
-    /// <summary>A guarda barra PII, jargão, mais de duas frases, texto longo e campo vazio; aprova uma tradução boa.</summary>
+    /// <summary>A guarda barra PII, jargão, mais de duas frases, texto longo, campo vazio e palavra sem acento (as duas
+    /// últimas linhas são traduções reais do Gemini que passaram antes desta regra); aprova uma tradução boa.</summary>
     /// <param name="cidadao">A mensagem do cidadão.</param>
     /// <param name="motivo">O motivo esperado (vazio quando aprova).</param>
     [TestMethod]
@@ -85,6 +86,8 @@ public sealed class TraducaoDeRiscoTests
     [DataRow("Um token da casa foi bloqueado no log.", "jargao_para_o_cidadao")]
     [DataRow("O Sombra bloqueou. Está tudo bem. Não precisa fazer nada.", "cidadao_com_mais_de_duas_frases")]
     [DataRow(" ", "campo_vazio")]
+    [DataRow("Tentaram acessar seus dados de identificacao sem autorizacao, mas o sistema bloqueou a tentativa.", "sem_acento")]
+    [DataRow("Fique tranquilo, suas informacoes estao seguras e ninguem precisa fazer nada.", "sem_acento")]
     public void GuardaDaIa(string cidadao, string motivo)
     {
         bool aprovada = GuardaDaTraducao.Aprovar(new TraducaoDeRisco(cidadao, "Bloqueado (LGPD art. 11).", "Use Sensivel<T> no log.", TraducaoDeRisco.FonteIa), out string obtido);
@@ -93,7 +96,8 @@ public sealed class TraducaoDeRiscoTests
         Assert.AreEqual(motivo.Length == 0, aprovada);
     }
 
-    /// <summary>A guarda também barra a linha da gestão longa demais e PII na sugestão técnica.</summary>
+    /// <summary>A guarda também barra a linha da gestão longa demais ou sem acento e PII na sugestão técnica, e não cobra
+    /// acento dos identificadores que a sugestão técnica cita (o id da regra, uma chave de configuração).</summary>
     [TestMethod]
     public void GuardaOlhaAsTresAudiencias()
     {
@@ -101,6 +105,9 @@ public sealed class TraducaoDeRiscoTests
         Assert.AreEqual("longa_demais", longa);
         Assert.IsFalse(GuardaDaTraducao.Aprovar(new TraducaoDeRisco("Tudo certo.", "ok", $"O campo cpf={_cpf} vazou.", "IA"), out string pii));
         Assert.AreEqual("dado_pessoal", pii);
+        Assert.IsFalse(GuardaDaTraducao.Aprovar(new TraducaoDeRisco("Tudo certo.", "Risco a seguranca dos dados (LGPD art. 46).", "ok", "IA"), out string gestao));
+        Assert.AreEqual("sem_acento", gestao);
+        Assert.IsTrue(GuardaDaTraducao.Aprovar(new TraducaoDeRisco("Tudo certo.", "ok", "A regra saude disparou: defina Privacidade__Aplicacao=Ligada e use Sensivel<T>.", "IA"), out _));
     }
 
     /// <summary>A assinatura junta eventos iguais (sem contar as repetições) e separa os diferentes.</summary>
