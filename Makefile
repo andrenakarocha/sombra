@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela compilar-sentinela integrar-sentinela integrar-sentinela-wokwi demo-wokwi entrega-cyber checklist test-qa qa-azure
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela compilar-sentinela integrar-sentinela integrar-sentinela-wokwi demo-wokwi entrega-cyber checklist test-qa qa-azure qa-prints qa-pdf
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -54,6 +54,12 @@ test-qa: ## QA: confere a especificação (Features e Test Cases) e testa a sinc
 
 qa-azure: ## Sobe as Features e os Test Cases para o Azure Boards (AZURE_DEVOPS_ORG, AZURE_DEVOPS_PROJETO e AZURE_DEVOPS_PAT)
 	@uv run -q qa/ferramentas/sincronizar_azure.py
+
+qa-prints: ## Tira os prints de cada Feature e Test Case no Azure Boards (abre o Chrome; faça o login na primeira vez)
+	@node qa/entrega/capturar-prints.mjs
+
+qa-pdf: ## Monta o PDF da entrega de QA em qa/entrega/qa.pdf (PITCH_URL=… acrescenta o link do pitch)
+	@uv run -q qa/entrega/gerar.py
 
 checklist: ## Confere o que cada uma das 8 entregas exige: arquivos, integrantes e links (ONLINE=1 abre os links)
 	@python3 -I tools/checklist-entrega.py $(if $(ONLINE),--online)
