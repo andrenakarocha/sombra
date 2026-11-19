@@ -23,6 +23,7 @@ import base64
 import html
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.parse
@@ -119,7 +120,18 @@ def igual(campo: str, no_azure, nosso) -> bool:
         def conjunto(t) -> set[str]:
             return {x.strip().lower() for x in str(t or "").split(";") if x.strip()}
         return conjunto(no_azure) == conjunto(nosso)
+    if isinstance(nosso, str):
+        return html_normal(no_azure) == html_normal(nosso)
     return no_azure == nosso
+
+
+def html_normal(valor) -> str:
+    """O Azure reescreve o HTML que recebe (resolve `&#x27;`, codifica emoji, põe espaço antes de `</p>` e de `/>`, passa
+    `<P>` para `<p>`): compara sem isso."""
+    texto = html.unescape(html.unescape(str(valor or "")))  # os passos do Test Case vêm escapados duas vezes
+    texto = re.sub(r"<(/?)([A-Za-z]+)", lambda m: "<" + m[1] + m[2].lower(), texto)
+    texto = re.sub(r"\s+(?=</|/>)", "", texto)
+    return re.sub(r"\s+", " ", texto).strip()
 
 
 class Azure:
