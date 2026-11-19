@@ -1,0 +1,47 @@
+# Sombra · Core API (.NET 10, self-contained). Instalada por infra/steps/70-aplicacao.sh.
+[Unit]
+Description=Sombra · Core API (alertas, escalonamento e privacidade)
+Documentation=https://github.com/andrenakarocha/sombra/tree/main/infra
+After=network-online.target postgresql.service mosquitto.service sombra-clima.service
+Wants=network-online.target mosquitto.service
+Requires=postgresql.service
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=sombra
+Group=sombra-ops
+EnvironmentFile=/etc/sombra/core.env
+WorkingDirectory=/opt/sombra/atual/core
+ExecStart=/opt/sombra/atual/core/Sombra.Api
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+SyslogIdentifier=sombra-core
+UMask=0027
+
+# Endurecimento: só lê o sistema, só escreve nos próprios diretórios, sem privilégio nenhum.
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/var/lib/sombra /var/log/sombra
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

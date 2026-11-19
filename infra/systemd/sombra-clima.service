@@ -1,0 +1,47 @@
+# Sombra · Clima Service (Spring Boot, JRE 21). Instalada por infra/steps/70-aplicacao.sh.
+[Unit]
+Description=Sombra · Clima Service (risco de calor, previsão e pontos de resfriamento)
+Documentation=https://github.com/andrenakarocha/sombra/tree/main/infra
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+StartLimitIntervalSec=120
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=sombra
+Group=sombra-ops
+EnvironmentFile=/etc/sombra/clima.env
+WorkingDirectory=/var/lib/sombra
+ExecStart=/usr/bin/java -XX:MaxRAMPercentage=35 -XX:+ExitOnOutOfMemoryError -jar /opt/sombra/atual/clima/sombra-clima.jar
+SuccessExitStatus=143
+Restart=always
+RestartSec=3
+TimeoutStopSec=30
+SyslogIdentifier=sombra-clima
+UMask=0027
+
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/var/lib/sombra /var/log/sombra
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target
