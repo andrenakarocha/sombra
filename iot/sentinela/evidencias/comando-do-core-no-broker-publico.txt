@@ -1,0 +1,15 @@
+$ mosquitto_sub -h broker.hivemq.com -t 'sombra/v1/snt-7f3a9c/#' -v   (o broker público, durante o escalonamento de um alerta aberto)
+
+  o Core (log JSON):
+    2026-11-19T06:30:03.639Z  alerta.escalonado  escalonador:5ce590c1  Alerta 01a1f271-9d6d-7e98-a5fc-0628f9826b0e da casa 0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10 escalonado para o degrau 1
+    2026-11-19T06:30:04.785Z  comando.publicado  escalonador:5ce590c1  Comando FAMILIA_AVISADA para a Sentinela snt-7f3a9c (seq 1795069804)
+
+  o broker entregou:
+    2026-11-19T06:30:04+0000 sombra/v1/snt-7f3a9c/comando {"v":1,"ts":1795069804,"seq":1795069804,"tipo":"FAMILIA_AVISADA","mensagem":"Sua fam\u00EDlia foi avisada. Aperte o bot\u00E3o verde se voc\u00EA est\u00E1 bem.","sig":"5f8b1eb3aaa4d9373baf0325c7e840606fb7bf733b1caae0679cab22ec10e513"}
+
+  o código do firmware (testes/mensagens.cpp conferir), 6 min depois:
+    comando do Core:        assinatura confere · ts a 397 s do relógio (FORA da janela)
+    mensagem trocada:       assinatura NÃO confere · ts a 397 s do relógio (FORA da janela)
+
+  A assinatura do comando real confere, com os acentos; a mensagem trocada não. A janela de 5 min recusa o comando
+  atrasado, como deve: uma Sentinela não aceita ordem velha (anti-replay).
