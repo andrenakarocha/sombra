@@ -822,8 +822,11 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   `RiscoCidadaoAtualizado` do contrato do hub, que ninguém emitia (`fix(core)`, com teste ouvindo o hub). Série por sink
   em small multiples num matiz só, com tabela (vermelho, âmbar e verde são do farol); o evento de integridade sem sink
   ganhou rótulo próprio; resposta fora do contrato vira erro com código curto; conferido em 1440 e 390 px).
-- [ ] **F7.4** 🤖 Operação: saúde e versão dos serviços, alertas de infra recebidos em `/ops/alertas`.
-  🔎 um `POST` manual em `/ops/alertas` aparece na tela.
+- [x] **F7.4** 🤖 Operação: saúde e versão dos serviços, alertas de infra recebidos em `/ops/alertas`.
+  🔎 um `POST` manual em `/ops/alertas` aparece na tela — 2026-11-18 (com a página aberta, o `POST` com o token do
+  monitor voltou 202 e o alerta crítico de CPU apareceu na hora, pelo hub; Core com banco e broker, Clima com banco e o
+  previsor, e as versões, conferidos a cada 15 s; do Clima o navegador só alcança as sondas `/clima/actuator/*`, e o JWT
+  do operador não vai para ele).
 - [ ] **F7.5** 🤖 Vitest + Playwright E2E do roteiro com o simulador.
   🔎 E2E verde.
 

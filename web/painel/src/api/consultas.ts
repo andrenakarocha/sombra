@@ -1,7 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { CHAVES } from '@/app/consultas';
 import { pedir } from './http';
-import { AlertaSchema, DomicilioSchema, EventoDeSegurancaSchema, pagina, ResumoSchema, RiscoCidadaoSchema } from './schemas';
+import {
+  AlertaSchema,
+  DomicilioSchema,
+  EventoDeSegurancaSchema,
+  InfoDoClimaSchema,
+  pagina,
+  ProntidaoSchema,
+  ResumoSchema,
+  RiscoCidadaoSchema,
+  SaudeDoClimaSchema,
+  VersaoSchema,
+} from './schemas';
 
 export function useResumo() {
   return useQuery({ queryKey: CHAVES.resumo, queryFn: () => pedir('/api/v1/painel/resumo', ResumoSchema) });
@@ -42,5 +53,30 @@ export function useEventosDeSeguranca() {
   return useQuery({
     queryKey: [...CHAVES.risco, 'eventos'],
     queryFn: () => pedir('/api/v1/privacidade/eventos?pagina=1&tamanho=100', pagina(EventoDeSegurancaSchema)),
+  });
+}
+
+const SAUDE = { refetchInterval: 15_000, retry: 0 } as const;
+
+/** A saúde de cada serviço, de 15 em 15 s (é o que o monitor da VM também faz). Falha vira "fora do ar", não erro. */
+export function useSaudeDoCore() {
+  return useQuery({
+    queryKey: [...CHAVES.saude, 'core'],
+    ...SAUDE,
+    queryFn: async () => ({
+      pronto: await pedir('/health/ready', ProntidaoSchema).catch(() => null),
+      versao: await pedir('/version', VersaoSchema).catch(() => null),
+    }),
+  });
+}
+
+export function useSaudeDoClima() {
+  return useQuery({
+    queryKey: [...CHAVES.saude, 'clima'],
+    ...SAUDE,
+    queryFn: async () => ({
+      pronto: await pedir('/clima/actuator/health/readiness', SaudeDoClimaSchema, {}, true).catch(() => null),
+      info: await pedir('/clima/actuator/info', InfoDoClimaSchema, {}, true).catch(() => null),
+    }),
   });
 }
