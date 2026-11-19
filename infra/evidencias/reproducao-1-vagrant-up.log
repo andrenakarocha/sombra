@@ -1,0 +1,161 @@
+Bringing machine 'default' up with 'virtualbox' provider...
+==> default: Importing base box 'bento/ubuntu-24.04'...
+[KProgress: 10%[KProgress: 20%[KProgress: 30%[KProgress: 40%[KProgress: 90%[K==> default: Matching MAC address for NAT networking...
+==> default: Setting the name of the VM: sombra-srv01
+==> default: Clearing any previously set network interfaces...
+==> default: Preparing network interfaces based on configuration...
+    default: Adapter 1: nat
+    default: Adapter 2: hostonly
+==> default: Forwarding ports...
+    default: 22 (guest) => 2222 (host) (adapter 1)
+==> default: Running 'pre-boot' VM customizations...
+==> default: Booting VM...
+==> default: Waiting for machine to boot. This may take a few minutes...
+    default: SSH address: 127.0.0.1:2222
+    default: SSH username: vagrant
+    default: SSH auth method: private key
+    default: 
+    default: Vagrant insecure key detected. Vagrant will automatically replace
+    default: this with a newly generated keypair for better security.
+    default: 
+    default: Inserting generated public key within guest...
+    default: Removing insecure key from the guest if it's present...
+    default: Key inserted! Disconnecting and reconnecting using new SSH key...
+==> default: Machine booted and ready!
+==> default: Checking for guest additions in VM...
+==> default: Mounting shared folders...
+    default: /home/andrenakarocha/University/year3/second-gs/sombra/infra => /vagrant
+==> default: Running provisioner: shell...
+    default: Running: inline script
+    default: {"timestamp":"2026-11-19T04:42:56.444Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.iniciado","message":"Provisionamento iniciado com 9 etapa(s)","etapas":"10-host 20-rede 30-dns 40-usuarios 50-dependencias 60-banco 70-aplicacao 80-monitor 90-validacao","host":"vagrant"}
+    default: {"timestamp":"2026-11-19T04:42:56.460Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 10-host iniciada","etapa":"10-host"}
+    default: {"timestamp":"2026-11-19T04:42:56.543Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Hostname definido como sombra-srv01","hostname":"sombra-srv01"}
+    default: {"timestamp":"2026-11-19T04:42:56.576Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/hosts gravado","arquivo":"/etc/hosts"}
+    default: {"timestamp":"2026-11-19T04:42:58.419Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"host.configurado","message":"Host sombra-srv01.sombra.local no fuso America/Sao_Paulo","hostname":"sombra-srv01","fuso":"America/Sao_Paulo"}
+    default: {"timestamp":"2026-11-19T04:42:58.437Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 10-host concluída","etapa":"10-host","duracaoMs":1960}
+    default: {"timestamp":"2026-11-19T04:42:58.454Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 20-rede iniciada","etapa":"20-rede"}
+    default: {"timestamp":"2026-11-19T04:42:58.564Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/netplan/60-sombra.yaml gravado","arquivo":"/etc/netplan/60-sombra.yaml"}
+    default: 
+    default: ** (generate:1941): WARNING **: 01:42:58.685: Permissions for /etc/netplan/01-netcfg.yaml are too open. Netplan configuration should NOT be accessible by others.
+    default: 
+    default: ** (process:1939): WARNING **: 01:42:58.848: Permissions for /etc/netplan/01-netcfg.yaml are too open. Netplan configuration should NOT be accessible by others.
+    default: 
+    default: ** (process:1939): WARNING **: 01:42:58.906: Permissions for /etc/netplan/01-netcfg.yaml are too open. Netplan configuration should NOT be accessible by others.
+    default: {"timestamp":"2026-11-19T04:42:59.027Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/sysctl.d/60-sombra.conf gravado","arquivo":"/etc/sysctl.d/60-sombra.conf"}
+    default: {"timestamp":"2026-11-19T04:42:59.042Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"rede.configurada","message":"Interface eth1 com 192.168.56.10/24","interface":"eth1","ip":"192.168.56.10"}
+    default: {"timestamp":"2026-11-19T04:42:59.053Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 20-rede concluída","etapa":"20-rede","duracaoMs":588}
+    default: {"timestamp":"2026-11-19T04:42:59.079Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 30-dns iniciada","etapa":"30-dns"}
+    default: {"timestamp":"2026-11-19T04:42:59.111Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"pacotes.atualizando_indice","message":"Atualizando o índice do apt"}
+    default: {"timestamp":"2026-11-19T04:43:05.245Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"pacotes.instalando","message":"Instalando dnsmasq","pacotes":"dnsmasq"}
+    default: 
+    default: Running kernel seems to be up-to-date.
+    default: 
+    default: No services need to be restarted.
+    default: 
+    default: No containers need to be restarted.
+    default: 
+    default: No user sessions are running outdated binaries.
+    default: 
+    default: No VM guests are running outdated hypervisor (qemu) binaries on this host.
+    default: {"timestamp":"2026-11-19T04:43:10.365Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/dnsmasq.d/sombra.conf gravado","arquivo":"/etc/dnsmasq.d/sombra.conf"}
+    default: {"timestamp":"2026-11-19T04:43:10.405Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/systemd/resolved.conf.d/sombra.conf gravado","arquivo":"/etc/systemd/resolved.conf.d/sombra.conf"}
+    default: {"timestamp":"2026-11-19T04:43:11.223Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"dns.configurado","message":"Zona sombra.local respondendo pelo dnsmasq","nomes":"api clima painel","externos":"10.0.2.3 fd17:625c:f037:2::3 "}
+    default: {"timestamp":"2026-11-19T04:43:11.237Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 30-dns concluída","etapa":"30-dns","duracaoMs":12142}
+    default: {"timestamp":"2026-11-19T04:43:11.265Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 40-usuarios iniciada","etapa":"40-usuarios"}
+    default: {"timestamp":"2026-11-19T04:43:11.435Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/sudoers.d/sombra-ops gravado","arquivo":"/etc/sudoers.d/sombra-ops"}
+    default: {"timestamp":"2026-11-19T04:43:11.501Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"usuarios.configurados","message":"Usuário sombra e grupo sombra-ops prontos","usuario":"sombra","grupo":"sombra-ops","operadores":"vagrant"}
+    default: {"timestamp":"2026-11-19T04:43:11.510Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 40-usuarios concluída","etapa":"40-usuarios","duracaoMs":231}
+    default: {"timestamp":"2026-11-19T04:43:11.543Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 50-dependencias iniciada","etapa":"50-dependencias"}
+    default: {"timestamp":"2026-11-19T04:43:11.626Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"pacotes.instalando","message":"Instalando postgresql postgresql-contrib mosquitto mosquitto-clients openjdk-21-jre-headless nginx stress-ng auditd","pacotes":"postgresql postgresql-contrib mosquitto mosquitto-clients openjdk-21-jre-headless nginx stress-ng auditd"}
+    default: 
+    default: Running kernel seems to be up-to-date.
+    default: 
+    default: Restarting services...
+    default:  /etc/needrestart/restart.d/systemd-manager
+    default:  systemctl restart cron.service ssh.service systemd-journald.service systemd-networkd.service systemd-resolved.service systemd-timesyncd.service
+    default: 
+    default: Service restarts being deferred:
+    default:  /etc/needrestart/restart.d/dbus.service
+    default:  systemctl restart systemd-logind.service
+    default: 
+    default: No containers need to be restarted.
+    default: 
+    default: User sessions running outdated binaries:
+    default:  vagrant @ session #3: sshd[1464]
+    default:  vagrant @ user manager service: systemd[1076]
+    default: 
+    default: No VM guests are running outdated hypervisor (qemu) binaries on this host.
+    default: {"timestamp":"2026-11-19T04:43:47.387Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"dependencias.instaladas","message":"Dependências prontas","versoes":"{\"postgresql\":\"16.15\",\"java\":\"21.0.13.1\",\"nginx\":\"1.24.0 (Ubuntu)\",\"mosquitto\":\"2.0.18-1build3\"}"}
+    default: {"timestamp":"2026-11-19T04:43:47.426Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 50-dependencias concluída","etapa":"50-dependencias","duracaoMs":35858}
+    default: {"timestamp":"2026-11-19T04:43:47.488Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 60-banco iniciada","etapa":"60-banco"}
+    default: {"timestamp":"2026-11-19T04:43:47.576Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Segredos do servidor gerados (o conteúdo não sai daqui)","arquivo":"/etc/sombra/segredos.env"}
+    default: {"timestamp":"2026-11-19T04:43:48.783Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/postgresql/16/main/conf.d/60-sombra.conf gravado","arquivo":"/etc/postgresql/16/main/conf.d/60-sombra.conf"}
+    default: {"timestamp":"2026-11-19T04:43:48.859Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/postgresql/16/main/pg_hba.conf gravado","arquivo":"/etc/postgresql/16/main/pg_hba.conf"}
+    default: {"timestamp":"2026-11-19T04:43:52.424Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"banco.configurado","message":"PostgreSQL 16 com um banco por serviço, só local","versao":16}
+    default: {"timestamp":"2026-11-19T04:43:52.440Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 60-banco concluída","etapa":"60-banco","duracaoMs":4933}
+    default: {"timestamp":"2026-11-19T04:43:52.465Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 70-aplicacao iniciada","etapa":"70-aplicacao"}
+    default: {"timestamp":"2026-11-19T04:43:52.655Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"release.obtido","message":"Artefatos da versão 4fa0d44 (local)","versao":"4fa0d44","origem":"local"}
+    default: {"timestamp":"2026-11-19T04:43:53.549Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/sombra/core.env gravado","arquivo":"/etc/sombra/core.env"}
+    default: {"timestamp":"2026-11-19T04:43:53.599Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/sombra/clima.env gravado","arquivo":"/etc/sombra/clima.env"}
+    default: {"timestamp":"2026-11-19T04:43:53.632Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/mosquitto/conf.d/sombra.conf gravado","arquivo":"/etc/mosquitto/conf.d/sombra.conf"}
+    default: {"timestamp":"2026-11-19T04:43:54.512Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/nginx/sites-available/sombra.conf gravado","arquivo":"/etc/nginx/sites-available/sombra.conf"}
+    default: {"timestamp":"2026-11-19T04:43:55.100Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/systemd/system/sombra-clima.service gravado","arquivo":"/etc/systemd/system/sombra-clima.service"}
+    default: {"timestamp":"2026-11-19T04:43:55.125Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/systemd/system/sombra-core.service gravado","arquivo":"/etc/systemd/system/sombra-core.service"}
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: curl: (7) Failed to connect to 127.0.0.1 port 8081 after 0 ms: Couldn't connect to server
+    default: {"timestamp":"2026-11-19T04:44:11.935Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"servico.pronto","message":"sombra-clima pronto","servico":"sombra-clima"}
+    default: {"timestamp":"2026-11-19T04:44:12.086Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"servico.pronto","message":"sombra-core pronto","servico":"sombra-core"}
+    default: {"timestamp":"2026-11-19T04:44:12.098Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"aplicacao.instalada","message":"Sombra 4fa0d44 no ar","versao":"4fa0d44","origem":"local"}
+    default: {"timestamp":"2026-11-19T04:44:12.124Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 70-aplicacao concluída","etapa":"70-aplicacao","duracaoMs":19646}
+    default: {"timestamp":"2026-11-19T04:44:12.149Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 80-monitor iniciada","etapa":"80-monitor"}
+    default: {"timestamp":"2026-11-19T04:44:12.205Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /opt/sombra/monitor/sombra-monitor.sh gravado","arquivo":"/opt/sombra/monitor/sombra-monitor.sh"}
+    default: {"timestamp":"2026-11-19T04:44:12.246Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /opt/sombra/monitor/lib/log.sh gravado","arquivo":"/opt/sombra/monitor/lib/log.sh"}
+    default: {"timestamp":"2026-11-19T04:44:12.278Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/sombra/monitor.conf gravado","arquivo":"/etc/sombra/monitor.conf"}
+    default: {"timestamp":"2026-11-19T04:44:12.302Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/systemd/system/sombra-monitor.service gravado","arquivo":"/etc/systemd/system/sombra-monitor.service"}
+    default: {"timestamp":"2026-11-19T04:44:12.520Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/logrotate.d/sombra gravado","arquivo":"/etc/logrotate.d/sombra"}
+    default: {"timestamp":"2026-11-19T04:44:12.560Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"config.alterada","message":"Arquivo /etc/audit/rules.d/60-sombra.rules gravado","arquivo":"/etc/audit/rules.d/60-sombra.rules"}
+    default: {"timestamp":"2026-11-19T04:44:13.533Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"monitor.instalado","message":"Monitor, logrotate e auditd prontos","regrasAuditd":6}
+    default: {"timestamp":"2026-11-19T04:44:13.552Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 80-monitor concluída","etapa":"80-monitor","duracaoMs":1388}
+    default: {"timestamp":"2026-11-19T04:44:13.599Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_iniciada","message":"Etapa 90-validacao iniciada","etapa":"90-validacao"}
+    default: {"timestamp":"2026-11-19T04:44:13.659Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"hostname é sombra-srv01","verificacao":"hostname é sombra-srv01"}
+    default: {"timestamp":"2026-11-19T04:44:13.674Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"IP estático 192.168.56.10","verificacao":"IP estático 192.168.56.10"}
+    default: {"timestamp":"2026-11-19T04:44:13.711Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"DNS: api.sombra.local → 192.168.56.10","verificacao":"DNS: api.sombra.local → 192.168.56.10"}
+    default: {"timestamp":"2026-11-19T04:44:13.739Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"DNS: clima.sombra.local → 192.168.56.10","verificacao":"DNS: clima.sombra.local → 192.168.56.10"}
+    default: {"timestamp":"2026-11-19T04:44:13.778Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"DNS: painel.sombra.local → 192.168.56.10","verificacao":"DNS: painel.sombra.local → 192.168.56.10"}
+    default: {"timestamp":"2026-11-19T04:44:13.834Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"DNS externo resolve","verificacao":"DNS externo resolve"}
+    default: {"timestamp":"2026-11-19T04:44:13.955Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"porta 80 aberta para a rede","verificacao":"porta 80 aberta para a rede"}
+    default: {"timestamp":"2026-11-19T04:44:13.973Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"porta 5080 só em localhost","verificacao":"porta 5080 só em localhost"}
+    default: {"timestamp":"2026-11-19T04:44:13.993Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"porta 8081 só em localhost","verificacao":"porta 8081 só em localhost"}
+    default: {"timestamp":"2026-11-19T04:44:14.011Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"porta 5432 só em localhost","verificacao":"porta 5432 só em localhost"}
+    default: {"timestamp":"2026-11-19T04:44:14.034Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"serviço postgresql ativo e no boot","verificacao":"serviço postgresql ativo e no boot"}
+    default: {"timestamp":"2026-11-19T04:44:14.053Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"serviço mosquitto ativo e no boot","verificacao":"serviço mosquitto ativo e no boot"}
+    default: {"timestamp":"2026-11-19T04:44:14.079Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"serviço nginx ativo e no boot","verificacao":"serviço nginx ativo e no boot"}
+    default: {"timestamp":"2026-11-19T04:44:14.103Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"serviço dnsmasq ativo e no boot","verificacao":"serviço dnsmasq ativo e no boot"}
+    default: {"timestamp":"2026-11-19T04:44:14.135Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"serviço sombra-clima ativo e no boot","verificacao":"serviço sombra-clima ativo e no boot"}
+    default: {"timestamp":"2026-11-19T04:44:14.163Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"serviço sombra-core ativo e no boot","verificacao":"serviço sombra-core ativo e no boot"}
+    default: {"timestamp":"2026-11-19T04:44:14.197Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"serviço sombra-monitor ativo e no boot","verificacao":"serviço sombra-monitor ativo e no boot"}
+    default: {"timestamp":"2026-11-19T04:44:14.218Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"serviço auditd ativo e no boot","verificacao":"serviço auditd ativo e no boot"}
+    default: {"timestamp":"2026-11-19T04:44:14.256Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"Core pronto (api.sombra.local/health/ready)","verificacao":"Core pronto (api.sombra.local/health/ready)"}
+    default: {"timestamp":"2026-11-19T04:44:14.278Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"Clima pronto (clima.sombra.local/actuator/health/readiness)","verificacao":"Clima pronto (clima.sombra.local/actuator/health/readiness)"}
+    default: {"timestamp":"2026-11-19T04:44:14.293Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"painel no ar (painel.sombra.local)","verificacao":"painel no ar (painel.sombra.local)"}
+    default: {"timestamp":"2026-11-19T04:44:14.311Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"escrita no Clima fechada pelo nginx","verificacao":"escrita no Clima fechada pelo nginx"}
+    default: {"timestamp":"2026-11-19T04:44:14.477Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"o operador entra (JWT)","verificacao":"o operador entra (JWT)"}
+    default: {"timestamp":"2026-11-19T04:44:14.778Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"o Core lista as casas do seed (3)","verificacao":"o Core lista as casas do seed (3)"}
+    default: {"timestamp":"2026-11-19T04:44:15.182Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.ok","message":"o Core traz do Clima os pontos de resfriamento (8)","verificacao":"o Core traz do Clima os pontos de resfriamento (8)"}
+    default: {"timestamp":"2026-11-19T04:44:15.216Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"validacao.aprovada","message":"Servidor sombra-srv01 validado de ponta a ponta"}
+    default: {"timestamp":"2026-11-19T04:44:15.249Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.etapa_concluida","message":"Etapa 90-validacao concluída","etapa":"90-validacao","duracaoMs":1619}
+    default: {"timestamp":"2026-11-19T04:44:15.304Z","level":"Information","service":"provision","version":"dev","environment":"Production","correlationId":"provision:fbc691a8","event":"provision.concluido","message":"Provisionamento concluído","etapas":9,"duracaoMs":78857}

@@ -879,11 +879,15 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   na auditoria com linha 3, comando e código. A etapa 90 confere 26 pontos e pegou um bug real: a guarda de PII do Core
   barrava os pontos de resfriamento num raio de 3 km, porque os IDs do OSM têm a forma de telefone (`fix(clima)`, V5).
   Os 10 prints saem de `infra/scripts/evidencias.sh` numa rodada só e foram revisados).
-- [ ] **F8.7** 🧑🤖 Prova de reprodutibilidade: `vagrant destroy -f && vagrant up` sem nenhum passo manual; uma segunda
+- [x] **F8.7** 🧑🤖 Prova de reprodutibilidade: `vagrant destroy -f && vagrant up` sem nenhum passo manual; uma segunda
   execução do `provision.sh` não muda nada.
-  🔎 os logs das duas execuções registrados nas evidências.
-- [ ] **F8.8** 🤖 shellcheck no CI + README (arquitetura, como reproduzir, como operar, evidências, integrantes).
-  🔎 os 6 critérios da rubrica de OS com evidência.
+  🔎 os logs das duas execuções registrados nas evidências — 2026-11-19 (`infra/scripts/reproduzir.sh`: do zero em
+  1 min 51 s, 9 etapas, 22 arquivos gravados, validação aprovada; a segunda execução em 10 s, **0** arquivos gravados,
+  validação aprovada. Logs em `infra/evidencias/reproducao-*.log`).
+- [x] **F8.8** 🤖 shellcheck no CI + README (arquitetura, como reproduzir, como operar, evidências, integrantes).
+  🔎 os 6 critérios da rubrica de OS com evidência — 2026-11-19 (o job `shellcheck` do CI roda em todo `*.sh`; o
+  `infra/README.md` liga cada critério ao script e ao print, mais os 7 testes de falha, a arquitetura em Mermaid, como
+  reproduzir e operar, e os integrantes).
 
 **✅ Aceite F8:** VM do zero ao Sombra inteiro no ar só com scripts · monitor tolerante a falhas · auditoria · 7 testes de
 falha documentados.
@@ -1072,7 +1076,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: as cinco páginas ao vivo pelo hub (o Core passou a emitir o `RiscoCidadaoAtualizado`), E2E verde (6) e 12 testes no Vitest, prints revisados em três larguras; o painel sobe no compose pelo nginx |
-| F8 Infra (OS) | 🟨 em andamento | 2026-11-18 | | |
+| F8 Infra (OS) | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: a VM vazia vira o `sombra-srv01` com o Sombra inteiro no ar só com scripts (9 etapas idempotentes, validação de 26 pontos), monitor `Type=notify` com watchdog, auditoria JSON e auditd, os 7 testes de falha com print, reprodução do zero provada; o 🔎 da F8.3 (release no GitHub) espera a primeira tag `v*` |
 | F9 Integração | ⬜ não iniciada | | | |
 | F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; faltam a F10.1 (Azure, 🔑), a F10.4 e a F10.5 |
 | F11 Polimento | ⬜ não iniciada | | | |

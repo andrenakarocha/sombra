@@ -1,0 +1,11 @@
+$ vagrant destroy -f && vagrant up      (do zero, sem nenhum passo manual)
+  duração: 1 min 51 s
+  etapas concluídas: 9
+  arquivos gravados: 22
+  validação: aprovada
+
+$ vagrant provision                      (segunda execução, sobre a máquina já pronta)
+  duração: 10 s
+  etapas concluídas: 9
+  arquivos gravados: 0   (idempotente: nada muda)
+  validação: aprovada
