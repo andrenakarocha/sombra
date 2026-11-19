@@ -1001,6 +1001,8 @@ F11.8 (VM no Azure) saíram.**
   depois dos merges).
 - [ ] **F12.4** 🧑🤖 `docs/defesa/`: guia por parte + perguntas prováveis + sessão de 30 min com o time.
   🔎 cada integrante explicou uma parte que não fez.
+  ⏸ 2026-11-19: `docs/defesa/README.md` com as perguntas da seção "Defesa" de cada spec, a resposta curta e onde mostrar
+  no código (caminhos conferidos). Falta a sessão de 30 min com o time.
 
 **✅ Aceite F12:** README, PDF de Cyber, ZIP, entrevista e defesa prontos.
 
