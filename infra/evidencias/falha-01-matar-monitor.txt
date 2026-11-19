@@ -1,0 +1,7 @@
+$ sudo falhas/01-matar-monitor.sh
+▶ monitor ativo com o PID 1063; kill -9 nele
+▶ o journal do systemd:
+  │ 2026-11-19T01:38:31-03:00 sombra-srv01 systemd[1]: sombra-monitor.service: Main process exited, code=killed, status=9/KILL
+  │ 2026-11-19T01:38:36-03:00 sombra-srv01 systemd[1]: sombra-monitor.service: Scheduled restart job, restart counter is at 1.
+  │ 2026-11-19T01:38:36-03:00 sombra-srv01 systemd[1]: Started sombra-monitor.service - Sombra · monitor de CPU, memória, disco e serviços.
+✔ monitor de volta sozinho: PID 1063 → 4198 (1 reinício(s) no total)

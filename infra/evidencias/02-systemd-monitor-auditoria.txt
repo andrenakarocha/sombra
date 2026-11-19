@@ -1,0 +1,40 @@
+$ systemctl status sombra-monitor --no-pager
+● sombra-monitor.service - Sombra · monitor de CPU, memória, disco e serviços
+     Loaded: loaded (/etc/systemd/system/sombra-monitor.service; enabled; preset: enabled)
+     Active: active (running) since Thu 2026-11-19 01:37:34 -03; 54s ago
+       Docs: https://github.com/andrenakarocha/sombra/tree/main/infra
+   Main PID: 1063 (bash)
+     Status: "CPU 2% · RAM 21% · disco 20%"
+      Tasks: 2 (limit: 4599)
+     Memory: 2.3M (peak: 4.2M)
+        CPU: 249ms
+     CGroup: /system.slice/sombra-monitor.service
+             ├─1063 bash /opt/sombra/monitor/sombra-monitor.sh
+             └─1514 sleep 15
+
+$ systemctl show sombra-core -p User -p Restart -p NoNewPrivileges -p ProtectSystem -p PrivateTmp -p CapabilityBoundingSet
+Restart=always
+CapabilityBoundingSet=
+User=sombra
+PrivateTmp=yes
+ProtectSystem=strict
+NoNewPrivileges=yes
+
+$ sudo tail -n 3 /var/log/sombra/sombra-monitor.log | jq -c
+{"timestamp":"2026-11-19T04:37:50.104Z","event":"monitor.verificacao","message":"CPU 68%, RAM 21%, disco 20% (/)","cpu":68,"ram":21,"disco":20}
+{"timestamp":"2026-11-19T04:38:05.172Z","event":"monitor.verificacao","message":"CPU 5%, RAM 21%, disco 20% (/)","cpu":5,"ram":21,"disco":20}
+{"timestamp":"2026-11-19T04:38:20.245Z","event":"monitor.verificacao","message":"CPU 2%, RAM 21%, disco 20% (/)","cpu":2,"ram":21,"disco":20}
+
+$ sudo auditctl -l | grep sombra
+-w /etc/sombra -p wa -k sombra-config
+-w /opt/sombra -p wa -k sombra-binarios
+-w /etc/systemd/system/sombra-core.service -p wa -k sombra-units
+-w /etc/systemd/system/sombra-clima.service -p wa -k sombra-units
+-w /etc/systemd/system/sombra-monitor.service -p wa -k sombra-units
+-w /etc/sudoers.d/sombra-ops -p wa -k sombra-acesso
+
+$ sudo tail -n 4 /var/log/sombra/auditoria.jsonl | jq -c
+{"quando":"2026-11-19T04:38:24.608Z","quem":"vagrant","acao":"etapa:80-monitor","resultado":"sucesso"}
+{"quando":"2026-11-19T04:38:25.437Z","quem":"vagrant","acao":"validacao","resultado":"sucesso"}
+{"quando":"2026-11-19T04:38:25.464Z","quem":"vagrant","acao":"etapa:90-validacao","resultado":"sucesso"}
+{"quando":"2026-11-19T04:38:25.485Z","quem":"vagrant","acao":"provision","resultado":"sucesso"}

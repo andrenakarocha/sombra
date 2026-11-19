@@ -1,0 +1,9 @@
+$ sudo falhas/04-disco-cheio.sh
+▶ disco em 18%; fallocate de 22 GB em /var/tmp/sombra-disco-cheio.bin
+  │ Filesystem                         Size  Used Avail Use% Mounted on
+  │ /dev/mapper/ubuntu--vg-ubuntu--lv   31G   29G  572M  99% /
+▶ o alerta do monitor:
+  │ {"timestamp":"2026-11-19T04:40:52.966Z","level":"Error","event":"monitor.alerta","message":"Disco (/) em 99% (limite crítico 90%) por 3 verificações seguidas"}
+▶ arquivo apagado; esperando o monitor registrar a volta ao normal
+  │ {"timestamp":"2026-11-19T04:40:22.760Z","event":"monitor.normalizado","message":"Memória voltou ao normal (23%)"}
+✔ disco cheio alertado e a volta ao normal registrada
