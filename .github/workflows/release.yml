@@ -1,0 +1,73 @@
+# Sombra · release: os artefatos que a VM baixa e confere pelo SHA256 (infra/steps/70-aplicacao.sh, F8.3).
+# Sai num tag v* (ex.: v1.0.0) ou à mão (workflow_dispatch). Actions fixadas por SHA de commit, como no ci.yml.
+name: release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag do release (ex.: v1.0.0-rc1)'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  artefatos:
+    name: artefatos e SHA256SUMS
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/painel/package-lock.json
+
+      - name: Core (.NET 10, linux-x64, self-contained, na imagem do SDK)
+        run: |
+          mkdir -p artefatos
+          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -e DOTNET_CLI_HOME=/tmp -e DOTNET_NOLOGO=1 \
+            -v "$PWD":/repo -w /repo/services/core-api mcr.microsoft.com/dotnet/sdk:10.0.404 \
+            dotnet publish sources/Sombra.Api/Sombra.Api.csproj -c Release -r linux-x64 --self-contained true \
+              -p:UseAppHost=true -o /repo/publicado/core
+          tar -C publicado/core -czf artefatos/sombra-core-linux-x64.tar.gz .
+
+      - name: Clima (jar do Spring Boot)
+        working-directory: services/clima-service
+        run: |
+          ./mvnw -B -ntp -DskipTests package
+          cp target/clima-service.jar ../../artefatos/sombra-clima.jar
+
+      - name: Painel (build estático)
+        working-directory: web/painel
+        env:
+          SOMBRA_COMMIT: ${{ github.sha }}
+        run: |
+          npm ci
+          SOMBRA_COMMIT="${SOMBRA_COMMIT::7}" npm run build
+          tar -C dist -czf ../../artefatos/sombra-painel.tar.gz .
+
+      - name: SHA256SUMS
+        working-directory: artefatos
+        run: sha256sum sombra-core-linux-x64.tar.gz sombra-clima.jar sombra-painel.tar.gz > SHA256SUMS && cat SHA256SUMS
+
+      - name: publica o release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" artefatos/* --title "Sombra $TAG" --target "$GITHUB_SHA" \
+            --notes "Artefatos da VM (infra/steps/70-aplicacao.sh confere cada um pelo SHA256SUMS). Commit ${GITHUB_SHA::7}."
