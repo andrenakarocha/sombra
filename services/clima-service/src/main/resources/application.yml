@@ -13,9 +13,9 @@ spring:
     # o esquema é das migrações (Flyway); o Hibernate só confere
     hibernate:
       ddl-auto: validate
+    # sem hibernate.jdbc.time_zone: o Instant vai como timestamptz (absoluto) e o LocalTime do horário dos pontos é hora
+    # de parede, que não pode ser deslocada pelo fuso da JVM
     open-in-view: false
-    properties:
-      hibernate.jdbc.time_zone: UTC
   flyway:
     locations: classpath:db/migration
   jackson:
@@ -24,6 +24,21 @@ spring:
   mvc:
     problemdetails:
       enabled: true
+  web:
+    # mensagens de validação em pt-BR, qualquer que seja o Accept-Language
+    locale: pt_BR
+    locale-resolver: fixed
+
+springdoc:
+  # a documentação é parte da entrega (rubrica de SOA): fica ligada de propósito
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  paths-to-match: /api/**
+  writer-with-order-by-keys: true
 
 server:
   port: 8081

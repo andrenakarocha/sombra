@@ -1,13 +1,32 @@
 # Clima Service · contrato REST
 
-> **Rascunho da F0.7.** Na F3.4, o OpenAPI gerado pelo springdoc vira a fonte da verdade e o CI o exporta para
-> `clima-service.openapi.json`, nesta pasta. O Core é o único cliente: o app e o painel falam só com o Core.
+> **Fonte da verdade:** [`clima-service.openapi.json`](clima-service.openapi.json), gerado do código pelo springdoc (F3.4).
+> O teste `ContratoOpenApiTest` quebra o CI se a API mudar e este arquivo não; `make openapi-clima` o regenera. A
+> documentação navegável fica em `http://localhost:8081/swagger-ui.html`. O Core é o único cliente: o app e o painel
+> falam só com o Core.
 
 ## Convenções
 
 As mesmas do Core: base `/api/v1`, JSON em camelCase com a linguagem ubíqua, tempo em ISO-8601 UTC, ProblemDetails
 (RFC 9457) nos erros (`400`, `404`, `422` com `regra`), paginação `?pagina=&tamanho=` e o header `X-Correlation-Id`
 aceito e repassado aos logs. O Clima não guarda dado pessoal.
+
+## Erros
+
+Todo erro é um ProblemDetails (RFC 9457) em pt-BR, com `type` apontando para esta seção, `title`, `status`, `detail` e o
+`correlationId` da requisição. Nenhum stack trace sai na resposta.
+
+| Status | Quando | Campo extra |
+|---|---|---|
+| `400` | JSON quebrado, campo obrigatório ausente, parâmetro fora do formato ou do limite (`tamanho` > 100) | `errors` (por campo) |
+| `404` | região, estação ou ponto que não existe; rota desconhecida | — |
+| `409` | região com código repetido; a mesma hora da mesma estação de novo | — |
+| `422` | regra do domínio violada | `regra` |
+| `500` | falha inesperada (o detalhe fica só no log) | — |
+
+Regras (`regra` no 422): `OBSERVACAO_FALTANTE` (-9999 do INMET), `UMIDADE_FORA_DA_FAIXA`, `TEMPERATURA_FORA_DA_FAIXA`,
+`GRANDEZA_NEGATIVA`, `PERIODO_INVALIDO`, `REGIAO_SEM_ESTACAO`, `CODIGO_DE_REGIAO_INVALIDO`, `CODIGO_DE_ESTACAO_INVALIDO`,
+`NOME_OBRIGATORIO`, `HORARIO_INVALIDO`, `FONTE_OBRIGATORIA`, `COORDENADA_INVALIDA` e `RAIO_INVALIDO`.
 
 ## Endpoints
 
