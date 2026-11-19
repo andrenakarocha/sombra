@@ -3,7 +3,7 @@ import { useAlertas } from '@/api/consultas';
 import { NIVEIS, type Alerta } from '@/api/schemas';
 import { Cartao, Carregando, ErroNaTela, Vazio } from '@/componentes/Base';
 import { SeloDeNivel } from '@/componentes/Nivel';
-import { DEGRAU, ESTADO_DO_ALERTA, NIVEL } from '@/dominio/niveis';
+import { DEGRAU, ESTADO_DO_ALERTA, NIVEL, rotuloDoEstado } from '@/dominio/niveis';
 import { formatarDataHora, haQuanto } from '@/dominio/formato';
 
 const ESTADOS = ['AGUARDANDO_CHECKIN', 'ESCALONADO', 'RECONHECIDO', 'RESOLVIDO'] as const;
@@ -80,10 +80,10 @@ export function Alertas() {
                     <p className="text-sm text-texto-suave">{a.tipo === 'PREVENTIVO' ? 'Preventivo (previsão de 24 h)' : 'Sentinela'}</p>
                     <h2 className="font-display text-xl font-semibold">{a.apelidoDaCasa}</h2>
                     <p className="text-texto-suave">
-                      {ESTADO_DO_ALERTA[a.estado] ?? a.estado} · aberto {haQuanto(a.abertoEm)} ({formatarDataHora(a.abertoEm)})
+                      {rotuloDoEstado(a.tipo, a.estado)} · aberto {haQuanto(a.abertoEm)} ({formatarDataHora(a.abertoEm)})
                     </p>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-col items-start gap-2 sm:items-end">
                     <SeloDeNivel nivel={a.nivel} />
                     <span className="text-sm text-texto-suave">
                       Degrau {a.degrau}: {DEGRAU[a.degrau]}

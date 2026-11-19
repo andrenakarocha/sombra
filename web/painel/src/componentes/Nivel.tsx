@@ -7,7 +7,7 @@ export function SeloDeNivel({ nivel, grande = false }: { nivel: Nivel; grande?: 
   const n = NIVEL[nivel];
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border font-semibold ${n.classes} ${grande ? 'px-3 py-1.5 text-base' : 'px-2.5 py-0.5 text-sm'}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border font-semibold ${n.classes} ${grande ? 'px-3 py-1.5 text-base' : 'px-2.5 py-0.5 text-sm'}`}
     >
       <Icone nome={n.icone} />
       {n.rotulo}

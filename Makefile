@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra openapi-clima amostras-clima sim vinculo
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -71,6 +71,12 @@ test-infra: ## shellcheck e testes das bibliotecas da VM (log, auditoria, trap, 
 	@find infra -name '*.sh' -not -path 'infra/compose/*' -print0 | xargs -0 shellcheck && echo "shellcheck ok"
 	@docker run --rm -v "$$PWD/infra":/infra:ro ubuntu:24.04 bash -c \
 	  'apt-get update -qq >/dev/null && apt-get install -y -qq jq >/dev/null 2>&1 && /infra/testes/testar-bibliotecas.sh'
+
+e2e-painel: ## E2E do painel (Playwright) contra o make up: login, roteiro com o simulador, Risco Cidadão e operação ao vivo
+	@cd web/painel && npx playwright test
+
+evidencias-painel: ## Regrava os prints das cinco páginas do painel em 1440, 768 e 390 px (web/painel/docs/evidencias)
+	@cd web/painel && EVIDENCIAS=1 npx playwright test evidencias
 
 test-sim: ## Testes do simulador da Sentinela (a integração usa o Mosquitto do make up)
 	@cd tools/sentinela-sim && uv run -q pytest -q

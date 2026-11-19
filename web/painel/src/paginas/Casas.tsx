@@ -3,7 +3,7 @@ import { useCasas } from '@/api/consultas';
 import { NIVEIS } from '@/api/schemas';
 import { Carregando, ErroNaTela, Vazio } from '@/componentes/Base';
 import { SeloDeNivel } from '@/componentes/Nivel';
-import { ESTADO_DO_ALERTA, NIVEL } from '@/dominio/niveis';
+import { NIVEL, rotuloDoEstado } from '@/dominio/niveis';
 import { formatarGraus, haQuanto } from '@/dominio/formato';
 
 /**
@@ -78,7 +78,7 @@ export function Casas() {
                   </td>
                   <td className="px-4 py-3">{c.sentinela ? (c.sentinela.online ? 'Respondendo' : 'Sem resposta') : '—'}</td>
                   <td className="px-4 py-3">{haQuanto(c.ultimoCheckIn)}</td>
-                  <td className="px-4 py-3">{c.alertaAberto ? ESTADO_DO_ALERTA[c.alertaAberto.estado] ?? c.alertaAberto.estado : '—'}</td>
+                  <td className="px-4 py-3">{c.alertaAberto ? rotuloDoEstado(c.alertaAberto.tipo, c.alertaAberto.estado) : '—'}</td>
                 </tr>
               ))}
             </tbody>
