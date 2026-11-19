@@ -20,6 +20,8 @@ const contexto = await chromium.launchPersistentContext(join(homedir(), '.cache/
   channel: 'chrome',
   headless: false,
   viewport: { width: 1600, height: 950 },
+  // o Chrome segue desenhando mesmo quando a janela fica atrás de outra
+  args: ['--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding', '--disable-background-timer-throttling'],
 });
 const p = contexto.pages()[0] ?? (await contexto.newPage());
 await p.goto('https://wokwi.com/projects/new/esp32', { waitUntil: 'domcontentloaded' });
