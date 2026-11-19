@@ -31,6 +31,9 @@ public static class EventosDeTempoReal
 
     /// <summary>Um alerta de infraestrutura do monitor da VM (só operadores).</summary>
     public const string AlertaDeInfra = nameof(AlertaDeInfra);
+
+    /// <summary>O farol de Risco Cidadão mudou porque entrou um evento de segurança (só operadores, farol global).</summary>
+    public const string RiscoCidadaoAtualizado = nameof(RiscoCidadaoAtualizado);
 }
 
 /// <summary>Evento <c>LeituraRegistrada</c>.</summary>
@@ -101,3 +104,12 @@ public sealed record AvisoParaARedeEvento(Guid DomicilioId, Guid? AlertaId, Dest
 /// <param name="Momento">Quando.</param>
 /// <param name="CorrelationId">A correlação.</param>
 public sealed record AlertaDeInfraEvento(string Host, string Recurso, string Severidade, string Mensagem, DateTimeOffset Momento, string? CorrelationId);
+
+/// <summary>Evento <c>RiscoCidadaoAtualizado</c> (farol global: <c>DomicilioId</c> nulo).</summary>
+/// <param name="DomicilioId">A casa, ou nulo para o farol global.</param>
+/// <param name="Farol">A cor.</param>
+/// <param name="Pontuacao">A pontuação de 0 a 100.</param>
+/// <param name="EventosNaJanela">Quantos eventos entraram na conta.</param>
+/// <param name="MensagemCidadao">Uma frase para quem não é técnico, sem dado pessoal.</param>
+/// <param name="CorrelationId">A correlação do lote que mudou o farol.</param>
+public sealed record RiscoCidadaoAtualizadoEvento(Guid? DomicilioId, FarolDePrivacidade Farol, double Pontuacao, int EventosNaJanela, string MensagemCidadao, string? CorrelationId);
