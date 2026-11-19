@@ -53,10 +53,15 @@ int horaLocal() {
 
 // A mesma regra do Core para os comandos (Sentinela.ProximoSeqDeComando): o maior entre o último mais um e os segundos
 // Unix de agora. Continua crescente mesmo se a flash for apagada, como o Wokwi faz a cada simulação. Só é chamado com o
-// relógio já acertado pelo NTP.
+// relógio já acertado pelo NTP. Como o relógio já garante o crescimento, a NVS guarda o seq a cada 60 mensagens (uns
+// 10 min), e não a cada uma: são ~150 gravações por dia em vez de ~8.600, o que poupa a flash de uma Sentinela real.
 uint32_t proximoSeq() {
+  static uint8_t desdeAGravacao = 60;  // grava já na primeira mensagem depois do boot
   seq = max(seq + 1, agora());
-  nvs.putUInt("seq", seq);
+  if (++desdeAGravacao >= 60) {
+    nvs.putUInt("seq", seq);
+    desdeAGravacao = 0;
+  }
   return seq;
 }
 
