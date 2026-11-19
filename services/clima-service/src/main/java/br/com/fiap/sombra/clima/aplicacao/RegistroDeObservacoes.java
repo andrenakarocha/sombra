@@ -42,7 +42,7 @@ public class RegistroDeObservacoes {
             throw e;
         }
         if (observacoes.existsByEstacaoCodigoAndObservadaEm(estacao.getCodigo(), nova.observadaEm())) {
-            throw new RecursoJaExiste("Observação da estação " + estacao.getCodigo() + " em", nova.observadaEm());
+            throw new RecursoJaExiste("observação da estação " + estacao.getCodigo() + " na hora", nova.observadaEm());
         }
         Observacao observacao = observacoes.save(estacao.registrar(nova.observadaEm(), medicao, nova.fonte()));
         LOG.atInfo().addKeyValue("event", "observacao.registrada").addKeyValue("estacao", estacao.getCodigo())
@@ -59,6 +59,6 @@ public class RegistroDeObservacoes {
     }
 
     private Estacao estacao(String codigo) {
-        return estacoes.findById(Codigos.normalizar(codigo)).orElseThrow(() -> new RecursoNaoEncontrado("Estação", codigo));
+        return estacoes.findById(Codigos.normalizar(codigo)).orElseThrow(() -> new RecursoNaoEncontrado("estação", codigo));
     }
 }

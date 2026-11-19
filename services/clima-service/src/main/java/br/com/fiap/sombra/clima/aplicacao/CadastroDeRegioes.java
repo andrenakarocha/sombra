@@ -31,13 +31,13 @@ public class CadastroDeRegioes {
     @Transactional(readOnly = true)
     public RegiaoClimatica obter(String codigo) {
         return regioes.findById(Codigos.normalizar(codigo))
-                .orElseThrow(() -> new RecursoNaoEncontrado("Região climática", codigo));
+                .orElseThrow(() -> new RecursoNaoEncontrado("região climática", codigo));
     }
 
     @Transactional
     public RegiaoClimatica criar(String codigo, String nome, String codigoDaEstacao) {
         if (regioes.existsById(Codigos.normalizar(codigo))) {
-            throw new RecursoJaExiste("Região climática", Codigos.normalizar(codigo));
+            throw new RecursoJaExiste("região climática", Codigos.normalizar(codigo));
         }
         return regioes.save(new RegiaoClimatica(codigo, nome, estacaoValida(codigoDaEstacao)));
     }

@@ -584,9 +584,11 @@ provando o antes e o depois.
   `servico.iniciado` com a configuração sem segredo; uma chamada com `X-Correlation-Id` sai com o mesmo ID em
   `previsao.calculada` e `requisicao.concluida`, sem o corpo; ID fora do formato é trocado; readiness com banco e o
   previsor como detalhe; 9 testes). O lado do Core (o `ClimaClient` mandando o header) é conferido na F3.9.
-- [ ] **F3.8** 🤖 Testes de API (MockMvc + Testcontainers) + ArchUnit + README (Ficha, como rodar, comando do banco,
+- [x] **F3.8** 🤖 Testes de API (MockMvc + Testcontainers) + ArchUnit + README (Ficha, como rodar, comando do banco,
   link e print da doc, endpoints, fonte dos dados, integrantes) + evidências.
-  🔎 autoavaliação do guia preenchida com 10/10 e evidência por subitem.
+  🔎 autoavaliação do guia preenchida com 10/10 e evidência por subitem — 2026-11-18 (README da pasta com os 22
+  subitens → código → print; 8 regras ArchUnit, com a de "entidade não vaza no JSON" conferida por mutação; os 5 prints
+  de `docs/evidencias/` saem de `scripts/evidencias.sh` e foram revisados; 142 testes no `./mvnw verify`).
 - [ ] **F3.9** 🤖 No Core: o `ClimaClient` real (HttpClient + resiliência) substitui o stub; teste de contrato.
   🔎 o `MonitorDePrevisaoWorker` abre alerta preventivo a partir do replay real.
 

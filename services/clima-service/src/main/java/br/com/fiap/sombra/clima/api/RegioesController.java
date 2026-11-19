@@ -34,7 +34,7 @@ public class RegioesController {
         this.cadastro = cadastro;
     }
 
-    @Operation(summary = "Lista as regiões climáticas", description = "Ordenadas pelo código, paginadas.")
+    @Operation(operationId = "listarRegioes", summary = "Lista as regiões climáticas", description = "Ordenadas pelo código, paginadas.")
     @ApiResponse(responseCode = "200", description = "A página de regiões")
     @ErrosDocumentados({400})
     @GetMapping
@@ -44,7 +44,7 @@ public class RegioesController {
         return Pagina.de(cadastro.listar(pagina, tamanho), RegiaoSaida::de);
     }
 
-    @Operation(summary = "Consulta uma região climática pelo código")
+    @Operation(operationId = "obterRegiao", summary = "Consulta uma região climática pelo código")
     @ApiResponse(responseCode = "200", description = "A região")
     @ErrosDocumentados({404})
     @GetMapping("/{codigo}")
@@ -52,7 +52,7 @@ public class RegioesController {
         return RegiaoSaida.de(cadastro.obter(codigo));
     }
 
-    @Operation(summary = "Cadastra uma região climática", description = "A estação de referência precisa existir (regra REGIAO_SEM_ESTACAO).")
+    @Operation(operationId = "criarRegiao", summary = "Cadastra uma região climática", description = "A estação de referência precisa existir (regra REGIAO_SEM_ESTACAO).")
     @ApiResponse(responseCode = "201", description = "Região cadastrada")
     @ErrosDocumentados({400, 409, 422})
     @PostMapping
@@ -61,7 +61,7 @@ public class RegioesController {
         return RegiaoSaida.de(cadastro.criar(dados.codigo(), dados.nome(), dados.estacao()));
     }
 
-    @Operation(summary = "Edita o nome e a estação de referência de uma região")
+    @Operation(operationId = "atualizarRegiao", summary = "Edita o nome e a estação de referência de uma região")
     @ApiResponse(responseCode = "200", description = "Região editada")
     @ErrosDocumentados({400, 404, 422})
     @PutMapping("/{codigo}")
@@ -70,7 +70,7 @@ public class RegioesController {
         return RegiaoSaida.de(cadastro.atualizar(codigo, dados.nome(), dados.estacao()));
     }
 
-    @Operation(summary = "Remove uma região climática",
+    @Operation(operationId = "removerRegiao", summary = "Remove uma região climática",
             description = "As observações ficam com a estação. O Core passa a receber 404 para essa região e a trata como desconhecida.")
     @ApiResponse(responseCode = "204", description = "Região removida")
     @ErrosDocumentados({404})

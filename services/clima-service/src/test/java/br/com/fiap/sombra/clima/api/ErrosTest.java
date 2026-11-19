@@ -49,7 +49,7 @@ class ErrosTest {
         mvc.perform(get("/teste/nao-existe/SP-XX"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.title").value("Recurso não encontrado"))
-                .andExpect(jsonPath("$.detail").value("Região climática 'SP-XX' não encontrado(a)."));
+                .andExpect(jsonPath("$.detail").value("Não existe região climática 'SP-XX'."));
     }
 
     @Test
@@ -103,12 +103,12 @@ class ErrosTest {
 
         @GetMapping("/teste/nao-existe/{codigo}")
         String naoExiste(@PathVariable String codigo) {
-            throw new RecursoNaoEncontrado("Região climática", codigo);
+            throw new RecursoNaoEncontrado("região climática", codigo);
         }
 
         @GetMapping("/teste/duplicado")
         String duplicado() {
-            throw new RecursoJaExiste("Região climática", "SP-MIRANTE");
+            throw new RecursoJaExiste("região climática", "SP-MIRANTE");
         }
 
         @PostMapping("/teste/validacao")

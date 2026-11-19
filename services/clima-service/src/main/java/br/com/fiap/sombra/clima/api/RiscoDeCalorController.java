@@ -68,7 +68,7 @@ public class RiscoDeCalorController {
         }
     }
 
-    @Operation(summary = "Consulta o risco de calor de uma região agora e nas próximas 24 h",
+    @Operation(operationId = "consultarRiscoDeCalor", summary = "Consulta o risco de calor de uma região agora e nas próximas 24 h",
             description = "O agora é a observação mais recente da estação de referência (no relógio do replay, se ele "
                     + "estiver ligado). A previsão usa o modelo de ML (fonte = onnx) ou, sem ele, a regra de persistência "
                     + "do pico (fonte = regra). Sem observação nas últimas 3 h, responde 503.")

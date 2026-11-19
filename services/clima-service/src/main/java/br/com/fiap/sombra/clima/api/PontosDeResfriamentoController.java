@@ -37,7 +37,7 @@ public class PontosDeResfriamentoController {
         this.cadastro = cadastro;
     }
 
-    @Operation(summary = "Lista os pontos de resfriamento", description = "Ordenados pelo nome, paginados.")
+    @Operation(operationId = "listarPontos", summary = "Lista os pontos de resfriamento", description = "Ordenados pelo nome, paginados.")
     @ApiResponse(responseCode = "200", description = "A página de pontos")
     @ErrosDocumentados({400})
     @GetMapping
@@ -47,7 +47,7 @@ public class PontosDeResfriamentoController {
         return Pagina.de(cadastro.listar(pagina, tamanho), PontoSaida::de);
     }
 
-    @Operation(summary = "Busca os pontos dentro de um raio, do mais perto ao mais longe",
+    @Operation(operationId = "buscarPontosProximos", summary = "Busca os pontos dentro de um raio, do mais perto ao mais longe",
             description = "Distância de haversine em km. Raio maior que 0 e no máximo 20 km (regra RAIO_INVALIDO).")
     @ApiResponse(responseCode = "200", description = "Os pontos dentro do raio")
     @ErrosDocumentados({400, 422})
@@ -59,7 +59,7 @@ public class PontosDeResfriamentoController {
         return cadastro.proximos(new Coordenada(lat, lon), raioKm).stream().map(PontoProximoSaida::de).toList();
     }
 
-    @Operation(summary = "Consulta um ponto de resfriamento")
+    @Operation(operationId = "obterPonto", summary = "Consulta um ponto de resfriamento")
     @ApiResponse(responseCode = "200", description = "O ponto")
     @ErrosDocumentados({400, 404})
     @GetMapping("/{id}")
@@ -67,7 +67,7 @@ public class PontosDeResfriamentoController {
         return PontoSaida.de(cadastro.obter(id));
     }
 
-    @Operation(summary = "Cadastra um ponto de resfriamento",
+    @Operation(operationId = "criarPonto", summary = "Cadastra um ponto de resfriamento",
             description = "Abre antes de fechar (HORARIO_INVALIDO), coordenada válida (COORDENADA_INVALIDA) e sempre com a fonte.")
     @ApiResponse(responseCode = "201", description = "Ponto cadastrado")
     @ErrosDocumentados({400, 422})
@@ -77,7 +77,7 @@ public class PontosDeResfriamentoController {
         return PontoSaida.de(cadastro.criar(dados.paraDados()));
     }
 
-    @Operation(summary = "Edita um ponto de resfriamento")
+    @Operation(operationId = "atualizarPonto", summary = "Edita um ponto de resfriamento")
     @ApiResponse(responseCode = "200", description = "Ponto editado")
     @ErrosDocumentados({400, 404, 422})
     @PutMapping("/{id}")
@@ -86,7 +86,7 @@ public class PontosDeResfriamentoController {
         return PontoSaida.de(cadastro.atualizar(id, dados.paraDados()));
     }
 
-    @Operation(summary = "Remove um ponto de resfriamento")
+    @Operation(operationId = "removerPonto", summary = "Remove um ponto de resfriamento")
     @ApiResponse(responseCode = "204", description = "Ponto removido")
     @ErrosDocumentados({400, 404})
     @DeleteMapping("/{id}")

@@ -37,7 +37,11 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+    deep-linking: true
+    display-request-duration: true
+    tags-sorter: alpha
   paths-to-match: /api/**
+  default-produces-media-type: application/json
   writer-with-order-by-keys: true
 
 server:

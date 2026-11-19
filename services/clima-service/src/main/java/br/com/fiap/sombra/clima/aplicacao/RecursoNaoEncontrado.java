@@ -5,7 +5,8 @@ public class RecursoNaoEncontrado extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
+    /** @param recurso o nome do recurso em minúsculas (ex.: "região climática") */
     public RecursoNaoEncontrado(String recurso, Object identificador) {
-        super(recurso + " '" + identificador + "' não encontrado(a).");
+        super("Não existe " + recurso + " '" + identificador + "'.");
     }
 }
