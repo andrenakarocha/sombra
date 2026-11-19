@@ -808,8 +808,12 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   utilitários e o tema escuro automático; a folhagem, a marca e os ícones de forma da direção de arte; rota protegida
   só para Operador e Admin; JWT no sessionStorage; erros com o código curto; um hub SignalR para o painel inteiro; o
   Vite repassa `/api` e `/hubs` ao Core, sem CORS; login conferido em 1440 e 390 px).
-- [ ] **F7.2** 🤖 Visão geral (KPIs + indicador de impacto), Alertas e Casas (PII mascarada) com SignalR.
-  🔎 os KPIs mudam ao vivo com o simulador.
+- [x] **F7.2** 🤖 Visão geral (KPIs + indicador de impacto), Alertas e Casas (PII mascarada) com SignalR.
+  🔎 os KPIs mudam ao vivo com o simulador — 2026-11-18 (Chrome automatizado contra o Core do compose, com o operador da
+  demo: durante o `make sim CENARIO=onda-de-calor`, os alertas ativos foram de 2 para 1 e a mediana até o "estou bem"
+  apareceu sem recarregar; o feed mostrou as leituras, o "estou bem" e a resolução, com o apelido da casa. Casas sem dado
+  pessoal: o Core nem entrega moradores ao papel Operador. 8 testes no Vitest, um deles com o evento do hub mudando os
+  KPIs; conferido em 1440 e 390 px).
 - [ ] **F7.3** 🤖 Risco Cidadão: farol global e por categoria, feed com as três traduções, série por sink, evidência
   técnica. Fecha o pilar "Dashboard" do Cyber.
   🔎 rodando a auditoria (F2.8), o farol muda ao vivo.
