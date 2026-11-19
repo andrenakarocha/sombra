@@ -67,7 +67,25 @@ sequenceDiagram
 
 ## Telas
 
-> 📷 Os prints entram aqui (F6.8), tirados no celular com o modo demonstração.
+> Tirados em 19/11 no emulador Android (Pixel 7, Expo Go), com o app falando com o Core de verdade (`make up`) e logado
+> como a Ana. As pessoas e os documentos são do seed, fictícios. O alerta das telas Casa, Alertas e Alerta é o do vídeo de
+> Mobile: a Sentinela simulada chegou a perigo, a Ana tocou em "Estou indo" e a Dona Lurdes apertou ESTOU BEM.
+
+| Entrar | Início | Casa | Alertas |
+|---|---|---|---|
+| <img src="docs/prints/01-entrar.png" width="200" alt="Entrar"> | <img src="docs/prints/02-inicio.png" width="200" alt="Início"> | <img src="docs/prints/03-casa.png" width="200" alt="Casa"> | <img src="docs/prints/04-alertas.png" width="200" alt="Alertas"> |
+
+| Alerta | Perto de mim | Privacidade | Ajustes |
+|---|---|---|---|
+| <img src="docs/prints/05-alerta.png" width="200" alt="Alerta"> | <img src="docs/prints/06-perto-de-mim.png" width="200" alt="Perto de mim"> | <img src="docs/prints/07-privacidade.png" width="200" alt="Privacidade"> | <img src="docs/prints/08-ajustes.png" width="200" alt="Ajustes"> |
+
+| Morador | Rotina | Sentinela | Sincronização |
+|---|---|---|---|
+| <img src="docs/prints/09-morador.png" width="200" alt="Morador"> | <img src="docs/prints/10-rotina.png" width="200" alt="Rotina"> | <img src="docs/prints/11-sentinela.png" width="200" alt="Sentinela"> | <img src="docs/prints/12-sincronizacao.png" width="200" alt="Sincronização"> |
+
+| Modo Idoso |
+|---|
+| <img src="docs/prints/13-modo-idoso.png" width="200" alt="Modo Idoso"> |
 
 | Tela | Rota | O que mostra |
 |---|---|---|

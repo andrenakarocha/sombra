@@ -821,8 +821,9 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   ⏸ 2026-11-18: checklist da spec no README; faltavam a dica do leitor de tela em interruptores, chips e 16 botões
   (agora obrigatória no tipo do `Botao`) e o tamanho do texto dentro do app (Normal, Grande, Maior, gravado no
   aparelho), ambos com teste. Falta o operador gravar o vídeo com TalkBack.
-- [ ] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
-  🔎 todos os critérios da rubrica de Mobile com evidência.
+- [x] **F6.8** 🤖 README (Ficha, como rodar, variáveis, prints de todas as telas).
+  🔎 todos os critérios da rubrica de Mobile com evidência — 2026-11-19 (as 13 telas em `mobile/docs/prints/`, tiradas no
+  emulador com o Core de verdade, na seção Telas do README).
   ⏸ 2026-11-18: README com a Ficha, a rubrica com onde está e a evidência de cada critério, a arquitetura, as 13 telas,
   o checklist de acessibilidade com a situação honesta de cada item, como rodar com e sem o Core, as variáveis, a
   qualidade e as limitações; faltam os prints das telas, tirados pelo operador no celular.
