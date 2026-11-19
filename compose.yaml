@@ -84,6 +84,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sombra_clima
       SPRING_DATASOURCE_USERNAME: sombra_clima
       SPRING_DATASOURCE_PASSWORD: ${CLIMA_DB_PASSWORD:?rode make env}
+      # a coleta ao vivo da Open-Meteo (sem chave), a cada 10 min
+      CLIMA_OPEN_METEO_HABILITADO: ${CLIMA_OPEN_METEO_HABILITADO:-true}
+      CLIMA_OPEN_METEO_URL: ${CLIMA_OPEN_METEO_URL:-https://api.open-meteo.com/v1/forecast}
     ports:
       - "127.0.0.1:8081:8081"
     depends_on:

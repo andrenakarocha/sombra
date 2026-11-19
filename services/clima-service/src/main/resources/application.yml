@@ -46,6 +46,16 @@ server:
     include-stacktrace: never
     include-message: never
 
+clima:
+  open-meteo:
+    # a coleta ao vivo liga no compose e na VM (CLIMA_OPEN_METEO_HABILITADO=true); nos testes, nunca
+    habilitado: ${CLIMA_OPEN_METEO_HABILITADO:false}
+    url: ${CLIMA_OPEN_METEO_URL:https://api.open-meteo.com/v1/forecast}
+    intervalo: PT10M
+    timeout: PT5S
+    tentativas: 3
+    espera: PT1S
+
 management:
   endpoints:
     web:

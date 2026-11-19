@@ -569,8 +569,11 @@ provando o antes e o depois.
   com o corpo `Problema`; o `ContratoOpenApiTest` confere isso e o `docs/contratos/clima-service.openapi.json`
   versionado; 31 testes de API com status e corpo no PostgreSQL real; o teste pegou e a F3.4 corrigiu o horário
   deslocado pelo fuso da JVM).
-- [ ] **F3.5** 🤖 `FonteMeteorologica`: `OpenMeteoClient` agendado e resiliente + `ReplayInmet` (`POST`/`DELETE /replay`).
-  🔎 o replay de nov/2023 avança hora a hora; o modo ao vivo traz dado atual (P7).
+- [x] **F3.5** 🤖 `FonteMeteorologica`: `OpenMeteoClient` agendado e resiliente + `ReplayInmet` (`POST`/`DELETE /replay`).
+  🔎 o replay de nov/2023 avança hora a hora; o modo ao vivo traz dado atual (P7) — 2026-11-18 (no compose: a coleta
+  gravou as 25 horas de hoje da Open-Meteo e o replay avançou 3 h em 3 s na velocidade 3600; nos testes, o relógio
+  controlado avança uma hora de dado por minuto e o replay encerra sozinho no fim dos dados; o cliente tenta 3 vezes com
+  espera crescente, pula hora nula ou fora da faixa e converte a radiação de W/m² para kJ/m²; a coleta não duplica hora).
 - [ ] **F3.6** 🤖 `PrevisorDeCalor` com `RegraPrevisorDeCalor` (o ONNX entra na F9.1) e `/risco-calor` completo.
   🔎 teste de API do risco, com status e corpo.
 - [ ] **F3.7** 🤖 Logs JSON (§6) aceitando o `X-Correlation-Id` do Core + actuator health.
@@ -965,7 +968,7 @@ F11.8 (VM no Azure) saíram.**
 | P4 | Testcontainers funciona na máquina de desenvolvimento (Docker) | F1.6 | ✅ 2026-11-17: Testcontainers 4.17 sobe o `postgres:16-alpine` de dentro do contêiner do SDK (socket do Docker, grupo e rede do host) |
 | P5 | A chave Gemini atual responde, com cota gratuita suficiente para a demo | F2.6 | ✅ 2026-11-18: `models.list` e `generateContent` respondem com a chave (header `x-goog-api-key`); `gemini-3.5-flash-lite` em 1–4 s; os Flash 3.6/3.8 davam 503 ou timeout na hora, daí o padrão Flash-Lite, o timeout de 8 s e o template |
 | P6 | O Semgrep CE em modo taint cobre as regras planejadas em C# | F2.7 | ✅ 2026-11-18 (Semgrep 1.177.0): as 3 regras acham os 8 vazamentos do canário, nenhum falso positivo, e o Core de produção sai limpo; limites: o parser não lê os raw strings do C# 11 dos testes (fora da varredura) e parâmetro solto (a senha na query do A7) não é fonte, o que fica com o taint dinâmico |
-| P7 | A Open-Meteo dá, sem chave, as variáveis horárias que o modelo usa (temperatura, umidade, pressão, radiação, vento), incluindo horas passadas | F3.5 | ⬜ |
+| P7 | A Open-Meteo dá, sem chave, as variáveis horárias que o modelo usa (temperatura, umidade, pressão, radiação, vento), incluindo horas passadas | F3.5 | ✅ 2026-11-18: chamada real com `past_hours=24`, sem chave; radiação vem em W/m² (× 3,6 = kJ/m² do INMET) |
 | P8 | XGBoost → ONNX (onnxmltools) e ONNX Runtime Java dão a mesma probabilidade | F4.6, F9.1 | ⬜ |
 | P9 | O ESP32 no Wokwi conecta num broker MQTT público pela rede `Wokwi-GUEST`, e o projeto abre por link público | F5.3, F5.5 | ⬜ |
 | P10 | `@microsoft/signalr` funciona no Expo SDK 58 (Expo Go) | F6.3 | ⬜ |
