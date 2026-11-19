@@ -1011,9 +1011,11 @@ F11.8 (VM no Azure) saíram.**
   ⏸ 2026-11-19: arquitetura em Mermaid, "como rodar tudo" com as URLs conferidas, o mapa das partes e os integrantes;
   o `make checklist` confere os links relativos dos 54 `.md` (nenhum quebrado; testado com um quebrado de propósito).
   O bairro entrou na Ficha (Moema, D20); falta o `prompts.md` ganhar as partes que ainda vão fechar.
-- [ ] **F12.2** 🤖 A partir da F0.16: `docs/entrevista.md`, `docs/problema.md`, `docs/rabiscos/` (wireframes, fluxo de
+- [x] **F12.2** 🤖 A partir da F0.16: `docs/entrevista.md`, `docs/problema.md`, `docs/rabiscos/` (wireframes, fluxo de
   dados, circuito) e a Ficha final.
-  🔎 nenhuma informação que identifique a pessoa.
+  🔎 nenhuma informação que identifique a pessoa — 2026-11-19 (a transcrição com "a filha" no lugar do nome, só o
+  primeiro nome da Dona Cida, que ela autorizou na gravação, e nenhum remédio; a tabela do que ouvimos e do que mudou no
+  projeto; o problema com os indicadores; os rabiscos apontam para as telas, os contratos e o circuito de hoje).
 - [x] **F12.3** 🤖 PDF de Cyber (`security/entrega/cyber.html` → PDF): capa com integrantes e uma seção para cada pilar
   (Parsing PII, Taint, IA, Dashboard), com prints de código e de evidência. ZIP do código **separado**.
   🔎 os 4 pilares no PDF; o ZIP abre e compila — 2026-11-19 (`make entrega-cyber`: 13 páginas geradas do repositório,

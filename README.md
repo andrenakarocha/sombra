@@ -78,6 +78,9 @@ make test      # os testes de todas as partes
 
 ## Documentação
 
+- [A entrevista](docs/entrevista.md): a Dona Cida e a filha, e o que mudou no projeto por causa delas
+- [O problema](docs/problema.md): o cidadão, o problema em uma frase e os indicadores
+- [Rabiscos](docs/rabiscos/): telas, fluxo de dados e circuito
 - [Plano mestre](docs/PLANO.md): decisões, arquitetura, fases e critérios de aceite
 - [Specs por disciplina](docs/specs/)
 - [Uso de IA](prompts.md): registro exigido pela GS
