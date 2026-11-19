@@ -60,7 +60,39 @@ public static partial class GuardaDaTraducao
         return motivo.Length == 0;
     }
 
+    /// <summary>
+    /// Confere a tradução e a coerência com o evento: a forma não basta, porque a IA já respondeu com o sentido trocado
+    /// (casos reais, nos testes). A correção técnica precisa citar o remédio do tipo de evento, o cidadão não pode ler que
+    /// o Sombra tentou enviar o dado num acesso negado, e ninguém promete o que o sistema não faz.
+    /// </summary>
+    /// <param name="traducao">A tradução.</param>
+    /// <param name="evento">O evento traduzido.</param>
+    /// <param name="motivo">Por que reprovou, sem o texto (vai para o log).</param>
+    /// <returns><c>true</c> quando pode ser usada.</returns>
+    public static bool Aprovar(TraducaoDeRisco traducao, EventoParaTraduzir evento, out string motivo)
+    {
+        ArgumentNullException.ThrowIfNull(evento);
+        if (!Aprovar(traducao, out motivo))
+        {
+            return false;
+        }
+
+        string cidadao = traducao.Cidadao.ToLowerInvariant();
+        string tecnico = traducao.Tecnico.ToLowerInvariant();
+        motivo = evento switch
+        {
+            _ when Palavra().Matches(cidadao).Any(p => p.Value is "equipe") => "cidadao_promete_o_que_nao_existe",
+            { Tipo: var t } when t.StartsWith("MQTT_", StringComparison.Ordinal) && !Cita(tecnico, "hmac", "segredo", "relógio") => "tecnico_sem_a_correcao_do_tipo",
+            { Regra: "acesso-negado" } when !Cita(tecnico, "token", "login", "credencial", "correlationid") => "tecnico_sem_a_correcao_do_tipo",
+            { Regra: "acesso-negado" } when Palavra().Matches(cidadao).Any(p => p.Value is "enviar" or "enviou" or "enviamos" or "tentamos") => "cidadao_contradiz_o_evento",
+            _ => string.Empty,
+        };
+        return motivo.Length == 0;
+    }
+
     private static bool SemAcento(string texto) => Palavra().Matches(texto.ToLowerInvariant()).Any(p => _semAcento.Contains(p.Value));
+
+    private static bool Cita(string texto, params string[] termos) => termos.Any(t => texto.Contains(t, StringComparison.Ordinal));
 
     // Uma frase termina em pontuação seguida de espaço ou do fim: "art. 11" no meio não conta, nem os pontos de um número.
     [GeneratedRegex(@"[.!?]+(?=\s|$)", RegexOptions.CultureInvariant)]

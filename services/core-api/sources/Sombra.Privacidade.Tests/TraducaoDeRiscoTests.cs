@@ -62,7 +62,7 @@ public sealed class TraducaoDeRiscoTests
         Assert.IsGreaterThan(10_000, conferidos);
     }
 
-    /// <summary>Todo template, em toda combinação, passa na mesma guarda que a resposta da IA.</summary>
+    /// <summary>Todo template, em toda combinação, passa na mesma guarda que a resposta da IA, coerência incluída.</summary>
     [TestMethod]
     public void TemplatesPassamNaGuarda()
     {
@@ -70,7 +70,7 @@ public sealed class TraducaoDeRiscoTests
         {
             TraducaoDeRisco template = TemplatesDeRisco.Para(evento);
 
-            Assert.IsTrue(GuardaDaTraducao.Aprovar(template, out string motivo), $"{evento.Tipo}/{evento.Sink}/{evento.Categoria}: {motivo}");
+            Assert.IsTrue(GuardaDaTraducao.Aprovar(template, evento, out string motivo), $"{evento.Tipo}/{evento.Sink}/{evento.Categoria}/{evento.Regra}: {motivo}");
             Assert.AreEqual(TraducaoDeRisco.FonteTemplate, template.Fonte);
         }
     }
@@ -91,6 +91,33 @@ public sealed class TraducaoDeRiscoTests
     public void GuardaDaIa(string cidadao, string motivo)
     {
         bool aprovada = GuardaDaTraducao.Aprovar(new TraducaoDeRisco(cidadao, "Bloqueado (LGPD art. 11).", "Use Sensivel<T> no log.", TraducaoDeRisco.FonteIa), out string obtido);
+
+        Assert.AreEqual(motivo, obtido);
+        Assert.AreEqual(motivo.Length == 0, aprovada);
+    }
+
+    /// <summary>
+    /// A coerência com o evento, com as respostas reais do Gemini (19/11) que passavam na forma e erravam o sentido: no
+    /// MQTT, a correção técnica sugeria Sensivel&lt;T&gt; em vez do segredo HMAC; no acesso negado, o cidadão lia que o
+    /// Sombra "tentou enviar" o dado e o técnico não citava o token; e uma promessa inventada ("nossa equipe").
+    /// </summary>
+    /// <param name="tipo">O tipo do evento.</param>
+    /// <param name="regra">A regra do evento.</param>
+    /// <param name="cidadao">A mensagem do cidadão.</param>
+    /// <param name="tecnico">A sugestão técnica.</param>
+    /// <param name="motivo">O motivo esperado (vazio quando aprova).</param>
+    [TestMethod]
+    [DataRow("MQTT_REPLAY", "mqtt", "Detectamos uma mensagem repetida vinda do aparelho que mede o calor da sua casa e a bloqueamos por segurança. Você não precisa fazer nada.", "Conferir o segredo HMAC e o relógio do dispositivo na origem snt-7f3a9c; não use Sensivel<T> nem [PermitePii] nesse caso.", "")]
+    [DataRow("MQTT_ASSINATURA_INVALIDA", "mqtt", "Uma mensagem falsa chegou em nome do aparelho da casa, e o Sombra descartou.", "A tentativa de assinatura inválida ocorreu no identificador snt-7f3a9c. Recomenda-se validar a autenticação do dispositivo usando o padrão Sensivel<T> e restringir o uso de [PermitePii].", "tecnico_sem_a_correcao_do_tipo")]
+    [DataRow("MQTT_ASSINATURA_INVALIDA", "mqtt", "Identificamos um acesso incorreto no seu dispositivo de segurança. Não é preciso fazer nada, nossa equipe já está cuidando disso para garantir sua proteção.", "Confira o segredo HMAC do dispositivo.", "cidadao_promete_o_que_nao_existe")]
+    [DataRow("ACESSO_NEGADO", "acesso-negado", "Tentamos enviar uma informação sobre a sua saúde, mas o sistema de segurança impediu para proteger sua privacidade. Não é preciso fazer nada.", "Confira se o cliente mandou o token.", "cidadao_contradiz_o_evento")]
+    [DataRow("ACESSO_NEGADO", "acesso-negado", "Alguém tentou ver um dado de saúde da casa sem permissão, e o Sombra bloqueou.", "O dado de saúde tentou sair pela RespostaHttp. Sugestão: usar Sensivel<T> e garantir que o payload contenha apenas metadados.", "tecnico_sem_a_correcao_do_tipo")]
+    [DataRow("ACESSO_NEGADO", "acesso-negado", "Alguém tentou ver um dado de saúde da casa sem permissão, e o Sombra bloqueou.", "Acesso sem credencial: confira se o cliente mandou o token e siga o correlationId.", "")]
+    public void GuardaConfereACoerenciaComOEvento(string tipo, string regra, string cidadao, string tecnico, string motivo)
+    {
+        EventoParaTraduzir evento = new(tipo, SinkDePii.RespostaHttp, CategoriaDePii.Saude, SeveridadeDePii.Alta, regra, "api/v1/x", Bloqueado: true);
+
+        bool aprovada = GuardaDaTraducao.Aprovar(new TraducaoDeRisco(cidadao, "Tentativa bloqueada (LGPD art. 46).", tecnico, TraducaoDeRisco.FonteIa), evento, out string obtido);
 
         Assert.AreEqual(motivo, obtido);
         Assert.AreEqual(motivo.Length == 0, aprovada);
