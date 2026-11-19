@@ -81,6 +81,7 @@ jobs:
               - 'Makefile'
               - 'services/core-api/**'
               - 'services/clima-service/**'
+              - 'web/painel/**'
               - 'tools/novo-env.py'
               - '.env.example'
             scripts:
