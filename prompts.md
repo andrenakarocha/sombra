@@ -137,4 +137,21 @@ integrante sabe explicar o que entregou.
    público, e o Core de verdade aceita a telemetria, recusa a adulterada e o replay, manda o comando assinado de volta e
    o firmware confere."*
 
+4. *"Com a Sentinela rodando no Wokwi, o Core passou a descartar a telemetria depois de uns dez minutos e o firmware
+   recusou o comando da família: ache a causa pelos logs e corrija no firmware, com os testes e a compilação de novo."*
+
+## Vídeos das disciplinas
+
+1. *"Grave os cinco vídeos o mais automático possível, porque não vou ter tempo de gravar: um roteiro em código por
+   vídeo, com a tela de verdade (o painel, o Wokwi, a VM e o app no emulador Android) e a saída real dos comandos, voz
+   sintética em português, legenda e a duração conferida contra o limite de cada disciplina."*
+2. *"Antes de me mostrar um vídeo, confira os quadros de cada cena. Se alguma coisa não aparece na tela, ache a causa e
+   corrija no código do Sombra ou do gravador, nunca escondendo no vídeo."*
+
+## Entrevista e problema
+
+1. *"Com a transcrição da entrevista, escreva a entrevista sem nada que identifique a pessoa, com o que ouvimos e o que
+   mudou no projeto por causa disso, e o problema em uma frase com os indicadores. Use só números que estão no
+   repositório."*
+
 <!-- Cada parte acrescenta aqui os seus prompts principais quando fecha (PLANO §0, regra 16). -->
