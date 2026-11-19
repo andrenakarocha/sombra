@@ -953,6 +953,10 @@ falha documentados.
   espera a F10.1 (a organização, o projeto e o PAT do operador): `make qa-azure`.
 - [ ] **F10.5** 🧑🤖 Prints (Playwright com sessão ou manual), matriz de rastreabilidade e PDF.
   🔎 o PDF tem o link do projeto e prints de todas as telas exigidas.
+  ⏸ 2026-11-19: `make qa-prints` tira os 66 prints pelo id de cada work item (o operador só faz o login no Chrome que
+  abrir) e `make qa-pdf` monta o PDF com a capa, o link do projeto e do pitch, o resumo, a matriz Feature × Test Case ×
+  teste automatizado (50 linhas) e os prints, com aviso em vermelho para o que faltar. Prints e PDF ficam fora do Git
+  (mostram o professor). Espera a F10.1 e a F10.4 no Azure de verdade.
 
 **✅ Aceite F10:** Features e Test Cases completos no Azure · professor como Admin · PDF pronto.
 

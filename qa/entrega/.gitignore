@@ -1,0 +1,6 @@
+# fora do Git: a sessão do navegador (cookies do Azure), os prints (mostram o professor e a conta de quem entrou) e o
+# PDF montado com eles, que vai só para o Teams
+.sessao/
+prints/
+qa.html
+qa.pdf
