@@ -3,7 +3,7 @@
 > Prof. Vitor Lasse · spec [`07-cyber-privacidade.md`](../../docs/specs/07-cyber-privacidade.md). O professor pediu **um
 > PDF** com a documentação e, **separado**, o código (ZIP ou link do GitHub), sem misturar, mais o vídeo do dashboard.
 
-**Vídeo do dashboard:** ‹link do YouTube (não listado)› · roteiro em [`docs/videos/cyber.md`](../../docs/videos/cyber.md)
+**Vídeo do dashboard:** https://youtu.be/O-JLswyySPU · roteiro em [`docs/videos/cyber.md`](../../docs/videos/cyber.md)
 
 | Arquivo | O que é |
 |---|---|

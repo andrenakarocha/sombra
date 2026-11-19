@@ -5,7 +5,7 @@
 > assinado nos dois sentidos. Não é um projeto paralelo: é a Sentinela `snt-7f3a9c` da casa da Dona Lurdes no seed do
 > Core, a mesma que o app vincula pelo QR e que o painel acompanha ao vivo.
 
-**Wokwi:** ‹link público do projeto› · **Vídeo (até 4 min):** ‹link do YouTube (não listado)› · roteiro em
+**Wokwi:** https://wokwi.com/projects/481162052559561729 · **Vídeo (até 4 min):** https://youtu.be/TOs7sIUAHls · roteiro em
 [`docs/videos/iot.md`](../../docs/videos/iot.md) · **Integrantes:** [`integrantes.txt`](integrantes.txt)
 
 ## Circuito

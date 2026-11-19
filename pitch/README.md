@@ -4,7 +4,7 @@ Vídeo de até 4 minutos com a solução e as entregas que mais somaram, enviado
 com [HyperFrames](https://hyperframes.heygen.com) (HTML + GSAP renderizado para MP4), no mesmo pipeline do pitch HENRY
 do Challenge, com a identidade do Sombra ([`design.md`](design.md)).
 
-**Saída:** `renders/sombra-pitch.mp4` (1920 × 1080, 30 fps, 3:01).
+**No YouTube:** https://youtu.be/g6WIFJjfmk8 · **Saída:** `renders/sombra-pitch.mp4` (1920 × 1080, 30 fps, 3:01).
 
 ```bash
 ./build.sh                  # sincroniza os tempos, renderiza os 5 atos, junta e mixa o áudio

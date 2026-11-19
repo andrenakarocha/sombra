@@ -12,7 +12,7 @@ em ondas de calor. Com dados **reais** do INMET, o modelo responde:
 | Dados e proveniência | [`dados/README.md`](dados/README.md) |
 | Modelos para produção | [`modelo/`](modelo/) |
 | Figuras | [`figuras/`](figuras/) |
-| Vídeo (até 5 min) | a publicar (F13.6) |
+| Vídeo (até 5 min) | https://youtu.be/avegWKhj2ag |
 
 ## Resultado em uma frase
 
