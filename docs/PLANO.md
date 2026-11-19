@@ -864,9 +864,14 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   `root:sombra-ops`, nunca no log; os `/health` de `api`, `clima` e `painel.sombra.local` 200 de dentro da VM e do host;
   só a porta 80 aberta para a rede, e escrita no Clima pelo nginx dá 403. O download do GitHub espera o primeiro release
   (F8.3); aqui os artefatos vieram de `infra/scripts/empacotar.sh`, que faz o mesmo que o `release.yml`).
-- [ ] **F8.5** 🤖 Monitor (CPU, RAM, disco e serviços; limites em `monitor.conf`; alerta em log, journald e `POST` no Core)
+- [x] **F8.5** 🤖 Monitor (CPU, RAM, disco e serviços; limites em `monitor.conf`; alerta em log, journald e `POST` no Core)
   + `sombra-monitor.service` (`Type=notify`, `WatchdogSec`, `Restart=always`) + logrotate + regras do auditd.
-  🔎 `restart`, `stop` e `start` funcionam; um alerta aparece no painel.
+  🔎 `restart`, `stop` e `start` funcionam; um alerta aparece no painel — 2026-11-19 (na VM: `Type=notify` com
+  `WatchdogSec=30` e o status mostrando CPU, RAM e disco; `stop` deixa inativo, `start` e `restart` voltam; cada ciclo
+  grava `monitor.verificacao` no journal e em `/var/log/sombra/sombra-monitor.log`; com `stress-ng` a CPU foi a 100% e,
+  depois de 3 verificações seguidas, o alerta crítico apareceu no painel da própria VM (`painel.sombra.local`) em 57 s;
+  logrotate diário com 7 arquivos e a trilha de auditoria só por tempo; 6 regras do auditd em `/etc/sombra`,
+  `/opt/sombra`, nas units e no sudoers).
 - [ ] **F8.6** 🤖 Etapa 90 (validação) + scripts de falha 01–07 + evidências.
   🔎 cada falha gera recuperação ou registro, com print em `infra/evidencias/`.
 - [ ] **F8.7** 🧑🤖 Prova de reprodutibilidade: `vagrant destroy -f && vagrant up` sem nenhum passo manual; uma segunda

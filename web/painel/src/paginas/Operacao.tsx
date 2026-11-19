@@ -108,7 +108,7 @@ export function Operacao() {
                     <Icone nome={critico ? 'perigo' : 'atencao'} /> {critico ? 'Crítico' : 'Aviso'}
                   </span>
                   <span className="flex-1">
-                    <strong>{d.recurso}</strong> em <span className="font-mono">{d.host}</span>: {d.mensagem}
+                    <span className="font-mono">{d.host}</span> · {d.mensagem}
                   </span>
                   <time className="font-mono text-sm text-texto-suave">{d.momento ? formatarHora(d.momento) : formatarHora(a.recebidoEm)}</time>
                 </li>
