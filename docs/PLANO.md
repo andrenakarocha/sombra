@@ -840,11 +840,18 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
 
 **Objetivo:** os 6 critérios da rubrica de OS, com a VM reproduzível do zero. **Spec:** 08.
 
-- [ ] **F8.1** 🤖 `lib/log.sh` + `lib/auditoria.sh` (o quê, quando, quem, resultado; JSONL; `trap ERR`), `provision.sh`
+- [x] **F8.1** 🤖 `lib/log.sh` + `lib/auditoria.sh` (o quê, quando, quem, resultado; JSONL; `trap ERR`), `provision.sh`
   orquestrador idempotente e `Vagrantfile`.
-  🔎 `vagrant up` grava `provision.log` e `auditoria.jsonl` (P11).
-- [ ] **F8.2** 🤖 Etapas 10 (host), 20 (rede), 30 (DNS com dnsmasq, zona `sombra.local`) e 40 (usuários e permissões).
-  🔎 `hostnamectl`, `ip a`, `dig api.sombra.local`, `id sombra`.
+  🔎 `vagrant up` grava `provision.log` e `auditoria.jsonl` (P11) — 2026-11-19 (Ubuntu 24.04 `bento/ubuntu-24.04` no
+  VirtualBox 7.2 com o Vagrant 2.4.9: os dois arquivos em `/var/log/sombra`, cada linha com quando, quem (o usuário por
+  trás do sudo), uid, host, ação e resultado; a primeira rodada falhou de verdade no apt e o `trap` registrou a linha, o
+  comando e o código 100, e o orquestrador parou na etapa; 17 testes das bibliotecas num Ubuntu descartável no CI).
+- [x] **F8.2** 🤖 Etapas 10 (host), 20 (rede), 30 (DNS com dnsmasq, zona `sombra.local`) e 40 (usuários e permissões).
+  🔎 `hostnamectl`, `ip a`, `dig api.sombra.local`, `id sombra` — 2026-11-19 (na VM: `sombra-srv01.sombra.local` no fuso
+  de São Paulo; `eth1` com 192.168.56.10/24 pelo netplan; `api`, `clima`, `painel` e o próprio host respondem
+  192.168.56.10 e o resto sai pelo DNS da rede; `sombra` sem shell no grupo `sombra-ops`, com sudoers só para os
+  serviços `sombra-*`; idempotência: a segunda rodada não mudou nada. Na VM a verificação pegou três defeitos: índice do
+  apt velho, `escrever_arquivo` num pipe (subshell) e o dnsmasq parado pela configuração padrão do pacote).
 - [ ] **F8.3** 🤖 Workflow de release (`release.yml`, adiado da F0.12): core linux-x64, jar do clima, dist do painel e
   `SHA256SUMS`, com a mesma fixação de actions por SHA do `ci.yml`.
   🔎 um release de teste no GitHub com os checksums.
@@ -1049,7 +1056,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: as cinco páginas ao vivo pelo hub (o Core passou a emitir o `RiscoCidadaoAtualizado`), E2E verde (6) e 12 testes no Vitest, prints revisados em três larguras; o painel sobe no compose pelo nginx |
-| F8 Infra (OS) | ⬜ não iniciada | | | |
+| F8 Infra (OS) | 🟨 em andamento | 2026-11-18 | | |
 | F9 Integração | ⬜ não iniciada | | | |
 | F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; faltam a F10.1 (Azure, 🔑), a F10.4 e a F10.5 |
 | F11 Polimento | ⬜ não iniciada | | | |
