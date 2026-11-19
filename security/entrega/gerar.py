@@ -21,6 +21,7 @@ RAIZ = pathlib.Path(__file__).resolve().parents[2]
 AQUI = RAIZ / "security" / "entrega"
 PRIV = RAIZ / "services" / "core-api" / "sources" / "Sombra.Privacidade"
 REPO = "https://github.com/andrenakarocha/sombra"
+VIDEO = "https://youtu.be/O-JLswyySPU"  # o vídeo do dashboard (YouTube, não listado)
 INTEGRANTES = [
     ("André Nakamatsu Rocha", "RM555004"),
     ("João Marcelo Furtado Romero", "RM555199"),
@@ -343,7 +344,7 @@ pre.saida {{ background: var(--cor-noite-900); color: var(--cor-areia-50); borde
   <div class="rodape">
     <div><h3>Integrantes</h3><ul>{integrantes}</ul></div>
     <div><h3>Entrega</h3><p>Cybersecurity · Prof. Vitor Lasse<br>Global Solution 2026.2 · FIAP<br>Engenharia de Software, 3º ano<br>19 de novembro de 2026</p>
-    <p>Código: <a href="{REPO}">{REPO.removeprefix('https://')}</a><br>e o ZIP <code style="background:none;color:inherit">sombra-codigo.zip</code>, entregue à parte.</p></div>
+    <p>Código: <a href="{REPO}">{REPO.removeprefix('https://')}</a><br>e o ZIP <code style="background:none;color:inherit">sombra-codigo.zip</code>, entregue à parte.<br>Vídeo do dashboard: <a href="{VIDEO}">{VIDEO.removeprefix('https://')}</a></p></div>
   </div>
 </section>
 
