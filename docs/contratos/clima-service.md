@@ -40,7 +40,7 @@ Regras (`regra` no 422): `OBSERVACAO_FALTANTE` (-9999 do INMET), `UMIDADE_FORA_D
 | GET · POST | `/pontos-de-resfriamento` | lista e cadastra pontos |
 | GET · PUT · DELETE | `/pontos-de-resfriamento/{id}` | consulta, edita, remove |
 | GET | `/pontos-de-resfriamento/proximos?lat=&lon=&raioKm=` | pontos dentro do raio, do mais perto ao mais longe |
-| POST · DELETE | `/replay` | liga e desliga o replay de uma onda de calor real do INMET (modo de demonstração) |
+| GET · POST · DELETE | `/replay` | mostra, liga e desliga o replay de uma onda de calor real do INMET (modo de demonstração) |
 | GET | `/actuator/health` | saúde |
 
 ## Exemplos

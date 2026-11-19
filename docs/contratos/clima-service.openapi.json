@@ -1134,6 +1134,180 @@
         "summary" : "Edita o nome e a estação de referência de uma região",
         "tags" : [ "Regiões climáticas" ]
       }
+    },
+    "/api/v1/replay" : {
+      "delete" : {
+        "description" : "Idempotente: desligar sem replay ativo também responde 204.",
+        "operationId" : "encerrar",
+        "responses" : {
+          "204" : {
+            "description" : "Replay desligado"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          }
+        },
+        "summary" : "Desliga o replay",
+        "tags" : [ "Replay (demonstração)" ]
+      },
+      "get" : {
+        "description" : "Com o replay desligado, responde ativo = false.",
+        "operationId" : "estado",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Replay"
+                }
+              }
+            },
+            "description" : "O estado do replay"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          }
+        },
+        "summary" : "Mostra o estado do replay",
+        "tags" : [ "Replay (demonstração)" ]
+      },
+      "post" : {
+        "description" : "Toca as horas reais gravadas no seed (A701, nov/2023) num relógio acelerado. Enquanto durar, o risco da região sai com fonteDados = replay-inmet. Um replay ativo é trocado pelo novo.",
+        "operationId" : "iniciar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PedidoDeReplay"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Replay"
+                }
+              }
+            },
+            "description" : "Replay ligado"
+          },
+          "400" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Um ou mais campos são inválidos.",
+                      "errors" : {
+                        "nome" : [ "não deve estar em branco" ]
+                      },
+                      "status" : 400,
+                      "title" : "Requisição inválida",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Requisição inválida: campo ou parâmetro fora do formato (os detalhes vêm em `errors`)"
+          },
+          "404" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "Região climática 'SP-XX' não encontrado(a).",
+                      "status" : 404,
+                      "title" : "Recurso não encontrado",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Recurso não encontrado"
+          },
+          "422" : {
+            "content" : {
+              "application/problem+json" : {
+                "examples" : {
+                  "exemplo" : {
+                    "value" : {
+                      "correlationId" : "4f1c2b7e9a0d4e6f",
+                      "detail" : "O valor -9999 é o código de dado faltante do INMET: não é uma observação.",
+                      "regra" : "OBSERVACAO_FALTANTE",
+                      "status" : 422,
+                      "title" : "Regra de negócio violada",
+                      "type" : "https://github.com/andrenakarocha/sombra/blob/main/docs/contratos/clima-service.md#erros"
+                    }
+                  }
+                },
+                "schema" : {
+                  "$ref" : "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description" : "Regra de negócio violada (o código estável vem em `regra`)"
+          }
+        },
+        "summary" : "Liga o replay de uma onda de calor real do INMET (modo de demonstração)",
+        "tags" : [ "Replay (demonstração)" ]
+      }
     }
   },
   "components" : {
@@ -1459,6 +1633,32 @@
           }
         }
       },
+      "PedidoDeReplay" : {
+        "type" : "object",
+        "description" : "Qual onda de calor real tocar, e com que velocidade",
+        "properties" : {
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "Hora real do INMET em que o replay começa",
+            "example" : "2023-11-12T00:00:00-03:00"
+          },
+          "regiao" : {
+            "type" : "string",
+            "example" : "SP-MIRANTE",
+            "minLength" : 1
+          },
+          "velocidade" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Horas de dado por hora real (60 = uma hora de dado por minuto)",
+            "example" : 60,
+            "maximum" : 3600,
+            "minimum" : 1
+          }
+        },
+        "required" : [ "inicio", "regiao" ]
+      },
       "PontoDeResfriamento" : {
         "type" : "object",
         "description" : "Um lugar público e fresco para o pico do calor",
@@ -1609,6 +1809,42 @@
           "nome" : {
             "type" : "string",
             "example" : "Zona Norte de São Paulo (Mirante de Santana)"
+          }
+        }
+      },
+      "Replay" : {
+        "type" : "object",
+        "description" : "O estado do replay",
+        "properties" : {
+          "ativo" : {
+            "type" : "boolean",
+            "example" : true
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "Última hora com dado: passou dela, o replay encerra sozinho",
+            "example" : "2023-11-30T23:00:00Z"
+          },
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2023-11-12T03:00:00Z"
+          },
+          "instanteAtual" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "O \"agora\" do replay",
+            "example" : "2023-11-12T05:00:00Z"
+          },
+          "regiao" : {
+            "type" : "string",
+            "example" : "SP-MIRANTE"
+          },
+          "velocidade" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 60
           }
         }
       }

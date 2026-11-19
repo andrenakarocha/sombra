@@ -1,5 +1,6 @@
 package br.com.fiap.sombra.clima.infraestrutura;
 
+import br.com.fiap.sombra.clima.dominio.FonteDaObservacao;
 import br.com.fiap.sombra.clima.dominio.Observacao;
 import java.time.Instant;
 import java.util.List;
@@ -37,4 +38,11 @@ public interface ObservacaoRepository extends JpaRepository<Observacao, Long> {
             Instant instante);
 
     boolean existsByEstacaoCodigoAndObservadaEm(String codigo, Instant observadaEm);
+
+    /** A última hora de uma fonte numa estação: o fim do replay ({@code INMET}) ou a coleta mais recente. */
+    Optional<Observacao> findFirstByEstacaoCodigoAndFonteOrderByObservadaEmDesc(String codigo, FonteDaObservacao fonte);
+
+    /** Se há dado da fonte na janela [de, ate): o replay só começa onde há onda de calor para tocar. */
+    boolean existsByEstacaoCodigoAndFonteAndObservadaEmGreaterThanEqualAndObservadaEmLessThan(String codigo,
+            FonteDaObservacao fonte, Instant de, Instant ate);
 }
