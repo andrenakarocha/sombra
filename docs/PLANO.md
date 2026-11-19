@@ -624,8 +624,13 @@ provando o antes e o depois.
   🔎 figuras em `ml/figuras/` — 2026-11-18 (8 figuras; no teste, recall 0,97, precisão 0,21 e PR-AUC 0,588, empatada com a
   persistência, 0,575: a diferença de +0,013 tem IC 95% de −0,099 a +0,114; 74 de 75 dias de calor avisados, com 7,8 dias de
   alarme falso por mês).
-- [ ] **F4.6** 🤖 Conclusão para o cidadão + exportação ONNX + `features.json` + `paridade.csv`.
-  🔎 o ONNX (onnxruntime) bate com o XGBoost em 20 amostras (|Δ| < 1e-5) (P8).
+- [x] **F4.6** 🤖 Conclusão para o cidadão + exportação ONNX + `features.json` + `paridade.csv`.
+  🔎 o ONNX (onnxruntime) bate com o XGBoost em 20 amostras (|Δ| < 1e-5) (P8) — 2026-11-18 (maior diferença 4,8e-07 nas 20
+  amostras e 3,4e-07 nas 5.702 do teste). Além do pedido: `modelo-pico-calor-v1.onnx` (mediana do pico em °C, para o
+  `indiceDeCalorPrevistoC` da D19; erro médio de 1,65 °C contra 2,21 °C da persistência) e `paridade-janelas.json`
+  (observações brutas, para testar as features em Java). ⚠ Para a F9.1: no replay de nov/2023 o pico previsto chega a
+  32,58 °C (34,88 °C com a margem), abaixo dos 34,94 °C do Seu Joaquim; usar o maior entre a persistência e a mediana +
+  margem, senão o preventivo da demonstração deixa de abrir.
 - [ ] **F4.7** 🤖 `RELATORIO_ML.md` (2–4 páginas), `dados/README.md` e README da pasta.
   🔎 checklist da rubrica de ML marcado; `jupyter nbconvert --execute` roda do início ao fim sem erro.
 
@@ -993,7 +998,7 @@ F11.8 (VM no Azure) saíram.**
 | P5 | A chave Gemini atual responde, com cota gratuita suficiente para a demo | F2.6 | ✅ 2026-11-18: `models.list` e `generateContent` respondem com a chave (header `x-goog-api-key`); `gemini-3.5-flash-lite` em 1–4 s; os Flash 3.6/3.8 davam 503 ou timeout na hora, daí o padrão Flash-Lite, o timeout de 8 s e o template |
 | P6 | O Semgrep CE em modo taint cobre as regras planejadas em C# | F2.7 | ✅ 2026-11-18 (Semgrep 1.177.0): as 3 regras acham os 8 vazamentos do canário, nenhum falso positivo, e o Core de produção sai limpo; limites: o parser não lê os raw strings do C# 11 dos testes (fora da varredura) e parâmetro solto (a senha na query do A7) não é fonte, o que fica com o taint dinâmico |
 | P7 | A Open-Meteo dá, sem chave, as variáveis horárias que o modelo usa (temperatura, umidade, pressão, radiação, vento), incluindo horas passadas | F3.5 | ✅ 2026-11-18: chamada real com `past_hours=24`, sem chave; radiação vem em W/m² (× 3,6 = kJ/m² do INMET) |
-| P8 | XGBoost → ONNX (onnxmltools) e ONNX Runtime Java dão a mesma probabilidade | F4.6, F9.1 | ⬜ |
+| P8 | XGBoost → ONNX (onnxmltools) e ONNX Runtime Java dão a mesma probabilidade | F4.6, F9.1 | 🟡 2026-11-18: ONNX Runtime em Python bate com o XGBoost (|Δ| < 1e-6, com ausentes); falta o Java na F9.1 |
 | P9 | O ESP32 no Wokwi conecta num broker MQTT público pela rede `Wokwi-GUEST`, e o projeto abre por link público | F5.3, F5.5 | ⬜ |
 | P10 | `@microsoft/signalr` funciona no Expo SDK 58 (Expo Go) | F6.3 | ⬜ |
 | P11 | Vagrant + VirtualBox sobem Ubuntu 24.04 na máquina de desenvolvimento (Arch) | F8.1 | 🟡 2026-11-17 (doctor): VirtualBox 7.2.22 instalado; **Vagrant ausente** e fora dos repositórios oficiais do Arch (só AUR). Alternativa: VBoxManage + imagem cloud do Ubuntu com cloud-init. Decidir na F8.1 |
