@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,13 @@ public class ColetaAoVivo {
 
     @Scheduled(fixedDelayString = "${clima.open-meteo.intervalo}", initialDelayString = "${clima.open-meteo.atraso-inicial:PT10S}")
     void agendada() {
-        coletar();
+        // cada volta da coleta tem o próprio correlationId, para achar no log tudo o que ela fez
+        MDC.put("correlationId", "coleta:" + Long.toHexString(System.nanoTime()));
+        try {
+            coletar();
+        } finally {
+            MDC.remove("correlationId");
+        }
     }
 
     /** Coleta todas as estações de referência e devolve quantas horas novas entraram. */

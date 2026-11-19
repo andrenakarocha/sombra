@@ -121,6 +121,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar} -Xshare:off</argLine>
+                    <systemPropertyVariables>
+                        <sombra.ambiente>Test</sombra.ambiente>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <!-- cobertura: o domínio (as regras) fica com pelo menos 90% das linhas testadas, como no Core -->
