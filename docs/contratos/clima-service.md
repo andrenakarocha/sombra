@@ -3,7 +3,8 @@
 > **Fonte da verdade:** [`clima-service.openapi.json`](clima-service.openapi.json), gerado do código pelo springdoc (F3.4).
 > O teste `ContratoOpenApiTest` quebra o CI se a API mudar e este arquivo não; `make openapi-clima` o regenera. A
 > documentação navegável fica em `http://localhost:8081/swagger-ui.html`. O Core é o único cliente: o app e o painel
-> falam só com o Core.
+> falam só com o Core. As respostas reais que o Core consome ficam em [`amostras-clima/`](amostras-clima/): o Clima as
+> grava e confere (`make amostras-clima`), e os testes do `ClimaClient` do Core leem as mesmas.
 
 ## Convenções
 

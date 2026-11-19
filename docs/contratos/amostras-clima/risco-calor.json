@@ -1,0 +1,19 @@
+{
+  "regiao" : "SP-MIRANTE",
+  "agora" : {
+    "observadaEm" : "2023-11-15T18:00:00Z",
+    "temperaturaC" : 35.7,
+    "umidadePct" : 29.0,
+    "indiceDeCalorC" : 35.47,
+    "nivel" : "CAUTELA_EXTREMA"
+  },
+  "previsao24h" : {
+    "probabilidadePerigo" : 0.07,
+    "nivelPrevisto" : "CAUTELA_EXTREMA",
+    "indiceDeCalorPrevistoC" : 35.47,
+    "horizonteHoras" : 24,
+    "modelo" : "regra-persistencia-v1",
+    "fonte" : "regra"
+  },
+  "fonteDados" : "replay-inmet"
+}

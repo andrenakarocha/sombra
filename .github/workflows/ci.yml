@@ -64,11 +64,13 @@ jobs:
               - 'docs/contratos/risco-personalizado.vetores.json'
               - 'docs/contratos/vinculo-da-sentinela.vetores.json'
               - 'docs/contratos/amostras/**'
+              - 'docs/contratos/amostras-clima/**'
             clima:
               - 'services/clima-service/**'
               - 'docs/contratos/indice-de-calor.vetores.json'
               - 'docs/contratos/clima-service.openapi.json'
               - 'ml/dados/brutos/**'
+              - 'docs/contratos/amostras-clima/**'
             ambiente:
               - 'compose.yaml'
               - 'infra/compose/**'

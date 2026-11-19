@@ -59,6 +59,8 @@ services:
       Ops__TokenDoMonitor: ${Ops__TokenDoMonitor:-}
       Mqtt__Host: mqtt
       Mqtt__Porta: "1883"
+      # o risco de calor e os pontos de resfriamento vêm do Clima de verdade (sem isso, o Core usa o modo offline)
+      Clima__UrlBase: http://clima:8081
       Banco__MigrarAoIniciar: "true"
     ports:
       - "127.0.0.1:5080:5080"

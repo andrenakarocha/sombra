@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile openapi-clima sim vinculo
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile openapi-clima amostras-clima sim vinculo
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -62,6 +62,10 @@ test-clima: ## Build, testes de domínio, API (Testcontainers) e arquitetura do 
 openapi-clima: ## Regenera docs/contratos/clima-service.openapi.json a partir do código (revise o diff)
 	@cd services/clima-service && SOMBRA_ATUALIZAR_OPENAPI=1 ./mvnw -q -B test -Dtest=ContratoOpenApiTest -Dsurefire.failIfNoSpecifiedTests=false
 	@git --no-pager diff --stat -- docs/contratos/clima-service.openapi.json
+
+amostras-clima: ## Regrava docs/contratos/amostras-clima/ (respostas reais do Clima que o Core lê nos testes do ClimaClient)
+	@cd services/clima-service && SOMBRA_ATUALIZAR_AMOSTRAS=1 ./mvnw -q -B test -Dtest=AmostrasDoContratoTest -Dsurefire.failIfNoSpecifiedTests=false
+	@git --no-pager diff --stat -- docs/contratos/amostras-clima
 
 test-sim: ## Testes do simulador da Sentinela (a integração usa o Mosquitto do make up)
 	@cd tools/sentinela-sim && uv run -q pytest -q

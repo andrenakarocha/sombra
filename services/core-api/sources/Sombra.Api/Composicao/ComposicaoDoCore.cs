@@ -32,6 +32,7 @@ using Sombra.Aplicacao.Cadastro;
 using Sombra.Aplicacao.Portas;
 using Sombra.Infraestrutura;
 using Sombra.Infraestrutura.Autenticacao;
+using Sombra.Infraestrutura.Clima;
 using Sombra.Infraestrutura.Ia;
 using Sombra.Infraestrutura.Mqtt;
 using Sombra.Infraestrutura.Persistencia;
@@ -96,6 +97,7 @@ public static class ComposicaoDoCore
 
         AdicionarSeguranca(servicos, configuracao);
         AdicionarPrivacidade(servicos, configuracao, builder.Environment.EnvironmentName);
+        AdicionarClima(servicos, configuracao);
         AdicionarLimites(servicos, configuracao);
         servicos.AddHealthChecks()
             .AddDbContextCheck<SombraDbContext>("banco", tags: [TagPronto])
@@ -263,6 +265,31 @@ public static class ComposicaoDoCore
             .AddHttpMessageHandler<GuardaDeSaidaHttp>();
         servicos.AddHttpClient(AuditoriaController.ClienteLlm, cliente => cliente.BaseAddress = new Uri(configuracao["Auditoria:UrlDoLlm"] ?? "http://llm.auditoria.invalid/"))
             .AddHttpMessageHandler<GuardaDeSaidaHttp>();
+    }
+
+    /// <summary>
+    /// Com <c>Clima:UrlBase</c> (o compose e a VM definem), o risco e os pontos de resfriamento vêm do Clima Service de
+    /// verdade, com a correlação no header e o guarda de saída; sem ele (os testes e o Core rodando sozinho), ficam o stub
+    /// e a lista de exemplo do modo offline.
+    /// </summary>
+    private static void AdicionarClima(IServiceCollection servicos, IConfiguration configuracao)
+    {
+        if (configuracao["Clima:UrlBase"] is not { Length: > 0 } url)
+        {
+            return;
+        }
+
+        servicos.AddSingleton<EstadoDoClima>();
+        servicos.AddTransient<CorrelacaoNaSaida>();
+        servicos.AddHttpClient<ClimaClient>(cliente =>
+            {
+                cliente.BaseAddress = new Uri(url.EndsWith('/') ? url : url + "/");
+                cliente.Timeout = ClimaClient.Timeout;
+            })
+            .AddHttpMessageHandler<CorrelacaoNaSaida>()
+            .AddHttpMessageHandler<GuardaDeSaidaHttp>();
+        servicos.Replace(ServiceDescriptor.Transient<IClimaGateway>(provedor => provedor.GetRequiredService<ClimaClient>()));
+        servicos.Replace(ServiceDescriptor.Transient<IPontosDeResfriamento>(provedor => provedor.GetRequiredService<ClimaClient>()));
     }
 
     private static void AdicionarLimites(IServiceCollection servicos, IConfiguration configuracao)
