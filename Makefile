@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela compilar-sentinela integrar-sentinela integrar-sentinela-wokwi demo-wokwi entrega-cyber test-qa qa-azure
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela compilar-sentinela integrar-sentinela integrar-sentinela-wokwi demo-wokwi entrega-cyber checklist test-qa qa-azure
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -54,6 +54,9 @@ test-qa: ## QA: confere a especificação (Features e Test Cases) e testa a sinc
 
 qa-azure: ## Sobe as Features e os Test Cases para o Azure Boards (AZURE_DEVOPS_ORG, AZURE_DEVOPS_PROJETO e AZURE_DEVOPS_PAT)
 	@uv run -q qa/ferramentas/sincronizar_azure.py
+
+checklist: ## Confere o que cada uma das 8 entregas exige: arquivos, integrantes e links (ONLINE=1 abre os links)
+	@python3 -I tools/checklist-entrega.py $(if $(ONLINE),--online)
 
 entrega-cyber: ## Gera a entrega de Cyber: security/entrega/cyber.pdf e, à parte, o sombra-codigo.zip (com o make up no ar)
 	@python3 -I security/entrega/gerar.py
