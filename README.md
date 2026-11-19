@@ -3,7 +3,7 @@
 > **Ninguém enfrenta o calor sozinho.**
 > CitizenTech da Global Solution 2026.2 · Engenharia de Software · 3º ano · FIAP
 
-🚧 **Em construção.** O andamento está no [painel de status do plano](docs/PLANO.md#12-painel-de-status).
+O andamento de cada parte está no [painel de status do plano](docs/PLANO.md#12-painel-de-status).
 
 ## Ficha da CitizenTech
 
@@ -33,6 +33,48 @@
 | Infraestrutura Linux provisionada por scripts | [`infra/`](infra/) | Operating Systems | ✅ |
 | Features e Test Cases no Azure Boards | [`qa/`](qa/) | Testing, Compliance & QA | 🚧 |
 | Vídeo pitch | [`pitch/`](pitch/) | (prêmio melhor GS) | 🚧 |
+
+## Arquitetura
+
+```mermaid
+flowchart LR
+    S["Sentinela<br>ESP32 · DHT22 · OLED<br>(Wokwi)"] -- "MQTT assinado (HMAC)" --> B[(Mosquitto)]
+    B --> C["Core API<br>.NET 10 · EF Core<br>Sombra.Privacidade"]
+    C -- "comandos assinados" --> B
+    C <-- "REST · risco e pontos" --> K["Clima Service<br>Java 21 · Spring Boot<br>INMET + Open-Meteo"]
+    M["Modelo de ML<br>XGBoost → ONNX"] -.-> K
+    C --- D[(PostgreSQL 16<br>AES-256-GCM em repouso)]
+    C -- "só metadados" --> G["Gemini<br>tradução dos eventos"]
+    C -- "SignalR · push" --> A["App da família<br>Expo · Modo Idoso"]
+    C -- "SignalR" --> P["Painel do operador<br>React 19"]
+```
+
+O app e o painel só falam com o Core. O Core é o único que fala com o Clima, com o broker e com a IA, e nenhum dado
+pessoal sai dele: a IA recebe só metadados dos eventos, e o broker, só ids e medições. Em produção, tudo roda num
+servidor Ubuntu provisionado por scripts ([`infra/`](infra/)).
+
+## Como rodar tudo
+
+Pré-requisitos: Docker com Compose, `make`, Python 3 e `uv` (o `make doctor` confere).
+
+```bash
+make env       # cria o .env com segredos gerados na hora (nada secreto vai para o Git)
+make up        # sobe banco, broker, Clima, Core e painel, e espera todos ficarem saudáveis
+make sim       # uma Sentinela simulada: a casa da Dona Lurdes sobe até PERIGO e ela aperta "estou bem"
+make test      # os testes de todas as partes
+```
+
+| O quê | Onde |
+|---|---|
+| Painel do operador | <http://localhost:5173> (`operador@demo.sombra`, senha `Demo__Senha` do `.env`) |
+| Core API e OpenAPI | <http://localhost:5080/scalar/v1> (o contrato em `/openapi/v1.json`) |
+| Clima Service | <http://localhost:8081/swagger-ui.html> |
+| App | `cd mobile && npx expo start` ([`mobile/README.md`](mobile/README.md)) |
+| Sentinela no Wokwi | `make demo-wokwi` ([`iot/sentinela/README.md`](iot/sentinela/README.md)) |
+| Servidor Linux | `cd infra && vagrant up` ([`infra/README.md`](infra/README.md)) |
+
+`make help` lista todos os alvos. Os roteiros dos vídeos estão em [`docs/videos/`](docs/videos/), e o
+`make checklist` confere o que cada entrega do Teams exige.
 
 ## Documentação
 
