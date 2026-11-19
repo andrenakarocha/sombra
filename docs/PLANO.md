@@ -168,6 +168,7 @@ Lasse) · `intrucoes-os.txt` (OS) · `Global Solution 2026.2_Arquitetura Orienta
 | D14 | **Fotos do território fora das entregas** (padronizadas pelo time); uso possível só no pitch, com a placa do carro desfocada. A transcrição vai para o repositório com "a filha" no lugar do nome dela | equipe, 2026-11-17 |
 | D18 | **Corte do trabalho manual que nenhuma entrega exige** (conferido nos enunciados): sem VM no Azure (fecha a DA3: não); F11 só com acessibilidade e uso, sem o cosmético; sem Test Plan pago nem APK; pitch só se sobrar tempo (vale só para o prêmio). Os **5 vídeos obrigatórios** (Cyber, ML ≤ 5, IoT ≤ 4, Mobile ≤ 3, OS ≤ 7) e os prints saem por script de **uma rodada** do `make demo`, cortada por matéria | dono do repositório, 2026-11-18 |
 | D17 | **O app é a referência da API do Cuidador:** onde os schemas Zod do `mobile/` e o Core divergem, o Core se adapta ao app, inclusive na R3 (F6.21–F6.26) | dono do repositório, 2026-11-18 |
+| D19 | **O preventivo segue o perigo de quem mora na casa** (fecha a DA6): o Core abre o `AlertaPreventivo` quando o nível previsto para a região **ou** o pico previsto do índice de calor (`indiceDeCalorPrevistoC`, do Clima) pelos limites pessoais do morador mais vulnerável (R3) chega a `PERIGO`; a R5 continua exigindo perigo. No replay real de nov/2023 (pico de 35,47 °C), o preventivo abre na Casa do Seu Joaquim (85 anos, cardiopatia: perigo a partir de 34,94 °C) e não na da Dona Lurdes (78 anos, diurético: 37,94 °C). O alvo do ML (F4.2) continua livre | dono do repositório, 2026-11-18 (fecha a DA6) |
 
 As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11), 002 (D2), 003 (D4), 004 (MQTT assinado e sem PII), 005 (D7) e 006 (índice de calor replicado com vetores).
 
@@ -177,7 +178,6 @@ As decisões de arquitetura têm ADR em [`docs/adr/`](adr/README.md): 001 (D11),
 |---|---|---|---|
 | DA2 | Bairro da Ficha · persona fictícia do sistema | cidade **São Paulo** confirmada (a A701 continua valendo); bairro "a preencher"; persona "Dona Lurdes, 78 anos", inspirada na Dona Cida | F12.1 (não bloqueia nada) |
 | DA4 | Voz do pitch: TTS (Gemini, como no HENRY) ou voz de alguém do time | TTS | F13.3 |
-| DA6 | Alvo do preventivo e do ML com o replay real, que não chega a `PERIGO` (pico de 35,47 °C, `CAUTELA_EXTREMA`; achado da F6.15). Hoje o `AlertaPreventivo` exige previsão de `PERIGO` (R5), então o replay não abriria nenhum | regras atuais (R5 e o alvo da F4.2 em aberto) | F4.2 |
 
 ### 2.3 Fora do escopo (ideias para depois)
 
@@ -247,8 +247,9 @@ sombra/
 Usado em todos os vídeos e no pitch, e automatizado como `make demo` (F9.2):
 
 1. Painel e app: casa no **verde**, Sentinela online, último "estou bem" às 9h.
-2. O Clima entra em **replay** da onda de calor de nov/2023 (INMET real). O modelo prevê **perigo em 24 h** → alerta
-   preventivo → OLED: *"Amanhã: calor perigoso. Encha sua garrafa de água."* → notificação no app da filha.
+2. O Clima entra em **replay** da onda de calor de nov/2023 (INMET real). O pico previsto (35,47 °C) é **perigo para o
+   Seu Joaquim** (85 anos, cardiopatia, D19) → alerta preventivo na casa dele → *"Amanhã: calor perigoso. Encha sua
+   garrafa de água."* → notificação no app do filho; na casa da Dona Lurdes, o mesmo calor ainda não é perigo.
 3. No Wokwi a temperatura sobe → a Sentinela fica **vermelha, apita** e pede o check-in → o app e o painel ficam
    vermelhos **ao vivo**.
 4. **Caminho A:** ela aperta o botão → alerta resolvido → o painel mostra o **tempo até o check-in**.
@@ -590,14 +591,15 @@ provando o antes e o depois.
   subitens → código → print; 8 regras ArchUnit, com a de "entidade não vaza no JSON" conferida por mutação; os 5 prints
   de `docs/evidencias/` saem de `scripts/evidencias.sh` e foram revisados; 142 testes no `./mvnw verify`).
 - [x] **F3.9** 🤖 No Core: o `ClimaClient` real (HttpClient + resiliência) substitui o stub; teste de contrato.
-  🔎 o `MonitorDePrevisaoWorker` abre alerta preventivo a partir do replay real — 2026-11-18, **parcial**: com
+  🔎 o `MonitorDePrevisaoWorker` abre alerta preventivo a partir do replay real — 2026-11-18: com
   `Clima__UrlBase` (compose e VM), o risco e os pontos vêm do Clima, com timeout de 3 s, circuito que abre em 3 falhas
   seguidas por 30 s, último risco conhecido por até 30 min, correlação no header e o guarda de saída; os testes leem as
   amostras reais que o Clima grava (`docs/contratos/amostras-clima/`). No compose: o worker consultou o Clima
   (`previsao:6c700f00` nos dois logs), caiu em `clima.indisponivel` quando o Clima ainda subia, e "Perto de mim" trouxe
-  os pontos reais do OSM com o mesmo `correlationId` no Core e no Clima. **O preventivo a partir do replay real não abre**
-  com a R5 de hoje (o pico real é `CAUTELA_EXTREMA`): é a DA6, que fica com o operador. Sem `Clima__UrlBase`, o Core
-  segue no modo offline (testes). Core: 363 testes e `make quality` = 100.
+  os pontos reais do OSM com o mesmo `correlationId` no Core e no Clima. Com a D19 (DA6 fechada), o replay real no pico
+  de 15/11/2023 abriu o preventivo, nível `PERIGO`, só na Casa do Seu Joaquim (`previsao:cb9e7e9f` em `alerta.aberto` no
+  Core e em `previsao.calculada` no Clima). Sem `Clima__UrlBase`, o Core segue no modo offline (testes). Core: 365
+  testes, cobertura do domínio 93,2% e `make quality` = 100.
 
 **✅ Aceite F3:** autoavaliação 10/10 com evidência · o Core consome o Clima de verdade.
 
@@ -1001,14 +1003,14 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** **F1, F2 e F3 concluídas** (Core em C# com 363 testes e quality 100/100; privacidade com a auditoria A1–A8; Clima Service em Java com 144 testes, autoavaliação de SOA 10/10 e o Core consumindo o Clima de verdade). Pendente do operador: a **DA6** (o preventivo a partir do replay real), os 🔎 do app no celular junto com a F9 e o que é do operador na F6.7 e na F6.8. Próximo no caminho principal: **F8 (Infra)**, depois F7 (Painel) e F9 (Integração). Em paralelo: ML (F4, Matheus) e, no QA, a F10.1 (Azure DevOps, 🔑).
+**Agora:** **F1, F2 e F3 concluídas** (Core em C# com 365 testes e quality 100/100; privacidade com a auditoria A1–A8; Clima Service em Java com 144 testes, autoavaliação de SOA 10/10 e o Core consumindo o Clima de verdade). DA6 fechada pela D19 (o preventivo segue o limite pessoal da R3). Pendente do operador: os 🔎 do app no celular junto com a F9 e o que é do operador na F6.7 e na F6.8. Próximo no caminho principal: **F8 (Infra)**, depois F7 (Painel) e F9 (Integração). Em paralelo: ML (F4, Matheus) e, no QA, a F10.1 (Azure DevOps, 🔑).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
 | F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
-| F3 Clima (SOA) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: autoavaliação 10/10 com evidência por subitem no README da pasta (144 testes, Testcontainers, ArchUnit, contrato OpenAPI conferido); o Core consome o Clima de verdade (risco e pontos, circuito, mesmo `correlationId`). O preventivo a partir do replay real espera a DA6 |
+| F3 Clima (SOA) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: autoavaliação 10/10 com evidência por subitem no README da pasta (144 testes, Testcontainers, ArchUnit, contrato OpenAPI conferido); o Core consome o Clima de verdade (risco e pontos, circuito, mesmo `correlationId`) e abre o preventivo a partir do replay real pelo limite pessoal (D19) |
 | F4 ML | ⬜ não iniciada | | | 🤝 |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
