@@ -125,4 +125,16 @@ integrante sabe explicar o que entregou.
    journal e no painel do Core, e sete scripts de falha que só saem com 0 se a recuperação ou o registro aconteceu."*
 4. *"Prove a reprodutibilidade: destrua a VM, crie de novo, provisione uma segunda vez e registre os logs das duas."*
 
+## Sentinela (IoT)
+
+1. *"Escreva a lógica da Sentinela em headers C++ sem Arduino, para testar no host com g++: o índice de calor com os 20
+   vetores do contrato, SHA-256 e HMAC portáteis com os 6 vetores de assinatura, a máquina de estados offline (luz fixa,
+   3 bipes, silêncio à noite, prazo do check-in) e a fila de eventos sem rede."*
+2. *"Monte o sketch do ESP32 em cima dela: Wi-Fi, NTP, MQTT com LWT, assinatura nos dois sentidos com `seq` sempre
+   crescente mesmo se a flash for apagada, OLED que sempre explica o próximo passo e o QR de vínculo no boot. Compile de
+   verdade para o ESP32 com aviso ligado antes de dizer que está pronto."*
+3. *"Prove a integração sem o Wokwi: as mensagens saem dos mesmos headers do firmware, vão pelo broker do compose e pelo
+   público, e o Core de verdade aceita a telemetria, recusa a adulterada e o replay, manda o comando assinado de volta e
+   o firmware confere."*
+
 <!-- Cada parte acrescenta aqui os seus prompts principais quando fecha (PLANO §0, regra 16). -->
