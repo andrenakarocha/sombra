@@ -1,0 +1,38 @@
+# Sombra · monitor do servidor. Instalada por infra/steps/80-monitor.sh.
+[Unit]
+Description=Sombra · monitor de CPU, memória, disco e serviços
+Documentation=https://github.com/andrenakarocha/sombra/tree/main/infra
+After=network-online.target sombra-core.service
+Wants=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=10
+
+[Service]
+# notify + watchdog: o script avisa que está pronto e, a cada ciclo, que continua vivo; se parar de avisar por 30 s
+# (travou), o systemd o mata e sobe de novo. Restart=always cobre também o kill -9 e a saída limpa.
+Type=notify
+NotifyAccess=all
+WatchdogSec=30
+Restart=always
+RestartSec=5
+User=sombra
+Group=sombra-ops
+ExecStart=/opt/sombra/monitor/sombra-monitor.sh
+SyslogIdentifier=sombra-monitor
+UMask=0027
+
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/log/sombra
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictSUIDSGID=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target
