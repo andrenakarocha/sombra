@@ -7,6 +7,7 @@ using Sombra.Aplicacao.Tests.Apoio;
 using Sombra.Dominio.Alertas;
 using Sombra.Dominio.Calor;
 using Sombra.Dominio.Casas;
+using Sombra.Dominio.Saude;
 
 namespace Sombra.Aplicacao.Tests.Alertas;
 
@@ -38,6 +39,28 @@ public sealed class AvaliarPrevisoesTests
         Assert.AreEqual("Amanhã: calor perigoso. Encha sua garrafa de água.", avisos[0].Mensagem);
         Assert.AreEqual(Destinatario.Familiar, avisos[1].Destinatario);
         Assert.AreEqual("Ana", avisos[1].Contatos.Single().Nome);
+    }
+
+    /// <summary>
+    /// DA6: com o pico real de nov/2023 (a região em CAUTELA_EXTREMA, pico de 35,47 °C), o preventivo abre só na casa de
+    /// quem tem 85 anos e cardiopatia, com o nível pessoal de perigo.
+    /// </summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task PicoRealAbrePreventivoSoNaCasaVulneravel()
+    {
+        Cenario cenario = new();
+        Domicilio comum = cenario.CasaMonitorada();
+        Domicilio vulneravel = cenario.CasaMonitorada(deviceId: "snt-00000c", idade: 85, fatores: new Cardiopatia());
+        cenario.Clima.Riscos["SP-MIRANTE"] = new RiscoDaRegiao(NivelDeRisco.CautelaExtrema, NivelDeRisco.CautelaExtrema, 0.07, "regra", 35.47);
+
+        int abertos = await cenario.AvaliarPrevisoes().ExecutarAsync(CancellationToken.None);
+
+        Assert.AreEqual(1, abertos);
+        AlertaDeCalor preventivo = cenario.Alertas.Alertas.Single();
+        Assert.AreEqual(vulneravel.Id, preventivo.DomicilioId);
+        Assert.AreEqual(NivelDeRisco.Perigo, preventivo.Nivel);
+        Assert.IsFalse(cenario.Alertas.Alertas.Any(a => a.DomicilioId == comum.Id));
     }
 
     /// <summary>Com o Clima fora do ar, ou com um alerta já aberto na casa, nenhum preventivo é aberto.</summary>

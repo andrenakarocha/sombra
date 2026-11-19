@@ -9,7 +9,11 @@ namespace Sombra.Aplicacao.Portas;
 /// <param name="NivelPrevisto">O nível previsto para as próximas 24 h.</param>
 /// <param name="ProbabilidadePerigo">A probabilidade de perigo em 24 h, de 0 a 1.</param>
 /// <param name="Fonte">De onde veio a previsão: <c>onnx</c> (modelo de ML) ou <c>regra</c> (fallback).</param>
-public sealed record RiscoDaRegiao(NivelDeRisco NivelAgora, NivelDeRisco NivelPrevisto, double ProbabilidadePerigo, string Fonte);
+/// <param name="IndiceDeCalorPrevistoC">
+/// O pico previsto do índice de calor nas próximas 24 h, em °C, para a casa comparar com os limites pessoais (DA6, R3);
+/// nulo quando a fonte não informa.
+/// </param>
+public sealed record RiscoDaRegiao(NivelDeRisco NivelAgora, NivelDeRisco NivelPrevisto, double ProbabilidadePerigo, string Fonte, double? IndiceDeCalorPrevistoC = null);
 
 /// <summary>A conversa com o Clima Service (contrato <c>docs/contratos/clima-service.md</c>).</summary>
 public interface IClimaGateway

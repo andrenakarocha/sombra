@@ -131,7 +131,7 @@ public sealed partial class ClimaClient : IClimaGateway, IPontosDeResfriamento
 
     private static RiscoDaRegiao Converter(RiscoResposta r) =>
         r.Agora is { } agora && r.Previsao24h is { } previsao
-            ? new RiscoDaRegiao(Nivel(agora.Nivel), Nivel(previsao.NivelPrevisto), previsao.ProbabilidadePerigo, previsao.Fonte ?? "regra")
+            ? new RiscoDaRegiao(Nivel(agora.Nivel), Nivel(previsao.NivelPrevisto), previsao.ProbabilidadePerigo, previsao.Fonte ?? "regra", previsao.IndiceDeCalorPrevistoC)
             : throw new JsonException("risco sem agora ou sem previsão");
 
     private static IReadOnlyList<PontoDeResfriamentoResposta> Converter(List<PontoResposta> pontos) =>

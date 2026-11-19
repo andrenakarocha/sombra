@@ -85,15 +85,17 @@ internal sealed class Cenario
     /// </summary>
     /// <param name="regiao">A região climática.</param>
     /// <param name="deviceId">A Sentinela.</param>
+    /// <param name="idade">A idade da moradora.</param>
+    /// <param name="fatores">As condições de saúde da moradora (R3).</param>
     /// <returns>A casa, já guardada.</returns>
-    internal Domicilio CasaMonitorada(string regiao = "SP-MIRANTE", string deviceId = DeviceId)
+    internal Domicilio CasaMonitorada(string regiao = "SP-MIRANTE", string deviceId = DeviceId, int idade = 70, params FatorDeRisco[] fatores)
     {
         DateOnly hoje = DateOnly.FromDateTime(Inicio.UtcDateTime);
         Domicilio casa = Domicilio.Cadastrar(
             "Casa da Dona Lurdes",
             Endereco.Criar("Rua das Flores", "12", "Santana", "São Paulo", "SP", "02012-000"),
             regiao);
-        casa.AdicionarMorador(Morador.Cadastrar("Lurdes A.", hoje.AddYears(-70), Cpf.Criar(DocumentosSinteticos.Cpf(1)), null, PerfilDeSaude.Vazio, hoje));
+        casa.AdicionarMorador(Morador.Cadastrar("Lurdes A.", hoje.AddYears(-idade), Cpf.Criar(DocumentosSinteticos.Cpf(1)), null, PerfilDeSaude.Com(fatores), hoje));
         casa.DefinirRedeDeCuidado(
         [
             new ContatoDeCuidado("Ana", Telefone.Criar("11987654321"), PapelDoContato.Familiar),

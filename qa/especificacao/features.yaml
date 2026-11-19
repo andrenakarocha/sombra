@@ -72,9 +72,9 @@ features:
     regras: [R6, D13]
     criterios_de_aceite:
       - id: F02-CA1
-        dado: o Clima prevê nível PERIGO ou acima para a região da casa nas próximas 24 h
+        dado: o Clima prevê PERIGO ou acima para a região da casa nas próximas 24 h, ou o pico previsto passa do limite pessoal de PERIGO do morador mais vulnerável (R3, D19)
         quando: o Core avalia as previsões
-        entao: abre um alerta PREVENTIVO por casa monitorada, com prazo informativo de 24 h
+        entao: abre um alerta PREVENTIVO por casa monitorada em perigo, com prazo informativo de 24 h
       - id: F02-CA2
         dado: o Clima fora do ar, ou a casa já com um alerta aberto
         quando: o Core avalia as previsões

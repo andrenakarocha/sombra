@@ -161,22 +161,31 @@ casos:
     titulo: Previsão de perigo abre um alerta preventivo por casa
     tipo: positivo
     tecnica: particao-de-equivalencia
-    objetivo: Verificar que a previsão do Clima vira um aviso na véspera para cada casa da região.
+    objetivo: Verificar que a previsão do Clima vira um aviso na véspera para cada casa em perigo, pelo nível da região ou pelo limite pessoal (D19).
     preparacao:
       - Duas casas monitoradas na mesma região, sem alerta aberto.
       - Clima respondendo uma previsão de PERIGO nas próximas 24 h.
-    entradas: { previsao: PERIGO, horizonte: 24 h }
+      - Para a segunda classe, uma casa com moradora de 70 anos e outra com morador de 85 anos e cardiopatia.
+    entradas: { previsao: [PERIGO, CAUTELA_EXTREMA com pico de 35,47 °C], horizonte: 24 h }
     passos:
-      - acao: O worker de previsão roda.
+      - acao: O worker de previsão roda com a região em PERIGO.
         esperado: Abre um alerta PREVENTIVO em cada casa.
       - acao: Consultar os alertas.
         esperado: Dois alertas PREVENTIVO, um por casa, com prazo de 24 h.
-    resultado_esperado: Um preventivo por casa, sem duplicar.
+      - acao: O worker roda com a região em CAUTELA_EXTREMA e o pico real de nov/2023 (35,47 °C).
+        esperado: Abre o PREVENTIVO, com nível PERIGO, só na casa do morador de 85 anos com cardiopatia (limite pessoal de 34,94 °C).
+    resultado_esperado: Um preventivo por casa em perigo, sem duplicar; o mesmo calor é perigo para uma casa e não para a outra.
     execucao: automatizado
     automatizado:
       - suite: mstest
         arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/AvaliarPrevisoesTests.cs
         teste: 'AvaliarPrevisoesTests.PrevisaoDePerigoAbreUmPreventivoPorCasa'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Aplicacao.Tests/Alertas/AvaliarPrevisoesTests.cs
+        teste: 'AvaliarPrevisoesTests.PicoRealAbrePreventivoSoNaCasaVulneravel'
+      - suite: mstest
+        arquivo: services/core-api/sources/Sombra.Dominio.Tests/Casas/DomicilioTests.cs
+        teste: 'DomicilioTests.PrevisaoDaCasaUsaOLimitePessoalDoMoradorMaisVulneravel'
       - suite: jest
         arquivo: mobile/__tests__/domain/alerta-test.ts
         teste: 'o preventivo abre em qualquer nível, com prazo informativo de 24 h'
