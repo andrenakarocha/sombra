@@ -644,15 +644,35 @@ provando o antes e o depois.
 
 - [ ] **F5.1** 🧑🤖 🔑 Projeto no Wokwi (conta do projeto) + circuito + `diagram.json` versionado.
   🔎 o OLED mostra a temperatura do DHT22.
+  ⏸ 2026-11-19: o circuito está no `iot/sentinela/diagram.json` (ESP32 DevKit, DHT22, OLED I²C, LED RGB com 3 × 220 Ω,
+  buzzer e os dois botões, com as teclas V e A) e o firmware compila para o ESP32 com `--warnings all`
+  (`make compilar-sentinela`: 80% da flash, 17% da RAM). Falta o operador criar o projeto no Wokwi e colar os arquivos.
 - [ ] **F5.2** 🤖 🤝 Índice de calor (vetores), máquina de estados offline, LED, buzzer e botões.
   🔎 mexendo no DHT22, os estados mudam conforme a tabela de níveis.
-- [ ] **F5.3** 🤖 Wi-Fi, NTP, MQTT, HMAC, `seq` e LWT.
-  🔎 o Core aceita a telemetria; uma mensagem adulterada é rejeitada (P9).
+  ⏸ 2026-11-19: coberto no host (`make test-sentinela`, também no CI): os 20 vetores do índice e 14 cenários da máquina
+  de estados (luz fixa por nível, 3 bipes, silêncio das 22h às 7h fora do perigo, prazo de 30/15 min, comandos do Core).
+  O 🔎 mexendo no DHT22 do Wokwi fica com o operador, junto com a F5.1.
+- [x] **F5.3** 🤖 Wi-Fi, NTP, MQTT, HMAC, `seq` e LWT.
+  🔎 o Core aceita a telemetria; uma mensagem adulterada é rejeitada (P9) — 2026-11-19 (`make integrar-sentinela`:
+  as mensagens saem dos mesmos headers do firmware e vão para o Core de verdade, pelo broker do compose e pelo público
+  `broker.hivemq.com`, o caminho do Wokwi. A telemetria vira leitura, a com o nível trocado depois da assinatura cai
+  em `mqtt.assinatura_invalida`, e a repetida, em `mqtt.replay_descartado`; as duas aparecem no dashboard de segurança.
+  O `seq` segue a regra do Core para os comandos, `max(último + 1, agora)`, e continua crescente mesmo com a flash
+  zerada, o que o Wokwi faz a cada simulação. Evidência em `iot/sentinela/evidencias/`).
 - [ ] **F5.4** 🤖 Comandos do Core no OLED + fila offline de eventos.
   🔎 roteiro, passos 2–5, com a Sentinela real; um check-in feito offline chega depois.
+  ⏸ 2026-11-19: um "estou bem" de 2 min atrás chega depois e o Core aceita; o perigo abre o alerta e o Core publica o
+  comando `ALERTA` assinado (`comando.publicado`), e o código do firmware confere o comando do vetor do contrato e recusa
+  o adulterado. Falta a rodada que recebe o comando pelo broker público: o ouvinte assinava tarde (uma corrida, agora
+  resolvida com um tópico de prova) e a carência de 1 h do D13 adiou a nova tentativa (`make integrar-sentinela`). A
+  fila descarta sozinha o que passou da janela de 5 min do Core, em vez
+  de gerar um falso replay. O roteiro com a Sentinela rodando no Wokwi fica com o operador (`make demo-wokwi`).
 - [ ] **F5.5** 🤖 README (circuito, pinagem, lista de materiais com custo pesquisado, estados em Mermaid, contrato, link)
   + `integrantes.txt`.
   🔎 o link do Wokwi abre deslogado.
+  ⏸ 2026-11-19: README e `integrantes.txt` prontos, com o roteiro do Wokwi e o aviso da carência de 1 h para a gravação.
+  Os custos da lista de materiais são estimativas de ordem de grandeza, e o README diz isso; falta colar o link público
+  do Wokwi.
 
 **✅ Aceite F5:** integração real demonstrável (não é projeto paralelo) · link público · `.txt` com os integrantes.
 
@@ -1073,7 +1093,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
 | F3 Clima (SOA) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: autoavaliação 10/10 com evidência por subitem no README da pasta (144 testes, Testcontainers, ArchUnit, contrato OpenAPI conferido); o Core consome o Clima de verdade (risco e pontos, circuito, mesmo `correlationId`) e abre o preventivo a partir do replay real pelo limite pessoal (D19) |
 | F4 ML | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado (Matheus): os 6 critérios com evidência no README da pasta; notebook executado; 2 modelos ONNX com paridade 20/20; 75 testes. No teste, 74 de 75 dias de calor avisados, com 7,8 dias de alarme falso por mês; o XGBoost empata com a persistência na PR-AUC. A F9.1 precisa da ressalva do pico (F4.6) |
-| F5 Sentinela (IoT) | ⬜ não iniciada | | | |
+| F5 Sentinela (IoT) | 🟨 em andamento | 2026-11-19 | | firmware compilado para o ESP32 e 47 testes no host; integração com o Core provada pelo broker do compose e pelo público (F5.3 ✔); faltam o projeto no Wokwi, os 🔎 visuais e o link (operador) |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: as cinco páginas ao vivo pelo hub (o Core passou a emitir o `RiscoCidadaoAtualizado`), E2E verde (6) e 12 testes no Vitest, prints revisados em três larguras; o painel sobe no compose pelo nginx |
 | F8 Infra (OS) | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: a VM vazia vira o `sombra-srv01` com o Sombra inteiro no ar só com scripts (9 etapas idempotentes, validação de 26 pontos), monitor `Type=notify` com watchdog, auditoria JSON e auditd, os 7 testes de falha com print, reprodução do zero provada; o 🔎 da F8.3 (release no GitHub) espera a primeira tag `v*` |
