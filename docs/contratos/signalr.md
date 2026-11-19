@@ -23,7 +23,7 @@
 | `AvisoParaARede` | casa, operadores | `domicilioId`, `alertaId` (ou `null`), `destinatario`, `motivo` (`PREVISAO` ou `CHECK_IN_DIARIO`), `mensagem` |
 | `AlertaResolvido` | casa, operadores | `alertaId`, `domicilioId`, `resolvidoPor` (`CHECKIN_SENTINELA`, `CHECKIN_APP` ou `CUIDADOR`), `minutosAteCheckIn` |
 | `CheckInRegistrado` | casa, operadores | `domicilioId`, `momento`, `origem`, `situacao` |
-| `RiscoCidadaoAtualizado` | casa (se for da casa), operadores | `domicilioId` (ou `null` para o farol global), `farol`, `mensagemCidadao` |
+| `RiscoCidadaoAtualizado` | operadores | `domicilioId` (`null`: o farol global), `farol`, `pontuacao` (0–100), `eventosNaJanela`, `mensagemCidadao`; sai depois de cada lote de eventos de segurança gravado |
 | `AlertaDeInfra` | operadores | `host`, `recurso`, `severidade`, `mensagem`, `momento` |
 
 Exemplo de `AlertaEscalonado`:

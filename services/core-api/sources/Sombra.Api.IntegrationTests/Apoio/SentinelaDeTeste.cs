@@ -147,7 +147,7 @@ internal sealed class SentinelaDeTeste : IAsyncDisposable
 /// <summary>Um cliente do hub que guarda todo evento recebido.</summary>
 internal sealed class OuvinteDoHub : IAsyncDisposable
 {
-    private static readonly string[] _eventos = ["LeituraRegistrada", "SentinelaStatus", "AlertaAberto", "AlertaEscalonado", "AlertaResolvido", "CheckInRegistrado", "AvisoParaARede", "AlertaDeInfra"];
+    private static readonly string[] _eventos = ["LeituraRegistrada", "SentinelaStatus", "AlertaAberto", "AlertaEscalonado", "AlertaResolvido", "CheckInRegistrado", "AvisoParaARede", "AlertaDeInfra", "RiscoCidadaoAtualizado"];
     private readonly HubConnection _conexao;
 
     private OuvinteDoHub(HubConnection conexao) => _conexao = conexao;

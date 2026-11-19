@@ -31,6 +31,7 @@ public sealed class RiscoCidadaoApiTests
         using HttpClient operador = await api.ClienteDeAsync(Demo.Operador);
         using HttpClient ana = await api.ClienteDeAsync(Demo.Ana);
         using HttpClient anonimo = api.CreateClient();
+        await using OuvinteDoHub painel = await OuvinteDoHub.ConectarAsync(api, await api.TokenAsync(Demo.Operador));
 
         using HttpResponseMessage negado = await anonimo.GetAsync(new Uri($"/api/v1/domicilios/{Demo.Lurdes}/moradores/{_moradoraLurdes}", UriKind.Relative));
         Assert.AreEqual(HttpStatusCode.Unauthorized, negado.StatusCode);
@@ -49,6 +50,12 @@ public sealed class RiscoCidadaoApiTests
 
         JsonElement risco = await operador.GetFromJsonAsync<JsonElement>("/api/v1/privacidade/risco-cidadao", AmbienteDaApi.Json);
         Assert.AreEqual("AMARELO", risco.GetProperty("farol").GetString());
+
+        // o painel fica sabendo na hora, pelo hub, sem perguntar de novo
+        JsonElement aoVivo = await painel.EventoAsync("RiscoCidadaoAtualizado", e => e.GetProperty("farol").GetString() == "AMARELO");
+        Assert.AreEqual(JsonValueKind.Null, aoVivo.GetProperty("domicilioId").ValueKind);
+        Assert.AreEqual(risco.GetProperty("pontuacao").GetDouble(), aoVivo.GetProperty("pontuacao").GetDouble(), 0.01);
+        Assert.IsFalse(string.IsNullOrWhiteSpace(aoVivo.GetProperty("mensagemCidadao").GetString()));
         Assert.AreEqual(2, risco.GetProperty("eventosNaJanela").GetInt32());
         Assert.AreEqual("SAUDE", risco.GetProperty("porCategoria")[0].GetProperty("categoria").GetString());
         Assert.AreEqual("RespostaHttp", risco.GetProperty("porSink")[0].GetProperty("nome").GetString());
