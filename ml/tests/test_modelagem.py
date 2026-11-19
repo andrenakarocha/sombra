@@ -4,12 +4,15 @@ import pytest
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 from sombra_ml.modelagem import (
+    GRADE,
     INICIO_TESTE,
+    buscar_hiperparametros,
     dividir_temporal,
     limiar_para_recall,
     metricas,
     nova_logistica,
     probabilidades_fora_da_amostra,
+    tabela_da_busca,
     validacao_temporal,
 )
 
@@ -96,3 +99,26 @@ def test_metricas_sem_probabilidade_nao_inventam_brier():
 def test_logistica_aceita_ausentes():
     X = np.array([[1.0, np.nan], [2.0, 1.0], [3.0, 2.0], [4.0, np.nan]])
     assert nova_logistica().fit(X, [0, 0, 1, 1]).predict_proba(X).shape == (4, 2)
+
+
+def _dados_separaveis(n=240):
+    gerador = np.random.default_rng(0)
+    X = gerador.normal(size=(n, 3)).astype(np.float32)
+    return X, (X[:, 0] > 0.8).astype(int)
+
+
+def test_grade_tem_3_hiperparametros_e_12_combinacoes():
+    assert set(GRADE) == {"max_depth", "learning_rate", "n_estimators"}
+    assert np.prod([len(v) for v in GRADE.values()]) == 12
+
+
+def test_busca_usa_so_a_validacao_temporal_e_gera_a_tabela_completa():
+    X, y = _dados_separaveis()
+    grade = {"max_depth": [2, 3], "learning_rate": [0.1], "n_estimators": [5]}
+    busca = buscar_hiperparametros(X, y, grade)
+    assert busca.scoring == "average_precision"
+    assert busca.cv.n_splits == 5 and busca.cv.gap == 4
+    tabela = tabela_da_busca(busca)
+    assert len(tabela) == 2
+    assert {"pr_auc_validacao", "desvio_validacao", "pr_auc_treino", "diferenca"} <= set(tabela.columns)
+    assert tabela["pr_auc_validacao"].is_monotonic_decreasing
