@@ -4,7 +4,7 @@ SHELL := bash
 .DEFAULT_GOAL := help
 COMPOSE := docker compose
 
-.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela
+.PHONY: help env doctor up down ps logs db-reset contratos lint semgrep test test-sim test-core test-clima test-mobile test-infra e2e-painel evidencias-painel openapi-clima amostras-clima sim vinculo test-sentinela compilar-sentinela
 
 help: ## Lista os alvos
 	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-10s %s\n", $$1, $$2}'
@@ -77,6 +77,11 @@ TESTAR_SENTINELA := $(or $(TMPDIR),/tmp)/sombra-testar-sentinela
 test-sentinela: ## Firmware da Sentinela no host (g++): índice de calor, HMAC, estados e fila, com os vetores do contrato
 	@python3 -I iot/sentinela/testes/gerar_vetores.py iot/sentinela/testes/vetores.h
 	@g++ -std=c++17 -Wall -Wextra -Werror -O1 -o $(TESTAR_SENTINELA) iot/sentinela/testes/testar.cpp && $(TESTAR_SENTINELA)
+
+COMPILAR_SENTINELA := $(or $(TMPDIR),/tmp)/sombra-sentinela/sketch
+compilar-sentinela: ## Compila o firmware para o ESP32 DevKit com aviso ligado (arduino-cli, core esp32 e o libraries.txt)
+	@mkdir -p $(COMPILAR_SENTINELA) && cp iot/sentinela/sketch.ino iot/sentinela/*.h $(COMPILAR_SENTINELA)/
+	@$(or $(ARDUINO_CLI),arduino-cli) compile --fqbn esp32:esp32:esp32 --warnings all $(COMPILAR_SENTINELA)
 
 e2e-painel: ## E2E do painel (Playwright) contra o make up: login, roteiro com o simulador, Risco Cidadão e operação ao vivo
 	@cd web/painel && npx playwright test
