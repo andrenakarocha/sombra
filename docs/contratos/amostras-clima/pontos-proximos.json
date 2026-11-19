@@ -8,7 +8,7 @@
     "fecha" : "18:00"
   },
   "acessivel" : false,
-  "fonte" : "OpenStreetMap (ODbL), node/4312079136; horário no OSM: Mo-Fr 09:00-18:00; Sa 09:00-16:00",
+  "fonte" : "OpenStreetMap (ODbL); horário no OSM: Mo-Fr 09:00-18:00; Sa 09:00-16:00",
   "latitude" : -23.498444,
   "longitude" : -46.619591
 }, {
@@ -21,7 +21,7 @@
     "fecha" : "20:00"
   },
   "acessivel" : false,
-  "fonte" : "OpenStreetMap (ODbL), way/719105499; horário no OSM: Mo-Sa 10:00-20:00",
+  "fonte" : "OpenStreetMap (ODbL); horário no OSM: Mo-Sa 10:00-20:00",
   "latitude" : -23.50118,
   "longitude" : -46.625601
 }, {
@@ -34,7 +34,7 @@
     "fecha" : "18:30"
   },
   "acessivel" : false,
-  "fonte" : "OpenStreetMap (ODbL), way/226745315; horário no OSM: PH,Tu-Su 09:30-18:30; Feb 17 off",
+  "fonte" : "OpenStreetMap (ODbL); horário no OSM: PH,Tu-Su 09:30-18:30; Feb 17 off",
   "latitude" : -23.507432,
   "longitude" : -46.623499
 }, {
@@ -47,7 +47,7 @@
     "fecha" : "19:00"
   },
   "acessivel" : false,
-  "fonte" : "OpenStreetMap (ODbL), way/917937965; horário no OSM: Mo-Sa 07:00-19:00",
+  "fonte" : "OpenStreetMap (ODbL); horário no OSM: Mo-Sa 07:00-19:00",
   "latitude" : -23.503493,
   "longitude" : -46.631616
 }, {
@@ -60,7 +60,7 @@
     "fecha" : "18:00"
   },
   "acessivel" : false,
-  "fonte" : "OpenStreetMap (ODbL), way/291412510; horário no OSM: Mo-Fr 09:00-18:00;Sa 09:00-16:00",
+  "fonte" : "OpenStreetMap (ODbL); horário no OSM: Mo-Fr 09:00-18:00;Sa 09:00-16:00",
   "latitude" : -23.482549,
   "longitude" : -46.63249
 }, {
@@ -73,7 +73,7 @@
     "fecha" : "22:00"
   },
   "acessivel" : false,
-  "fonte" : "OpenStreetMap (ODbL), way/1135484967; horário no OSM: Mo-Sa 10:00-22:00; Su,PH 14:00-20:00",
+  "fonte" : "OpenStreetMap (ODbL); horário no OSM: Mo-Sa 10:00-22:00; Su,PH 14:00-20:00",
   "latitude" : -23.47864,
   "longitude" : -46.609935
 }, {
@@ -86,7 +86,7 @@
     "fecha" : "17:00"
   },
   "acessivel" : false,
-  "fonte" : "OpenStreetMap (ODbL), way/1468509142; horário no OSM: Mo-Fr 09:00-17:00; Sa 09:00-16:00; Su 09:00-13:00",
+  "fonte" : "OpenStreetMap (ODbL); horário no OSM: Mo-Fr 09:00-17:00; Sa 09:00-16:00; Su 09:00-13:00",
   "latitude" : -23.481622,
   "longitude" : -46.604223
 }, {
@@ -99,7 +99,7 @@
     "fecha" : "18:00"
   },
   "acessivel" : true,
-  "fonte" : "OpenStreetMap (ODbL), node/11617810626; horário no OSM: Tu-Su 10:00-18:00",
+  "fonte" : "OpenStreetMap (ODbL); horário no OSM: Tu-Su 10:00-18:00",
   "latitude" : -23.500957,
   "longitude" : -46.646133
 } ]
