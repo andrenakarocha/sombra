@@ -62,7 +62,7 @@ Nome `<contexto>.<fato>` em português, no particípio. Evento novo entra aqui n
 | Core · Privacidade | `privacidade.pii_detectada`, `privacidade.vazamento_bloqueado`, `privacidade.saida_externa_bloqueada`, `ia.traducao_gerada`, `ia.fallback_template`, `risco_cidadao.atualizado` |
 | Clima | `observacao.registrada`, `observacao.recusada`, `previsao.calculada` (com `fonte`: `onnx` ou `regra`), `modelo.carregado`, `modelo.indisponivel`, `fonte_meteorologica.falhou`, `replay.iniciado`, `replay.encerrado` |
 | Sentinela (serial) e simulador | `boot`, `wifi.conectado`, `mqtt.conectado`, `mqtt.desconectado`, `telemetria.enviada`, `nivel.mudou`, `checkin.enviado`, `evento.enviado`, `comando.aceito`, `comando.recusado`, `fila.descarregada`; só no simulador: `telemetria.adulterada_enviada`, `comando.publicado`, `simulador.ouvindo` |
-| VM | `provision.etapa_iniciada`, `provision.etapa_concluida`, `provision.etapa_falhou`, `monitor.verificacao`, `monitor.alerta`, `monitor.servico_inativo` |
+| VM | `provision.iniciado`, `provision.concluido`, `provision.interrompido`, `provision.etapa_iniciada`, `provision.etapa_concluida`, `provision.etapa_falhou`, `provision.comando_falhou` (o trap ERR, com linha, comando e código), `provision.sem_permissao`, `config.alterada`, `pacotes.instalando`, `monitor.verificacao`, `monitor.alerta`, `monitor.servico_inativo` |
 
 ## 5. Por stack
 

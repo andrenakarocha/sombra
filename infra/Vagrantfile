@@ -1,0 +1,22 @@
+# Sombra · a VM do sombra-srv01 (Ubuntu 24.04 no VirtualBox). O Vagrant só cria a máquina e chama o provision.sh: toda a
+# configuração (hostname, IP estático, DNS, usuários, aplicação, monitor) é dos scripts, que rodam em qualquer Ubuntu.
+#
+#   vagrant up                     cria e provisiona do zero
+#   vagrant provision              roda o provision.sh de novo (idempotente)
+#   vagrant destroy -f && vagrant up   a prova de reprodutibilidade (F8.7)
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.box_check_update = false
+
+  # Rede host-only: o IP estático é configurado pelo steps/20-rede.sh (netplan), não pelo Vagrant.
+  config.vm.network "private_network", ip: "192.168.56.10", auto_config: false
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "sombra-srv01"
+    vb.memory = 4096
+    vb.cpus = 2
+  end
+
+  # A pasta infra/ do repositório aparece em /vagrant; o provision.sh roda de lá como root.
+  config.vm.provision "shell", privileged: true, inline: "cd /vagrant && ./provision.sh"
+end

@@ -1,0 +1,4 @@
+# os scripts da VM se carregam entre si (lib/): o shellcheck segue esses source, relativos ao próprio script
+external-sources=true
+source-path=SCRIPTDIR
+source-path=SCRIPTDIR/..

@@ -81,6 +81,7 @@ jobs:
               - '.env.example'
             scripts:
               - '**/*.sh'
+              - 'infra/**'
             workflows:
               - '.github/workflows/**'
             semgrep:
@@ -338,6 +339,8 @@ jobs:
         with:
           persist-credentials: false
       - run: git ls-files -z '*.sh' | xargs -0 shellcheck
+      - name: testes das bibliotecas da VM (log, auditoria, trap, orquestrador) num Ubuntu 24.04
+        run: make test-infra
 
   workflows:
     name: actionlint
