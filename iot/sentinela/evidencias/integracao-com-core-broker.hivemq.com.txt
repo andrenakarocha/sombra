@@ -1,0 +1,23 @@
+$ make integrar-sentinela    (o código do firmware → broker broker.hivemq.com → Core)
+  mensagens:
+    evento     {"v":1,"ts":1795065032,"seq":1795065152,"tipo":"CHECKIN_ESTOU_BEM","sig":"f568d77a4d7e196fd2de8e75ae168da8c9a3e6806dc237b377070f4e55bc73a3"}
+    telemetria {"v":1,"ts":1795065152,"seq":1795065153,"t":29.0,"rh":50.0,"hi":29.7,"nivel":"ATENCAO","sig":"74509e548d7592f258a4fafa38904cbaf01041b4cac90e5dd63f6176725ad1b7"}
+    adulterada {"v":1,"ts":1795065152,"seq":1795065154,"t":29.0,"rh":50.0,"hi":29.7,"nivel":"NORMAL","sig":"68058f2a96da7a149feb64983c9adaf10f08b7df719513c7ae36d399151b15af"}
+
+✔ o "estou bem" apertado sem rede há 2 min chega depois e é aceito  (seq 1795065152 → checkin.registrado)
+✔ a telemetria assinada vira leitura no Core  (seq 1795065153 → leitura.registrada)
+✔ a telemetria adulterada (ATENCAO trocado por NORMAL) é recusada  (seq 1795065154 → mqtt.assinatura_invalida)
+✔ a mesma telemetria repetida é descartada como replay  (seq 1795065153 → mqtt.replay_descartado)
+⏸ a volta (comando do Core) não rodou: nenhum alerta abriu em 30 s. A casa deve estar na carência de 1 h depois de
+  um alerta resolvido (D13); rode de novo depois dela.
+
+  o que o Core registrou (log JSON):
+    checkin.registrado  snt-7f3a9c:1795065152  Check-in EstouBem (BotaoSentinela) na casa 0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10
+    leitura.registrada  snt-7f3a9c:1795065153  Leitura da Sentinela snt-7f3a9c na casa 0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10: nível Atencao
+    mqtt.assinatura_invalida  snt-7f3a9c:1795065154  Assinatura inválida na mensagem telemetria da Sentinela snt-7f3a9c (seq 1795065154): descartada
+    seguranca.evento_registrado  snt-7f3a9c:1795065154  Evento de segurança MQTT_ASSINATURA_INVALIDA da origem snt-7f3a9c
+    mqtt.replay_descartado  snt-7f3a9c:1795065153  Mensagem repetida ou fora da janela da Sentinela snt-7f3a9c (seq 1795065153): descartada
+    seguranca.evento_registrado  snt-7f3a9c:1795065153  Evento de segurança MQTT_REPLAY da origem snt-7f3a9c
+    leitura.registrada  snt-7f3a9c:1795065155  Leitura da Sentinela snt-7f3a9c na casa 0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10: nível Perigo
+    alerta.aberto  snt-7f3a9c:1795065155  Alerta 01a1f238-a3a4-796d-8390-f84013cc8fa1 (DE_SENTINELA) aberto na casa 0b6f3c1e-6c1d-4c55-9a51-2f3d1b9e7a10 com nível Perigo
+    comando.publicado  snt-7f3a9c:1795065155  Comando ALERTA para a Sentinela snt-7f3a9c (seq 1795065161)
