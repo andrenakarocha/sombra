@@ -642,11 +642,13 @@ provando o antes e o depois.
 
 **Objetivo:** a porta física do Sombra, integrada de verdade. **Spec:** 04.
 
-- [ ] **F5.1** 🧑🤖 🔑 Projeto no Wokwi (conta do projeto) + circuito + `diagram.json` versionado.
-  🔎 o OLED mostra a temperatura do DHT22.
-  ⏸ 2026-11-19: o circuito está no `iot/sentinela/diagram.json` (ESP32 DevKit, DHT22, OLED I²C, LED RGB com 3 × 220 Ω,
+- [x] **F5.1** 🧑🤖 🔑 Projeto no Wokwi (conta do projeto) + circuito + `diagram.json` versionado.
+  🔎 o OLED mostra a temperatura do DHT22 — 2026-11-19 (https://wokwi.com/projects/481162052559561729, montado e salvo
+  por `node tools/wokwi/publicar.mjs` depois do login do operador; aberto sem login, traz o código, o circuito, os 7
+  cabeçalhos e o `libraries.txt`; a OLED com a temperatura está em `iot/sentinela/evidencias/`).
+  Antes: o circuito está no `iot/sentinela/diagram.json` (ESP32 DevKit, DHT22, OLED I²C, LED RGB com 3 × 220 Ω,
   buzzer e os dois botões, com as teclas V e A) e o firmware compila para o ESP32 com `--warnings all`
-  (`make compilar-sentinela`: 80% da flash, 17% da RAM). Falta o operador criar o projeto no Wokwi e colar os arquivos.
+  (`make compilar-sentinela`: 80% da flash, 17% da RAM).
 - [x] **F5.2** 🤖 🤝 Índice de calor (vetores), máquina de estados offline, LED, buzzer e botões.
   🔎 mexendo no DHT22, os estados mudam conforme a tabela de níveis — 2026-11-19 (no Wokwi, por script: 28 → 30 → 33 →
   35 °C com 50%, e a OLED e o LED passam por Quente, Cautela extrema e Perigo; `iot/sentinela/evidencias/wokwi-perigo.png`
@@ -954,8 +956,9 @@ falha documentados.
 
 **Objetivo:** Features (50%) e Test Cases (50%) no Azure, rastreáveis até o código. **Spec:** 09.
 
-- [ ] **F10.1** 🧑 🔑 ⛔ Organização e projeto no Azure DevOps, **professor de QA como Admin**, PAT para o script.
-  🔎 o professor aparece em Project Administrators.
+- [x] **F10.1** 🧑 🔑 ⛔ Organização e projeto no Azure DevOps, **professor de QA como Admin**, PAT para o script.
+  🔎 o professor aparece em Project Administrators — 2026-11-19 (`dev.azure.com/gs-sombra/Sombra`, processo Agile; o
+  print dos membros do grupo abre o PDF de QA; o PAT, só com Work Items, ficou no `.env` sem passar pelo chat).
 - [x] **F10.2** 🤖 🤝 `features.yaml` (F01–F12, Como/Quero/Para + Dado/Quando/Então).
   🔎 revisado pelo operador — 2026-11-18. `qa/especificacao/features.yaml`: 12 Features e 43 critérios de aceite,
   tirados das regras R1–R14 e do contrato de níveis, com prioridade, valor de negócio e MoSCoW (padrão do backlog da
@@ -965,18 +968,22 @@ falha documentados.
   🔎 cada Feature tem pelo menos 1 negativo — 2026-11-18 (`qa/ferramentas/conferir_especificacao.py`: 50 casos, 22
   positivos e 28 negativos, as quatro técnicas, todo critério coberto e os 102 testes citados existem no repositório;
   48 automatizados e 2 manuais; com a F2, o TC39 também ficou automatizado: 49 e 1).
-- [ ] **F10.4** 🤖 `sincronizar_azure.py` idempotente (REST + PAT).
-  🔎 o Boards mostra tudo, com passos e vínculos; uma segunda execução não duplica nada (P12).
+- [x] **F10.4** 🤖 `sincronizar_azure.py` idempotente (REST + PAT).
+  🔎 o Boards mostra tudo, com passos e vínculos; uma segunda execução não duplica nada (P12) — 2026-11-19 (63 itens no
+  Azure de verdade; a segunda execução sai "63 sem mudança" depois de comparar o HTML do jeito que o Azure o devolve:
+  ele resolve entidades, codifica emoji, põe espaço antes de `</p>` e passa as tags para minúsculas).
   ⏸ 2026-11-19: o script está pronto e testado contra um Azure DevOps falso (`make test-qa`, também no CI): a primeira
   execução cria 63 itens (Epic, 12 Features filhas e 50 Test Cases ligados por Tested By, com os passos no XML do
   `Microsoft.VSTS.TCM.Steps`), a segunda não cria nem muda nada, e mudar um caso muda só ele. O 🔎 no Boards de verdade
   espera a F10.1 (a organização, o projeto e o PAT do operador): `make qa-azure`.
-- [ ] **F10.5** 🧑🤖 Prints (Playwright com sessão ou manual), matriz de rastreabilidade e PDF.
-  🔎 o PDF tem o link do projeto e prints de todas as telas exigidas.
-  ⏸ 2026-11-19: `make qa-prints` tira os 66 prints pelo id de cada work item (o operador só faz o login no Chrome que
+- [x] **F10.5** 🧑🤖 Prints (Playwright com sessão ou manual), matriz de rastreabilidade e PDF.
+  🔎 o PDF tem o link do projeto e prints de todas as telas exigidas — 2026-11-19 (`qa/entrega/qa.pdf`, 40 páginas: o
+  link do projeto e o do pitch na capa, os membros de Project Administrators com o professor, a matriz e os 66 prints;
+  depois do primeiro login, `node qa/entrega/capturar-prints.mjs --sem-janela` tira tudo sem abrir janela).
+  Antes: `make qa-prints` tira os 66 prints pelo id de cada work item (o operador só faz o login no Chrome que
   abrir) e `make qa-pdf` monta o PDF com a capa, o link do projeto e do pitch, o resumo, a matriz Feature × Test Case ×
   teste automatizado (50 linhas) e os prints, com aviso em vermelho para o que faltar. Prints e PDF ficam fora do Git
-  (mostram o professor). Espera a F10.1 e a F10.4 no Azure de verdade.
+  (mostram o professor).
 
 **✅ Aceite F10:** Features e Test Cases completos no Azure · professor como Admin · PDF pronto.
 
@@ -1045,8 +1052,8 @@ F11.8 (VM no Azure) saíram.**
   🔎 cada número tem link.
   ⏸ 2026-11-19: o ato 1 usa só números do repositório (a série real da A701 e a entrevista), com a fonte de cada um no
   `pitch/README.md`; a pesquisa externa ficou de fora.
-- [ ] **F13.3** 🧑🤖 Roteiro e storyboard do pitch (fecha a DA4).
-  🔎 aprovado pelo operador.
+- [x] **F13.3** 🧑🤖 Roteiro e storyboard do pitch (fecha a DA4).
+  🔎 aprovado pelo operador — 2026-11-19 (publicado por ele no YouTube).
   ⏸ 2026-11-19: o roteiro em `pitch/shared/roteiro.js` (12 cenas, 5 atos) e a voz pela D21; falta a aprovação.
 - [x] **F13.4** 🤖 Capturas em 1080p: Playwright a partir do `make demo`, Wokwi, VM, emulador; fotos do território
   (D14) com a placa desfocada.
@@ -1061,24 +1068,26 @@ F11.8 (VM no Azure) saíram.**
   parte o operador grava). Narração: a voz do operador lendo as falas do roteiro ou TTS; montagem e legenda com
   `ffmpeg`, e a duração conferida com `ffprobe` contra o limite de cada vídeo. A carência de 1 h por casa vale para
   cada tomada de alerta.
-- [ ] **F13.5** 🧑🤖 Render do pitch (≤ 4:00), mix e legendas.
-  🔎 o operador aprova.
+- [x] **F13.5** 🧑🤖 Render do pitch (≤ 4:00), mix e legendas.
+  🔎 o operador aprova — 2026-11-19 (https://youtu.be/g6WIFJjfmk8).
   ⏸ 2026-11-19: `pitch/renders/sombra-pitch.mp4`, 3:01 em 1080p, com a voz Charon, a trilha de Kevin MacLeod (CC BY) e
   legendas; falta a aprovação.
-- [ ] **F13.6** 🧑🤖 Vídeos de IoT (≤ 4), Mobile (≤ 3), ML (≤ 5), OS (≤ 7) e Cyber.
-  🔎 o operador aprova cada um.
+- [x] **F13.6** 🧑🤖 Vídeos de IoT (≤ 4), Mobile (≤ 3), ML (≤ 5), OS (≤ 7) e Cyber.
+  🔎 o operador aprova cada um — 2026-11-19.
   ⏸ 2026-11-19: os 5 gravados por script, com voz sintética (decisão do operador): Cyber 2:52, OS 4:02, ML 3:43, IoT
   2:51 e Mobile 2:06, em `tools/videos/saida/` (fora do Git). Falta a aprovação do operador.
-- [ ] **F13.7** 🧑 🔑 Upload no YouTube como não listado + links nos READMEs.
-  🔎 cada link abre numa aba anônima.
+- [x] **F13.7** 🧑 🔑 Upload no YouTube como não listado + links nos READMEs.
+  🔎 cada link abre numa aba anônima — 2026-11-19 (os 6 no README de cada pasta; o do Cyber também na capa do PDF e o
+  do pitch no PDF de QA; `make checklist ONLINE=1` confere cada um pelo oEmbed, que recusa vídeo privado).
 
 **✅ Aceite F13:** 6 vídeos dentro do limite, aprovados, com os links publicados.
 
 ### 8.15 F14 — Entrega
 
-- [ ] **F14.1** 🤖 `tools/checklist-entrega.sh`: confere links (anônimos), arquivos exigidos, durações dos vídeos,
+- [x] **F14.1** 🤖 `tools/checklist-entrega.sh`: confere links (anônimos), arquivos exigidos, durações dos vídeos,
   integrantes em cada entrega.
-  🔎 sai com 0.
+  🔎 sai com 0 — 2026-11-19 (`make checklist ONLINE=1`: as 8 entregas completas, os 6 vídeos e o Wokwi abrindo sem
+  login; o professor como Admin está no print da F10.1).
 - [ ] **F14.2** 🧑 🔑 Envio das 8 tarefas no Teams (um integrante por disciplina).
   🔎 print de cada envio em `docs/evidencias/entrega/`.
 
@@ -1146,22 +1155,17 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (19/11, 15h30):** F1 a F4, F7 e F8 concluídas e na `main`; em PR (#21) os vídeos por script, a correção do relógio da Sentinela, o feed do Risco Cidadão se atualizando com a tradução da IA e o bairro da Ficha (Moema, D20). Os **5 vídeos estão gravados** (`tools/videos/saida/`). **Com o operador:** aprovar e subir os vídeos (YouTube, não listados, e o link no README de cada pasta), o Azure DevOps com o professor como Admin e o PAT (F10.1, depois `make qa-azure`, `make qa-prints` e `make qa-pdf`), o link do Wokwi (`node tools/wokwi/publicar.mjs`) e o envio no Teams.
+**Agora (19/11, 20h40):** falta pouco para a entrega. O Azure DevOps está no ar (`gs-sombra/Sombra`, com o professor como
+Admin, 63 itens e os 66 prints); a Sentinela está publicada no Wokwi; os 6 vídeos estão no YouTube, com o link no
+README de cada pasta; o pitch tem 3:01.
 
-**Próxima sessão (19/11, último dia), nesta ordem:**
+**Falta, nesta ordem:**
 
-1. O push do branch `f5-evidencias` (`git push -u origin f5-evidencias`, pelo operador) e o PR: este registro e a
-   evidência do comando no broker público.
-2. `make up` (depois do boot, o compose pode voltar no modo Wokwi; `make up` volta ao normal) e `make doctor`.
-3. **Operador, em paralelo:** o projeto no Wokwi com os arquivos de `iot/sentinela/` e o link no README (F5.1); o
-   Azure DevOps com o professor como Admin e o PAT (F10.1), depois `make qa-azure`, `make qa-prints` e `make qa-pdf`;
-   os 🔎 do app no celular; o bairro da Ficha.
-4. **Vídeos (F13.4 e F13.6):** um roteiro de `docs/videos/` por vez, gravado o máximo por script (o plano está na
-   F13.4). Ordem sugerida: Cyber e OS (dependem só do painel e da VM), depois Mobile e IoT (dependem do celular e do
-   Wokwi). O ML é do Matheus. Upload como não listado e o link no README de cada pasta.
-5. Com o Wokwi no ar: `make demo-wokwi` e `make integrar-sentinela-wokwi` fecham a F5.4 e a F9.5.
-6. **Entrega:** `make entrega-cyber` na `main` final (o ZIP do código), `make checklist ONLINE=1` sem nenhum ✘ e o
-   envio das 8 tarefas no Teams até 23h55, com print de cada envio (F14.2).
+1. ✔ O PDF de QA (`qa/entrega/qa.pdf`, com os prints e o pitch) e o de Cyber com o ZIP; `make checklist ONLINE=1` sai
+   com 0.
+2. O merge do PR #22 (os links, o pitch e os PDFs).
+3. **Operador:** o envio das 8 tarefas no Teams até 23h55 (a tabela da §4 diz o que vai em cada uma), com print de
+   cada envio (F14.2).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -1170,16 +1174,16 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
 | F3 Clima (SOA) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: autoavaliação 10/10 com evidência por subitem no README da pasta (144 testes, Testcontainers, ArchUnit, contrato OpenAPI conferido); o Core consome o Clima de verdade (risco e pontos, circuito, mesmo `correlationId`) e abre o preventivo a partir do replay real pelo limite pessoal (D19) |
 | F4 ML | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado (Matheus): os 6 critérios com evidência no README da pasta; notebook executado; 2 modelos ONNX com paridade 20/20; 75 testes. No teste, 74 de 75 dias de calor avisados, com 7,8 dias de alarme falso por mês; o XGBoost empata com a persistência na PR-AUC. A F9.1 precisa da ressalva do pico (F4.6) |
-| F5 Sentinela (IoT) | 🟨 em andamento | 2026-11-19 | | firmware compilado para o ESP32 e 47 testes no host; a Sentinela roda no Wokwi ligada ao Core pelo broker público, do perigo ao escalonamento e ao "estou bem" (F5.2 a F5.4 ✔; o NTP ressincroniza a cada minuto); falta o link público do Wokwi (`node tools/wokwi/publicar.mjs`, operador) |
+| F5 Sentinela (IoT) | ✅ concluída | 2026-11-19 | 2026-11-19 | firmware compilado para o ESP32 e 47 testes no host; a Sentinela roda no Wokwi ligada ao Core pelo broker público, do perigo ao escalonamento e ao "estou bem" (o NTP ressincroniza a cada minuto); publicada em https://wokwi.com/projects/481162052559561729 |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: as cinco páginas ao vivo pelo hub (o Core passou a emitir o `RiscoCidadaoAtualizado`), E2E verde (6) e 12 testes no Vitest, prints revisados em três larguras; o painel sobe no compose pelo nginx |
 | F8 Infra (OS) | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: a VM vazia vira o `sombra-srv01` com o Sombra inteiro no ar só com scripts (9 etapas idempotentes, validação de 26 pontos), monitor `Type=notify` com watchdog, auditoria JSON e auditd, os 7 testes de falha com print, reprodução do zero provada; o 🔎 da F8.3 (release no GitHub) espera a primeira tag `v*` |
 | F9 Integração | 🟨 em andamento | 2026-11-19 | | F9.5 quase: o ID do MQTT segue nos logs do Core e o do worker chega ao Clima; falta a rodada do SignalR fora da carência. F9.1 adiada (o contrato do Clima). F9.2–F9.4 não começadas |
-| F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; F10.4 e F10.5 prontas por script (`make qa-azure`, `qa-prints`, `qa-pdf`), esperando a F10.1 (Azure, 🔑) |
+| F10 QA | ✅ concluída | 2026-11-18 | 2026-11-19 | 12 Features e 50 casos (João) no Azure Boards de verdade (`gs-sombra/Sombra`, professor como Admin), sincronizados por `make qa-azure` (a segunda execução não muda nada) e o `qa/entrega/qa.pdf` com a matriz, os 66 prints e o link do pitch |
 | F11 Polimento | 🟨 em andamento | 2026-11-19 | | pela D18, só acessibilidade: o axe no painel (WCAG 2.2 AA, F11.6); a guarda da IA ficou mais rígida (ortografia e coerência) |
 | F12 Docs e PDFs | 🟨 em andamento | 2026-11-19 | | F12.3 feita (PDF de Cyber); F12.1 falta o bairro; F12.2 falta a entrevista (operador); F12.4 guia pronto, falta a sessão com o time |
-| F13 Vídeos | 🟨 em andamento | 2026-11-19 | | os 5 vídeos gravados por script (`tools/videos/`, F13.4 ✔): Cyber 2:52, OS 4:02, ML 3:43, IoT 2:51 e Mobile 2:06; faltam a aprovação e o upload (operador); pitch fora pela D18 |
-| F14 Entrega | 🟨 em andamento | 2026-11-19 | | F14.1 feita: `make checklist` (e `ONLINE=1`) lista o que falta em cada uma das 8 tarefas |
+| F13 Vídeos | ✅ concluída | 2026-11-19 | 2026-11-19 | os 5 vídeos por script (`tools/videos/`) e o pitch (`pitch/`, 3:01, voz Charon) aprovados e no YouTube como não listados, com o link no README de cada pasta; a F13.2 (pesquisa externa) ficou de fora: o pitch usa só números do repositório |
+| F14 Entrega | 🟨 em andamento | 2026-11-19 | | F14.1 feita: `make checklist ONLINE=1` sai com 0; falta o envio das 8 tarefas no Teams (operador, F14.2) |
 
 Legenda: ⬜ não iniciada · 🟨 em andamento · ✅ concluída · ⛔ bloqueada
 
