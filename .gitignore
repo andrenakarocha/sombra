@@ -61,3 +61,6 @@ security/semgrep/semgrep.sarif
 
 # Artefatos locais da VM (infra/scripts/empacotar.sh)
 infra/artefatos/
+
+# Vídeos gravados por script (tools/videos): saem grandes, vão para o YouTube
+tools/videos/saida/
