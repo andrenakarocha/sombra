@@ -108,6 +108,32 @@ public sealed class TradutorDeRiscoTests
         Assert.AreEqual(TraducaoDeRisco.FonteTemplate, (await criar().EventosDeSeguranca.SingleAsync()).FonteDaTraducao);
     }
 
+    /// <summary>
+    /// Uma tradução guardada que a guarda de hoje reprova (a resposta real do Gemini que dizia que o Sombra "tentou
+    /// enviar" o dado num acesso negado) não é reaproveitada: o evento novo com a mesma assinatura vai de novo à IA.
+    /// </summary>
+    /// <returns>O teste.</returns>
+    [TestMethod]
+    public async Task NaoReaproveitaTraducaoQueAGuardaDeHojeReprova()
+    {
+        Func<SombraDbContext> criar = await ComEventosAsync(AcessoNegado(CategoriaDePii.Saude), AcessoNegado(CategoriaDePii.Saude));
+        TraducaoDeRisco antiga = _boa with { Cidadao = "Tentamos enviar uma informação sobre a sua saúde, mas o sistema de segurança impediu para proteger sua privacidade." };
+        await using (SombraDbContext antes = criar())
+        {
+            EventoDeSeguranca primeiro = await antes.EventosDeSeguranca.OrderBy(e => e.Momento).FirstAsync();
+            primeiro.RegistrarTraducao(primeiro.ParaTraduzir(1).Assinatura, antiga, DateTimeOffset.UtcNow);
+            await antes.SaveChangesAsync();
+        }
+
+        ModeloFalso modelo = new(_ => Task.FromResult(_boa));
+        await using SombraDbContext db = criar();
+        await Tradutor(db, modelo).TraduzirPendentesAsync(CancellationToken.None);
+
+        Assert.HasCount(1, modelo.Prompts);
+        EventoDeSeguranca novo = await criar().EventosDeSeguranca.OrderBy(e => e.Momento).LastAsync();
+        Assert.AreEqual(_boa.Cidadao, novo.TraducaoCidadao);
+    }
+
     /// <summary>Cada volta faz no máximo as chamadas configuradas: o resto fica pendente, não vira template.</summary>
     /// <returns>O teste.</returns>
     [TestMethod]

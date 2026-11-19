@@ -72,7 +72,7 @@ public sealed partial class TradutorDeRisco
             string assinatura = paraTraduzir.Assinatura;
             int repeticoes = await _db.EventosDeSeguranca.CountAsync(e => e.Assinatura == assinatura && e.Momento >= desde, cancellationToken) + 1;
 
-            TraducaoDeRisco? traducao = cache.GetValueOrDefault(assinatura) ?? await DoCacheAsync(assinatura, cancellationToken);
+            TraducaoDeRisco? traducao = cache.GetValueOrDefault(assinatura) ?? await DoCacheAsync(paraTraduzir, cancellationToken);
             if (traducao is null && !_modelo.Configurado)
             {
                 traducao = Template(paraTraduzir, "sem_chave");
@@ -102,13 +102,16 @@ public sealed partial class TradutorDeRisco
         return traduzidos;
     }
 
-    private async Task<TraducaoDeRisco?> DoCacheAsync(string assinatura, CancellationToken cancellationToken)
+    // A tradução guardada só vale se passar na guarda de hoje: uma regra nova (como a da ortografia) não pode ser
+    // contornada por uma resposta antiga da IA que entrou antes dela.
+    private async Task<TraducaoDeRisco?> DoCacheAsync(EventoParaTraduzir evento, CancellationToken cancellationToken)
     {
+        string assinatura = evento.Assinatura;
         EventoDeSeguranca? anterior = await _db.EventosDeSeguranca.AsNoTracking()
             .Where(e => e.Assinatura == assinatura && e.FonteDaTraducao == TraducaoDeRisco.FonteIa)
             .OrderByDescending(e => e.TraduzidoEm)
             .FirstOrDefaultAsync(cancellationToken);
-        return anterior?.Traducao;
+        return anterior?.Traducao is { } guardada && GuardaDaTraducao.Aprovar(guardada, evento, out _) ? guardada : null;
     }
 
     private async Task<(TraducaoDeRisco Traducao, bool Transitorio)> PedirAsync(EventoParaTraduzir evento, CancellationToken cancellationToken)
@@ -119,7 +122,7 @@ public sealed partial class TradutorDeRisco
         try
         {
             TraducaoDeRisco traducao = await _modelo.TraduzirAsync(PromptDeRisco.Sistema, PromptDeRisco.Montar(evento), limite.Token);
-            if (!GuardaDaTraducao.Aprovar(traducao, out string motivo))
+            if (!GuardaDaTraducao.Aprovar(traducao, evento, out string motivo))
             {
                 return (Template(evento, "reprovada_" + motivo), false);
             }
