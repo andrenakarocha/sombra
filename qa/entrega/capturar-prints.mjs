@@ -33,9 +33,12 @@ const telas = [
 
 const contexto = await chromium.launchPersistentContext(join(AQUI, '.sessao'), {
   channel: 'chrome',
-  headless: false,
+  // --sem-janela: depois do primeiro login a sessão já está na pasta e o Chrome não precisa aparecer
+  headless: process.argv.includes('--sem-janela'),
   viewport: { width: 1440, height: 1500 },
   locale: 'pt-BR',
+  // sem isto o Chrome para de desenhar quando a janela fica atrás de outra e o screenshot nunca termina
+  args: ['--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding', '--disable-background-timer-throttling'],
 });
 const pagina = contexto.pages()[0] ?? (await contexto.newPage());
 
@@ -49,8 +52,21 @@ let feitos = 0;
 for (const [nome, url] of telas) {
   const arquivo = join(PRINTS, `${nome}.png`);
   if (existsSync(arquivo) && !process.argv.includes('--de-novo')) continue;
-  await pagina.goto(url, { waitUntil: 'networkidle' });
-  await pagina.waitForTimeout(1500); // o Boards termina de desenhar o formulário depois do networkidle
+  // o load às vezes nunca chega (o Boards fica com conexões abertas): segue com o que já desenhou
+  await pagina.goto(url, { waitUntil: 'load', timeout: 45_000 }).catch(() => {});
+  await pagina.waitForTimeout(3500); // o Boards termina de desenhar o formulário depois do load
+  // o aviso "Welcome to the New Azure Boards" cobre a tela na primeira visita; fechado no X, não volta mais
+  const fechar = pagina.getByRole('dialog').getByRole('button', { name: /close|fechar/i });
+  if (await fechar.count()) {
+    await fechar.first().click();
+    await pagina.waitForTimeout(800);
+  }
+  // a prova da F10.1: os membros do grupo Project Administrators, com o professor
+  if (nome === 'administradores') {
+    await pagina.getByText('Project Administrators', { exact: true }).first().click();
+    await pagina.getByRole('tab', { name: /Members|Membros/ }).first().click();
+    await pagina.waitForTimeout(2500);
+  }
   await pagina.screenshot({ path: arquivo });
   feitos += 1;
   console.log(`${nome}.png`);
