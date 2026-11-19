@@ -33,10 +33,14 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-# A pasta de logs é a primeira coisa: tudo o que vem depois deixa rastro. O grupo adm lê (journal e logs do Ubuntu).
-install -d -m 0750 -o root -g adm "$SOMBRA_DIR_LOG"
-touch "$SOMBRA_AUDITORIA"
-chmod 0640 "$SOMBRA_AUDITORIA"
+# A pasta de logs é a primeira coisa: tudo o que vem depois deixa rastro. Só cria se não existir; o dono e o grupo
+# definitivos (sombra-ops) são da etapa 40, e uma segunda execução não os desfaz.
+if [[ ! -d $SOMBRA_DIR_LOG ]]; then
+  install -d -m 0750 -o root -g adm "$SOMBRA_DIR_LOG"
+fi
+if [[ ! -e $SOMBRA_AUDITORIA ]]; then
+  install -m 0640 -o root -g "$(stat -c %G "$SOMBRA_DIR_LOG")" /dev/null "$SOMBRA_AUDITORIA"
+fi
 instalar_trap_de_erro
 
 # Filtro opcional: os números das etapas pedidas.
