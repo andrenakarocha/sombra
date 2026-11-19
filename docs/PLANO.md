@@ -579,8 +579,11 @@ provando o antes e o depois.
   da F4.3, com probabilidade logística em torno do limiar de PERIGO; no pico real de 15/11/2023 o risco sai
   `CAUTELA_EXTREMA`, 35,47 °C, p = 0,07, `fonteDados: replay-inmet`; sem observação nas últimas 3 h, 503; o campo novo
   `indiceDeCalorPrevistoC` deixa a DA6 resolvível no Core pelo limiar pessoal da R3).
-- [ ] **F3.7** 🤖 Logs JSON (§6) aceitando o `X-Correlation-Id` do Core + actuator health.
-  🔎 uma chamada do Core aparece nos dois logs com o mesmo `correlationId`.
+- [x] **F3.7** 🤖 Logs JSON (§6) aceitando o `X-Correlation-Id` do Core + actuator health.
+  🔎 uma chamada do Core aparece nos dois logs com o mesmo `correlationId` — 2026-11-18, lado do Clima (no container:
+  `servico.iniciado` com a configuração sem segredo; uma chamada com `X-Correlation-Id` sai com o mesmo ID em
+  `previsao.calculada` e `requisicao.concluida`, sem o corpo; ID fora do formato é trocado; readiness com banco e o
+  previsor como detalhe; 9 testes). O lado do Core (o `ClimaClient` mandando o header) é conferido na F3.9.
 - [ ] **F3.8** 🤖 Testes de API (MockMvc + Testcontainers) + ArchUnit + README (Ficha, como rodar, comando do banco,
   link e print da doc, endpoints, fonte dos dados, integrantes) + evidências.
   🔎 autoavaliação do guia preenchida com 10/10 e evidência por subitem.

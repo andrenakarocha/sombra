@@ -81,6 +81,8 @@ services:
     image: sombra-clima-service:local
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      # o mesmo ambiente do Core nos logs (Development, Demo, Production)
+      SOMBRA_AMBIENTE: ${ASPNETCORE_ENVIRONMENT:-Development}
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/sombra_clima
       SPRING_DATASOURCE_USERNAME: sombra_clima
       SPRING_DATASOURCE_PASSWORD: ${CLIMA_DB_PASSWORD:?rode make env}

@@ -56,6 +56,19 @@ clima:
     tentativas: 3
     espera: PT1S
 
+sombra:
+  # Development, Demo, Production ou Test (observabilidade §1)
+  ambiente: ${SOMBRA_AMBIENTE:Development}
+
+logging:
+  # uma linha JSON por evento no stdout, com os campos da observabilidade §1
+  structured:
+    format:
+      console: br.com.fiap.sombra.clima.infraestrutura.observabilidade.FormatoDoLog
+  level:
+    root: WARN
+    br.com.fiap.sombra.clima: INFO
+
 management:
   endpoints:
     web:
@@ -65,6 +78,12 @@ management:
     health:
       probes:
         enabled: true
+      show-details: always
+      show-components: always
+      group:
+        # pronto = aceita tráfego e tem banco; o previsor aparece como detalhe (a regra mantém o serviço útil sem o modelo)
+        readiness:
+          include: readinessState,db,previsor
   info:
     env:
       enabled: true
