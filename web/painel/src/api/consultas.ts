@@ -49,10 +49,15 @@ export function useRiscoCidadao() {
   return useQuery({ queryKey: CHAVES.risco, queryFn: () => pedir('/api/v1/privacidade/risco-cidadao', RiscoCidadaoSchema) });
 }
 
+/**
+ * Os eventos com a tradução. O hub avisa quando chega evento novo, mas a tradução sai depois, no worker do Core: enquanto
+ * algum evento estiver na fila da tradução, a lista se atualiza sozinha a cada 4 s.
+ */
 export function useEventosDeSeguranca() {
   return useQuery({
     queryKey: [...CHAVES.risco, 'eventos'],
     queryFn: () => pedir('/api/v1/privacidade/eventos?pagina=1&tamanho=100', pagina(EventoDeSegurancaSchema)),
+    refetchInterval: (q) => (q.state.data?.itens.some((e) => !e.traducao) ? 4_000 : false),
   });
 }
 
