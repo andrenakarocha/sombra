@@ -607,8 +607,9 @@ provando o antes e o depois.
 
 **Objetivo:** os 6 critérios da rubrica de ML, com o modelo pronto para produção. **Spec:** 03.
 
-- [ ] **F4.1** 🤖 `requirements.txt` fixado, carga dos CSVs da F0.15, limpeza (`-9999`, fuso, buracos) em funções testadas.
-  🔎 `pytest` verde (sem vazamento de futuro, `-9999` tratado).
+- [x] **F4.1** 🤖 `requirements.txt` fixado, carga dos CSVs da F0.15, limpeza (`-9999`, fuso, buracos) em funções testadas.
+  🔎 `pytest` verde (sem vazamento de futuro, `-9999` tratado) — 2026-11-18 (33 testes; os CSVs conferem com o SHA-256 do
+  manifesto; 160 horas interpoladas e 40 dias locais descartados; hora interpolada nunca vira amostra).
 - [ ] **F4.2** 🤖 EDA, alvo (limiar ancorado na tabela NWS e no balanceamento real) e features.
   🔎 seções 1–4 do notebook executadas; limiar justificado no texto.
 - [ ] **F4.3** 🤖 Divisão temporal (treino 2010–2021, teste 2022–2025) e baselines (persistência, regressão logística).
@@ -1011,7 +1012,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
 | F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
 | F3 Clima (SOA) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: autoavaliação 10/10 com evidência por subitem no README da pasta (144 testes, Testcontainers, ArchUnit, contrato OpenAPI conferido); o Core consome o Clima de verdade (risco e pontos, circuito, mesmo `correlationId`) e abre o preventivo a partir do replay real pelo limite pessoal (D19) |
-| F4 ML | ⬜ não iniciada | | | 🤝 |
+| F4 ML | 🟨 em andamento | 2026-11-18 | | 🤝 Matheus, branch `f4-ml-matheus` |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ⬜ não iniciada | | | |
