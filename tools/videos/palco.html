@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Sombra · palco dos vídeos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;700&family=Atkinson+Hyperlegible+Next:wght@400;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<style>
+  /* O palco onde o gravador (gravar.mjs) mostra slides, o terminal com a saída real dos comandos e imagens. */
+  :root {
+    --areia-0: #FFFDF8; --areia-100: #F5EEDF; --areia-200: #E9DEC8;
+    --tinta-900: #142224; --tinta-500: #5E6E70;
+    --sombra-900: #0B3B39; --sombra-500: #1F7A73; --sombra-300: #5FB3A8; --sombra-100: #CFE8E3;
+    --telha-500: #B04F27; --telha-300: #E08A62; --ocre-300: #F0CF83;
+    --noite-950: #0C1617; --noite-900: #122022; --noite-800: #1A2C2E; --noite-300: #B8C2C0;
+    --display: 'Fraunces', Georgia, serif;
+    --texto: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+    --mono: 'Atkinson Hyperlegible Mono', 'JetBrains Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--areia-0); color: var(--tinta-900); font-family: var(--texto); }
+  .cena { position: absolute; inset: 0; display: none; }
+  .cena.ativa { display: flex; }
+
+  /* Slide */
+  #slide { flex-direction: column; justify-content: center; padding: 0 160px; background: var(--areia-0); }
+  #slide .marca { display: flex; align-items: center; gap: 20px; color: var(--sombra-500); font-weight: 700; font-size: 34px; letter-spacing: .04em; text-transform: uppercase; }
+  #slide .marca i { width: 26px; height: 26px; border-radius: 50%; background: var(--sombra-500); box-shadow: 14px 0 0 var(--telha-300); }
+  #slide h1 { margin-top: 36px; font-family: var(--display); font-weight: 600; font-size: 104px; line-height: 1.05; color: var(--sombra-900); max-width: 1500px; }
+  #slide p.sub { margin-top: 28px; font-size: 42px; color: var(--tinta-500); max-width: 1450px; line-height: 1.3; }
+  #slide ul { margin-top: 44px; padding: 0; list-style: none; display: grid; gap: 18px; }
+  #slide li { font-size: 38px; padding-left: 40px; position: relative; }
+  #slide li::before { content: ''; position: absolute; left: 0; top: 18px; width: 16px; height: 16px; border-radius: 4px; background: var(--telha-300); }
+  #slide .rodape { position: absolute; left: 160px; right: 160px; top: 64px; display: flex; justify-content: space-between; font-size: 30px; color: var(--tinta-500); border-bottom: 2px solid var(--areia-200); padding-bottom: 20px; }
+
+  /* Terminal */
+  #terminal { flex-direction: column; background: var(--noite-950); padding: 48px 64px; }
+  #terminal .janela { flex: 1; display: flex; flex-direction: column; border-radius: 18px; background: var(--noite-900); border: 2px solid var(--noite-800); overflow: hidden; }
+  #terminal .barra { display: flex; align-items: center; gap: 12px; padding: 16px 24px; background: var(--noite-800); color: var(--noite-300); font: 24px var(--mono); }
+  #terminal .barra b { width: 16px; height: 16px; border-radius: 50%; background: #3A4E50; }
+  #terminal .barra span { margin-left: 16px; }
+  #tela { flex: 1; overflow: hidden; padding: 24px 32px; font: 27px/1.42 var(--mono); color: #E6ECEA; white-space: pre-wrap; word-break: break-word; }
+  #tela .prompt { color: var(--sombra-300); font-weight: 700; }
+  #tela .cursor { display: inline-block; width: .6em; height: 1.1em; vertical-align: -.15em; background: var(--sombra-300); animation: piscar 1s steps(1) infinite; }
+  #tela .comentario { color: var(--ocre-300); }
+  @keyframes piscar { 50% { opacity: 0; } }
+
+  /* Imagem que rola (PDF, relatório, print) */
+  #imagem { justify-content: center; background: var(--areia-100); overflow: hidden; }
+  #imagem .trilho { width: 1500px; will-change: transform; }
+  #imagem img { display: block; width: 100%; margin-bottom: 40px; box-shadow: 0 10px 40px rgba(20,34,36,.18); border-radius: 6px; background: #fff; }
+
+  /* Selo no canto (ex.: "log real, acelerado 8×") */
+  #selo { position: absolute; top: 28px; right: 36px; z-index: 5; display: none; padding: 10px 22px; border-radius: 999px; background: var(--telha-500); color: #fff; font: 700 26px var(--texto); }
+</style>
+</head>
+<body>
+  <section id="slide" class="cena">
+    <div class="marca"><i></i><span>Sombra</span></div>
+    <h1></h1>
+    <p class="sub"></p>
+    <ul></ul>
+    <div class="rodape"><span>André · João · Matheus</span><span>GS 2026.2 · CitizenTech · FIAP</span></div>
+  </section>
+  <section id="terminal" class="cena">
+    <div class="janela">
+      <div class="barra"><b></b><b></b><b></b><span id="titulo-terminal">operador@sombra: ~/sombra</span></div>
+      <div id="tela"></div>
+    </div>
+  </section>
+  <section id="imagem" class="cena"><div class="trilho"></div></section>
+  <div id="selo"></div>
+<script>
+  const $ = (s) => document.querySelector(s);
+  function mostrar(id) {
+    document.querySelectorAll('.cena').forEach((c) => c.classList.toggle('ativa', c.id === id));
+  }
+  function esc(t) { return t.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]); }
+
+  // ANSI SGR mínimo → spans (cores básicas e negrito); o resto das sequências é descartado.
+  const CORES = { 30: '#7A8A8C', 31: '#F08A7A', 32: '#7FD1A8', 33: '#F0CF83', 34: '#8EC5FF', 35: '#E0A3E8', 36: '#7FD6D0', 37: '#E6ECEA' };
+  function ansi(texto) {
+    let html = '', aberto = false;
+    const partes = texto.replace(/\r(?!\n)/g, '').split(/\x1b\[([0-9;]*)m/);
+    for (let i = 0; i < partes.length; i++) {
+      if (i % 2 === 0) { html += esc(partes[i].replace(/\x1b\[[0-9;?]*[A-Za-z]/g, '')); continue; }
+      if (aberto) { html += '</span>'; aberto = false; }
+      const codigos = partes[i].split(';').map(Number);
+      let estilo = '';
+      for (const c of codigos) {
+        if (c === 1) estilo += 'font-weight:700;';
+        const n = c >= 90 && c <= 97 ? c - 60 : c;
+        if (CORES[n]) estilo += `color:${CORES[n]};`;
+      }
+      if (estilo) { html += `<span style="${estilo}">`; aberto = true; }
+    }
+    return html + (aberto ? '</span>' : '');
+  }
+
+  const tela = () => $('#tela');
+  function rolar() { const t = tela(); t.scrollTop = t.scrollHeight; }
+  function cursor() { tela().querySelector('.cursor')?.remove(); const c = document.createElement('span'); c.className = 'cursor'; tela().append(c); rolar(); }
+
+  window.palco = {
+    slide({ titulo, sub = '', itens = [] }) {
+      $('#slide h1').textContent = titulo;
+      $('#slide .sub').textContent = sub;
+      $('#slide ul').innerHTML = itens.map((i) => `<li>${esc(i)}</li>`).join('');
+      mostrar('slide');
+    },
+    terminal({ titulo, limpar = true } = {}) {
+      if (titulo) $('#titulo-terminal').textContent = titulo;
+      if (limpar) tela().innerHTML = '';
+      mostrar('terminal');
+      cursor();
+    },
+    async digitar(comando, { prompt = '$', msPorTecla = 38 } = {}) {
+      tela().querySelector('.cursor')?.remove();
+      const linha = document.createElement('span');
+      linha.innerHTML = `<span class="prompt">${esc(prompt)}</span> `;
+      tela().append(linha);
+      const cmd = document.createElement('span');
+      linha.append(cmd);
+      cursor();
+      for (const ch of comando) {
+        cmd.textContent += ch;
+        rolar();
+        await new Promise((r) => setTimeout(r, msPorTecla));
+      }
+      tela().querySelector('.cursor')?.remove();
+      tela().append('\n');
+      rolar();
+    },
+    escrever(texto) {
+      tela().querySelector('.cursor')?.remove();
+      const s = document.createElement('span');
+      s.innerHTML = ansi(texto);
+      tela().append(s);
+      rolar();
+    },
+    comentario(texto) {
+      tela().querySelector('.cursor')?.remove();
+      const s = document.createElement('span');
+      s.className = 'comentario';
+      s.textContent = `# ${texto}\n`;
+      tela().append(s);
+      rolar();
+    },
+    fimDoComando() { cursor(); },
+    imagens(srcs, { segundos = 10, inicio = 0, fim = 1 } = {}) {
+      const trilho = $('#imagem .trilho');
+      trilho.style.transition = 'none';
+      trilho.innerHTML = srcs.map((s) => `<img src="${s}">`).join('');
+      mostrar('imagem');
+      return Promise.all([...trilho.querySelectorAll('img')].map((i) => i.decode().catch(() => {}))).then(() => {
+        const total = Math.max(0, trilho.scrollHeight - 1080 + 80);
+        trilho.style.transform = `translateY(${-total * inicio + 40}px)`;
+        trilho.getBoundingClientRect();
+        trilho.style.transition = `transform ${segundos}s ease-in-out`;
+        trilho.style.transform = `translateY(${-total * fim + 40}px)`;
+      });
+    },
+    selo(texto) { const s = $('#selo'); s.textContent = texto || ''; s.style.display = texto ? 'block' : 'none'; },
+  };
+  mostrar('slide');
+</script>
+</body>
+</html>
