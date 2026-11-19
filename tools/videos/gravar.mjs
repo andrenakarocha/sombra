@@ -66,7 +66,10 @@ if (!soMontar) {
   const env = lerEnv();
   const ctx = { env, raiz: RAIZ, duracao: 0, fimDaFala: 0, dados: {} };
   const t0 = {};
-  const usaPainel = roteiro.cenas.some((c) => c.tela === 'painel');
+  // Cada tela que não é o palco (o painel, o Wokwi…) é um contexto do navegador com a sua gravação. O zoom de cada uma
+  // vem de roteiro.telas[nome].zoom (padrão 1,25: o texto do painel fica legível no vídeo).
+  // 'celular' é a tela do emulador Android, gravada por cena com o adb screenrecord (não é página do navegador).
+  const telas = [...new Set(roteiro.cenas.map((c) => c.tela).filter((t) => t !== 'palco' && t !== 'celular'))];
 
   const contextoPalco = await browser.newContext({ viewport: { width: 1920, height: 1080 }, recordVideo: { dir: join(BRUTO, 'palco'), size: { width: 1920, height: 1080 } } });
   ctx.palco = await contextoPalco.newPage();
@@ -74,21 +77,21 @@ if (!soMontar) {
   await ctx.palco.goto(pathToFileURL(join(AQUI, 'palco.html')).href);
   await ctx.palco.evaluate(() => document.fonts.ready);
 
-  let contextoPainel;
-  if (usaPainel) {
-    contextoPainel = await browser.newContext({
+  const contextos = [contextoPalco];
+  ctx.paginas = {};
+  for (const tela of telas) {
+    const contexto = await browser.newContext({
       viewport: { width: 1920, height: 1080 },
       locale: 'pt-BR',
       timezoneId: 'America/Sao_Paulo',
       colorScheme: 'light',
       ignoreHTTPSErrors: true,
-      recordVideo: { dir: join(BRUTO, 'painel'), size: { width: 1920, height: 1080 } },
+      recordVideo: { dir: join(BRUTO, tela), size: { width: 1920, height: 1080 } },
     });
-    // Zoom de 125% (o texto fica legível no vídeo) e, como o cursor não aparece na gravação headless, um ponteiro
-    // desenhado fora da área com zoom, que segue o mouse e marca o clique.
-    await contextoPainel.addInitScript(() => {
+    // Como o cursor não aparece na gravação headless, um ponteiro desenhado fora da área com zoom segue o mouse.
+    await contexto.addInitScript((zoom) => {
       addEventListener('DOMContentLoaded', () => {
-        document.body.style.zoom = '1.25';
+        if (zoom !== 1) document.body.style.zoom = String(zoom);
         const p = document.createElement('div');
         p.style.cssText = 'position:fixed;z-index:2147483647;left:0;top:0;width:22px;height:22px;margin:-4px 0 0 -4px;pointer-events:none;transition:transform .12s;' +
           "background:url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3 2l7.5 19 2.6-7.9L21 10.5z' fill='%23142224' stroke='white' stroke-width='1.5'/></svg>\") no-repeat;";
@@ -97,10 +100,12 @@ if (!soMontar) {
         addEventListener('mousedown', () => { p.style.transform = 'scale(.8)'; }, true);
         addEventListener('mouseup', () => { p.style.transform = ''; }, true);
       });
-    });
-    ctx.painel = await contextoPainel.newPage();
-    t0.painel = Date.now();
+    }, roteiro.telas?.[tela]?.zoom ?? 1.25);
+    contextos.push(contexto);
+    ctx.paginas[tela] = await contexto.newPage();
+    t0[tela] = Date.now();
   }
+  ctx.painel = ctx.paginas.painel;
 
   // Ajudantes das cenas.
   const P = (fn, arg) => ctx.palco.evaluate(fn, arg);
@@ -114,6 +119,7 @@ if (!soMontar) {
     selo: (t) => P((x) => window.palco.selo(x), t ?? ''),
     digitar: (cmd, o = {}) => P(([c, op]) => window.palco.digitar(c, op), [cmd, o]),
     escrever: (t) => P((x) => window.palco.escrever(x), t),
+    figura: (arquivo, titulo) => P(([s, t]) => window.palco.figura(s, t), [pathToFileURL(resolve(RAIZ, arquivo)).href, titulo ?? '']),
     imagens: (arquivos, o = {}) => P(([s, op]) => window.palco.imagens(s, op), [arquivos.map((a) => pathToFileURL(resolve(RAIZ, a)).href), o]),
     /** Digita o comando e roda de verdade, com a saída aparecendo no palco enquanto sai. */
     async rodar(cmd, { mostrar = cmd, cwd = RAIZ, env: extra = {}, prompt = '$', msPorTecla = 30, timeout = 240, filtro = (t) => t } = {}) {
@@ -154,12 +160,12 @@ if (!soMontar) {
     async clicar(locator, { espera = 0.35 } = {}) {
       await locator.scrollIntoViewIfNeeded();
       const caixa = await locator.boundingBox();
-      if (caixa) await ctx.painel.mouse.move(caixa.x + caixa.width / 2, caixa.y + caixa.height / 2, { steps: 28 });
+      if (caixa) await locator.page().mouse.move(caixa.x + caixa.width / 2, caixa.y + caixa.height / 2, { steps: 28 });
       await dormir(espera * 1000);
       await locator.click();
     },
-    async rolarPainel(y, ms = 1200) {
-      await ctx.painel.evaluate((alvo) => window.scrollTo({ top: alvo, behavior: 'smooth' }), y);
+    async rolarPainel(y, ms = 1200, pagina = ctx.painel) {
+      await pagina.evaluate((alvo) => window.scrollTo({ top: alvo, behavior: 'smooth' }), y);
       await dormir(ms);
     },
   });
@@ -169,20 +175,37 @@ if (!soMontar) {
   const linhaDoTempo = [];
   for (const cena of roteiro.cenas) {
     const fala = duracoes[cena.id];
+    let gravadorDoCelular;
+    if (cena.tela === 'celular') {
+      mkdirSync(join(BRUTO, 'celular'), { recursive: true });
+      gravadorDoCelular = spawn('adb', ['shell', 'screenrecord', '--bit-rate', '10000000', `/sdcard/sombra-${cena.id}.mp4`], { stdio: 'ignore' });
+      await dormir(900);
+      t0.celular = Date.now();
+    }
     const inicio = Date.now();
     ctx.duracao = fala;
     ctx.fimDaFala = inicio + (fala + ATRASO_DA_FALA) * 1000;
     log(`cena ${cena.id} (${cena.tela}, ${fala.toFixed(1)} s)`);
     await cena.acao(ctx);
-    await dormir(ctx.fimDaFala + (cena.folga ?? 0.6) * 1000 - Date.now());
+    // Segura o estado final na tela (1,5 s no vídeo, já contando a aceleração): o resultado de um comando costuma
+    // chegar no fim, e a captura de quadros tem um pequeno atraso.
+    const segurar = (cena.segurar ?? 1.5) * (cena.acelerar ?? 1) * 1000;
+    await dormir(Math.max(ctx.fimDaFala + (cena.folga ?? 0.6) * 1000 - Date.now(), segurar));
     const fim = Date.now();
-    linhaDoTempo.push({ id: cena.id, tela: cena.tela, inicio: (inicio - t0[cena.tela]) / 1000, fim: (fim - t0[cena.tela]) / 1000, fala });
+    let fonte = null;
+    if (gravadorDoCelular) {
+      spawnSync('adb', ['shell', 'pkill', '-INT', 'screenrecord']);
+      await new Promise((r) => (gravadorDoCelular.exitCode !== null ? r() : gravadorDoCelular.on('exit', r)));
+      await dormir(800);
+      fonte = join(BRUTO, 'celular', `${cena.id}.mp4`);
+      spawnSync('adb', ['pull', `/sdcard/sombra-${cena.id}.mp4`, fonte], { stdio: 'ignore' });
+    }
+    linhaDoTempo.push({ id: cena.id, tela: cena.tela, fonte, inicio: (inicio - t0[cena.tela]) / 1000, fim: (fim - t0[cena.tela]) / 1000, fala, acelerar: cena.acelerar ?? 1, recorte: cena.recorte ?? null, rotulo: cena.rotulo ?? null });
   }
 
   const videos = { palco: ctx.palco.video() };
-  if (usaPainel) videos.painel = ctx.painel.video();
-  await contextoPalco.close();
-  if (contextoPainel) await contextoPainel.close();
+  for (const tela of telas) videos[tela] = ctx.paginas[tela].video();
+  for (const c of contextos) await c.close();
   await browser.close();
   const fontes = {};
   for (const [tela, v] of Object.entries(videos)) fontes[tela] = await v.path();
@@ -235,17 +258,24 @@ function ffmpeg(args) {
 const ESTILO = "FontName=DejaVu Sans,FontSize=12,PrimaryColour=&H00FFFFFF,BackColour=&H30142224,BorderStyle=4,Outline=0,Shadow=0,MarginV=22,MarginL=60,MarginR=60";
 const lista = [];
 for (const [i, c] of cenas.entries()) {
-  const dur = (c.fim - c.inicio).toFixed(3);
+  // Uma cena acelerada (ex.: o vagrant up, 4×) ocupa o tempo real dividido pelo fator, nunca menos que a fala.
+  const f = c.acelerar ?? 1;
+  // O conteúdo da tela chega uns décimos antes do relógio: o corte termina 0,35 s antes para não pegar a cena seguinte.
+  const real = Math.max(0.5, c.fim - c.inicio - 0.35).toFixed(3);
+  const dur = Math.max((c.fim - c.inicio) / f, c.fala + ATRASO_DA_FALA + 0.4).toFixed(3);
   const srt = join(SEG, `${i}.srt`);
   const fala = roteiro.cenas.find((x) => x.id === c.id).fala;
   writeFileSync(srt, legenda(fala, c.fala));
   const saida = join(SEG, `${String(i).padStart(2, '0')}-${c.id}.mp4`);
   const atraso = Math.round(ATRASO_DA_FALA * 1000);
   ffmpeg([
-    '-ss', c.inicio.toFixed(3), '-t', dur, '-i', fontes[c.tela],
+    '-ss', c.inicio.toFixed(3), '-t', real, '-i', c.fonte ?? fontes[c.tela],
     '-i', join(AUDIO, `${c.id}.wav`),
     '-filter_complex',
-    `[0:v]fps=30,scale=1920:1080:flags=lanczos,tpad=stop_mode=clone:stop_duration=2,trim=0:${dur},setpts=PTS-STARTPTS,format=yuv420p,subtitles=${srt}:force_style='${ESTILO}'[v];` +
+    // recorte: {x, y, w, h} da tela gravada, ampliado para 1080p (o close na OLED do Wokwi, por exemplo);
+    // rotulo: um selo no canto, desenhado na montagem (para telas que não são o palco).
+    `[0:v]fps=30,setpts=(PTS-STARTPTS)/${f},fps=30,${c.recorte ? `crop=${c.recorte.w}:${c.recorte.h}:${c.recorte.x}:${c.recorte.y},` : ''}${c.tela === 'celular' ? 'scale=-2:1000:flags=lanczos,pad=iw+16:ih+16:8:8:color=0x142224,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0xF5EEDF' : 'scale=1920:1080:flags=lanczos'},` +
+      `${c.rotulo ? `drawtext=fontfile=/usr/share/fonts/liberation/LiberationSans-Bold.ttf:text='${c.rotulo.replace(/[':]/g, '')}':fontsize=34:fontcolor=white:box=1:boxcolor=0xB04F27:boxborderw=16:x=w-tw-48:y=40,` : ''}tpad=stop_mode=clone:stop_duration=${dur},trim=0:${dur},setpts=PTS-STARTPTS,format=yuv420p,subtitles=${srt}:force_style='${ESTILO}'[v];` +
       `[1:a]aresample=48000,aformat=channel_layouts=stereo,adelay=${atraso}|${atraso},apad,atrim=0:${dur}[a]`,
     '-map', '[v]', '-map', '[a]',
     '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-r', '30',

@@ -50,6 +50,11 @@
   #imagem .trilho { width: 1500px; will-change: transform; }
   #imagem img { display: block; width: 100%; margin-bottom: 40px; box-shadow: 0 10px 40px rgba(20,34,36,.18); border-radius: 6px; background: #fff; }
 
+  /* Figura inteira, centralizada, com título */
+  #figura { flex-direction: column; align-items: center; justify-content: center; gap: 28px; background: var(--areia-0); padding: 48px 80px 150px; }
+  #figura h2 { font: 600 52px var(--display); color: var(--sombra-900); }
+  #figura img { height: 820px; width: auto; max-width: 1760px; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 30px rgba(20,34,36,.12); background: #fff; }
+
   /* Selo no canto (ex.: "log real, acelerado 8×") */
   #selo { position: absolute; top: 28px; right: 36px; z-index: 5; display: none; padding: 10px 22px; border-radius: 999px; background: var(--telha-500); color: #fff; font: 700 26px var(--texto); }
 </style>
@@ -68,6 +73,7 @@
       <div id="tela"></div>
     </div>
   </section>
+  <section id="figura" class="cena"><h2></h2><img alt=""></section>
   <section id="imagem" class="cena"><div class="trilho"></div></section>
   <div id="selo"></div>
 <script>
@@ -159,6 +165,13 @@
         trilho.style.transition = `transform ${segundos}s ease-in-out`;
         trilho.style.transform = `translateY(${-total * fim + 40}px)`;
       });
+    },
+    figura(src, titulo = '') {
+      $('#figura h2').textContent = titulo;
+      const img = $('#figura img');
+      img.src = src;
+      mostrar('figura');
+      return img.decode().catch(() => {});
     },
     selo(texto) { const s = $('#selo'); s.textContent = texto || ''; s.style.display = texto ? 'block' : 'none'; },
   };
