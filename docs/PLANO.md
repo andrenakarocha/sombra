@@ -614,8 +614,9 @@ provando o antes e o depois.
   🔎 seções 1–4 do notebook executadas; limiar justificado no texto — 2026-11-18 (alvo em `CAUTELA_EXTREMA`, 32,22 °C: o
   maior índice da A701 em 16 anos é 35,47 °C, e `PERIGO` nunca ocorreu; 63 features só com o que o Clima tem em produção,
   em janelas de até 24 h; 49 testes, incluindo mudar o futuro sem mudar as features).
-- [ ] **F4.3** 🤖 Divisão temporal (treino 2010–2021, teste 2022–2025) e baselines (persistência, regressão logística).
-  🔎 métricas dos baselines registradas.
+- [x] **F4.3** 🤖 Divisão temporal (treino 2010–2021, teste 2022–2025) e baselines (persistência, regressão logística).
+  🔎 métricas dos baselines registradas — 2026-11-18 (seção 5 do notebook, só na validação temporal: PR-AUC 0,360 da
+  persistência e 0,335 da logística; 24 h de folga entre treino e teste e entre as dobras; 58 testes).
 - [ ] **F4.4** 🤖 XGBoost com `GridSearchCV` + `TimeSeriesSplit(5)` só no treino: 3 hiperparâmetros, 12 combinações.
   🔎 tabela das 12 combinações, com média e desvio.
 - [ ] **F4.5** 🤖 Treino × teste lado a lado, gráficos, overfitting, limiar de decisão escolhido no treino, SHAP.
