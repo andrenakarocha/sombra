@@ -1,0 +1,175 @@
+{
+  "periodoTeste": "2022-2025",
+  "melhoresHiperparametros": {
+    "learning_rate": 0.03,
+    "max_depth": 3,
+    "n_estimators": 200
+  },
+  "limiarDeDecisao": 0.01007797196507454,
+  "margemSuperiorP90C": 2.3029427125718875,
+  "xgboost": {
+    "treino (dados já vistos)": {
+      "precisao": 0.11424017003188097,
+      "recall": 1.0,
+      "f1": 0.2050548402479733,
+      "f2": 0.39204959883296864,
+      "roc_auc": 0.9797301584031969,
+      "pr_auc": 0.6576963215085343,
+      "brier": 0.013844546861946583
+    },
+    "validação temporal": {
+      "precisao": 0.11907894736842105,
+      "recall": 0.900497512437811,
+      "f1": 0.21034282393957002,
+      "f2": 0.38941480206540446,
+      "roc_auc": 0.9211476559482937,
+      "pr_auc": 0.2921933774500624,
+      "brier": 0.022876930696500524
+    },
+    "teste 2022–2025": {
+      "precisao": 0.20768136557610242,
+      "recall": 0.9700996677740864,
+      "f1": 0.34212067955477443,
+      "f2": 0.5593869731800766,
+      "roc_auc": 0.9597767363125199,
+      "pr_auc": 0.5881080122534994,
+      "brier": 0.03435104712843895
+    }
+  },
+  "comparacaoNoTeste": {
+    "persistência · regra direta": {
+      "precisao": 0.5830508474576271,
+      "recall": 0.5714285714285714,
+      "f1": 0.5771812080536913,
+      "f2": 0.5737158105403602,
+      "roc_auc": 0.9523150320999987,
+      "pr_auc": 0.5754038334932623,
+      "brier": null
+    },
+    "persistência · recall 0,90 no treino": {
+      "precisao": 0.22468354430379747,
+      "recall": 0.9435215946843853,
+      "f1": 0.36293929712460066,
+      "f2": 0.5753646677471637,
+      "roc_auc": 0.9523150320999987,
+      "pr_auc": 0.5754038334932623,
+      "brier": null
+    },
+    "regressão logística": {
+      "precisao": 0.17900485436893204,
+      "recall": 0.9800664451827242,
+      "f1": 0.30271934325295025,
+      "f2": 0.5171809256661991,
+      "roc_auc": 0.9583410479540826,
+      "pr_auc": 0.5824418917301706,
+      "brier": 0.034181270748376846
+    },
+    "XGBoost": {
+      "precisao": 0.20768136557610242,
+      "recall": 0.9700996677740864,
+      "f1": 0.34212067955477443,
+      "f2": 0.5593869731800766,
+      "roc_auc": 0.9597767363125199,
+      "pr_auc": 0.5881080122534994,
+      "brier": 0.03435104712843895
+    }
+  },
+  "contraPersistencia": {
+    "diferenca": 0.012704178760237106,
+    "ic95_inferior": -0.09885810014814761,
+    "ic95_superior": 0.11405261314812895
+  },
+  "contraLogistica": {
+    "diferenca": 0.0056661205233288214,
+    "ic95_inferior": -0.060938864223940445,
+    "ic95_superior": 0.10182488715073608
+  },
+  "avisos": {
+    "persistência · regra direta": {
+      "dias_de_calor": 75.0,
+      "dias_avisados": 43.0,
+      "taxa_de_aviso": 0.5733333333333334,
+      "antecedencia_mediana_h": 21.0,
+      "dias_com_alarme": 106.0,
+      "dias_com_alarme_falso": 44.0,
+      "alarmes_falsos_por_mes": 0.9173698630136987
+    },
+    "persistência · recall 0,90": {
+      "dias_de_calor": 75.0,
+      "dias_avisados": 74.0,
+      "taxa_de_aviso": 0.9866666666666667,
+      "antecedencia_mediana_h": 21.0,
+      "dias_com_alarme": 418.0,
+      "dias_com_alarme_falso": 316.0,
+      "alarmes_falsos_por_mes": 6.588383561643837
+    },
+    "regressão logística · recall 0,90": {
+      "dias_de_calor": 75.0,
+      "dias_avisados": 75.0,
+      "taxa_de_aviso": 1.0,
+      "antecedencia_mediana_h": 21.0,
+      "dias_com_alarme": 560.0,
+      "dias_com_alarme_falso": 454.0,
+      "alarmes_falsos_por_mes": 9.46558904109589
+    },
+    "XGBoost · recall 0,90": {
+      "dias_de_calor": 75.0,
+      "dias_avisados": 74.0,
+      "taxa_de_aviso": 0.9866666666666667,
+      "antecedencia_mediana_h": 21.0,
+      "dias_com_alarme": 480.0,
+      "dias_com_alarme_falso": 376.0,
+      "alarmes_falsos_por_mes": 7.839342465753425
+    },
+    "XGBoost · recall 0,80": {
+      "dias_de_calor": 75.0,
+      "dias_avisados": 72.0,
+      "taxa_de_aviso": 0.96,
+      "antecedencia_mediana_h": 21.0,
+      "dias_com_alarme": 335.0,
+      "dias_com_alarme_falso": 236.0,
+      "alarmes_falsos_por_mes": 4.920438356164384
+    },
+    "XGBoost · recall 0,70": {
+      "dias_de_calor": 75.0,
+      "dias_avisados": 71.0,
+      "taxa_de_aviso": 0.9466666666666667,
+      "antecedencia_mediana_h": 21.0,
+      "dias_com_alarme": 269.0,
+      "dias_com_alarme_falso": 176.0,
+      "alarmes_falsos_por_mes": 3.669479452054795
+    }
+  },
+  "picoNoTeste": {
+    "persistência (pico de hoje)": {
+      "erro absoluto médio (°C)": 2.207467878689677,
+      "viés (°C)": -0.011071649635519994,
+      "% dos picos cobertos": 43.405822518414595
+    },
+    "XGBoost, mediana": {
+      "erro absoluto médio (°C)": 1.6476220101654082,
+      "viés (°C)": -0.07063497398234836,
+      "% dos picos cobertos": 43.72150122763942
+    },
+    "XGBoost, mediana + margem": {
+      "erro absoluto médio (°C)": 2.532686222009511,
+      "viés (°C)": 2.23230773858954,
+      "% dos picos cobertos": 87.86390740091196
+    },
+    "só dias de calor · persistência": {
+      "erro absoluto médio (°C)": 1.2449253714554498,
+      "viés (°C)": -0.8924475372747729,
+      "% dos picos cobertos": 21.262458471760798
+    },
+    "só dias de calor · XGBoost, mediana": {
+      "erro absoluto médio (°C)": 2.190054113726508,
+      "viés (°C)": -2.1897206777491656,
+      "% dos picos cobertos": 0.33222591362126247
+    },
+    "só dias de calor · mediana + margem": {
+      "erro absoluto médio (°C)": 0.9696968291878181,
+      "viés (°C)": 0.11322203482272519,
+      "% dos picos cobertos": 60.797342192691026
+    }
+  }
+}

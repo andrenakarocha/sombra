@@ -1,0 +1,510 @@
+{
+  "versao": "v1",
+  "pergunta": "O índice de calor vai alcançar o limiar nas próximas 24 h?",
+  "alvo": {
+    "limiarC": 32.22,
+    "nivel": "CAUTELA_EXTREMA",
+    "horizonteHoras": 24
+  },
+  "modelos": {
+    "probabilidade": {
+      "arquivo": "modelo-calor-v1.onnx",
+      "saida": "probabilities[:, 1]",
+      "limiarDeDecisao": 0.01007797196507454,
+      "limiaresPorRecallNaValidacao": {
+        "0.90": 0.01007797196507454,
+        "0.80": 0.023445898666977882,
+        "0.70": 0.03663737326860428
+      },
+      "significado": "probabilidade de o pico das próximas 24 h alcançar 32,22 °C"
+    },
+    "pico": {
+      "arquivo": "modelo-pico-calor-v1.onnx",
+      "saida": "variable[:, 0]",
+      "unidade": "°C",
+      "significado": "mediana do pico do índice de calor nas próximas 24 h",
+      "margemSuperiorP90C": 2.3029427125718875,
+      "margemSignificado": "somada à mediana, cobre 90% dos picos reais na validação temporal do treino"
+    }
+  },
+  "entrada": {
+    "nome": "features",
+    "tipo": "float32",
+    "formato": [
+      "n",
+      63
+    ],
+    "ausente": "NaN"
+  },
+  "janela": {
+    "instanteDeReferencia": "t = observação mais recente da janela (não a posição na lista)",
+    "historicoHoras": 24,
+    "minimoDeHorasComDado": 18,
+    "fusoHorario": "America/Sao_Paulo",
+    "abaixoDoMinimo": "usar o previsor por regra"
+  },
+  "derivadas": {
+    "indice_calor_c": "indice-de-calor conforme docs/contratos/niveis-de-risco.md, sem arredondar",
+    "orvalho_c": {
+      "formula": "gama = ln(UR/100) + a·T/(b+T); orvalho = b·gama/(a-gama); UR limitada a [1, 100]",
+      "a": 17.625,
+      "b": 243.04
+    }
+  },
+  "agregacoes": {
+    "atual": "valor da observação mais recente (t)",
+    "media": "média dos valores presentes em (t - janelaHoras, t]",
+    "maximo": "máximo dos valores presentes em (t - janelaHoras, t]",
+    "minimo": "mínimo dos valores presentes em (t - janelaHoras, t]",
+    "amplitude": "máximo menos mínimo dos valores presentes em (t - janelaHoras, t]",
+    "soma": "soma dos valores presentes em (t - janelaHoras, t]; sem nenhum valor, 0",
+    "delta": "valor em t menos o valor exatamente janelaHoras antes; ausente se um dos dois faltar",
+    "hora_sen": "sen(2π · hora local / 24)",
+    "hora_cos": "cos(2π · hora local / 24)",
+    "dia_do_ano_sen": "sen(2π · dia do ano local / 365,25)",
+    "dia_do_ano_cos": "cos(2π · dia do ano local / 365,25)"
+  },
+  "features": [
+    {
+      "indice": 0,
+      "nome": "temperatura_atual",
+      "variavel": "temperatura_c",
+      "agregacao": "atual",
+      "janelaHoras": null
+    },
+    {
+      "indice": 1,
+      "nome": "umidade_atual",
+      "variavel": "umidade_pct",
+      "agregacao": "atual",
+      "janelaHoras": null
+    },
+    {
+      "indice": 2,
+      "nome": "orvalho_atual",
+      "variavel": "orvalho_c",
+      "agregacao": "atual",
+      "janelaHoras": null
+    },
+    {
+      "indice": 3,
+      "nome": "indice_calor_atual",
+      "variavel": "indice_calor_c",
+      "agregacao": "atual",
+      "janelaHoras": null
+    },
+    {
+      "indice": 4,
+      "nome": "pressao_atual",
+      "variavel": "pressao_hpa",
+      "agregacao": "atual",
+      "janelaHoras": null
+    },
+    {
+      "indice": 5,
+      "nome": "vento_atual",
+      "variavel": "vento_ms",
+      "agregacao": "atual",
+      "janelaHoras": null
+    },
+    {
+      "indice": 6,
+      "nome": "temperatura_media_3h",
+      "variavel": "temperatura_c",
+      "agregacao": "media",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 7,
+      "nome": "temperatura_maximo_3h",
+      "variavel": "temperatura_c",
+      "agregacao": "maximo",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 8,
+      "nome": "indice_calor_media_3h",
+      "variavel": "indice_calor_c",
+      "agregacao": "media",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 9,
+      "nome": "indice_calor_maximo_3h",
+      "variavel": "indice_calor_c",
+      "agregacao": "maximo",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 10,
+      "nome": "umidade_media_3h",
+      "variavel": "umidade_pct",
+      "agregacao": "media",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 11,
+      "nome": "orvalho_media_3h",
+      "variavel": "orvalho_c",
+      "agregacao": "media",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 12,
+      "nome": "radiacao_soma_3h",
+      "variavel": "radiacao_kj_m2",
+      "agregacao": "soma",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 13,
+      "nome": "chuva_soma_3h",
+      "variavel": "chuva_mm",
+      "agregacao": "soma",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 14,
+      "nome": "temperatura_media_6h",
+      "variavel": "temperatura_c",
+      "agregacao": "media",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 15,
+      "nome": "temperatura_maximo_6h",
+      "variavel": "temperatura_c",
+      "agregacao": "maximo",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 16,
+      "nome": "indice_calor_media_6h",
+      "variavel": "indice_calor_c",
+      "agregacao": "media",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 17,
+      "nome": "indice_calor_maximo_6h",
+      "variavel": "indice_calor_c",
+      "agregacao": "maximo",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 18,
+      "nome": "umidade_media_6h",
+      "variavel": "umidade_pct",
+      "agregacao": "media",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 19,
+      "nome": "orvalho_media_6h",
+      "variavel": "orvalho_c",
+      "agregacao": "media",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 20,
+      "nome": "radiacao_soma_6h",
+      "variavel": "radiacao_kj_m2",
+      "agregacao": "soma",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 21,
+      "nome": "chuva_soma_6h",
+      "variavel": "chuva_mm",
+      "agregacao": "soma",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 22,
+      "nome": "temperatura_media_12h",
+      "variavel": "temperatura_c",
+      "agregacao": "media",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 23,
+      "nome": "temperatura_maximo_12h",
+      "variavel": "temperatura_c",
+      "agregacao": "maximo",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 24,
+      "nome": "indice_calor_media_12h",
+      "variavel": "indice_calor_c",
+      "agregacao": "media",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 25,
+      "nome": "indice_calor_maximo_12h",
+      "variavel": "indice_calor_c",
+      "agregacao": "maximo",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 26,
+      "nome": "umidade_media_12h",
+      "variavel": "umidade_pct",
+      "agregacao": "media",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 27,
+      "nome": "orvalho_media_12h",
+      "variavel": "orvalho_c",
+      "agregacao": "media",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 28,
+      "nome": "radiacao_soma_12h",
+      "variavel": "radiacao_kj_m2",
+      "agregacao": "soma",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 29,
+      "nome": "chuva_soma_12h",
+      "variavel": "chuva_mm",
+      "agregacao": "soma",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 30,
+      "nome": "temperatura_media_24h",
+      "variavel": "temperatura_c",
+      "agregacao": "media",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 31,
+      "nome": "temperatura_maximo_24h",
+      "variavel": "temperatura_c",
+      "agregacao": "maximo",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 32,
+      "nome": "indice_calor_media_24h",
+      "variavel": "indice_calor_c",
+      "agregacao": "media",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 33,
+      "nome": "indice_calor_maximo_24h",
+      "variavel": "indice_calor_c",
+      "agregacao": "maximo",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 34,
+      "nome": "umidade_media_24h",
+      "variavel": "umidade_pct",
+      "agregacao": "media",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 35,
+      "nome": "orvalho_media_24h",
+      "variavel": "orvalho_c",
+      "agregacao": "media",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 36,
+      "nome": "radiacao_soma_24h",
+      "variavel": "radiacao_kj_m2",
+      "agregacao": "soma",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 37,
+      "nome": "chuva_soma_24h",
+      "variavel": "chuva_mm",
+      "agregacao": "soma",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 38,
+      "nome": "temperatura_minimo_24h",
+      "variavel": "temperatura_c",
+      "agregacao": "minimo",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 39,
+      "nome": "temperatura_amplitude_24h",
+      "variavel": "temperatura_c",
+      "agregacao": "amplitude",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 40,
+      "nome": "vento_media_6h",
+      "variavel": "vento_ms",
+      "agregacao": "media",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 41,
+      "nome": "vento_media_24h",
+      "variavel": "vento_ms",
+      "agregacao": "media",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 42,
+      "nome": "pressao_media_24h",
+      "variavel": "pressao_hpa",
+      "agregacao": "media",
+      "janelaHoras": 24
+    },
+    {
+      "indice": 43,
+      "nome": "temperatura_delta_3h",
+      "variavel": "temperatura_c",
+      "agregacao": "delta",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 44,
+      "nome": "indice_calor_delta_3h",
+      "variavel": "indice_calor_c",
+      "agregacao": "delta",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 45,
+      "nome": "umidade_delta_3h",
+      "variavel": "umidade_pct",
+      "agregacao": "delta",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 46,
+      "nome": "pressao_delta_3h",
+      "variavel": "pressao_hpa",
+      "agregacao": "delta",
+      "janelaHoras": 3
+    },
+    {
+      "indice": 47,
+      "nome": "temperatura_delta_6h",
+      "variavel": "temperatura_c",
+      "agregacao": "delta",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 48,
+      "nome": "indice_calor_delta_6h",
+      "variavel": "indice_calor_c",
+      "agregacao": "delta",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 49,
+      "nome": "umidade_delta_6h",
+      "variavel": "umidade_pct",
+      "agregacao": "delta",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 50,
+      "nome": "pressao_delta_6h",
+      "variavel": "pressao_hpa",
+      "agregacao": "delta",
+      "janelaHoras": 6
+    },
+    {
+      "indice": 51,
+      "nome": "temperatura_delta_12h",
+      "variavel": "temperatura_c",
+      "agregacao": "delta",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 52,
+      "nome": "indice_calor_delta_12h",
+      "variavel": "indice_calor_c",
+      "agregacao": "delta",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 53,
+      "nome": "umidade_delta_12h",
+      "variavel": "umidade_pct",
+      "agregacao": "delta",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 54,
+      "nome": "pressao_delta_12h",
+      "variavel": "pressao_hpa",
+      "agregacao": "delta",
+      "janelaHoras": 12
+    },
+    {
+      "indice": 55,
+      "nome": "temperatura_delta_18h",
+      "variavel": "temperatura_c",
+      "agregacao": "delta",
+      "janelaHoras": 18
+    },
+    {
+      "indice": 56,
+      "nome": "indice_calor_delta_18h",
+      "variavel": "indice_calor_c",
+      "agregacao": "delta",
+      "janelaHoras": 18
+    },
+    {
+      "indice": 57,
+      "nome": "umidade_delta_18h",
+      "variavel": "umidade_pct",
+      "agregacao": "delta",
+      "janelaHoras": 18
+    },
+    {
+      "indice": 58,
+      "nome": "pressao_delta_18h",
+      "variavel": "pressao_hpa",
+      "agregacao": "delta",
+      "janelaHoras": 18
+    },
+    {
+      "indice": 59,
+      "nome": "hora_sen",
+      "variavel": "tempo",
+      "agregacao": "hora_sen",
+      "janelaHoras": null
+    },
+    {
+      "indice": 60,
+      "nome": "hora_cos",
+      "variavel": "tempo",
+      "agregacao": "hora_cos",
+      "janelaHoras": null
+    },
+    {
+      "indice": 61,
+      "nome": "dia_do_ano_sen",
+      "variavel": "tempo",
+      "agregacao": "dia_do_ano_sen",
+      "janelaHoras": null
+    },
+    {
+      "indice": 62,
+      "nome": "dia_do_ano_cos",
+      "variavel": "tempo",
+      "agregacao": "dia_do_ano_cos",
+      "janelaHoras": null
+    }
+  ]
+}

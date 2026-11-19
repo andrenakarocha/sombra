@@ -117,3 +117,32 @@ def tabela_da_busca(busca: GridSearchCV) -> pd.DataFrame:
     )
     tabela["diferenca"] = tabela["pr_auc_treino"] - tabela["pr_auc_validacao"]
     return tabela.sort_values("pr_auc_validacao", ascending=False).reset_index(drop=True)
+
+
+def novo_regressor_pico(**parametros) -> xgb.XGBRegressor:
+    """Mediana do pico das próximas 24 h em °C: o ``indiceDeCalorPrevistoC`` que o Core compara ao limite pessoal."""
+    base = {
+        **REGULARIZACAO,
+        "objective": "reg:quantileerror",
+        "quantile_alpha": 0.5,
+        "max_depth": 5,
+        "learning_rate": 0.05,
+        "n_estimators": 400,
+        "tree_method": "hist",
+        "random_state": SEMENTE,
+        "n_jobs": -1,
+    }
+    return xgb.XGBRegressor(**{**base, **parametros})
+
+
+def previsoes_fora_da_amostra(modelo, X: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Como ``probabilidades_fora_da_amostra``, para um regressor."""
+    resultado = np.full(len(y), np.nan)
+    for ajuste, validacao in validacao_temporal().split(X):
+        resultado[validacao] = clone(modelo).fit(X[ajuste], y[ajuste]).predict(X[validacao])
+    return resultado
+
+
+def margem_superior(real: np.ndarray, previsto: np.ndarray) -> float:
+    """Quanto somar à mediana para cobrir 90% dos picos reais, medido fora da amostra."""
+    return float(np.quantile(np.asarray(real) - np.asarray(previsto), 0.9))
