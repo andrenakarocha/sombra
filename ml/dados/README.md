@@ -48,6 +48,21 @@ Colunas usadas pelo modelo:
 | `VENTO, VELOCIDADE HORARIA` | m/s | features |
 | `PRECIPITAÇÃO TOTAL, HORÁRIO` | mm | features |
 
+## Como os dados são limpos
+
+Regras em [`sombra_ml/dados.py`](../sombra_ml/dados.py), com testes em [`tests/test_dados.py`](../tests/test_dados.py):
+
+| Etapa | Regra | Efeito na série |
+|---|---|---|
+| Código de falha | `-9999` e campo vazio viram ausente | 893 horas sem temperatura, 742 sem umidade |
+| Faixa física | valor impossível vira ausente | nenhum caso encontrado |
+| Buracos curtos | até 3 h, só em grandezas contínuas; chuva e radiação nunca | 160 horas de temperatura interpoladas |
+| Dias ruins | dia local com mais de 25% faltando é descartado | 40 dias (960 horas) |
+| Amostras | hora interpolada nunca vira amostra | nenhuma amostra usa valor posterior a ela |
+
+A radiação não é informada à noite (cerca de 47% das horas vêm vazias). Por isso ela só entra como soma na janela, em que
+a ausência conta como zero, igual à radiação noturna que a Open-Meteo entrega em produção.
+
 ## Por ano
 
 <!-- tabela gerada a partir de brutos/manifesto.json -->

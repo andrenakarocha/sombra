@@ -88,4 +88,19 @@ integrante sabe explicar o que entregou.
 7. *"No Core, troque o stub pelo ClimaClient real com circuit breaker e último risco conhecido, lendo as amostras reais
    que o próprio Clima grava, sem quebrar os testes nem a nota 100 da pipeline de qualidade."*
 
+## Machine Learning
+
+1. *"Leia o plano e a spec de ML e veja o que o Clima Service guarda em produção. Carregue os CSVs reais da A701 conferindo o
+   SHA-256, trate -9999, fuso e buracos em funções testadas, e prove que nenhuma amostra enxerga o futuro."*
+2. *"Meça nos dados reais qual limiar da tabela da NWS dá para usar como alvo e justifique. Crie features só com as medições
+   e as 24 horas que o serviço terá em produção, a partir de um catálogo único."*
+3. *"Divida por tempo, com folga de 24 horas entre treino e teste, e compare persistência e regressão logística na validação
+   temporal, sem tocar no teste."*
+4. *"Treine o XGBoost com GridSearchCV e TimeSeriesSplit em 12 combinações de 3 hiperparâmetros, escolha o limiar para
+   recall de 0,90 fora da amostra e aplique uma única vez no teste."*
+5. *"Avalie como o cidadão sentiria: dias de calor avisados a tempo e dias de alarme falso por mês. Diga com intervalo de
+   confiança se o XGBoost ganhou mesmo dos baselines, e não esconda se empatar."*
+6. *"Exporte os modelos para ONNX com o contrato das features e amostras de paridade, inclusive as janelas brutas para o teste
+   em Java, e confira no replay de novembro de 2023 o que muda para o preventivo do Seu Joaquim."*
+
 <!-- Cada parte acrescenta aqui os seus prompts principais quando fecha (PLANO §0, regra 16). -->
