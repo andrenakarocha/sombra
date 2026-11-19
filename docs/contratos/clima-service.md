@@ -60,6 +60,7 @@ Regras (`regra` no 422): `OBSERVACAO_FALTANTE` (-9999 do INMET), `UMIDADE_FORA_D
   "previsao24h": {
     "probabilidadePerigo": 0.83,
     "nivelPrevisto": "PERIGO",
+    "indiceDeCalorPrevistoC": 41.2,
     "horizonteHoras": 24,
     "modelo": "xgb-calor-v1",
     "fonte": "onnx"
@@ -68,8 +69,11 @@ Regras (`regra` no 422): `OBSERVACAO_FALTANTE` (-9999 do INMET), `UMIDADE_FORA_D
 }
 ```
 
-`fonte` vale `onnx` (modelo de ML) ou `regra` (fallback, se o modelo não carregar). `fonteDados` vale `open-meteo`
-(ao vivo) ou `replay-inmet` (demonstração).
+`fonte` vale `onnx` (modelo de ML) ou `regra` (fallback, se o modelo não carregar: `modelo` =
+`regra-persistencia-v1`, o pico das últimas 24 h, o mesmo baseline de persistência do notebook de ML).
+`indiceDeCalorPrevistoC` é o pico previsto em °C, para o Core comparar com o limiar pessoal do morador (R3).
+`fonteDados` vale `open-meteo` (ao vivo) ou `replay-inmet` (demonstração). Sem observação da estação nas últimas 3 h, o
+endpoint responde `503` e o Core segue com o último risco conhecido.
 
 `POST /api/v1/replay`:
 
