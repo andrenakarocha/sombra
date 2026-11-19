@@ -872,8 +872,13 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
   depois de 3 verificações seguidas, o alerta crítico apareceu no painel da própria VM (`painel.sombra.local`) em 57 s;
   logrotate diário com 7 arquivos e a trilha de auditoria só por tempo; 6 regras do auditd em `/etc/sombra`,
   `/opt/sombra`, nas units e no sudoers).
-- [ ] **F8.6** 🤖 Etapa 90 (validação) + scripts de falha 01–07 + evidências.
-  🔎 cada falha gera recuperação ou registro, com print em `infra/evidencias/`.
+- [x] **F8.6** 🤖 Etapa 90 (validação) + scripts de falha 01–07 + evidências.
+  🔎 cada falha gera recuperação ou registro, com print em `infra/evidencias/` — 2026-11-19 (os 7 ✔ na VM: o monitor
+  volta do `kill -9` em ~5 s; CPU, memória e disco viram alerta no log, no journal e no painel, e o disco registra a
+  volta ao normal; a API volta em 5 s; depois do reboot os 7 serviços voltam sozinhos; a etapa com erro proposital fica
+  na auditoria com linha 3, comando e código. A etapa 90 confere 26 pontos e pegou um bug real: a guarda de PII do Core
+  barrava os pontos de resfriamento num raio de 3 km, porque os IDs do OSM têm a forma de telefone (`fix(clima)`, V5).
+  Os 10 prints saem de `infra/scripts/evidencias.sh` numa rodada só e foram revisados).
 - [ ] **F8.7** 🧑🤖 Prova de reprodutibilidade: `vagrant destroy -f && vagrant up` sem nenhum passo manual; uma segunda
   execução do `provision.sh` não muda nada.
   🔎 os logs das duas execuções registrados nas evidências.

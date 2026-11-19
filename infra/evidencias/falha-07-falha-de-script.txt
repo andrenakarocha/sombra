@@ -1,0 +1,6 @@
+$ sudo falhas/07-falha-de-script.sh
+▶ provision.sh com uma etapa que copia um arquivo que não existe (linha 3)
+▶ o que o trap gravou na trilha de auditoria (/var/log/sombra/auditoria.jsonl):
+  │ {"quando":"2026-11-19T04:41:18.106Z","quem":"vagrant","acao":"etapa:20-com-erro","resultado":"falha","linha":3,"comando":"cp /etc/sombra/arquivo-que-nao-existe.conf /tmp/destino.conf","codigo":1}
+  │ {"quando":"2026-11-19T04:41:18.127Z","quem":"vagrant","acao":"etapa:20-com-erro","resultado":"falha","linha":null,"comando":null,"codigo":1}
+✔ erro registrado com linha, comando e código; o provisionamento parou (código 1) e a etapa 30 não rodou

@@ -1,0 +1,41 @@
+$ hostnamectl --static && hostname -f && timedatectl show -p Timezone --value
+sombra-srv01
+sombra-srv01.sombra.local
+America/Sao_Paulo
+$ ip -4 -br addr
+eth0             UP             10.0.2.15/24 metric 100 
+eth1             UP             192.168.56.10/24 
+$ dig +short {api,clima,painel}.sombra.local
+api.sombra.local       192.168.56.10
+clima.sombra.local     192.168.56.10
+painel.sombra.local    192.168.56.10
+$ id sombra && getent passwd sombra
+uid=995(sombra) gid=986(sombra-ops) groups=986(sombra-ops)
+sombra:/opt/sombra:/usr/sbin/nologin
+$ stat -c "%n %a %U:%G" /opt/sombra /etc/sombra /etc/sombra/*.env /var/log/sombra
+/opt/sombra 755 root:root
+/etc/sombra 750 root:sombra-ops
+/etc/sombra/core.env 640 root:sombra-ops
+/etc/sombra/clima.env 640 root:sombra-ops
+/etc/sombra/segredos.env 640 root:sombra-ops
+/var/log/sombra 2770 root:sombra-ops
+$ sudo ss -ltn   (só a 80 para a rede; o resto em localhost)
+0.0.0.0:80
+127.0.0.1:1883
+127.0.0.1:5080
+127.0.0.1:5432
+192.168.56.10:1883
+[::ffff:127.0.0.1]:8081
+$ systemctl is-active / is-enabled
+postgresql       active  enabled
+mosquitto        active  enabled
+nginx            active  enabled
+dnsmasq          active  enabled
+sombra-clima     active  enabled
+sombra-core      active  enabled
+sombra-monitor   active  enabled
+auditd           active  enabled
+$ curl dos /health pelos nomes
+200  http://api.sombra.local/health/ready
+200  http://clima.sombra.local/actuator/health/readiness
+200  http://painel.sombra.local/healthz

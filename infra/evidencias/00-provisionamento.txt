@@ -1,0 +1,38 @@
+$ sudo ./provision.sh        (segunda execução: idempotente, com a validação da etapa 90)
+04:38:21  provision.iniciado            Provisionamento iniciado com 9 etapa(s)
+04:38:21  provision.etapa_concluida     Etapa 10-host concluída
+04:38:21  provision.etapa_concluida     Etapa 20-rede concluída
+04:38:22  provision.etapa_concluida     Etapa 30-dns concluída
+04:38:22  provision.etapa_concluida     Etapa 40-usuarios concluída
+04:38:22  provision.etapa_concluida     Etapa 50-dependencias concluída
+04:38:23  provision.etapa_concluida     Etapa 60-banco concluída
+04:38:23  provision.etapa_concluida     Etapa 70-aplicacao concluída
+04:38:24  provision.etapa_concluida     Etapa 80-monitor concluída
+04:38:24  validacao.ok                  hostname é sombra-srv01
+04:38:24  validacao.ok                  IP estático 192.168.56.10
+04:38:24  validacao.ok                  DNS: api.sombra.local → 192.168.56.10
+04:38:24  validacao.ok                  DNS: clima.sombra.local → 192.168.56.10
+04:38:24  validacao.ok                  DNS: painel.sombra.local → 192.168.56.10
+04:38:24  validacao.ok                  DNS externo resolve
+04:38:24  validacao.ok                  porta 80 aberta para a rede
+04:38:24  validacao.ok                  porta 5080 só em localhost
+04:38:24  validacao.ok                  porta 8081 só em localhost
+04:38:24  validacao.ok                  porta 5432 só em localhost
+04:38:24  validacao.ok                  serviço postgresql ativo e no boot
+04:38:24  validacao.ok                  serviço mosquitto ativo e no boot
+04:38:24  validacao.ok                  serviço nginx ativo e no boot
+04:38:24  validacao.ok                  serviço dnsmasq ativo e no boot
+04:38:24  validacao.ok                  serviço sombra-clima ativo e no boot
+04:38:24  validacao.ok                  serviço sombra-core ativo e no boot
+04:38:24  validacao.ok                  serviço sombra-monitor ativo e no boot
+04:38:24  validacao.ok                  serviço auditd ativo e no boot
+04:38:24  validacao.ok                  Core pronto (api.sombra.local/health/ready)
+04:38:24  validacao.ok                  Clima pronto (clima.sombra.local/actuator/health/readiness)
+04:38:24  validacao.ok                  painel no ar (painel.sombra.local)
+04:38:24  validacao.ok                  escrita no Clima fechada pelo nginx
+04:38:25  validacao.ok                  o operador entra (JWT)
+04:38:25  validacao.ok                  o Core lista as casas do seed (3)
+04:38:25  validacao.ok                  o Core traz do Clima os pontos de resfriamento (8)
+04:38:25  validacao.aprovada            Servidor sombra-srv01 validado de ponta a ponta
+04:38:25  provision.etapa_concluida     Etapa 90-validacao concluída
+04:38:25  provision.concluido           Provisionamento concluído

@@ -1,0 +1,6 @@
+$ sudo falhas/03-memoria-alta.sh
+▶ stress-ng --vm alocando 2454 MB por 80 s (RAM em uso hoje: 23%)
+▶ o alerta do monitor:
+  │ {"timestamp":"2026-11-19T04:40:07.382Z","level":"Error","event":"monitor.alerta","message":"Memória em 93% (limite crítico 90%) por 3 verificações seguidas"}
+▶ os serviços continuam de pé: active active active
+✔ memória alta detectada e alertada, sem derrubar nenhum serviço

@@ -1,0 +1,12 @@
+$ sudo falhas/06-reboot.sh
+▶ boot atual 0f3efcdc; reiniciando a VM
+$ sudo falhas/06-reboot.sh --conferir   (depois que a VM voltou)
+▶ boot antes 0f3efcdc → depois 146d29e9; no ar há 12 s
+  │ postgresql       active (desde 01:41:38)
+  │ mosquitto        active (desde 01:41:36)
+  │ nginx            active (desde 01:41:37)
+  │ dnsmasq          active (desde 01:41:36)
+  │ sombra-clima     active (desde 01:41:38)
+  │ sombra-core      active (desde 01:41:38)
+  │ sombra-monitor   active (desde 01:41:39)
+✔ depois do reboot, os postgresql, mosquitto, nginx, dnsmasq, sombra-clima, sombra-core, sombra-monitor voltaram sozinhos

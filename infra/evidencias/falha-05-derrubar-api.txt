@@ -1,0 +1,7 @@
+$ sudo falhas/05-derrubar-api.sh
+▶ Core no ar com o PID 1062; kill -9 nele
+▶ o journal do systemd:
+  │ 2026-11-19T01:41:10-03:00 sombra-srv01 systemd[1]: sombra-core.service: Main process exited, code=killed, status=9/KILL
+  │ 2026-11-19T01:41:13-03:00 sombra-srv01 systemd[1]: sombra-core.service: Scheduled restart job, restart counter is at 1.
+  │ 2026-11-19T01:41:13-03:00 sombra-srv01 systemd[1]: Started sombra-core.service - Sombra · Core API (alertas, escalonamento e privacidade).
+✔ API de volta em 5 s, com o /health/ready respondendo 200
