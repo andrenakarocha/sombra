@@ -19,6 +19,7 @@
 // tempo: NTP e o fuso de São Paulo (sem horário de verão)
 #define NTP_SERVIDOR "pool.ntp.org"
 #define FUSO "<-03>3"
+#define NTP_RESSINCRONIA_MS 60000UL  // acerta o relógio a cada minuto (o padrão do SNTP é 1 h)
 
 // cadência
 #define LEITURA_MS 2000UL

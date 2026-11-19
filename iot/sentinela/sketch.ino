@@ -12,6 +12,7 @@
 #include <WiFi.h>
 #include <Wire.h>
 #include <qrcode.h>  // o esp_qrcode do ESP-IDF, que já vem no core do ESP32 (sem biblioteca extra)
+#include <esp_sntp.h>
 #include <time.h>
 
 #include "config.h"
@@ -305,6 +306,7 @@ void setup() {
   mostrarQr();
   fimDoQr = millis() + QR_NO_BOOT_MS;
   WiFi.begin(WIFI_SSID, WIFI_SENHA, 6);
+  sntp_set_sync_interval(NTP_RESSINCRONIA_MS);  // o relógio deriva (no Wokwi, muito): sem isso a janela anti-replay recusa
   configTzTime(FUSO, NTP_SERVIDOR);
   mqtt.setServer(MQTT_HOST, MQTT_PORTA);
   mqtt.setBufferSize(512);
