@@ -610,8 +610,10 @@ provando o antes e o depois.
 - [x] **F4.1** 🤖 `requirements.txt` fixado, carga dos CSVs da F0.15, limpeza (`-9999`, fuso, buracos) em funções testadas.
   🔎 `pytest` verde (sem vazamento de futuro, `-9999` tratado) — 2026-11-18 (33 testes; os CSVs conferem com o SHA-256 do
   manifesto; 160 horas interpoladas e 40 dias locais descartados; hora interpolada nunca vira amostra).
-- [ ] **F4.2** 🤖 EDA, alvo (limiar ancorado na tabela NWS e no balanceamento real) e features.
-  🔎 seções 1–4 do notebook executadas; limiar justificado no texto.
+- [x] **F4.2** 🤖 EDA, alvo (limiar ancorado na tabela NWS e no balanceamento real) e features.
+  🔎 seções 1–4 do notebook executadas; limiar justificado no texto — 2026-11-18 (alvo em `CAUTELA_EXTREMA`, 32,22 °C: o
+  maior índice da A701 em 16 anos é 35,47 °C, e `PERIGO` nunca ocorreu; 63 features só com o que o Clima tem em produção,
+  em janelas de até 24 h; 49 testes, incluindo mudar o futuro sem mudar as features).
 - [ ] **F4.3** 🤖 Divisão temporal (treino 2010–2021, teste 2022–2025) e baselines (persistência, regressão logística).
   🔎 métricas dos baselines registradas.
 - [ ] **F4.4** 🤖 XGBoost com `GridSearchCV` + `TimeSeriesSplit(5)` só no treino: 3 hiperparâmetros, 12 combinações.
