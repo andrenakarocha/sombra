@@ -631,8 +631,10 @@ provando o antes e o depois.
   (observações brutas, para testar as features em Java). ⚠ Para a F9.1: no replay de nov/2023 o pico previsto chega a
   32,58 °C (34,88 °C com a margem), abaixo dos 34,94 °C do Seu Joaquim; usar o maior entre a persistência e a mediana +
   margem, senão o preventivo da demonstração deixa de abrir.
-- [ ] **F4.7** 🤖 `RELATORIO_ML.md` (2–4 páginas), `dados/README.md` e README da pasta.
-  🔎 checklist da rubrica de ML marcado; `jupyter nbconvert --execute` roda do início ao fim sem erro.
+- [x] **F4.7** 🤖 `RELATORIO_ML.md` (2–4 páginas), `dados/README.md` e README da pasta.
+  🔎 checklist da rubrica de ML marcado; `jupyter nbconvert --execute` roda do início ao fim sem erro — 2026-11-18
+  (`make -C ml notebook`: 27 células de código sem erro, com as mesmas métricas ao repetir; 75 testes também num ambiente
+  novo criado do `requirements.txt`; rubrica no README da pasta). O vídeo é a F13.6.
 
 **✅ Aceite F4:** os 6 critérios com evidência · notebook executado · modelo e paridade publicados.
 
@@ -893,6 +895,7 @@ F11.8 (VM no Azure) saíram.**
 - [ ] **F11.1** 🤖 Core: Stryker no domínio, OpenTelemetry, C4 no README, arquivos `.http` da demonstração.
 - [ ] **F11.2** 🤖 Clima: cache por região, métricas Micrometer, página de evidências.
 - [ ] **F11.3** 🤖 ML: figuras com os tokens, validação na A771, gráfico do replay hora a hora.
+  ⏸ 2026-11-18: figuras com os tokens e replay prontos na F4; falta a validação na A771, que exige baixar os dados dela.
 - [ ] **F11.4** 🤖 Sentinela: ícones no OLED, luz que acende e apaga devagar (sem piscar, D13), `wokwi-cli` no CI.
 - [ ] **F11.5** 🤖 App: animações com Reanimated, ilustrações, tema escuro, ícone, splash, onboarding.
 - [ ] **F11.6** 🤖 Painel: transições do farol, modo apresentação, mapa por bairro (agregado).
@@ -1023,7 +1026,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F1 Core (C#) | ✅ concluída | 2026-11-17 | 2026-11-18 | aceite assinado: POO, Web API, EF Core + LINQ, Async e Qualidade com evidência cada (README da pasta); `make quality` = 100; `make test` verde (140); roteiro de alerta funcionando com o simulador |
 | F2 Privacidade (Cyber) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: motor de PII com regras em JSON (63 casos, 0 falso negativo); taint dinâmico (entrada, cifra em repouso, guardas de log, resposta, saída externa, MQTT e exceções) e estático (Semgrep com canário e SARIF); IA na remediação (Gemini Flash-Lite, guarda, cache e template); farol do Risco Cidadão; auditoria antes × depois com os 8 cenários; `make quality` = 100 |
 | F3 Clima (SOA) | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado: autoavaliação 10/10 com evidência por subitem no README da pasta (144 testes, Testcontainers, ArchUnit, contrato OpenAPI conferido); o Core consome o Clima de verdade (risco e pontos, circuito, mesmo `correlationId`) e abre o preventivo a partir do replay real pelo limite pessoal (D19) |
-| F4 ML | 🟨 em andamento | 2026-11-18 | | 🤝 Matheus, branch `f4-ml-matheus` |
+| F4 ML | ✅ concluída | 2026-11-18 | 2026-11-18 | aceite assinado (Matheus): os 6 critérios com evidência no README da pasta; notebook executado; 2 modelos ONNX com paridade 20/20; 75 testes. No teste, 74 de 75 dias de calor avisados, com 7,8 dias de alarme falso por mês; o XGBoost empata com a persistência na PR-AUC. A F9.1 precisa da ressalva do pico (F4.6) |
 | F5 Sentinela (IoT) | ⬜ não iniciada | | | |
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ⬜ não iniciada | | | |
