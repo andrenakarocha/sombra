@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { CHAVES } from '@/app/consultas';
 import { pedir } from './http';
-import { AlertaSchema, DomicilioSchema, pagina, ResumoSchema } from './schemas';
+import { AlertaSchema, DomicilioSchema, EventoDeSegurancaSchema, pagina, ResumoSchema, RiscoCidadaoSchema } from './schemas';
 
 export function useResumo() {
   return useQuery({ queryKey: CHAVES.resumo, queryFn: () => pedir('/api/v1/painel/resumo', ResumoSchema) });
@@ -30,5 +30,17 @@ export function useCasas(filtro: { nivel?: string; bairro?: string } = {}) {
   return useQuery({
     queryKey: [...CHAVES.casas, filtro],
     queryFn: () => pedir(`/api/v1/domicilios?${params}`, pagina(DomicilioSchema)),
+  });
+}
+
+/** O farol global e por categoria; o evento RiscoCidadaoAtualizado do hub invalida esta chave e a dos eventos. */
+export function useRiscoCidadao() {
+  return useQuery({ queryKey: CHAVES.risco, queryFn: () => pedir('/api/v1/privacidade/risco-cidadao', RiscoCidadaoSchema) });
+}
+
+export function useEventosDeSeguranca() {
+  return useQuery({
+    queryKey: [...CHAVES.risco, 'eventos'],
+    queryFn: () => pedir('/api/v1/privacidade/eventos?pagina=1&tamanho=100', pagina(EventoDeSegurancaSchema)),
   });
 }
