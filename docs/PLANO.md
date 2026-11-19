@@ -947,6 +947,10 @@ falha documentados.
   48 automatizados e 2 manuais; com a F2, o TC39 também ficou automatizado: 49 e 1).
 - [ ] **F10.4** 🤖 `sincronizar_azure.py` idempotente (REST + PAT).
   🔎 o Boards mostra tudo, com passos e vínculos; uma segunda execução não duplica nada (P12).
+  ⏸ 2026-11-19: o script está pronto e testado contra um Azure DevOps falso (`make test-qa`, também no CI): a primeira
+  execução cria 63 itens (Epic, 12 Features filhas e 50 Test Cases ligados por Tested By, com os passos no XML do
+  `Microsoft.VSTS.TCM.Steps`), a segunda não cria nem muda nada, e mudar um caso muda só ele. O 🔎 no Boards de verdade
+  espera a F10.1 (a organização, o projeto e o PAT do operador): `make qa-azure`.
 - [ ] **F10.5** 🧑🤖 Prints (Playwright com sessão ou manual), matriz de rastreabilidade e PDF.
   🔎 o PDF tem o link do projeto e prints de todas as telas exigidas.
 
