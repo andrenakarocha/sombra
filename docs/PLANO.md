@@ -620,8 +620,10 @@ provando o antes e o depois.
 - [x] **F4.4** 🤖 XGBoost com `GridSearchCV` + `TimeSeriesSplit(5)` só no treino: 3 hiperparâmetros, 12 combinações.
   🔎 tabela das 12 combinações, com média e desvio — 2026-11-18 (seção 6 do notebook e `ml/modelo/busca_hiperparametros.csv`;
   melhor: `max_depth=3`, `learning_rate=0.03`, `n_estimators=200`, PR-AUC 0,332 ± 0,065 na validação).
-- [ ] **F4.5** 🤖 Treino × teste lado a lado, gráficos, overfitting, limiar de decisão escolhido no treino, SHAP.
-  🔎 figuras em `ml/figuras/`.
+- [x] **F4.5** 🤖 Treino × teste lado a lado, gráficos, overfitting, limiar de decisão escolhido no treino, SHAP.
+  🔎 figuras em `ml/figuras/` — 2026-11-18 (8 figuras; no teste, recall 0,97, precisão 0,21 e PR-AUC 0,588, empatada com a
+  persistência, 0,575: a diferença de +0,013 tem IC 95% de −0,099 a +0,114; 74 de 75 dias de calor avisados, com 7,8 dias de
+  alarme falso por mês).
 - [ ] **F4.6** 🤖 Conclusão para o cidadão + exportação ONNX + `features.json` + `paridade.csv`.
   🔎 o ONNX (onnxruntime) bate com o XGBoost em 20 amostras (|Δ| < 1e-5) (P8).
 - [ ] **F4.7** 🤖 `RELATORIO_ML.md` (2–4 páginas), `dados/README.md` e README da pasta.
