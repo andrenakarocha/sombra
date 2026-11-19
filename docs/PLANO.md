@@ -663,8 +663,11 @@ provando o antes e o depois.
   🔎 roteiro, passos 2–5, com a Sentinela real; um check-in feito offline chega depois.
   ⏸ 2026-11-19: um "estou bem" de 2 min atrás chega depois e o Core aceita; o perigo abre o alerta e o Core publica o
   comando `ALERTA` assinado (`comando.publicado`), e o código do firmware confere o comando do vetor do contrato e recusa
-  o adulterado. Falta a rodada que recebe o comando pelo broker público: o ouvinte assinava tarde (uma corrida, agora
-  resolvida com um tópico de prova) e a carência de 1 h do D13 adiou a nova tentativa (`make integrar-sentinela`). A
+  o adulterado. Às 03h30, o escalonamento publicou o `FAMILIA_AVISADA` no broker público e o código do firmware conferiu
+  a assinatura do comando real, com acentos, e recusou a mensagem trocada
+  (`iot/sentinela/evidencias/comando-do-core-no-broker-publico.txt`). Falta só a rodada automática completa fora da
+  carência (`make demo-wokwi` e `make integrar-sentinela-wokwi`): o ouvinte agora espera a assinatura valer (tópico de
+  prova) antes do perigo, porque o comando não fica retido e o `sleep` fixo perdia a corrida. A
   fila descarta sozinha o que passou da janela de 5 min do Core, em vez
   de gerar um falso replay. O roteiro com a Sentinela rodando no Wokwi fica com o operador (`make demo-wokwi`).
 - [ ] **F5.5** 🤖 README (circuito, pinagem, lista de materiais com custo pesquisado, estados em Mermaid, contrato, link)
@@ -931,6 +934,11 @@ falha documentados.
   🔎 `make demo TARGET=vm` verde.
 - [ ] **F9.5** 🤖 Rastreio ponta a ponta: o `correlationId` do MQTT até o SignalR.
   🔎 um alerta é seguido pelos logs do Core e do Clima com um único ID.
+  ⏸ 2026-11-19: no Core, a leitura, o alerta aberto e o comando saem com o ID da mensagem MQTT (`snt-7f3a9c:<seq>`) e o
+  escalonamento com o do worker (`escalonador:…`); a volta do worker de previsão aparece no Clima com o mesmo ID
+  (`previsao:0a3a4e45`: `clima.recuperado` no Core, `previsao.calculada` e `GET …/risco-calor 200` no Clima). O
+  ouvinte do SignalR (`iot/sentinela/testes/ouvir-hub.mjs`) já está no `make integrar-sentinela`, que confere a leitura,
+  o alerta aberto e o resolvido no painel com o ID do MQTT; falta a rodada fora da carência.
 
 **✅ Aceite F9:** o roteiro roda igual no compose, na VM e com a Sentinela real.
 
@@ -1028,6 +1036,13 @@ F11.8 (VM no Azure) saíram.**
 - [ ] **F13.4** 🤖 Capturas em 1080p: Playwright a partir do `make demo`, Wokwi, VM, emulador; fotos do território
   (D14) com a placa desfocada.
   🔎 os clipes cobrem todos os atos.
+  ⏸ Plano para 19/11 (o operador tem pouco tempo; gravar o máximo por script, um roteiro de `docs/videos/` por vez):
+  painel com o Playwright (`recordVideo` em 1920×1080, seguindo os passos do roteiro); terminal da VM com `vhs` ou
+  asciinema (os comandos do `os.md` por `vagrant ssh`); app com `scrcpy --record` no emulador, com o `make sim`
+  disparando o alerta; Wokwi com o Playwright na página pública do projeto (se mexer no DHT22 por script não der, essa
+  parte o operador grava). Narração: a voz do operador lendo as falas do roteiro ou TTS; montagem e legenda com
+  `ffmpeg`, e a duração conferida com `ffprobe` contra o limite de cada vídeo. A carência de 1 h por casa vale para
+  cada tomada de alerta.
 - [ ] **F13.5** 🧑🤖 Render do pitch (≤ 4:00), mix e legendas.
   🔎 o operador aprova.
 - [ ] **F13.6** 🧑🤖 Vídeos de IoT (≤ 4), Mobile (≤ 3), ML (≤ 5), OS (≤ 7) e Cyber.
@@ -1111,6 +1126,21 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Agora (19/11, madrugada):** **F1, F2, F3, F4, F7 e F8 concluídas** e na `main` (o ML pelo PR #17, a infra e o painel pelo #18). Em PR: a F5 (#19: firmware compilado para o ESP32 e integração com o Core provada pelo broker público) e as entregas (#20: PDF de Cyber, sincronização e PDF de QA, roteiros dos vídeos, guia de defesa e `make checklist`, mais duas correções no Core achadas ao revisar as traduções reais da IA). **Com o operador, para hoje:** o projeto no Wokwi e o link (F5.1), o Azure DevOps com o professor como Admin e o PAT (F10.1, depois `make qa-azure`, `make qa-prints` e `make qa-pdf`), os 🔎 do app no celular, os 5 vídeos (`docs/videos/`), o bairro da Ficha e o envio no Teams (`make checklist` diz o que falta). A F9.1 (o ONNX no Clima) ficou de fora: o modelo prevê CAUTELA_EXTREMA e o campo do contrato é `probabilidadePerigo`; ligar os dois pede um campo novo no contrato do Clima e do Core.
 
+**Próxima sessão (19/11, último dia), nesta ordem:**
+
+1. O push do branch `f5-evidencias` (`git push -u origin f5-evidencias`, pelo operador) e o PR: este registro e a
+   evidência do comando no broker público.
+2. `make up` (depois do boot, o compose pode voltar no modo Wokwi; `make up` volta ao normal) e `make doctor`.
+3. **Operador, em paralelo:** o projeto no Wokwi com os arquivos de `iot/sentinela/` e o link no README (F5.1); o
+   Azure DevOps com o professor como Admin e o PAT (F10.1), depois `make qa-azure`, `make qa-prints` e `make qa-pdf`;
+   os 🔎 do app no celular; o bairro da Ficha.
+4. **Vídeos (F13.4 e F13.6):** um roteiro de `docs/videos/` por vez, gravado o máximo por script (o plano está na
+   F13.4). Ordem sugerida: Cyber e OS (dependem só do painel e da VM), depois Mobile e IoT (dependem do celular e do
+   Wokwi). O ML é do Matheus. Upload como não listado e o link no README de cada pasta.
+5. Com o Wokwi no ar: `make demo-wokwi` e `make integrar-sentinela-wokwi` fecham a F5.4 e a F9.5.
+6. **Entrega:** `make entrega-cyber` na `main` final (o ZIP do código), `make checklist ONLINE=1` sem nenhum ✘ e o
+   envio das 8 tarefas no Teams até 23h55, com print de cada envio (F14.2).
+
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
 | F0 Fundação | ✅ concluída | 2026-11-17 | 2026-11-17 | aceite assinado: CI verde, `make up`, contratos, direção de arte, simulador, dados do INMET e doctor |
@@ -1122,12 +1152,12 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 | F6 App (Mobile) | 🟨 em andamento | 2026-11-17 | | F6.1, F6.6, F6.9–F6.16, F6.19 e F6.21–F6.26 feitas: o app fala com o Core real (contrato vivo, D17); F6.7 e F6.8 ⏸ (falta o vídeo com TalkBack e os prints, do operador); faltam os 🔎 no celular |
 | F7 Painel | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: as cinco páginas ao vivo pelo hub (o Core passou a emitir o `RiscoCidadaoAtualizado`), E2E verde (6) e 12 testes no Vitest, prints revisados em três larguras; o painel sobe no compose pelo nginx |
 | F8 Infra (OS) | ✅ concluída | 2026-11-18 | 2026-11-19 | aceite assinado: a VM vazia vira o `sombra-srv01` com o Sombra inteiro no ar só com scripts (9 etapas idempotentes, validação de 26 pontos), monitor `Type=notify` com watchdog, auditoria JSON e auditd, os 7 testes de falha com print, reprodução do zero provada; o 🔎 da F8.3 (release no GitHub) espera a primeira tag `v*` |
-| F9 Integração | ⬜ não iniciada | | | |
-| F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; faltam a F10.1 (Azure, 🔑), a F10.4 e a F10.5 |
-| F11 Polimento | ⬜ não iniciada | | | |
-| F12 Docs e PDFs | ⬜ não iniciada | | | |
-| F13 Vídeos | ⬜ não iniciada | | | |
-| F14 Entrega | ⬜ não iniciada | | | |
+| F9 Integração | 🟨 em andamento | 2026-11-19 | | F9.5 quase: o ID do MQTT segue nos logs do Core e o do worker chega ao Clima; falta a rodada do SignalR fora da carência. F9.1 adiada (o contrato do Clima). F9.2–F9.4 não começadas |
+| F10 QA | 🟨 em andamento | 2026-11-18 | | F10.2–F10.3 feitas (João): 12 Features, 50 casos (49 automatizados), conferidos por `qa/ferramentas/conferir_especificacao.py`; F10.4 e F10.5 prontas por script (`make qa-azure`, `qa-prints`, `qa-pdf`), esperando a F10.1 (Azure, 🔑) |
+| F11 Polimento | 🟨 em andamento | 2026-11-19 | | pela D18, só acessibilidade: o axe no painel (WCAG 2.2 AA, F11.6); a guarda da IA ficou mais rígida (ortografia e coerência) |
+| F12 Docs e PDFs | 🟨 em andamento | 2026-11-19 | | F12.3 feita (PDF de Cyber); F12.1 falta o bairro; F12.2 falta a entrevista (operador); F12.4 guia pronto, falta a sessão com o time |
+| F13 Vídeos | 🟨 em andamento | 2026-11-19 | | os 5 roteiros em `docs/videos/` (com fala e comandos); gravação automática planejada na F13.4; pitch fora pela D18 |
+| F14 Entrega | 🟨 em andamento | 2026-11-19 | | F14.1 feita: `make checklist` (e `ONLINE=1`) lista o que falta em cada uma das 8 tarefas |
 
 Legenda: ⬜ não iniciada · 🟨 em andamento · ✅ concluída · ⛔ bloqueada
 
