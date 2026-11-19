@@ -14,6 +14,9 @@ if [[ -z $externos ]]; then
 fi
 externos=${externos:-1.1.1.1 9.9.9.9}
 
+# O conteúdo vai para um arquivo e entra por redirecionamento (num pipe, o escrever_arquivo rodaria num subshell e o
+# ARQUIVO_MUDOU não voltaria para cá).
+config=$(mktemp)
 {
   echo "# Gerado por infra/steps/30-dns.sh: a zona $SOMBRA_DOMINIO do $SOMBRA_HOSTNAME."
   echo "listen-address=127.0.0.1,$SOMBRA_IP"
@@ -26,7 +29,9 @@ externos=${externos:-1.1.1.1 9.9.9.9}
   for s in $externos; do echo "server=$s"; done
   echo "host-record=$SOMBRA_HOSTNAME.$SOMBRA_DOMINIO,$SOMBRA_HOSTNAME,$SOMBRA_IP"
   for nome in $SOMBRA_NOMES; do echo "address=/$nome.$SOMBRA_DOMINIO/$SOMBRA_IP"; done
-} | escrever_arquivo /etc/dnsmasq.d/sombra.conf 0644 root:root
+} >"$config"
+escrever_arquivo /etc/dnsmasq.d/sombra.conf 0644 root:root <"$config"
+rm -f "$config"
 mudou_dnsmasq=$ARQUIVO_MUDOU
 
 escrever_arquivo /etc/systemd/resolved.conf.d/sombra.conf 0644 root:root <<RESOLVED
@@ -37,8 +42,13 @@ Domains=$SOMBRA_DOMINIO
 RESOLVED
 mudou_resolved=$ARQUIVO_MUDOU
 
-systemctl enable --now dnsmasq >/dev/null 2>&1
-if ((mudou_dnsmasq)); then systemctl restart dnsmasq; fi
+# Reinicia se a configuração mudou ou se o serviço não está de pé (o pacote sobe o dnsmasq com a configuração padrão,
+# que briga com o systemd-resolved pela porta 53, e ele fica parado até ler a nossa).
+systemctl enable dnsmasq >/dev/null 2>&1
+if ((mudou_dnsmasq)) || ! systemctl is-active --quiet dnsmasq; then
+  systemctl restart dnsmasq
+  auditar "servico:dnsmasq" sucesso "acao=restart"
+fi
 if ((mudou_resolved)); then systemctl restart systemd-resolved; fi
 
 for nome in $SOMBRA_NOMES; do

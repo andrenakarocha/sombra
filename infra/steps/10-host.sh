@@ -13,9 +13,13 @@ else
   auditar hostname inalterado "hostname=$SOMBRA_HOSTNAME"
 fi
 
-# 127.0.1.1 com o nome completo e o curto (convenção do Debian/Ubuntu para o próprio host).
-linha="127.0.1.1 $fqdn $SOMBRA_HOSTNAME"
-{ grep -v '^127\.0\.1\.1[[:space:]]' /etc/hosts; echo "$linha"; } | escrever_arquivo /etc/hosts 0644 root:root
+# O nome completo e o curto no IP estático da rede interna (num servidor com IP fixo, no lugar do 127.0.1.1 do Debian),
+# para o próprio host e o DNS responderem o mesmo endereço.
+linha="$SOMBRA_IP $fqdn $SOMBRA_HOSTNAME"
+hosts=$(mktemp)
+{ grep -vE "^(127\.0\.1\.1|$SOMBRA_IP)[[:space:]]" /etc/hosts; echo "$linha"; } >"$hosts"
+escrever_arquivo /etc/hosts 0644 root:root <"$hosts"
+rm -f "$hosts"
 
 if [[ $(timedatectl show -p Timezone --value) != "$SOMBRA_FUSO" ]]; then
   timedatectl set-timezone "$SOMBRA_FUSO"

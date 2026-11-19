@@ -35,6 +35,8 @@ garantir_diretorio() {
 
 # escrever_arquivo <destino> <modo> <dono:grupo> < conteúdo
 # Só grava se o conteúdo, o modo ou o dono mudaram. Deixa ARQUIVO_MUDOU=1 quando mudou (para recarregar um serviço).
+# Chame com redirecionamento (< arquivo ou <<HEREDOC), nunca do lado direito de um pipe: lá ele roda num subshell e o
+# ARQUIVO_MUDOU não volta.
 escrever_arquivo() {
   local destino=$1 modo=$2 dono=$3 novo
   novo=$(mktemp)
@@ -64,6 +66,12 @@ instalar_pacotes() {
   if ((${#faltando[@]} == 0)); then
     auditar "pacotes" inalterado "pacotes=$*"
     return 0
+  fi
+  # Uma imagem recém-criada vem com o índice do apt velho (os .deb já saíram do espelho): atualiza se tiver mais de 6 h.
+  if ! find /var/lib/apt/lists -maxdepth 1 -name '*_Packages*' -mmin -360 2>/dev/null | grep -q .; then
+    log_info pacotes.atualizando_indice "Atualizando o índice do apt"
+    DEBIAN_FRONTEND=noninteractive apt-get update -qq >/dev/null
+    auditar "apt:update" sucesso
   fi
   log_info pacotes.instalando "Instalando ${faltando[*]}" "pacotes=${faltando[*]}"
   DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends "${faltando[@]}" >/dev/null
