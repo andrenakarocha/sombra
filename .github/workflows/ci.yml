@@ -33,6 +33,7 @@ jobs:
       painel: ${{ steps.filtro.outputs.painel }}
       sentinela: ${{ steps.filtro.outputs.sentinela }}
       qa: ${{ steps.filtro.outputs.qa }}
+      ml: ${{ steps.filtro.outputs.ml }}
       ambiente: ${{ steps.filtro.outputs.ambiente }}
       scripts: ${{ steps.filtro.outputs.scripts }}
       workflows: ${{ steps.filtro.outputs.workflows }}
@@ -77,6 +78,9 @@ jobs:
             painel:
               - 'web/painel/**'
               - 'design/tokens.css'
+            ml:
+              - 'ml/**'
+              - 'docs/contratos/indice-de-calor.vetores.json'
             qa:
               - 'qa/**'
               - 'services/core-api/sources/*Tests/**'
@@ -413,6 +417,21 @@ jobs:
       - name: o firmware no host (índice de calor, HMAC, estados e fila), com os vetores do contrato e aviso como erro
         run: make test-sentinela
 
+  ml:
+    name: ML (modelo de previsão de calor)
+    needs: mudancas
+    if: needs.mudancas.outputs.ml == 'true' || needs.mudancas.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      # a pasta ml/ chega com o PR da F4; até lá, o job passa sem nada para testar
+      - name: dependências fixadas, ruff e os testes da preparação, do treino e da exportação
+        if: hashFiles('ml/Makefile') != ''
+        run: make -C ml setup lint test
+
   qa:
     name: QA (especificação e sincronização com o Azure)
     needs: mudancas
@@ -429,7 +448,7 @@ jobs:
   ci-ok:
     name: ci-ok
     if: always()
-    needs: [mudancas, contratos, design, simulador, core, clima, painel, sentinela, qa, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
+    needs: [mudancas, contratos, design, simulador, core, clima, painel, sentinela, qa, ml, semgrep, mobile, ambiente-local, scripts, workflows, segredos]
     runs-on: ubuntu-latest
     steps:
       - name: nenhum job falhou nem foi cancelado
