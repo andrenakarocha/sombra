@@ -80,9 +80,28 @@ def link(disciplina: str, caminho: str, padrao: re.Pattern, nome: str) -> None:
         marcar(disciplina, True, f"link do {nome} em `{caminho}`")
 
 
+def links_relativos(disciplina: str) -> None:
+    """Todo link relativo dos .md versionados aponta para um arquivo ou pasta que existe (o 🔎 da F12.1)."""
+    arquivos_md = subprocess.run(["git", "-C", str(RAIZ), "ls-files", "*.md"], capture_output=True, text=True, check=True).stdout.split()
+    quebrados = []
+    for md in arquivos_md:
+        caminho = RAIZ / md
+        if not caminho.exists():
+            continue
+        sem_codigo = re.sub(r"```.*?```", "", caminho.read_text(encoding="utf-8", errors="replace"), flags=re.S)
+        for alvo in re.findall(r"\]\(([^)\s]+)\)", sem_codigo):
+            if re.match(r"[a-z]+:", alvo) or alvo.startswith("#"):
+                continue
+            destino = (caminho.parent / urllib.parse.unquote(alvo.split("#", 1)[0])).resolve()
+            if not destino.exists():
+                quebrados.append(f"{md} → {alvo}")
+    marcar(disciplina, not quebrados, f"nenhum link relativo quebrado nos {len(arquivos_md)} .md" + (": " + "; ".join(quebrados[:8]) if quebrados else ""))
+
+
 def main() -> int:
     t = "Geral"
     integrantes(t, "README.md")
+    links_relativos(t)
     arquivos(t, "prompts.md")
     if ONLINE:
         marcar(t, abre(REPO), f"o repositório abre sem login: {REPO}")

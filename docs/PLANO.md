@@ -981,6 +981,9 @@ F11.8 (VM no Azure) saíram.**
 - [ ] **F12.1** 🤖 README raiz final: Ficha completa, mapa do repositório, link de cada disciplina, como rodar tudo,
   integrantes. `prompts.md` consolidado.
   🔎 lido numa aba anônima, sem link quebrado (verificado por script).
+  ⏸ 2026-11-19: arquitetura em Mermaid, "como rodar tudo" com as URLs conferidas, o mapa das partes e os integrantes;
+  o `make checklist` confere os links relativos dos 54 `.md` (nenhum quebrado; testado com um quebrado de propósito).
+  Falta o bairro na Ficha (da entrevista, F0.16, do operador) e o `prompts.md` ganhar as partes que ainda vão fechar.
 - [ ] **F12.2** 🤖 A partir da F0.16: `docs/entrevista.md`, `docs/problema.md`, `docs/rabiscos/` (wireframes, fluxo de
   dados, circuito) e a Ficha final.
   🔎 nenhuma informação que identifique a pessoa.
