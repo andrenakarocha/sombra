@@ -855,9 +855,15 @@ Roda antes de qualquer outra fase; os commits são `feat(core)`.
 - [ ] **F8.3** 🤖 Workflow de release (`release.yml`, adiado da F0.12): core linux-x64, jar do clima, dist do painel e
   `SHA256SUMS`, com a mesma fixação de actions por SHA do `ci.yml`.
   🔎 um release de teste no GitHub com os checksums.
-- [ ] **F8.4** 🤖 Etapas 50 (dependências), 60 (banco) e 70 (aplicação: download + SHA256, diretórios, env 0640, units
+- [x] **F8.4** 🤖 Etapas 50 (dependências), 60 (banco) e 70 (aplicação: download + SHA256, diretórios, env 0640, units
   endurecidas, migrações, nginx).
-  🔎 `systemctl status sombra-*` ativos; `curl` nos `/health` pelos nomes respondem 200.
+  🔎 `systemctl status sombra-*` ativos; `curl` nos `/health` pelos nomes respondem 200 — 2026-11-19 (as 7 etapas de
+  primeira: PostgreSQL 16 com um papel por banco e `pg_hba` fechado, Mosquitto, JRE 21, nginx; artefatos conferidos pelo
+  `SHA256SUMS` em `/opt/sombra/releases/<versão>` com o link `atual`; o Core self-contained e o Clima como `sombra`, com
+  `ProtectSystem=strict`, `NoNewPrivileges`, sem capabilities e `Restart=always`; segredos gerados na VM, 0640
+  `root:sombra-ops`, nunca no log; os `/health` de `api`, `clima` e `painel.sombra.local` 200 de dentro da VM e do host;
+  só a porta 80 aberta para a rede, e escrita no Clima pelo nginx dá 403. O download do GitHub espera o primeiro release
+  (F8.3); aqui os artefatos vieram de `infra/scripts/empacotar.sh`, que faz o mesmo que o `release.yml`).
 - [ ] **F8.5** 🤖 Monitor (CPU, RAM, disco e serviços; limites em `monitor.conf`; alerta em log, journald e `POST` no Core)
   + `sombra-monitor.service` (`Type=notify`, `WatchdogSec`, `Restart=always`) + logrotate + regras do auditd.
   🔎 `restart`, `stop` e `start` funcionam; um alerta aparece no painel.
