@@ -918,6 +918,10 @@ falha documentados.
 
 - [ ] **F9.1** 🤖 `OnnxPrevisorDeCalor` no Clima (features pela `features.json`) + teste de paridade Java × Python.
   🔎 paridade 20/20 (P8).
+  ⏸ 2026-11-19: fica para depois da entrega. O modelo de probabilidade prevê o pico chegar a CAUTELA_EXTREMA (32,22 °C),
+  e o contrato do Clima expõe `probabilidadePerigo` (≥ 39,44 °C), que o previsor por regra preenche hoje. Trocar um pelo
+  outro mudaria o sentido do campo para o Core; o certo é um campo novo no contrato do Clima e do Core. O contrato das
+  features (`ml/modelo/features.json`) e as janelas de paridade em Java (`paridade-janelas.json`) já estão prontos.
 - [ ] **F9.2** 🤖 `make demo`: o roteiro completo automatizado (compose, simulador e Playwright no painel), com relatório
   de tempos.
   🔎 verde 3 vezes seguidas.
@@ -1105,7 +1109,7 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora:** **F1, F2 e F3 concluídas** (Core em C# com 365 testes e quality 100/100; privacidade com a auditoria A1–A8; Clima Service em Java com 144 testes, autoavaliação de SOA 10/10 e o Core consumindo o Clima de verdade). DA6 fechada pela D19 (o preventivo segue o limite pessoal da R3). Pendente do operador: os 🔎 do app no celular junto com a F9 e o que é do operador na F6.7 e na F6.8. Próximo no caminho principal: **F8 (Infra)**, depois F7 (Painel) e F9 (Integração). Em paralelo: ML (F4, Matheus) e, no QA, a F10.1 (Azure DevOps, 🔑).
+**Agora (19/11, madrugada):** **F1, F2, F3, F4, F7 e F8 concluídas** e na `main` (o ML pelo PR #17, a infra e o painel pelo #18). Em PR: a F5 (#19: firmware compilado para o ESP32 e integração com o Core provada pelo broker público) e as entregas (#20: PDF de Cyber, sincronização e PDF de QA, roteiros dos vídeos, guia de defesa e `make checklist`, mais duas correções no Core achadas ao revisar as traduções reais da IA). **Com o operador, para hoje:** o projeto no Wokwi e o link (F5.1), o Azure DevOps com o professor como Admin e o PAT (F10.1, depois `make qa-azure`, `make qa-prints` e `make qa-pdf`), os 🔎 do app no celular, os 5 vídeos (`docs/videos/`), o bairro da Ficha e o envio no Teams (`make checklist` diz o que falta). A F9.1 (o ONNX no Clima) ficou de fora: o modelo prevê CAUTELA_EXTREMA e o campo do contrato é `probabilidadePerigo`; ligar os dois pede um campo novo no contrato do Clima e do Core.
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
