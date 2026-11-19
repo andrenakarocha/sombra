@@ -91,6 +91,25 @@ public sealed class DomicilioTests
         Assert.AreEqual(37.07, leitura.IndiceDeCalor.Celsius, 0.05);
     }
 
+    /// <summary>
+    /// DA6: o pico real de nov/2023 (35,47 °C, CAUTELA_EXTREMA pela NWS) é perigo para quem tem 85 anos e cardiopatia
+    /// (limite pessoal de 34,94 °C), mas não para quem tem 70 anos; sem o pico, vale o nível da região.
+    /// </summary>
+    [TestMethod]
+    public void PrevisaoDaCasaUsaOLimitePessoalDoMoradorMaisVulneravel()
+    {
+        DateOnly hoje = DateOnly.FromDateTime(_agora.UtcDateTime);
+        Domicilio comum = Fabricas.Casa();
+        comum.AdicionarMorador(Fabricas.Morador(70, semente: 1));
+        Domicilio vulneravel = Fabricas.Casa();
+        vulneravel.AdicionarMorador(Fabricas.Morador(85, 2, new Cardiopatia()));
+
+        Assert.AreEqual(NivelDeRisco.CautelaExtrema, comum.NivelPrevistoParaACasa(NivelDeRisco.CautelaExtrema, 35.47, hoje));
+        Assert.AreEqual(NivelDeRisco.Perigo, vulneravel.NivelPrevistoParaACasa(NivelDeRisco.CautelaExtrema, 35.47, hoje));
+        Assert.AreEqual(NivelDeRisco.CautelaExtrema, vulneravel.NivelPrevistoParaACasa(NivelDeRisco.CautelaExtrema, null, hoje));
+        Assert.AreEqual(NivelDeRisco.Perigo, comum.NivelPrevistoParaACasa(NivelDeRisco.Perigo, 30.0, hoje), "o nível da região nunca baixa");
+    }
+
     /// <summary>Regra R10: leitura de uma Sentinela de outra casa é recusada.</summary>
     [TestMethod]
     public void RecusaLeituraDeSentinelaDeOutraCasa()

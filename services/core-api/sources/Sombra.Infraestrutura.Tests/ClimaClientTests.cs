@@ -41,6 +41,7 @@ public sealed class ClimaClientTests
         Assert.AreEqual(NivelDeRisco.CautelaExtrema, risco.NivelPrevisto);
         Assert.AreEqual(0.07, risco.ProbabilidadePerigo, 1e-9);
         Assert.AreEqual("regra", risco.Fonte);
+        Assert.AreEqual(35.47, risco.IndiceDeCalorPrevistoC);
         Assert.AreEqual("/api/v1/regioes/SP-MIRANTE/risco-calor", c.Pedidos.Single().RequestUri!.AbsolutePath);
     }
 

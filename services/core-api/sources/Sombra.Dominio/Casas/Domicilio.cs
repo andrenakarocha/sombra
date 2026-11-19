@@ -204,6 +204,26 @@ public sealed partial class Domicilio
     public LimitesTermicos LimitesTermicos(DateOnly hoje)
         => _moradores.Select(m => m.LimitesTermicos(hoje)).MinBy(l => l.Perigo) ?? Calor.LimitesTermicos.Padrao;
 
+    /// <summary>
+    /// O nível previsto para esta casa (DA6): o maior entre o nível previsto para a região e o pico previsto do índice de
+    /// calor classificado pelos limites do morador mais vulnerável (R3). O mesmo calor pode ser perigo para uma casa e
+    /// não para a vizinha, e o preventivo (R5) segue o perigo de quem mora ali.
+    /// </summary>
+    /// <param name="nivelDaRegiao">O nível que o Clima prevê para a região.</param>
+    /// <param name="picoPrevistoC">O pico previsto do índice de calor, em °C (nulo quando a fonte não informa).</param>
+    /// <param name="hoje">A data de referência, para a idade.</param>
+    /// <returns>O nível previsto para a casa.</returns>
+    public NivelDeRisco NivelPrevistoParaACasa(NivelDeRisco nivelDaRegiao, double? picoPrevistoC, DateOnly hoje)
+    {
+        if (picoPrevistoC is not { } pico || double.IsNaN(pico))
+        {
+            return nivelDaRegiao;
+        }
+
+        NivelDeRisco pessoal = LimitesTermicos(hoje).Classificar(pico);
+        return pessoal > nivelDaRegiao ? pessoal : nivelDaRegiao;
+    }
+
     /// <summary>Registra uma medição da Sentinela da casa (regras R9 e R10).</summary>
     /// <param name="deviceId">A Sentinela que mediu.</param>
     /// <param name="momento">O instante da medição.</param>

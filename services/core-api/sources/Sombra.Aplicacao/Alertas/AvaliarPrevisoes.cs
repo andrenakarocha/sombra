@@ -12,7 +12,8 @@ namespace Sombra.Aplicacao.Alertas;
 
 /// <summary>
 /// A volta do monitor de previsão: consulta o Clima uma vez por região, em paralelo, e abre o alerta preventivo nas casas
-/// monitoradas onde a previsão de 24 h chega a perigo (roteiro, passo 2).
+/// monitoradas onde a previsão de 24 h chega a perigo para quem mora ali (roteiro, passo 2): o nível da região ou o pico
+/// previsto pelos limites pessoais da R3, o que for maior (DA6).
 /// </summary>
 public sealed class AvaliarPrevisoes
 {
@@ -51,11 +52,17 @@ public sealed class AvaliarPrevisoes
         Dictionary<string, RiscoDaRegiao?> riscoDaRegiao = regioes.Zip(riscos).ToDictionary(p => p.First, p => p.Second, StringComparer.Ordinal);
 
         DateTimeOffset agora = _relogio.Agora;
+        DateOnly hoje = DateOnly.FromDateTime(agora.UtcDateTime);
         int abertos = 0;
         foreach (Domicilio casa in casas)
         {
-            if (riscoDaRegiao[casa.RegiaoClimatica] is { NivelPrevisto: >= NivelDeRisco.Perigo } risco
-                && await AbrirSeLivreAsync(casa, risco.NivelPrevisto, agora, cancellationToken))
+            if (riscoDaRegiao[casa.RegiaoClimatica] is not { } risco)
+            {
+                continue;
+            }
+
+            NivelDeRisco nivelDaCasa = casa.NivelPrevistoParaACasa(risco.NivelPrevisto, risco.IndiceDeCalorPrevistoC, hoje);
+            if (nivelDaCasa >= NivelDeRisco.Perigo && await AbrirSeLivreAsync(casa, nivelDaCasa, agora, cancellationToken))
             {
                 abertos++;
             }
