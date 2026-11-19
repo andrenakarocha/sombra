@@ -29,8 +29,8 @@
 | Modelo de previsão de calor perigoso | [`ml/`](ml/) | IA & Machine Learning | 🚧 |
 | Sentinela: ESP32 no Wokwi | [`iot/sentinela/`](iot/sentinela/) | Physical Computing | 🚧 |
 | App da família e Modo Idoso | [`mobile/`](mobile/) | Mobile Development | 🚧 |
-| Painel do operador e Dashboard de Risco Cidadão | [`web/painel/`](web/painel/) | (Cyber, OS e pitch) | 🚧 |
-| Infraestrutura Linux provisionada por scripts | [`infra/`](infra/) | Operating Systems | 🚧 |
+| Painel do operador e Dashboard de Risco Cidadão | [`web/painel/`](web/painel/) | (Cyber, OS e pitch) | ✅ |
+| Infraestrutura Linux provisionada por scripts | [`infra/`](infra/) | Operating Systems | ✅ |
 | Features e Test Cases no Azure Boards | [`qa/`](qa/) | Testing, Compliance & QA | 🚧 |
 | Vídeo pitch | [`pitch/`](pitch/) | (prêmio melhor GS) | 🚧 |
 
