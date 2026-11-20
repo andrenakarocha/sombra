@@ -1088,8 +1088,9 @@ F11.8 (VM no Azure) saíram.**
   integrantes em cada entrega.
   🔎 sai com 0 — 2026-11-19 (`make checklist ONLINE=1`: as 8 entregas completas, os 6 vídeos e o Wokwi abrindo sem
   login; o professor como Admin está no print da F10.1).
-- [ ] **F14.2** 🧑 🔑 Envio das 8 tarefas no Teams (um integrante por disciplina).
-  🔎 print de cada envio em `docs/evidencias/entrega/`.
+- [x] **F14.2** 🧑 🔑 Envio das 8 tarefas no Teams (um integrante por disciplina).
+  🔎 print de cada envio — 2026-11-19 (as 8 enviadas entre 20h46 e 20h55; os prints ficam com o operador, fora do Git,
+  porque mostram os professores e a turma, como os do Azure).
 
 **✅ Aceite F14:** as 8 tarefas enviadas até 19/11, 23h55.
 
@@ -1155,17 +1156,9 @@ Legenda: ⬜ não verificada · 🟡 conferida em documentação ou uso anterior
 
 **Meta:** as 8 tarefas enviadas até 19/11, 23h55, com o **✅ Aceite** de F0 a F14 passando.
 
-**Agora (19/11, 20h40):** falta pouco para a entrega. O Azure DevOps está no ar (`gs-sombra/Sombra`, com o professor como
-Admin, 63 itens e os 66 prints); a Sentinela está publicada no Wokwi; os 6 vídeos estão no YouTube, com o link no
-README de cada pasta; o pitch tem 3:01.
-
-**Falta, nesta ordem:**
-
-1. ✔ O PDF de QA (`qa/entrega/qa.pdf`, com os prints e o pitch) e o de Cyber com o ZIP; `make checklist ONLINE=1` sai
-   com 0.
-2. O merge do PR #22 (os links, o pitch e os PDFs).
-3. **Operador:** o envio das 8 tarefas no Teams até 23h55 (a tabela da §4 diz o que vai em cada uma), com print de
-   cada envio (F14.2).
+**Agora (19/11, 21h00):** **entregue.** As 8 tarefas foram enviadas no Teams (F14.2) e a `main` está verde. O que ficou
+em aberto: a pesquisa externa do pitch (F13.2, fora por decisão) e o vídeo curto do TalkBack no celular do operador
+(F6.7; o checklist de acessibilidade e os testes estão feitos).
 
 | Fase | Status | Início | Fim | Notas |
 |---|---|---|---|---|
@@ -1183,7 +1176,7 @@ README de cada pasta; o pitch tem 3:01.
 | F11 Polimento | 🟨 em andamento | 2026-11-19 | | pela D18, só acessibilidade: o axe no painel (WCAG 2.2 AA, F11.6); a guarda da IA ficou mais rígida (ortografia e coerência) |
 | F12 Docs e PDFs | 🟨 em andamento | 2026-11-19 | | F12.3 feita (PDF de Cyber); F12.1 falta o bairro; F12.2 falta a entrevista (operador); F12.4 guia pronto, falta a sessão com o time |
 | F13 Vídeos | ✅ concluída | 2026-11-19 | 2026-11-19 | os 5 vídeos por script (`tools/videos/`) e o pitch (`pitch/`, 3:01, voz Charon) aprovados e no YouTube como não listados, com o link no README de cada pasta; a F13.2 (pesquisa externa) ficou de fora: o pitch usa só números do repositório |
-| F14 Entrega | 🟨 em andamento | 2026-11-19 | | F14.1 feita: `make checklist ONLINE=1` sai com 0; falta o envio das 8 tarefas no Teams (operador, F14.2) |
+| F14 Entrega | ✅ concluída | 2026-11-19 | 2026-11-19 | `make checklist ONLINE=1` sai com 0 e as 8 tarefas foram enviadas no Teams até 20h55 |
 
 Legenda: ⬜ não iniciada · 🟨 em andamento · ✅ concluída · ⛔ bloqueada
 
